@@ -1,0 +1,73 @@
+# ============================================================
+# docker-compose.yml — Projet Odoo  Community
+# PostgreSQL géré séparément via Dokploy "Database"
+# Ports internes : web 8204 / longpolling 8204
+# ============================================================
+
+version: '3.8'
+
+services:
+  odoo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: taaral_odoo19
+    restart: unless-stopped
+    environment:
+      # Variables lues par l'image officielle odoo:18.0
+      HOST: ${DB_HOST}
+      PORT: ${DB_PORT:-5432}
+      USER: ${DB_USER:-odoo_taaral}
+      PASSWORD: ${DB_PASSWORD}
+      # Variables pour notre entrypoint
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USER: ${DB_USER:-odoo_taaral}
+      DB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - taaral_odoo_data:/var/lib/odoo
+      - taaral_odoo_logs:/var/log/odoo
+    networks:
+      - dokploy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=dokploy-network"
+
+      # ── HTTP → HTTPS ─────────────────────────────────────
+      - "traefik.http.routers.taaral-http.rule=Host(`${ODOO_DOMAIN}`)"
+      - "traefik.http.routers.taaral-http.entrypoints=web"
+      - "traefik.http.routers.taaral-http.middlewares=taaral-https-redirect"
+      - "traefik.http.middlewares.taaral-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.taaral-https-redirect.redirectscheme.permanent=true"
+
+      # ── HTTPS web (port 8204) ─────────────────────
+      - "traefik.http.routers.taaral-https.rule=Host(`${ODOO_DOMAIN}`)"
+      - "traefik.http.routers.taaral-https.entrypoints=websecure"
+      - "traefik.http.routers.taaral-https.tls=true"
+      - "traefik.http.routers.taaral-https.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.taaral-https.service=taaral-web"
+      - "traefik.http.routers.taaral-https.middlewares=taaral-security-headers"
+      - "traefik.http.services.taaral-web.loadbalancer.server.port=8204"
+
+      # ── HTTPS longpolling (port 8205) ──────────────
+      - "traefik.http.routers.taaral-lp.rule=Host(`${ODOO_DOMAIN}`) && PathPrefix(`/longpolling`)"
+      - "traefik.http.routers.taaral-lp.entrypoints=websecure"
+      - "traefik.http.routers.taaral-lp.tls=true"
+      - "traefik.http.routers.taaral-lp.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.taaral-lp.service=taaral-lp"
+      - "traefik.http.services.taaral-lp.loadbalancer.server.port=8205"
+
+      # ── Security headers ──────────────────────────────────
+      - "traefik.http.middlewares.taaral-security-headers.headers.customResponseHeaders.X-Frame-Options=SAMEORIGIN"
+      - "traefik.http.middlewares.taaral-security-headers.headers.customResponseHeaders.X-Content-Type-Options=nosniff"
+      - "traefik.http.middlewares.taaral-security-headers.headers.customResponseHeaders.Referrer-Policy=strict-origin-when-cross-origin"
+
+volumes:
+  taaral_odoo_data:
+    driver: local
+  taaral_odoo_logs:
+    driver: local
+
+networks:
+  dokploy-network:
+    external: true
