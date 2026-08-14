@@ -1,29 +1,23 @@
-.o-mail-MessageInReply-author {
-    opacity: 75%;
-}
-
 .o-mail-MessageInReply-avatar {
     width: $o-mail-Avatar-size / 2;
-    aspect-ratio: 1;
+    height: $o-mail-Avatar-size / 2;
 }
 
 .o-mail-MessageInReply-core {
-    --border-color: var(--o-message-bubble-border-color);
-    border-width: $border-width $border-width $border-width ($border-width * 3) !important;
-    border-left-color: var(--o-message-bubble-color-base) !important;;
+    border-left: 3px solid transparent !important;
+    border-top: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
     background-color: rgba($o-view-background-color, .5) !important;
 
-    .o-mail-MessageInReply-message {
-        opacity: var(--mail-MessageInReply-messageOpacityNonHover, 65%);
+    &.o-blue {
+        border-left-color: mix($o-view-background-color, $info, 50%) !important;
     }
-
-    &:hover, &:focus-visible {
-        transform: translateY(#{$border-width * -2});
-        transition: $transition-base;
-
-        .o-mail-MessageInReply-message {
-            opacity: 100%;
-        }
+    &.o-green {
+        border-left-color: mix($o-view-background-color, $success, 50%) !important;
+    }
+    &.o-orange {
+        border-left-color: mix($o-view-background-color, $warning, 40%) !important;
     }
 }
 
@@ -35,7 +29,13 @@
 
 .o-mail-MessageInReply-message {
     // Make the body single line when possible
-    p {
+    p, div {
+        display: inline;
         margin: 0;
     }
+
+    br {
+        display: none;
+    }
 }
+

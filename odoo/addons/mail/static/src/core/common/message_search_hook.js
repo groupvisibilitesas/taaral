@@ -1,7 +1,7 @@
 import { useSequential } from "@mail/utils/common/hooks";
+import { createDocumentFragmentFromContent } from "@mail/utils/common/html";
 import { useState, onWillUnmount, markup } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
-import { createDocumentFragmentFromContent } from "@web/core/utils/html";
 import { escapeRegExp } from "@web/core/utils/strings";
 
 export const HIGHLIGHT_CLASS = "o-mail-Message-searchHighlight";
@@ -69,15 +69,10 @@ export function useMessageSearch(thread) {
     const state = useState({
         thread,
         async search(before = false) {
-            if (this.searchTerm || this.is_notification !== undefined) {
+            if (this.searchTerm) {
                 this.searching = true;
                 const data = await sequential(() =>
-                    store.searchMessagesInThread(
-                        this.searchTerm,
-                        this.thread,
-                        before,
-                        this.is_notification
-                    )
+                    store.search(this.searchTerm, this.thread, before)
                 );
                 if (!data) {
                     return;
@@ -98,14 +93,11 @@ export function useMessageSearch(thread) {
         },
         count: 0,
         clear() {
-            this.is_notification = undefined;
             this.messages = [];
             this.searched = false;
             this.searching = false;
             this.searchTerm = undefined;
         },
-        /** @type {true | false | undefined} */
-        is_notification: undefined,
         loadMore: false,
         /** @type {import('@mail/core/common/message_model').Message[]} */
         messages: [],

@@ -7,7 +7,6 @@ from odoo.exceptions import UserError
 
 import pytz
 
-
 class HrLeave(models.Model):
     _inherit = 'hr.leave'
 
@@ -36,12 +35,12 @@ class HrLeave(models.Model):
 
         if not self.request_unit_hours:
             # Use company's working schedule hours for the leave to avoid duration calculation issues.
-            def adjust_date_range(date_from, date_to, from_period, to_period, attendance_ids, employee_id):
-                period_ids_from = attendance_ids.filtered(lambda a: a.day_period in from_period
+            def adjust_date_range(date_from, date_to, period, attendance_ids, employee_id):
+                period_ids_from = attendance_ids.filtered(lambda a: a.day_period in period
                                                                     and int(a.dayofweek) == date_from.weekday()
                                                                     and (not a.two_weeks_calendar or int(a.week_type) == a.get_week_type(date_from))
                                                                     and not a.display_type)
-                period_ids_to = attendance_ids.filtered(lambda a: a.day_period in to_period
+                period_ids_to = attendance_ids.filtered(lambda a: a.day_period in period
                                                                     and int(a.dayofweek) == date_to.weekday()
                                                                     and (not a.two_weeks_calendar or int(a.week_type) == a.get_week_type(date_to))
                                                                     and not a.display_type)
@@ -54,24 +53,25 @@ class HrLeave(models.Model):
                 return date_from, date_to
 
             if self.request_unit_half:
-                from_period = ['morning'] if self.request_date_from_period == 'am' else ['afternoon']
-                to_period = ['morning'] if self.request_date_to_period == 'am' else ['afternoon']
+                period = ['morning'] if self.request_date_from_period == 'am' else ['afternoon']
             else:
-                from_period = ['morning', 'afternoon']
-                to_period = ['morning', 'afternoon']
+                period = ['morning', 'afternoon']
             attendance_ids = self.company_id.resource_calendar_id.attendance_ids | self.resource_calendar_id.attendance_ids
-            date_from, date_to = adjust_date_range(date_from, date_to, from_period, to_period, attendance_ids, self.employee_id)
+            date_from, date_to = adjust_date_range(date_from, date_to, period, attendance_ids, self.employee_id)
 
-        if self.request_unit_half and self.request_date_to_period == 'am':
+        if self.request_unit_half and self.request_date_from_period == 'am':
+            # In normal workflows request_unit_half implies that date_from and date_to are the same
+            # request_unit_half allows us to choose between `am` and `pm`
             # In a case where we work from mon-wed and request a half day in the morning
             # we do not want to push date_to since the next work attendance is actually in the afternoon
-            date_to_weektype = str(self.env['resource.calendar.attendance'].get_week_type(date_to))
-            date_to_dayofweek = str(date_to.weekday())
+            date_from_weektype = str(self.env['resource.calendar.attendance'].get_week_type(date_from))
+            date_from_dayofweek = str(date_from.weekday())
             # Fetch the attendances we care about
-            if self.resource_calendar_id.attendance_ids.filtered(lambda a:
-                a.dayofweek == date_to_dayofweek
-                and a.day_period in ('afternoon', 'full_day')
-                and (not self.resource_calendar_id.two_weeks_calendar or a.week_type == date_to_weektype)):
+            attendance_ids = self.resource_calendar_id.attendance_ids.filtered(lambda a:
+                a.dayofweek == date_from_dayofweek
+                and a.day_period != "lunch"
+                and (not self.resource_calendar_id.two_weeks_calendar or a.week_type == date_from_weektype))
+            if len(attendance_ids) == 2:
                 # The employee took the morning off on a day where he works the afternoon aswell
                 return (date_from, date_to)
 
@@ -91,8 +91,8 @@ class HrLeave(models.Model):
         # Undo the last day increment
         return (date_start, date_target)
 
-    @api.depends('request_date_from_period', 'request_date_to_period', 'request_hour_from', 'request_hour_to',
-                'request_date_from', 'request_date_to', 'request_unit_half', 'request_unit_hours', 'employee_id')
+    @api.depends('request_date_from_period', 'request_hour_from', 'request_hour_to', 'request_date_from', 'request_date_to',
+                 'request_unit_half', 'request_unit_hours', 'employee_id')
     def _compute_date_from_to(self):
         super()._compute_date_from_to()
         for leave in self:
@@ -144,6 +144,9 @@ class HrLeave(models.Model):
                         holidays_days_list.append(current)
                         current += relativedelta(days=1)
                 for leave in leaves:
+                    if leave.request_unit_half:
+                        duration_by_leave_id.update(leave._get_durations(resource_calendar=company_cal))
+                        continue
                     # Extend the end date to next working day
                     date_start = leave.date_from
                     date_end = leave.date_to
@@ -156,24 +159,12 @@ class HrLeave(models.Model):
                     current = date_start.date()
                     end_date = extended_date_end.date()
                     legal_days = 0.0
-                    is_half_day_start = leave.request_unit_half and (
-                            (leave.request_date_from == leave.request_date_to and leave.request_date_from_period == leave.request_date_to_period)
-                            or (leave.request_date_from != leave.request_date_to and leave.request_date_from_period == 'pm')
-                    )
-                    is_half_day_end = (
-                            leave.request_unit_half and leave.request_date_to_period == 'am'
-                            and not leave.l10n_fr_date_to_changed  # date_to was not extended -> employee works PM
-                            and leave.request_date_from != leave.request_date_to  # same-day handled by is_half_day_start
-                    )
                     while current <= end_date:
                         if current in holidays_days_list:
                             current += relativedelta(days=1)
                             continue
                         if company_cal._works_on_date(current):
-                            if is_half_day_start and current == date_start.date() or is_half_day_end and current == end_date:
-                                legal_days += 0.5
-                            else:
-                                legal_days += 1.0
+                            legal_days += 1.0
                         current += relativedelta(days=1)
                     _, hours = standard_duration.get(leave.id, (0.0, 0.0))
 

@@ -12,7 +12,7 @@ class TestTranslationOverride(TransactionCase):
             'name': 'x_html_test',
             'ttype': 'html',
             'model_id': cls.category.id,
-            'translate': 'html_translate',
+            'translate': True,
         })
 
     def test_web_override_translations(self):

@@ -4,7 +4,7 @@ import {
     clickOnSave,
     registerWebsitePreviewTour,
 } from '@website/js/tours/tour_utils';
-import { stepUtils } from "@web_tour/tour_utils";
+import { stepUtils } from "@web_tour/tour_service/tour_utils";
 
 /**
  * The purpose of these tours is to check the systray visibility:
@@ -63,6 +63,7 @@ const canSwitchWebsiteNoCheck = () => [{
     trigger: '.o-dropdown--menu .dropdown-item:contains("Other")',
 }];
 
+
 const canSwitchWebsite = () => [{
     content: "Open website switcher",
     trigger: '.o_menu_systray .o_menu_systray_item.o_website_switcher_container .dropdown-toggle:contains("My Website"):not(:contains("My Website 2"))',
@@ -78,11 +79,11 @@ const canSwitchWebsite = () => [{
 
 const canAddNewContent = () => [{
     content: "Open +New content",
-    trigger: '.o_menu_systray .o_menu_systray_item.o_new_content_container button',
+    trigger: '.o_menu_systray .o_menu_systray_item.o_new_content_container',
     run: "click",
 }, {
     content: "Close +New content",
-    trigger: '.o_new_content_menu_choices',
+    trigger: '#o_new_content_menu_choices',
     run: "click",
 }];
 
@@ -151,20 +152,6 @@ const canEditButCannotChange = () => [
     },
 ];
 
-const ensureWebsiteSwitcherIsNotVisible = [
-    {
-        content: "Ensure website switcher is hidden when only one website exists",
-        trigger: ".o_menu_systray:not(:has(.o_website_switcher_container))",
-    },
-];
-
-const ensureWebsiteSwitcherIsVisible = [
-    {
-        content: "Ensure website switcher is present when multiple website exists",
-        trigger: ".o_menu_systray:has(.o_website_switcher_container)",
-    },
-];
-
 const register = (title, steps) => {
     registerWebsitePreviewTour(title, {
         url: "/test_model/1",
@@ -218,7 +205,3 @@ register("test_systray_not_reditor_not_tester", () => [
         trigger: ":iframe main:contains(test model)",
     },
 ]);
-
-register("test_systray_single_website", () => ensureWebsiteSwitcherIsNotVisible);
-
-register("test_systray_multi_website", () => ensureWebsiteSwitcherIsVisible);

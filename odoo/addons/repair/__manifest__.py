@@ -6,7 +6,7 @@
     'name': 'Repairs',
     'version': '1.0',
     'sequence': 230,
-    'category': 'Supply Chain/Inventory',
+    'category': 'Inventory/Inventory',
     'summary': 'Repair damaged products',
     'description': """
 The aim is to have a complete module to manage all products repairs.
@@ -48,6 +48,5 @@ The following topics are covered by this module:
             'repair/static/tests/tours/*.js',
         ],
     },
-    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 }

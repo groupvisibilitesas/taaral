@@ -1,4 +1,4 @@
-import { Component, onWillDestroy, useChildSubEnv, useRef, useState } from "@odoo/owl";
+import { Component, onWillDestroy, useChildSubEnv, useEffect, useRef, useState } from "@odoo/owl";
 import { sortBy } from "@web/core/utils/arrays";
 import { ErrorHandler } from "@web/core/utils/components";
 
@@ -53,8 +53,13 @@ export class OverlayContainer extends Component {
 
     setup() {
         this.root = useRef("root");
-        /** @deprecated */
         this.state = useState({ rootEl: null });
+        useEffect(
+            () => {
+                this.state.rootEl = this.root.el;
+            },
+            () => [this.root.el]
+        );
     }
 
     get sortedOverlays() {
@@ -62,7 +67,7 @@ export class OverlayContainer extends Component {
     }
 
     isVisible(overlay) {
-        return overlay.rootId === this.env?.rootId;
+        return overlay.rootId === this.state.rootEl?.getRootNode()?.host?.id;
     }
 
     handleError(overlay, error) {

@@ -1,9 +1,12 @@
+import { ActionDialog } from "./action_dialog";
+
 import { Component, xml, onWillDestroy } from "@odoo/owl";
 
 // -----------------------------------------------------------------------------
 // ActionContainer (Component)
 // -----------------------------------------------------------------------------
 export class ActionContainer extends Component {
+    static components = { ActionDialog };
     static props = {};
     static template = xml`
         <t t-name="web.ActionContainer">

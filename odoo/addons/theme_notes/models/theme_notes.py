@@ -1,7 +1,7 @@
 from odoo import models
 
 
-class ThemeUtils(models.AbstractModel):
+class ThemeNotes(models.AbstractModel):
     _inherit = 'theme.utils'
 
     def _theme_notes_post_copy(self, mod):

@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { registry } from "@web/core/registry";
 
 /**
@@ -33,9 +35,6 @@ registry.category("web_tour.tours").add("course_reviews", {
         {
             trigger: ".modal.modal_shown.show button.o_portal_chatter_composer_btn",
             run: "click",
-        },
-        {
-            trigger: "body:not(:has(.modal.show))",
         },
         {
             trigger: ".o_wslides_course_header_nav_review",
@@ -74,13 +73,12 @@ registry.category("web_tour.tours").add("course_reviews", {
             run: "click",
         },
         {
-            trigger:
-                "#chatterRoot:shadow .o-mail-QuickReactionMenu-emoji span:contains('👍'):not(:visible)",
+            trigger: "#chatterRoot:shadow .o-Emoji[data-codepoints='😃']",
             run: "click",
         },
         {
             trigger:
-                "#chatterRoot:shadow .o-mail-Message .o-mail-MessageReactions:not([title='Add a Reaction'])",
+                "#chatterRoot:shadow .o-mail-Message .o-mail-MessageReactions-add:not(:visible)",
         },
         {
             trigger: "#chatterRoot:shadow .o-mail-Message .o-mail-MessageReaction",
@@ -93,7 +91,7 @@ registry.category("web_tour.tours").add("course_reviews", {
         },
         {
             trigger: "#chatterRoot:shadow .o-mail-Message .o-mail-Composer textarea",
-            run: "press ctrl+Enter",
+            run: "press Enter",
         },
         {
             trigger: `#chatterRoot:shadow .o_wrating_publisher_comment:contains("Thanks for enjoying my 'mid' course, you mid student")`,

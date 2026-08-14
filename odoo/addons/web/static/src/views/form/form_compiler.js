@@ -183,7 +183,6 @@ export class FormCompiler extends ViewCompiler {
         const field = super.compileField(el, params);
 
         const fieldName = el.getAttribute("name");
-        params.notebookPageFields?.push(fieldName);
         const fieldString = el.getAttribute("string");
         const fieldId = el.getAttribute("field_id");
         const labelsForAttr = el.getAttribute("id") || fieldName;
@@ -439,10 +438,9 @@ export class FormCompiler extends ViewCompiler {
      * @returns {Element}
      */
     compileHeader(el, params) {
-        const statusBar = createElement("div", {
-            "t-att-class": "{ 'shadow-sm': __comp__.state.isStatusbarStickyPinned }",
-        });
-        statusBar.className = "o_form_statusbar d-flex justify-content-between py-2";
+        const statusBar = createElement("div");
+        statusBar.className =
+            "o_form_statusbar position-relative d-flex justify-content-between mb-0 mb-md-2 pb-2 pb-md-0";
         const buttons = [];
         const others = [];
         for (const child of el.childNodes) {
@@ -461,7 +459,14 @@ export class FormCompiler extends ViewCompiler {
             }
         }
         let slotId = 0;
-        const statusBarButtons = createElement("StatusBarButtons");
+        let statusBarButtons;
+        if (params.asDropdownItems) {
+            statusBarButtons = createElement("StatusBarDropdownItems");
+        } else {
+            statusBarButtons = createElement("StatusBarButtons", {
+                "t-if": "!__comp__.env.isSmall or __comp__.env.inDialog",
+            });
+        }
         for (const button of buttons) {
             const slot = createElement("t", {
                 "t-set-slot": `button_${slotId++}`,
@@ -469,6 +474,9 @@ export class FormCompiler extends ViewCompiler {
             });
             append(slot, button);
             append(statusBarButtons, slot);
+        }
+        if (params.asDropdownItems) {
+            return statusBarButtons;
         }
         append(statusBar, statusBarButtons);
         append(statusBar, others);
@@ -514,6 +522,8 @@ export class FormCompiler extends ViewCompiler {
     compileNotebook(el, params) {
         const noteBookId = this.noteBookId++;
         const noteBook = createElement("Notebook");
+        const pageAnchors = [];
+        const noteBookAnchors = {};
 
         if (el.hasAttribute("class")) {
             noteBook.setAttribute("className", toStringExpression(el.getAttribute("class")));
@@ -527,10 +537,6 @@ export class FormCompiler extends ViewCompiler {
         noteBook.setAttribute(
             "onPageUpdate",
             `(page) => __comp__.props.onNotebookPageChange(${noteBookId}, page)`
-        );
-        noteBook.setAttribute(
-            "onWillActivatePage",
-            `(page) => __comp__.onWillChangeNotebookPage?.(${noteBookId}, page)`
         );
 
         for (const child of el.children) {
@@ -565,6 +571,17 @@ export class FormCompiler extends ViewCompiler {
                 );
             }
 
+            for (const anchor of child.querySelectorAll("[href^=\\#]")) {
+                const anchorValue = CSS.escape(anchor.getAttribute("href").substring(1));
+                if (!anchorValue.length) {
+                    continue;
+                }
+                pageAnchors.push(anchorValue);
+                noteBookAnchors[anchorValue] = {
+                    origin: `'${pageId}'`,
+                };
+            }
+
             let isVisibleExpr;
             if (!invisible || invisible === "False" || invisible === "0") {
                 isVisibleExpr = "true";
@@ -577,11 +594,27 @@ export class FormCompiler extends ViewCompiler {
             }
             pageSlot.setAttribute("isVisible", isVisibleExpr);
 
-            params.notebookPageFields = [];
             for (const contents of child.children) {
                 append(pageSlot, this.compileNode(contents, { ...params, currentSlot: pageSlot }));
             }
-            pageSlot.setAttribute("fieldNames", `${JSON.stringify(params.notebookPageFields)}`);
+        }
+
+        if (pageAnchors.length) {
+            // If anchors from the page are targetting an element
+            // present in the notebook, it must be aware of the
+            // page that contains the corresponding element
+            for (const anchor of pageAnchors) {
+                let pageId = 1;
+                for (const child of el.children) {
+                    if (child.querySelector(`#${anchor}`)) {
+                        noteBookAnchors[anchor].target = `'page_${pageId}'`;
+                        noteBookAnchors[anchor] = objectToString(noteBookAnchors[anchor]);
+                        break;
+                    }
+                    pageId++;
+                }
+            }
+            noteBook.setAttribute("anchors", objectToString(noteBookAnchors));
         }
 
         return noteBook;
@@ -594,7 +627,6 @@ export class FormCompiler extends ViewCompiler {
      */
     compileSetting(el, params) {
         const setting = createElement(params.componentName || "Setting", {
-            info: toStringExpression(el.getAttribute("info") || ""),
             title: toStringExpression(el.getAttribute("title") || ""),
             help: toStringExpression(el.getAttribute("help") || ""),
             companyDependent: el.getAttribute("company_dependent") === "1" || "false",
@@ -654,9 +686,7 @@ export class FormCompiler extends ViewCompiler {
      * @returns {Element}
      */
     compileSheet(el, params) {
-        const sheetBG = createElement("div", {
-            "t-on-scroll": "__comp__.onScrollThrottled",
-        });
+        const sheetBG = createElement("div");
         sheetBG.className = "o_form_sheet_bg";
 
         const sheetFG = createElement("div");

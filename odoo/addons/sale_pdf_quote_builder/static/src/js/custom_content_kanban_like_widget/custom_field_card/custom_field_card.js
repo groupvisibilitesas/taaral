@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { Component, useRef } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { useAutoresize } from "@web/core/utils/autoresize";
@@ -8,7 +10,7 @@ export class CustomFieldCard extends Component {
         name: String,
         value: String,
         onChange: Function,
-        readonly: { type: Boolean, optional: true },
+        disabled: { type: Boolean, default: false },
     };
 
     setup() {

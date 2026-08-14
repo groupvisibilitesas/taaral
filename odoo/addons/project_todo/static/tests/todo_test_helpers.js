@@ -8,10 +8,10 @@ import { ProjectTags } from "./mock_server/mock_models/project_tags";
 import { MailActivityTodoCreate } from "./mock_server/mock_models/mail_activity_todo_create";
 
 export function defineTodoModels() {
-    defineModels(todoModels);
+    defineModels(todoodoModels);
 }
 
-export const todoModels = {
+export const todoodoModels = {
     ...mailModels,
     ...projectModels,
     ProjectTask,

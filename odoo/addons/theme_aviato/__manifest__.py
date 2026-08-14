@@ -17,7 +17,6 @@
         'views/snippets/s_cta_box.xml',
         'views/snippets/s_cover.xml',
         'views/snippets/s_company_team.xml',
-        'views/snippets/s_comparisons_horizontal.xml',
         'views/snippets/s_striped_top.xml',
         'views/snippets/s_features.xml',
         'views/snippets/s_sidegrid.xml',
@@ -55,57 +54,26 @@
         'views/snippets/s_images_constellation.xml',
         'views/snippets/s_text_cover.xml',
         'views/snippets/s_empowerment.xml',
-        'views/snippets/s_company_team_spotlight.xml',
-        'views/snippets/s_numbers_boxed.xml',
-        'views/snippets/s_split_intro.xml',
-        'views/snippets/s_numbers_framed.xml',
         'views/new_page_template.xml',
     ],
     'images': [
-        'static/description/aviato_cover.webp',
-        'static/description/aviato_screenshot.webp',
+        'static/description/aviato_cover.jpg',
+        'static/description/aviato_screenshot.jpg',
     ],
     'images_preview_theme': {
-        'website.s_image_text_default_image': '/theme_aviato/static/src/img/content/s_banner_2.webp',
-        'website.s_product_list_default_image_1': '/theme_aviato/static/src/img/content/s_banner_3.webp',
-        'website.s_picture_default_image': '/theme_aviato/static/src/img/content/s_popup.webp',
-        'website.s_media_list_default_image_1': '/theme_aviato/static/src/img/content/s_wall_01.webp',
-        'website.s_carousel_default_image_1': '/theme_aviato/static/src/img/content/s_carousel_1.webp',
-        'website.s_quotes_carousel_demo_image_2': '/theme_aviato/static/src/img/content/s_quote_bg_3.webp',
-        'website.s_text_image_default_image': '/theme_aviato/static/src/img/content/s_wall_05.webp',
-        'website.s_three_columns_default_image_1': '/theme_aviato/static/src/img/content/s_three_columns_1.webp',
-        'website.s_quotes_carousel_demo_image_0': '/theme_aviato/static/src/img/content/s_quote_bg_1.webp',
+        'website.s_image_text_default_image': '/theme_aviato/static/src/img/content/s_banner_2.jpg',
+        'website.s_product_list_default_image_1': '/theme_aviato/static/src/img/content/s_banner_3.jpg',
+        'website.s_picture_default_image': '/theme_aviato/static/src/img/content/s_popup.jpg',
+        'website.s_media_list_default_image_1': '/theme_aviato/static/src/img/content/s_wall_01.jpg',
+        'website.s_carousel_default_image_1': '/theme_aviato/static/src/img/content/s_carousel_1.jpg',
+        'website.s_quotes_carousel_demo_image_2': '/theme_aviato/static/src/img/content/s_quote_bg_3.jpg',
+        'website.s_text_image_default_image': '/theme_aviato/static/src/img/content/s_wall_05.jpg',
+        'website.s_three_columns_default_image_1': '/theme_aviato/static/src/img/content/s_three_columns_1.jpg',
+        'website.s_quotes_carousel_demo_image_0': '/theme_aviato/static/src/img/content/s_quote_bg_1.jpg',
     },
     'configurator_snippets': {
-        'homepage': ['s_banner', 's_text_image', 's_image_text', 's_picture', 's_title', 's_masonry_block_default_template', 's_company_team', 's_showcase', 's_quotes_carousel'],
+        'homepage': ['s_banner', 's_text_image', 's_image_text', 's_picture', 's_title', 's_masonry_block', 's_company_team', 's_showcase', 's_quotes_carousel'],
     },
-    'configurator_snippets_addons': {
-        'website_sale': {
-            'homepage': [
-                ('website_sale.s_dynamic_snippet_category_list', 'after', 's_image_text'),
-            ],
-        },
-    },
-    'theme_customizations': {
-        'website_sale.s_dynamic_snippet_category_list': {
-            'data_attributes': {
-                'gap': '3',
-            },
-            'background': {
-                'shape': {
-                    'data-oe-shape-data': '{"shape":"web_editor/Connections/20", "colors":{"c5":"o-color-3"}}',
-                    'element': """<div class="o_we_shape o_web_editor_Connections_20" style="background-image: url('/web_editor/shape/web_editor/Connections/20.svg?c5=o-color-3');""",
-                },
-            },
-            'add_classes': [
-                'pb80',
-            ],
-            'remove_classes': [
-                'pb64',
-            ],
-        },
-    },
-    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 
     'assets': {

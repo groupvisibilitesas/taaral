@@ -21,7 +21,7 @@ export class BusMonitoringService {
      * @param {Partial<import("services").Services>} services
      */
     setup(env, { bus_service }) {
-        bus_service.addEventListener("BUS:WORKER_STATE_UPDATED", ({ detail }) =>
+        bus_service.addEventListener("worker_state_updated", ({ detail }) =>
             this.workerStateOnChange(detail)
         );
         browser.addEventListener("offline", () => (this.isReconnecting = false));

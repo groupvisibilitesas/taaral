@@ -1,38 +1,43 @@
-import { fields, Record } from "@mail/core/common/record";
-import { rpc } from "@web/core/network/rpc";
-import { _t } from "@web/core/l10n/translation";
+import { Record } from "@mail/core/common/record";
 
 export class Follower extends Record {
-    static _name = "mail.followers";
     static id = "id";
+    /** @type {Object.<number, import("models").Follower>} */
+    static records = {};
+    /** @returns {import("models").Follower} */
+    static get(data) {
+        return super.get(data);
+    }
+    /** @returns {import("models").Follower|import("models").Follower[]} */
+    static insert(data) {
+        return super.insert(...arguments);
+    }
 
-    thread = fields.One("Thread");
+    thread = Record.one("Thread");
     /** @type {number} */
     id;
     /** @type {boolean} */
     is_active;
-    partner_id = fields.One("res.partner");
-    subtype_ids = fields.Many("mail.message.subtype");
+    partner = Record.one("Persona");
 
     get displayName() {
-        return this.partner_id.name || this.display_name || _t("Unnamed");
+        return this.partner.name || this.display_name;
     }
 
     /** @returns {boolean} */
     get isEditable() {
         const hasWriteAccess = this.thread ? this.thread.hasWriteAccess : false;
-        return this.partner_id.eq(this.store.self_partner)
+        return this.partner.eq(this.thread?.effectiveSelf)
             ? this.thread.hasReadAccess
             : hasWriteAccess;
     }
 
     async remove() {
-        const data = await rpc("/mail/thread/unsubscribe", {
-            res_model: this.thread.model,
-            res_id: this.thread.id,
-            partner_ids: [this.partner_id.id],
-        });
-        this.store.insert(data);
+        await this.store.env.services.orm.call(this.thread.model, "message_unsubscribe", [
+            [this.thread.id],
+            [this.partner.id],
+        ]);
+        this.delete();
     }
 
     removeRecipient() {

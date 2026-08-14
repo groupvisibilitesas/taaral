@@ -4,12 +4,11 @@ import {
     edit,
     manuallyDispatchProgrammaticEvent,
     queryAll,
-    queryAllProperties,
     queryFirst,
     setInputFiles,
     waitFor,
 } from "@odoo/hoot-dom";
-import { animationFrame, runAllTimers } from "@odoo/hoot-mock";
+import { animationFrame, runAllTimers, mockDate } from "@odoo/hoot-mock";
 import {
     clickSave,
     defineModels,
@@ -18,11 +17,11 @@ import {
     mountView,
     onRpc,
     pagerNext,
-    contains,
-    webModels,
 } from "@web/../tests/web_test_helpers";
 
 import { getOrigin } from "@web/core/utils/urls";
+
+const { DateTime } = luxon;
 
 const MY_IMAGE =
     "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
@@ -170,6 +169,8 @@ test("ImageField on a many2one", async () => {
     Partner._fields.parent_id = fields.Many2one({ relation: "partner" });
     Partner._records[1].parent_id = 1;
 
+    mockDate("2017-02-06 10:00:00");
+
     await mountView({
         type: "form",
         resModel: "partner",
@@ -183,7 +184,7 @@ test("ImageField on a many2one", async () => {
     expect(".o_field_widget[name=parent_id] img").toHaveCount(1);
     expect('div[name="parent_id"] img').toHaveAttribute(
         "data-src",
-        `${getOrigin()}/web/image/partner/1/document`
+        `${getOrigin()}/web/image/partner/1/document?unique=1486375200000`
     );
     expect(".o_field_widget[name='parent_id'] img").toHaveAttribute("alt", "first record");
 });
@@ -194,6 +195,8 @@ test("url should not use the record last updated date when the field is related"
     Partner._records[1].parent_id = 1;
     Partner._records[0].write_date = "2017-02-04 10:00:00";
     Partner._records[0].document = "3 kb";
+
+    mockDate("2017-02-06 10:00:00");
 
     await mountView({
         type: "form",
@@ -206,19 +209,18 @@ test("url should not use the record last updated date when the field is related"
             </form>`,
     });
 
-    expect('div[name="related"] img').toHaveAttribute(
-        "data-src",
-        `${getOrigin()}/web/image/partner/2/related`
+    const initialUnique = Number(getUnique(queryFirst('div[name="related"] img')));
+    expect(DateTime.fromMillis(initialUnique).hasSame(DateTime.fromISO("2017-02-06"), "days")).toBe(
+        true
     );
 
     await click(".o_field_widget[name='foo'] input");
     await edit("grrr");
     await animationFrame();
 
-    expect('div[name="related"] img').toHaveAttribute(
-        "data-src",
-        `${getOrigin()}/web/image/partner/2/related`
-    );
+    expect(Number(getUnique(queryFirst('div[name="related"] img')))).toBe(initialUnique);
+
+    mockDate("2017-02-09 10:00:00");
 
     await click("input[type=file]", { visible: false });
     await setFiles(
@@ -237,10 +239,8 @@ test("url should not use the record last updated date when the field is related"
 
     await clickSave();
 
-    expect('div[name="related"] img').toHaveAttribute(
-        "data-src",
-        `${getOrigin()}/web/image/partner/2/related`
-    );
+    const unique = Number(getUnique(queryFirst('div[name="related"] img')));
+    expect(DateTime.fromMillis(unique).hasSame(DateTime.fromISO("2017-02-09"), "days")).toBe(true);
 });
 
 test("url should use the record last updated date when the field is related on the same model", async () => {
@@ -348,7 +348,9 @@ test("ImageField preview is updated when an image is uploaded", async () => {
     await click(".o_select_file_button");
     await setInputFiles(imageFile);
     // It can take some time to encode the data as a base64 url
-    await waitFor(`div[name=document] img[data-src="data:image/png;base64,${MY_IMAGE}"]`);
+    await waitFor(`div[name=document] img[data-src="data:image/png;base64,${MY_IMAGE}"]`, {
+        timeout: 1000,
+    });
 });
 
 test("clicking save manually after uploading new image should change the unique of the image src", async () => {
@@ -629,10 +631,10 @@ test("ImageField in subviews is loaded correctly", async () => {
     });
 
     expect(`img[data-src="data:image/png;base64,${MY_IMAGE}"]`).toHaveCount(1);
-    expect(".o_kanban_record:not(.o_kanban_ghost):not(.o-kanban-button-new)").toHaveCount(1);
+    expect(".o_kanban_record:not(.o_kanban_ghost)").toHaveCount(1);
 
     // Actual flow: click on an element of the m2m to get its form view
-    await click(".o_kanban_record:not(.o_kanban_ghost):not(.o-kanban-button-new)");
+    await click(".o_kanban_record:not(.o_kanban_ghost)");
     await animationFrame();
     expect(".modal").toHaveCount(1, { message: "The modal should have opened" });
 
@@ -827,7 +829,7 @@ test("unique in url does not change on record change if reload option is set to 
         `,
     });
     expect(getUnique(queryFirst(".o_field_image img"))).toBe("1659688620000");
-    await contains("div[name='write_date'] > div > button").click();
+    await click("div[name='write_date'] > div > input");
     await edit("2022-08-05 08:39:00", { confirm: "enter" });
     await animationFrame();
     await clickSave();
@@ -869,25 +871,4 @@ test("convert image to webp", async () => {
         { message: "image field should not be set" }
     );
     await setFiles(imageFile);
-});
-
-test.tags("desktop");
-test("ImageField with width attribute in list", async () => {
-    const { ResCompany, ResPartner, ResUsers } = webModels;
-    defineModels([ResCompany, ResPartner, ResUsers]);
-
-    await mountView({
-        type: "list",
-        resModel: "partner",
-        arch: /* xml */ `
-            <list>
-                <field name="document" widget="image" width="30"/>
-                <field name="foo"/>
-            </list>
-        `,
-    });
-
-    expect(".o_data_row").toHaveCount(3);
-    expect(".o_field_widget[name=document] img").toHaveCount(3);
-    expect(queryAllProperties(".o_list_table th[data-name=document]", "offsetWidth")).toEqual([39]);
 });

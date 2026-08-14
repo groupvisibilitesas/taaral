@@ -7,11 +7,6 @@ from odoo.addons.l10n_ro_edi_stock.tests.test_etransport_flows import TestETrans
 @tagged("post_install_l10n", "post_install", "-at_install")
 class TestBatchStockETransport(TestETransportFlows):
     @classmethod
-    def get_default_groups(cls):
-        groups = super().get_default_groups()
-        return groups | cls.quick_ref('sales_team.group_sale_manager')
-
-    @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.sale_orders = cls.env['sale.order']
@@ -59,7 +54,7 @@ class TestBatchStockETransport(TestETransportFlows):
         })
         batch.action_confirm()
 
-        self.assertRecordValues(pickings.sorted('sale_id.id'), [
+        self.assertRecordValues(pickings.sorted('sale_id'), [
             {'sale_id': self.sale_orders[0].id, 'l10n_ro_edi_stock_enable': True, 'l10n_ro_edi_stock_enable_send': False, 'picking_type_code': 'outgoing'},
             {'sale_id': self.sale_orders[1].id, 'l10n_ro_edi_stock_enable': True, 'l10n_ro_edi_stock_enable_send': False, 'picking_type_code': 'outgoing'},
         ])
@@ -93,7 +88,7 @@ class TestBatchStockETransport(TestETransportFlows):
         batch.action_confirm()
 
         # Can send the batch but not the individual pickings
-        self.assertRecordValues(pickings.sorted('sale_id.id'), [
+        self.assertRecordValues(pickings.sorted('sale_id'), [
             {'sale_id': self.sale_orders[0].id, 'l10n_ro_edi_stock_enable': True, 'l10n_ro_edi_stock_enable_send': False, 'picking_type_code': 'outgoing'},
             {'sale_id': self.sale_orders[1].id, 'l10n_ro_edi_stock_enable': True, 'l10n_ro_edi_stock_enable_send': False, 'picking_type_code': 'outgoing'},
         ])
@@ -103,7 +98,7 @@ class TestBatchStockETransport(TestETransportFlows):
 
         pickings[0].button_validate()
         self.assertEqual(pickings[0].state, 'done')
-        self.assertRecordValues(pickings.sorted('sale_id.id'), [
+        self.assertRecordValues(pickings.sorted('sale_id'), [
             # Can send as Done and not in the batch anymore
             {'sale_id': self.sale_orders[0].id, 'l10n_ro_edi_stock_enable': True, 'l10n_ro_edi_stock_enable_send': True, 'picking_type_code': 'outgoing'},
             # In the batch so should be sent in the batch

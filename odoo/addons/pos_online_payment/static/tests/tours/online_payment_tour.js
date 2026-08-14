@@ -1,7 +1,7 @@
-import * as ProductScreen from "@point_of_sale/../tests/pos/tours/utils/product_screen_util";
-import * as Chrome from "@point_of_sale/../tests/pos/tours/utils/chrome_util";
-import * as PaymentScreen from "@point_of_sale/../tests/pos/tours/utils/payment_screen_util";
-import * as Dialog from "@point_of_sale/../tests/generic_helpers/dialog_util";
+import * as ProductScreen from "@point_of_sale/../tests/tours/utils/product_screen_util";
+import * as Chrome from "@point_of_sale/../tests/tours/utils/chrome_util";
+import * as PaymentScreen from "@point_of_sale/../tests/tours/utils/payment_screen_util";
+import * as Dialog from "@point_of_sale/../tests/tours/utils/dialog_util";
 import { registry } from "@web/core/registry";
 
 registry.category("web_tour.tours").add("OnlinePaymentErrorsTour", {
@@ -10,7 +10,7 @@ registry.category("web_tour.tours").add("OnlinePaymentErrorsTour", {
             Chrome.startPoS(),
             Dialog.confirm("Open Register"),
             ProductScreen.addOrderline("Letter Tray", "10"),
-            ProductScreen.selectedOrderlineHas("Letter Tray", "10"),
+            ProductScreen.selectedOrderlineHas("Letter Tray", "10.0"),
             ProductScreen.clickPayButton(),
             PaymentScreen.totalIs("48.0"),
             PaymentScreen.emptyPaymentlines("48.0"),
@@ -24,7 +24,7 @@ registry.category("web_tour.tours").add("OnlinePaymentErrorsTour", {
             PaymentScreen.clickPaymentMethod("Cash"),
             PaymentScreen.enterPaymentLineAmount("Cash", "2"),
             PaymentScreen.selectedPaymentlineHas("Cash", "2.0"),
-            PaymentScreen.changeIs("1.0"),
+            PaymentScreen.changeIs("-1.0"),
             PaymentScreen.validateButtonIsHighlighted(true),
             PaymentScreen.clickValidate(),
             // successfully confirming the dialog would imply that the error popup is actually shown
@@ -109,24 +109,5 @@ registry.category("web_tour.tours").add("test_selected_customer_after_adding_pay
             PaymentScreen.validateButtonIsHighlighted(true),
             PaymentScreen.clickValidate(),
             Dialog.is("Scan to Pay"),
-        ].flat(),
-});
-
-registry.category("web_tour.tours").add("test_payment_method_customer_required", {
-    steps: () =>
-        [
-            Chrome.startPoS(),
-            Dialog.confirm("Open Register"),
-            ProductScreen.addOrderline("Letter Tray", "1"),
-            ProductScreen.clickPayButton(),
-            PaymentScreen.totalIs("4.80"),
-            PaymentScreen.clickPaymentMethod("Online payment"),
-            PaymentScreen.selectedPaymentlineHas("Online payment", "4.80"),
-            PaymentScreen.validateButtonIsHighlighted(false),
-            PaymentScreen.clickPartnerButton(),
-            PaymentScreen.clickCustomer("A Test Partner"),
-            PaymentScreen.validateButtonIsHighlighted(true),
-            PaymentScreen.clickValidate(),
-            Dialog.is({ title: "Payment provider requirement" }),
         ].flat(),
 });

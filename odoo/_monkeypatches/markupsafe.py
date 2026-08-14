@@ -6,10 +6,7 @@ from markupsafe import Markup
 from odoo.tools import parse_version
 
 
-orig_markupsafe_striptags = Markup.striptags
-
-
-def patch_module():
+def patch_markup():
     # ---------------------------------------------------------
     # MarkupSafe changed the implementation of striptags starting
     # version 2.1.4, which is causing a significant performance

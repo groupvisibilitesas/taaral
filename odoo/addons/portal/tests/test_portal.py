@@ -25,29 +25,34 @@ class TestUsersHttp(HttpCase):
             'acc_type': 'bank',
         })
 
+        bank_account_2 = self.env['res.partner.bank'].create({
+            'acc_number': '987654321',
+            'partner_id': portal_user.partner_id.id,
+            'acc_holder_name': 'Partner A',
+            'acc_type': 'bank',
+        })
+
         common_data = {
             'phone': '1234567890',
-            'email': portal_user.partner_id.email,
+            'email': 'test@example.com',
             'street': '123 Main St',
             'city': 'Anytown',
             'zipcode': '12345',
             'country_id': self.env.ref('base.us').id,
-            'state_id': self.env.ref('base.state_us_5').id,
         }
 
         self.authenticate(login, login)
-        # request without changing partner name
-        response = self.url_open(
-            url='/my/address/submit',
-            data={
-                **common_data,
-                'name': portal_user.partner_id.name,
-                'partner_id': str(portal_user.partner_id.id),
-                'csrf_token': Request.csrf_token(self)
-            }
-        )
+        # request 1: request without changing partner name
+        response = self.url_open(url='/my/account', data={**common_data, 'name': portal_user.partner_id.name, 'csrf_token': Request.csrf_token(self)})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(bank_account.acc_holder_name, 'Partner A Holder')
+        self.assertEqual(bank_account_2.acc_holder_name, 'Partner A')
+
+        # request 2: request with changed partner name
+        response2 = self.url_open(url='/my/account', data={**common_data, 'name': 'Partner New Name', 'csrf_token': Request.csrf_token(self)})
+        self.assertEqual(response2.status_code, 200)
+        self.assertEqual(bank_account.acc_holder_name, 'Partner A Holder')
+        self.assertEqual(bank_account_2.acc_holder_name, 'Partner New Name')
 
     def test_deactivate_portal_user(self):
         # Create a portal user with data which should be removed on deactivation
@@ -56,7 +61,7 @@ class TestUsersHttp(HttpCase):
             'name': login,
             'login': login,
             'password': login,
-            'group_ids': [Command.set([self.env.ref('base.group_portal').id])],
+            'groups_id': [Command.set([self.env.ref('base.group_portal').id])],
         })
         self.env['res.users.apikeys'].with_user(portal_user)._generate(
             None,
@@ -88,32 +93,3 @@ class TestUsersHttp(HttpCase):
         self.env.ref('base.ir_cron_res_users_deletion').method_direct_trigger()
         # Assert the account is completely deleted
         self.assertFalse(portal_user.exists())
-
-    def test_submit_address_from_anonymous_partner(self):
-        login = 'test_portal_user'
-        portal_user = mail_new_test_user(self.env, login, name='Portal User')
-        self.authenticate(login, login)
-        anonymous_partner = self.env['res.partner'].create({
-            'type': 'invoice',
-            'parent_id': portal_user.commercial_partner_id.id,
-        })
-        common_data = {
-            'phone': '1234567890',
-            'email': 'anonymous-user@example.com',
-            'street': '123 Street Name',
-            'city': 'City',
-            'zipcode': '12345',
-            'country_id': self.env.ref('base.us').id,
-            'state_id': self.env.ref('base.state_us_5').id,
-        }
-        new_name = 'Secret Name'
-        self.url_open(
-            url='/my/address/submit',
-            data={
-                **common_data,
-                'name': new_name,
-                'partner_id': str(anonymous_partner.id),
-                'csrf_token': Request.csrf_token(self)
-            }
-        )
-        self.assertEqual(anonymous_partner.name, new_name)

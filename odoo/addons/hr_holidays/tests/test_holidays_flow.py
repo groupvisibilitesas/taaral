@@ -11,6 +11,7 @@ from odoo import Command
 from odoo.tools import date_utils, mute_logger, test_reports
 
 from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
+from odoo.addons.mail.tests.common import mail_new_test_user
 
 
 class TestHolidaysFlow(TestHrHolidaysCommon):
@@ -25,16 +26,16 @@ class TestHolidaysFlow(TestHrHolidaysCommon):
         HolidayStatusManagerGroup = HolidaysStatus.with_user(self.user_hrmanager_id)
         HolidayStatusManagerGroup.create({
             'name': 'WithMeetingType',
-            'requires_allocation': False,
+            'requires_allocation': 'no',
         })
         self.holidays_status_hr = HolidayStatusManagerGroup.create({
             'name': 'NotLimitedHR',
-            'requires_allocation': False,
+            'requires_allocation': 'no',
             'leave_validation_type': 'hr',
         })
         self.holidays_status_manager = HolidayStatusManagerGroup.create({
             'name': 'NotLimitedManager',
-            'requires_allocation': False,
+            'requires_allocation': 'no',
             'leave_validation_type': 'manager',
         })
 
@@ -86,8 +87,8 @@ class TestHolidaysFlow(TestHrHolidaysCommon):
 
             holiday_status_paid_time_off = self.env['hr.leave.type'].create({
                 'name': 'Paid Time Off',
-                'requires_allocation': True,
-                'employee_requests': False,
+                'requires_allocation': 'yes',
+                'employee_requests': 'no',
                 'allocation_validation_type': 'hr',
                 'leave_validation_type': 'both',
                 'responsible_ids': [Command.link(self.env.ref('base.user_admin').id)],
@@ -109,7 +110,7 @@ class TestHolidaysFlow(TestHrHolidaysCommon):
                     'state': 'confirm',
                     'date_from': time.strftime('%Y-%m-01'),
                 }
-            ]).action_approve()
+            ]).action_validate()
 
             def _check_holidays_status(holiday_status, employee, ml, lt, rl, vrl):
                 result = holiday_status.get_allocation_data(employee)[employee][0][1]
@@ -126,13 +127,13 @@ class TestHolidaysFlow(TestHrHolidaysCommon):
             HolidayStatusManagerGroup = HolidaysStatus.with_user(self.user_hrmanager_id)
             HolidayStatusManagerGroup.create({
                 'name': 'WithMeetingType',
-                'requires_allocation': False,
+                'requires_allocation': 'no',
             })
 
             self.holidays_status_limited = HolidayStatusManagerGroup.create({
                 'name': 'Limited',
-                'requires_allocation': True,
-                'employee_requests': False,
+                'requires_allocation': 'yes',
+                'employee_requests': 'no',
                 'allocation_validation_type': 'hr',
                 'leave_validation_type': 'both',
                 'responsible_ids': [Command.link(self.env.ref('base.user_admin').id)]
@@ -152,7 +153,7 @@ class TestHolidaysFlow(TestHrHolidaysCommon):
             self.env.flush_all()
 
             # HrManager validates the second step
-            aloc1_user_group.with_user(self.user_hrmanager_id).action_approve()
+            aloc1_user_group.with_user(self.user_hrmanager_id).action_validate()
             # Checks Employee has effectively some days left
             hol_status_2_employee_group = self.holidays_status_limited.with_user(self.user_employee_id)
             _check_holidays_status(hol_status_2_employee_group, self.employee_emp, 2.0, 0.0, 2.0, 2.0)
@@ -172,7 +173,7 @@ class TestHolidaysFlow(TestHrHolidaysCommon):
             _check_holidays_status(hol_status_2_employee_group, self.employee_emp, 2.0, 0.0, 2.0, 1.0)
 
             # HrManager validates the second step
-            hol2_user_group.with_user(self.user_hrmanager_id).action_approve()
+            hol2_user_group.with_user(self.user_hrmanager_id).action_validate()
             self.assertEqual(hol2.state, 'validate',
                             'hr_holidays: second validation should lead to validate state')
             # Check left days: - 1 day taken
@@ -206,8 +207,11 @@ class TestHolidaysFlow(TestHrHolidaysCommon):
             # I find a small mistake on my leave request to I click on "Refuse" button to correct a mistake.
             hol3.action_refuse()
             self.assertEqual(hol3.state, 'refuse', 'hr_holidays: refuse should lead to refuse state')
-            # Validate it again
-            hol3.action_approve()
+            # Reset to confirm.
+            hol3.action_reset_confirm()
+            self.assertEqual(hol3.state, 'confirm', 'hr_holidays: confirming should lead to confirm state')
+            # I validate the holiday request by clicking on "To Approve" button.
+            hol3.action_validate()
             self.assertEqual(hol3.state, 'validate', 'hr_holidays: validation should lead to validate state')
             # Check left days for casual leave: 19 days left
             _check_holidays_status(hol3_status, self.env['hr.employee'].browse(employee_id), 20.0, 1.0, 19.0, 19.0)
@@ -233,8 +237,8 @@ class TestHolidaysFlow(TestHrHolidaysCommon):
 
         holiday_status_paid_time_off = self.env['hr.leave.type'].create({
             'name': 'Paid Time Off',
-            'requires_allocation': True,
-            'employee_requests': False,
+            'requires_allocation': 'yes',
+            'employee_requests': 'no',
             'allocation_validation_type': 'hr',
             'leave_validation_type': 'both',
             'responsible_ids': [Command.link(self.env.ref('base.user_admin').id)],
@@ -248,7 +252,7 @@ class TestHolidaysFlow(TestHrHolidaysCommon):
             'state': 'confirm',
             'date_from': time.strftime('%Y-%m-01'),
             'date_to': time.strftime('%Y-12-31'),
-        }).action_approve()
+        }).action_validate()
 
         leave_vals = {
             'name': 'Sick Time Off',
@@ -257,8 +261,10 @@ class TestHolidaysFlow(TestHrHolidaysCommon):
             'request_date_to': date.today() + relativedelta(day=10),
             'employee_id': self.ref('hr.employee_admin'),
         }
-        with mute_logger('odoo.sql_db'), self.assertRaises(IntegrityError):
-            self.env['hr.leave'].create(leave_vals)
+        with mute_logger('odoo.sql_db'):
+            with self.assertRaises(IntegrityError):
+                with self.cr.savepoint():
+                    self.env['hr.leave'].create(leave_vals)
 
         leave_vals = {
             'name': 'Sick Time Off',
@@ -269,8 +275,113 @@ class TestHolidaysFlow(TestHrHolidaysCommon):
         }
         leave = self.env['hr.leave'].create(leave_vals)
 
-        with mute_logger('odoo.sql_db'), self.assertRaises(IntegrityError):
-            leave.write({
-                'request_date_from': date.today() + relativedelta(day=11),
-                'request_date_to': date.today() + relativedelta(day=10),
-            })
+        with mute_logger('odoo.sql_db'):
+            with self.assertRaises(IntegrityError):  # No ValidationError
+                with self.cr.savepoint():
+                    leave.write({
+                        'request_date_from': date.today() + relativedelta(day=11),
+                        'request_date_to': date.today() + relativedelta(day=10),
+                    })
+
+    @freeze_time("2023-03-15")
+    def test_manager_can_approve_from_leave_report_calendar(self):
+        """Check if an approval user that has not additional access rights for Time Off can approve a leave for an employee."""
+
+        leave_type = self.env['hr.leave.type'].create({
+            'name': 'Manager Approval Time Off',
+            'requires_allocation': 'no',
+            'leave_validation_type': 'manager',
+            'time_type': 'leave',
+        })
+
+        manager_user = mail_new_test_user(
+            self.env,
+            login='manager_no_timeoff',
+            groups='base.group_user',
+        )
+
+        self.employee_emp.leave_manager_id = manager_user
+
+        leave = self.env['hr.leave'].with_user(self.user_employee).create({
+            'name': 'Employee Leave',
+            'employee_id': self.employee_emp.id,
+            'holiday_status_id': leave_type.id,
+            'request_date_from': date.today() + relativedelta(days=1),
+            'request_date_to': date.today() + relativedelta(days=1),
+        })
+
+        leave_report = self.env['hr.leave.report.calendar'].with_user(manager_user).browse(leave.id)
+        self.assertEqual(leave.state, 'confirm')
+        leave_report.action_approve()
+        self.assertEqual(leave.state, 'validate')
+
+    @freeze_time("2025-05-02")
+    def test_leave_calendar_date_from_to(self):
+        calendar = self.env["resource.calendar"].create({
+            "name": "Test calendar",
+            "attendance_ids": [
+                (
+                    0,
+                    0,
+                    {
+                        "name": "Friday Morning",
+                        "dayofweek": "4",
+                        "day_period": "morning",
+                        "hour_from": 9,
+                        "hour_to": 14,
+                        "date_from": "2025-01-02",
+                    },
+                ),
+                (
+                    0,
+                    0,
+                    {
+                        "name": "Friday Afternoon",
+                        "dayofweek": "4",
+                        "day_period": "afternoon",
+                        "hour_from": 17,
+                        "hour_to": 20,
+                        "date_from": "2025-01-02",
+                    },
+                ),
+                (
+                    0,
+                    0,
+                    {
+                        "name": "Friday Morning (old)",
+                        "dayofweek": "4",
+                        "day_period": "morning",
+                        "hour_from": 8,
+                        "hour_to": 13,
+                        "date_to": "2025-01-01",
+                    },
+                ),
+                (
+                    0,
+                    0,
+                    {
+                        "name": "Friday Afternoon (old)",
+                        "dayofweek": "4",
+                        "day_period": "afternoon",
+                        "hour_from": 19,
+                        "hour_to": 21,
+                        "date_to": "2025-01-01",
+                    },
+                )
+            ]
+        })
+        self.employee_emp.resource_calendar_id = calendar
+        self.holidays_status_hr = self.env["hr.leave.type"].with_user(self.user_hrmanager_id).create({
+            "name": "NotLimitedHR",
+            "requires_allocation": "no",
+            "leave_validation_type": "hr",
+        })
+        holidays = self.env["hr.leave"].with_user(self.user_employee_id).create({
+            "name": "Hol11",
+            "employee_id": self.employee_emp.id,
+            "holiday_status_id": self.holidays_status_hr.id,
+            "request_date_from": "2025-05-02",
+            "request_date_to": "2025-05-02",
+        })
+        self.assertEqual(holidays.date_from.hour, 7)
+        self.assertEqual(holidays.date_to.hour, 18)

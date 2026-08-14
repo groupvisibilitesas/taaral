@@ -12,24 +12,22 @@ class MercadoPagoCommon(PaymentCommon):
         super().setUpClass()
 
         cls.provider = cls._prepare_provider('mercado_pago', update_values={
-            'mercado_pago_account_country_id': cls.env.ref('base.mx').id,
             'mercado_pago_access_token': 'TEST-4850554046279901-TEST-TEST',
         })
         cls.payment_id = '123456'
-        cls.redirect_payment_data = {
+        cls.redirect_notification_data = {
             'external_reference': cls.reference,
             'payment_id': cls.payment_id,
         }
-        cls.webhook_payment_data = {
+        cls.webhook_notification_data = {
             'action': 'payment.created',
             'data': {'id': cls.payment_id},
         }
         cls.verification_data = {
-            'id': cls.payment_id,
             'status': 'approved',
             'external_reference': cls.reference,
         }
         cls.verification_data_for_error_state = {
-            'id': cls.payment_id,
             'status': 404,
+            'external_reference': cls.reference,
         }

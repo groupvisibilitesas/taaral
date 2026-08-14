@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { Component } from "@odoo/owl";
 import { AutoCompleteWithPages } from "@website/components/autocomplete_with_pages/autocomplete_with_pages";
 
@@ -18,7 +20,7 @@ export class PlacesAutoComplete extends Component {
     get sources() {
         return [
             {
-                optionSlot: "option",
+                optionTemplate: "website.PlacesAutoComplete.Item",
                 options: async (inputValue) => {
                     if (inputValue.length < 2) {
                         return [];
@@ -40,9 +42,8 @@ export class PlacesAutoComplete extends Component {
                             id: suggestion.placePrediction.id,
                             label: suggestion.placePrediction.text.toString(),
                             value: suggestion.placePrediction.text.toString(),
-                            cssClass: "pac-item",
+                            classList: "pac-item",
                             placePrediction: suggestion.placePrediction,
-                            onSelect: () => this.onSelect(suggestion),
                         }));
                     } catch {
                         this.props.onError();
@@ -53,7 +54,7 @@ export class PlacesAutoComplete extends Component {
         ];
     }
 
-    async onSelect(selectedSuggestion) {
+    async onSelect(selectedSuggestion, { input }) {
         const placePrediction = selectedSuggestion.placePrediction;
         try {
             const placeResult = placePrediction.toPlace();

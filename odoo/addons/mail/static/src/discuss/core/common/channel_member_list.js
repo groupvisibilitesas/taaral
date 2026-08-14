@@ -1,7 +1,7 @@
 import { ImStatus } from "@mail/core/common/im_status";
 import { ActionPanel } from "@mail/discuss/core/common/action_panel";
 
-import { Component, onWillUpdateProps, onWillStart } from "@odoo/owl";
+import { Component, onWillUpdateProps, onWillStart, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 
 import { useService } from "@web/core/utils/hooks";
@@ -13,7 +13,7 @@ export class ChannelMemberList extends Component {
 
     setup() {
         super.setup();
-        this.store = useService("mail.store");
+        this.store = useState(useService("mail.store"));
         onWillStart(() => {
             if (this.props.thread.fetchMembersState === "not_fetched") {
                 this.props.thread.fetchChannelMembers();
@@ -39,13 +39,19 @@ export class ChannelMemberList extends Component {
     }
 
     canOpenChatWith(member) {
-        return !this.store.inPublicPage && !member.guest_id && member.persona.main_user_id;
+        if (this.store.inPublicPage) {
+            return false;
+        }
+        if (!member.persona.userId) {
+            return false;
+        }
+        return true;
     }
 
     onClickAvatar(ev, member) {
         if (!this.canOpenChatWith(member)) {
             return;
         }
-        this.store.openChat({ partnerId: member.partner_id.id });
+        this.store.openChat({ partnerId: member.persona.id });
     }
 }

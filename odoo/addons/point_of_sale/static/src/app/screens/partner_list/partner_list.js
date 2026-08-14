@@ -1,13 +1,12 @@
 import { _t } from "@web/core/l10n/translation";
-import { useChildRef, useService } from "@web/core/utils/hooks";
+import { useService } from "@web/core/utils/hooks";
 import { Dialog } from "@web/core/dialog/dialog";
 import { PartnerLine } from "@point_of_sale/app/screens/partner_list/partner_line/partner_line";
-import { usePos } from "@point_of_sale/app/hooks/pos_hook";
-import { Input } from "@point_of_sale/app/components/inputs/input/input";
-import { Component, useEffect, useState } from "@odoo/owl";
+import { usePos } from "@point_of_sale/app/store/pos_hook";
+import { Input } from "@point_of_sale/app/generic_components/inputs/input/input";
+import { Component, useState } from "@odoo/owl";
 import { useHotkey } from "@web/core/hotkeys/hotkey_hook";
-import { normalize } from "@web/core/l10n/utils";
-import { debounce } from "@web/core/utils/timing";
+import { unaccent } from "@web/core/utils/strings";
 
 export class PartnerList extends Component {
     static components = { PartnerLine, Dialog, Input };
@@ -23,58 +22,16 @@ export class PartnerList extends Component {
 
     setup() {
         this.pos = usePos();
-        this.ui = useService("ui");
+        this.ui = useState(useService("ui"));
         this.notification = useService("notification");
         this.dialog = useService("dialog");
-        this.modalRef = useChildRef();
-        this.modalContent = null;
-        this.searchInputRef = null;
+
         this.state = useState({
-            initialPartners: this.pos.models["res.partner"].filter((p) => {
-                const par = p.property_account_receivable_id;
-                return !par || par.non_trade !== true;
-            }),
-            loadedPartners: [],
-            query: "",
-            loading: false,
+            query: null,
+            previousQuery: "",
+            currentOffset: 0,
         });
-        this.loadedPartnerIds = new Set(this.state.initialPartners.map((p) => p.id));
-        useHotkey("enter", () => this.onEnter(), {
-            bypassEditableProtection: true,
-        });
-        this.onScroll = debounce(this.onScroll.bind(this), 200);
-
-        useEffect(
-            () => {
-                if (this.state.loading || !this.modalRef.el) {
-                    return;
-                } else if (!this.modalContent) {
-                    this.modalContent = this.modalRef.el.querySelector(".modal-body");
-                }
-
-                const scrollMethod = this.onScroll.bind(this);
-                this.modalContent.addEventListener("scroll", scrollMethod);
-                return () => {
-                    this.modalContent.removeEventListener("scroll", scrollMethod);
-                };
-            },
-            () => [this.modalRef.el]
-        );
-    }
-    get globalState() {
-        return this.pos.screenState.partnerList;
-    }
-    onScroll(ev) {
-        if (this.state.loading || !this.modalContent) {
-            return;
-        }
-        const height = this.modalContent.offsetHeight;
-        const scrollTop = this.modalContent.scrollTop;
-        const scrollHeight = this.modalContent.scrollHeight;
-
-        if (scrollTop + height >= scrollHeight * 0.8) {
-            this.getNewPartners();
-        }
+        useHotkey("enter", () => this.onEnter());
     }
     async editPartner(p = false) {
         const partner = await this.pos.editPartner(p);
@@ -83,11 +40,6 @@ export class PartnerList extends Component {
         }
     }
     async onEnter() {
-        // The search input uses a debounce, so state.query may lag behind what the user
-        // typed. Read the live DOM value and sync it before triggering the server search.
-        if (this.searchInputRef?.el) {
-            this.state.query = this.searchInputRef.el.value;
-        }
         if (!this.state.query) {
             return;
         }
@@ -105,25 +57,25 @@ export class PartnerList extends Component {
     goToOrders(partner) {
         this.clickPartner(this.props.partner);
         const partnerHasActiveOrders = this.pos
-            .getOpenOrders()
+            .get_open_orders()
             .some((order) => order.partner?.id === partner.id);
         const stateOverride = {
             search: {
                 fieldName: "PARTNER",
                 searchTerm: partner.name,
-                partnerId: partner.id,
             },
             filter: partnerHasActiveOrders ? "" : "SYNCED",
         };
-        this.pos.navigate("TicketScreen", { stateOverride });
+        this.pos.showScreen("TicketScreen", { stateOverride });
     }
 
     confirm() {
         this.props.resolve({ confirmed: true, payload: this.state.selectedPartner });
         this.pos.closeTempScreen();
     }
-    getPartners(partners) {
-        const searchWord = normalize(this.state.query?.trim() ?? "");
+    getPartners() {
+        const searchWord = unaccent((this.state.query || "").trim(), false).toLowerCase();
+        const partners = this.pos.models["res.partner"].getAll();
         const exactMatches = partners.filter((partner) => partner.exactMatch(searchWord));
 
         if (exactMatches.length > 0) {
@@ -144,7 +96,7 @@ export class PartnerList extends Component {
         );
 
         const availablePartners = searchWord
-            ? partners.filter((p) => regex.test(normalize(p.searchString))).slice(0, 50)
+            ? partners.filter((p) => regex.test(unaccent(p.searchString))).slice(0, 200)
             : partners
                   .slice(0, 1000)
                   .toSorted((a, b) =>
@@ -157,26 +109,6 @@ export class PartnerList extends Component {
 
         return availablePartners;
     }
-    _getSearchFields(query) {
-        if (query.includes("@")) {
-            return ["email"];
-        }
-        const stripped = query.replace(/[+\s()\-./]/g, "");
-        if (/^\d+$/.test(stripped) && stripped.length >= 3) {
-            return ["phone_mobile_search", "barcode", "vat", "zip"];
-        }
-        return [
-            "complete_name",
-            "ref",
-            "company_registry",
-            "vat",
-            "street",
-            "zip",
-            "email",
-            "phone_mobile_search",
-            "barcode",
-        ];
-    }
     get isBalanceDisplayed() {
         return false;
     }
@@ -185,47 +117,51 @@ export class PartnerList extends Component {
         this.props.close();
     }
     async searchPartner() {
+        if (this.state.previousQuery != this.state.query) {
+            this.state.currentOffset = 0;
+        }
         const partner = await this.getNewPartners();
+
+        if (this.state.previousQuery == this.state.query) {
+            this.state.currentOffset += partner.length;
+        } else {
+            this.state.previousQuery = this.state.query;
+            this.state.currentOffset = partner.length;
+        }
         return partner;
     }
     async getNewPartners() {
         let domain = [];
-        const offset = this.globalState.offsetBySearch[this.state.query] || 0;
-        if (offset > this.loadedPartnerIds.size) {
-            return [];
-        }
+        const limit = 30;
         if (this.state.query) {
-            const search_fields = this._getSearchFields(this.state.query);
+            const search_fields = [
+                "name",
+                "parent_name",
+                ...this.getPhoneSearchTerms(),
+                "email",
+                "barcode",
+                "street",
+                "zip",
+                "city",
+                "state_id",
+                "country_id",
+                "vat",
+            ];
             domain = [
                 ...Array(search_fields.length - 1).fill("|"),
-                ...search_fields.map((field) => [field, "ilike", this.state.query]),
+                ...search_fields.map((field) => [field, "ilike", this.state.query + "%"]),
             ];
         }
 
-        try {
-            this.state.loading = true;
+        const result = await this.pos.data.searchRead("res.partner", domain, [], {
+            limit: limit,
+            offset: this.state.currentOffset,
+        });
 
-            const result = await this.pos.data.callRelated("res.partner", "get_new_partner", [
-                this.pos.config.id,
-                domain,
-                offset,
-            ]);
+        return result;
+    }
 
-            this.globalState.offsetBySearch[this.state.query] =
-                offset + (result["res.partner"].length || 100);
-
-            for (const partner of result["res.partner"]) {
-                if (!this.loadedPartnerIds.has(partner.id)) {
-                    this.loadedPartnerIds.add(partner.id);
-                    this.state.loadedPartners.push(partner);
-                }
-            }
-
-            return result["res.partner"];
-        } catch {
-            return [];
-        } finally {
-            this.state.loading = false;
-        }
+    getPhoneSearchTerms() {
+        return ["phone", "mobile"];
     }
 }

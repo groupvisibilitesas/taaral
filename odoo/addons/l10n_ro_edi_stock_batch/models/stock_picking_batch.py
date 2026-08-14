@@ -1,4 +1,3 @@
-import base64
 import markupsafe
 import requests
 
@@ -169,10 +168,8 @@ class StockPickingBatch(models.Model):
     def action_done(self):
         # EXTENDS 'stock_picking_batch'
         self.ensure_one()
-        if not self.l10n_ro_edi_stock_enable:
-            return super().action_done()
-
         self._check_company()
+
         self.picking_ids.with_context(l10n_ro_edi_stock_validate_carrier=True)._l10n_ro_edi_stock_validate_carrier()
 
         # Carrier should be the same on all pickings
@@ -244,13 +241,20 @@ class StockPickingBatch(models.Model):
 
     def _l10n_ro_edi_stock_create_document_stock_sent(self, values: dict[str, object]):
         self.ensure_one()
-        return self.env['l10n_ro_edi.document'].create({
+        document = self.env['l10n_ro_edi.document'].create({
             'batch_id': self.id,
             'state': 'stock_sent',
             'l10n_ro_edi_stock_load_id': values['l10n_ro_edi_stock_load_id'],
             'l10n_ro_edi_stock_uit': values['l10n_ro_edi_stock_uit'],
-            'attachment': base64.b64encode(values['raw_xml'].encode('utf-8')),
         })
+
+        document.attachment_id = self.env['stock.picking']._l10n_ro_edi_stock_create_attachment({
+            'name': self.name,
+            'res_id': document.id,
+            'raw': values['raw_xml'],
+        })
+
+        return document
 
     def _l10n_ro_edi_stock_create_document_stock_sending_failed(self, values: dict[str, object]):
         self.ensure_one()
@@ -264,19 +268,30 @@ class StockPickingBatch(models.Model):
 
         if 'raw_xml' in values:
             # when an error is thrown during data validation there will be no 'raw_xml'
-            document.attachment = base64.b64encode(values['raw_xml'].encode('utf-8'))
+            document.attachment_id = self.env['stock.picking']._l10n_ro_edi_stock_create_attachment({
+                'name': self.name,
+                'res_id': document.id,
+                'raw': values['raw_xml'],
+            })
 
         return document
 
     def _l10n_ro_edi_stock_create_document_stock_validated(self, values: dict[str, object]):
         self.ensure_one()
-        return self.env['l10n_ro_edi.document'].create({
+        document = self.env['l10n_ro_edi.document'].create({
             'batch_id': self.id,
             'state': 'stock_validated',
             'l10n_ro_edi_stock_load_id': values['l10n_ro_edi_stock_load_id'],
             'l10n_ro_edi_stock_uit': values['l10n_ro_edi_stock_uit'],
-            'attachment': base64.b64encode(values['raw_xml'].encode('utf-8')),
         })
+
+        document.attachment_id = self.env['stock.picking']._l10n_ro_edi_stock_create_attachment({
+            'name': self.name,
+            'res_id': document.id,
+            'raw': values['raw_xml'],
+        })
+
+        return document
 
     ################################################################################
     # Send Logic
@@ -322,7 +337,7 @@ class StockPickingBatch(models.Model):
                 document_values |= {
                     'l10n_ro_edi_stock_load_id': last_sent_document.l10n_ro_edi_stock_load_id,
                     'l10n_ro_edi_stock_uit': last_sent_document.l10n_ro_edi_stock_uit,
-                    'raw_xml': base64.b64decode(last_sent_document.attachment).decode(),
+                    'raw_xml': last_sent_document.attachment_id.raw,
                 }
 
             self._l10n_ro_edi_stock_create_document_stock_sending_failed(document_values)
@@ -357,24 +372,19 @@ class StockPickingBatch(models.Model):
             else:
                 last_validated = self._l10n_ro_edi_stock_get_last_document('stock_validated')
                 uit = last_validated.l10n_ro_edi_stock_uit
-                raw_xml = base64.b64decode(last_validated.attachment).decode()
+                raw_xml = last_validated.attachment_id.raw
 
             edi_document = self._l10n_ro_edi_stock_create_document_stock_sent({
                 'l10n_ro_edi_stock_load_id': content['index_incarcare'],
                 'l10n_ro_edi_stock_uit': uit,
                 'raw_xml': raw_xml,
             })
-            attachment = self.env['ir.attachment'].create({
-                'name': f"etransport_{self.name.replace('/', '_')}.xml",
-                'type': 'binary',
-                'datas': edi_document.attachment,
-            })
             self._message_log(
                 body=_(
                     "Generated eTransport XML (UIT: %(uit)s) was sent to the authority.",
                     uit=uit,
                 ),
-                attachment_ids=attachment.ids
+                attachment_ids=edi_document.attachment_id.ids
             )
 
     def _l10n_ro_edi_stock_fetch_document_status(self):
@@ -391,7 +401,7 @@ class StockPickingBatch(models.Model):
                     'message': '\n'.join(errors),
                     'l10n_ro_edi_stock_load_id': current_sending_document.l10n_ro_edi_stock_load_id,
                     'l10n_ro_edi_stock_uit': current_sending_document.l10n_ro_edi_stock_uit,
-                    'raw_xml': base64.b64decode(current_sending_document.attachment).decode(),
+                    'raw_xml': current_sending_document.attachment_id.raw,
                 })
                 continue
 
@@ -407,14 +417,14 @@ class StockPickingBatch(models.Model):
                     'message': result['error'],
                     'l10n_ro_edi_stock_load_id': current_sending_document.l10n_ro_edi_stock_load_id,
                     'l10n_ro_edi_stock_uit': current_sending_document.l10n_ro_edi_stock_uit,
-                    'raw_xml': base64.b64decode(current_sending_document.attachment).decode(),
+                    'raw_xml': current_sending_document.attachment_id.raw,
                 })
             else:
                 documents_to_delete |= batch._l10n_ro_edi_stock_get_all_documents(('stock_sent', 'stock_sending_failed'))
                 new_document_data = {
                     'l10n_ro_edi_stock_load_id': current_sending_document.l10n_ro_edi_stock_load_id,
                     'l10n_ro_edi_stock_uit': current_sending_document.l10n_ro_edi_stock_uit,
-                    'raw_xml': base64.b64decode(current_sending_document.attachment).decode(),
+                    'raw_xml': current_sending_document.attachment_id.raw,
                 }
                 match state := result['content']['stare']:
                     case 'ok':

@@ -451,7 +451,7 @@ class AccountEdiFormat(models.Model):
         session.cert = company.l10n_es_sii_certificate_id
         session.mount('https://', CertificateAdapter(ciphers=EUSKADI_CIPHERS))
 
-        client = company._get_zeep_client__(connection_vals['url'], session=session)
+        client = zeep.Client(connection_vals['url'], operation_timeout=60, timeout=60, session=session)
 
         if connection_vals.get('custom_navarra'):
             # We Inject the namespaces directly in the header dictionary
@@ -474,7 +474,6 @@ class AccountEdiFormat(models.Model):
             serv._binding_options['address'] = connection_vals['test_url']
 
         error_msg = None
-        blocking_lvl = None
         try:
             if cancel:
                 if invoices[0].is_sale_document():
@@ -488,10 +487,6 @@ class AccountEdiFormat(models.Model):
                     res = serv.SuministroLRFacturasRecibidas(header, info_list)
         except requests.exceptions.SSLError as error:
             error_msg = _("The SSL certificate could not be validated.")
-        # If the receiver intentionally rejects the message, he migth return a Fault
-        except zeep.exceptions.Fault as soapfault:
-            blocking_lvl = 'error'
-            error_msg = self.env._("Fault error:\n[%(code)s] %(message)s", code=soapfault.code, message=soapfault.message)
         except (zeep.exceptions.Error, requests.exceptions.ConnectionError) as error:
             error_msg = _("Networking error:\n%s", error)
         except Exception as error:
@@ -500,7 +495,7 @@ class AccountEdiFormat(models.Model):
         if error_msg:
             return {inv: {
                 'error': error_msg,
-                'blocking_level': blocking_lvl or 'warning',
+                'blocking_level': 'warning',
             } for inv in invoices}
 
         # Process response.
@@ -621,7 +616,7 @@ class AccountEdiFormat(models.Model):
         if not move.company_id.vat:
             res.append(_("VAT number is missing on company %s", move.company_id.display_name))
         total_taxes = self.env['account.tax']
-        for line in move.invoice_line_ids.filtered(lambda line: line.display_type not in ('line_section', 'line_subsection', 'line_note')):
+        for line in move.invoice_line_ids.filtered(lambda line: line.display_type not in ('line_note', 'line_section')):
             taxes = line.tax_ids.flatten_taxes_hierarchy()
             total_taxes |= taxes
             recargo_count = taxes.mapped('l10n_es_type').count('recargo')

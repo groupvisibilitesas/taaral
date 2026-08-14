@@ -77,9 +77,9 @@ class AccountEdiUBLPint(models.AbstractModel):
         if self._is_document(vals, 'invoice', 'credit_note', 'self_invoice', 'self_credit_note'):
             self._ubl_add_notes_nodes_all_invoices(vals)
 
-    def _ubl_add_delivery_nodes(self, vals):
+    def _ubl_add_invoice_delivery_nodes(self, vals):
         # [ibr-107]-Deliver to information (ibg-13) MUST occur maximum once.
-        super()._ubl_add_delivery_nodes(vals)
+        super()._ubl_add_invoice_delivery_nodes(vals)
 
         if self._is_document(vals, 'invoice', 'credit_note', 'self_invoice', 'self_credit_note'):
             document_node = vals['document_node']
@@ -218,24 +218,6 @@ class AccountEdiUBLPint(models.AbstractModel):
                 },
             })
 
-    def _ubl_add_delivery_party_endpoint_id_node(self, vals):
-        pass
-
-    def _ubl_add_delivery_party_identification_nodes(self, vals):
-        pass
-
-    def _ubl_add_delivery_party_postal_address_node(self, vals):
-        pass
-
-    def _ubl_add_delivery_party_tax_scheme_nodes(self, vals):
-        pass
-
-    def _ubl_add_delivery_party_legal_entity_nodes(self, vals):
-        pass
-
-    def _ubl_add_delivery_party_contact_node(self, vals):
-        pass
-
     def _ubl_get_payment_means_payee_financial_account_institution_branch_node_from_partner_bank(self, vals, partner_bank):
         node = super()._ubl_get_payment_means_payee_financial_account_institution_branch_node_from_partner_bank(vals, partner_bank)
         if node:
@@ -327,9 +309,6 @@ class AccountEdiUBLPint(models.AbstractModel):
                 '_text': FloatFmt(sum(corresponding_line_node_amounts), min_dp=currency.decimal_places),
                 'currencyID': currency.name,
             }
-
-        # Percent is not reported in TaxSubtotal
-        node['cbc:Percent']['_text'] = None
 
         return node
 

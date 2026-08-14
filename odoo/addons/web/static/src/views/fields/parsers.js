@@ -3,7 +3,6 @@ import { localization } from "@web/core/l10n/localization";
 import { evaluateExpr } from "@web/core/py_js/py";
 import { registry } from "@web/core/registry";
 import { escapeRegExp } from "@web/core/utils/strings";
-import { Operation } from "@web/model/relational_model/operation";
 
 // -----------------------------------------------------------------------------
 // Helpers
@@ -24,21 +23,6 @@ function evaluateMathematicalExpression(expr, context = {}) {
         safeEvalString += v;
     }
     return evaluateExpr(safeEvalString, context);
-}
-
-function parseOperation(value, parseValueFn) {
-    const regex = new RegExp(
-        `^(?<operator>[+\\-*/])\\s*=\\s*(?<operand>-?\\d+(?:[${escapeRegExp(
-            localization.decimalPoint
-        )}]\\d+)?)$`
-    );
-    const match = value.match(regex);
-    if (match?.groups) {
-        const operand = parseValueFn(match.groups.operand);
-        const operator = match.groups.operator;
-        return new Operation(operator, operand);
-    }
-    return false;
 }
 
 /**
@@ -85,11 +69,7 @@ export class InvalidNumberError extends Error {}
  * @param {string} value
  * @returns {number} a float
  */
-export function parseFloat(value, { allowOperation = false } = {}) {
-    const operation = allowOperation ? parseOperation(value, parseFloat) : null;
-    if (operation instanceof Operation) {
-        return operation;
-    }
+export function parseFloat(value) {
     const thousandsSepRegex = localization.thousandsSep || "";
     const decimalPointRegex = localization.decimalPoint;
     let parsed = parseNumber(value, {
@@ -139,11 +119,7 @@ export function parseFloatTime(value) {
  * @param {string} value
  * @returns {number} an integer
  */
-export function parseInteger(value, { allowOperation = false } = {}) {
-    const operation = allowOperation ? parseOperation(value, parseInteger) : null;
-    if (operation instanceof Operation) {
-        return operation;
-    }
+export function parseInteger(value) {
     const thousandsSepRegex = localization.thousandsSep || "";
     const decimalPointRegex = localization.decimalPoint;
     let parsed = parseNumber(value, {
@@ -197,11 +173,7 @@ export function parsePercentage(value) {
  * @param {string} value
  * @returns {number}
  */
-export function parseMonetary(value, { allowOperation = false } = {}) {
-    const operation = allowOperation ? parseOperation(value, parseMonetary) : null;
-    if (operation instanceof Operation) {
-        return operation;
-    }
+export function parseMonetary(value) {
     value = value.trim();
     const startMatch = value.match(
         new RegExp(`[\\d\\-+=]|${escapeRegExp(localization.decimalPoint)}`)

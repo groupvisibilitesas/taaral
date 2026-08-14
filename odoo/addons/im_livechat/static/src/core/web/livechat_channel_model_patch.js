@@ -4,6 +4,7 @@ import { useSequential } from "@mail/utils/common/hooks";
 
 import { _t } from "@web/core/l10n/translation";
 import { patch } from "@web/core/utils/patch";
+import { sprintf } from "@web/core/utils/strings";
 
 const sequential = useSequential();
 
@@ -20,7 +21,7 @@ const livechatChannelPatch = {
         );
     },
     get joinTitle() {
-        return _t("Join %s", this.name);
+        return sprintf(_t("Join %s"), this.name);
     },
     async leave({ notify = true } = {}) {
         this.are_you_inside = false;
@@ -34,7 +35,7 @@ const livechatChannelPatch = {
         );
     },
     get leaveTitle() {
-        return _t("Leave %s", this.name);
+        return sprintf(_t("Leave %s"), this.name);
     },
 };
 patch(LivechatChannel.prototype, livechatChannelPatch);

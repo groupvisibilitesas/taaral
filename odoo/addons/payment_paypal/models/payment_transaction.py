@@ -1,15 +1,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import _, api, fields, models
+import logging
+import pprint
+
+from odoo import _, fields, models
 from odoo.exceptions import ValidationError
 
 from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment.logging import get_payment_logger
 from odoo.addons.payment_paypal import utils as paypal_utils
 from odoo.addons.payment_paypal.const import PAYMENT_STATUS_MAPPING
 
-
-_logger = get_payment_logger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class PaymentTransaction(models.Model):
@@ -29,22 +30,26 @@ class PaymentTransaction(models.Model):
         :return: The dict of provider-specific processing values
         :rtype: dict
         """
+        res = super()._get_specific_processing_values(processing_values)
         if self.provider_code != 'paypal':
-            return super()._get_specific_processing_values(processing_values)
+            return res
 
         payload = self._paypal_prepare_order_payload()
 
+        _logger.info(
+            "Sending '/checkout/orders' request for transaction with reference %s:\n%s",
+            self.reference, pprint.pformat(payload)
+        )
         idempotency_key = payment_utils.generate_idempotency_key(
             self, scope='payment_request_order'
         )
-        try:
-            order_data = self._send_api_request(
-                'POST', '/v2/checkout/orders', json=payload, idempotency_key=idempotency_key
-            )
-        except ValidationError as e:
-            self._set_error(str(e))
-            return {}
-
+        order_data = self.provider_id._paypal_make_request(
+            '/v2/checkout/orders', json_payload=payload, idempotency_key=idempotency_key
+        )
+        _logger.info(
+            "Response of '/checkout/orders' request for transaction with reference %s:\n%s",
+            self.reference, pprint.pformat(order_data)
+        )
         return {'order_id': order_data['id']}
 
     def _paypal_prepare_order_payload(self):
@@ -77,7 +82,7 @@ class PaymentTransaction(models.Model):
                         'display_data': {
                             'brand_name': self.provider_id.company_id.name,
                         },
-                        'email_address': self.provider_id.paypal_email_account,
+                        'email_address': paypal_utils.get_normalized_email_account(self.provider_id)
                     },
                     **shipping_address_vals,
                 },
@@ -102,44 +107,61 @@ class PaymentTransaction(models.Model):
 
         return payload
 
-    @api.model
-    def _extract_reference(self, provider_code, payment_data):
-        """Override of `payment` to extract the reference from the payment data."""
-        if provider_code != 'paypal':
-            return super()._extract_reference(provider_code, payment_data)
-        return payment_data.get('reference_id')
+    def _get_tx_from_notification_data(self, provider_code, notification_data):
+        """ Override of `payment` to find the transaction based on Paypal data.
 
-    def _extract_amount_data(self, payment_data):
-        """Override of payment to extract the amount and currency from the payment data."""
+        :param str provider_code: The code of the provider that handled the transaction.
+        :param dict notification_data: The notification data sent by the provider.
+        :return: The transaction if found.
+        :rtype: payment.transaction
+        :raise ValidationError: If the data match no transaction.
+        """
+        tx = super()._get_tx_from_notification_data(provider_code, notification_data)
+        if provider_code != 'paypal' or len(tx) == 1:
+            return tx
+
+        reference = notification_data.get('reference_id')
+        tx = self.search([('reference', '=', reference), ('provider_code', '=', 'paypal')])
+        if not tx:
+            raise ValidationError(
+                "PayPal: " + _("No transaction found matching reference %s.", reference)
+            )
+        return tx
+
+    def _process_notification_data(self, notification_data):
+        """ Override of `payment` to process the transaction based on Paypal data.
+
+        Note: self.ensure_one()
+
+        :param dict notification_data: The notification data sent by the provider.
+        :return: None
+        :raise ValidationError: If inconsistent data were received.
+        """
+        super()._process_notification_data(notification_data)
         if self.provider_code != 'paypal':
-            return super()._extract_amount_data(payment_data)
+            return
 
-        amount_data = payment_data.get('amount', {})
-        amount = amount_data.get('value')
-        currency_code = amount_data.get('currency_code')
-        return {
-            'amount': float(amount),
-            'currency_code': currency_code,
-        }
-
-    def _apply_updates(self, payment_data):
-        """Override of `payment` to update the transaction based on the payment data."""
-        if self.provider_code != 'paypal':
-            return super()._apply_updates(payment_data)
-
-        if not payment_data:
+        if not notification_data:
             self._set_canceled(state_message=_("The customer left the payment page."))
             return
 
+        amount = notification_data.get('amount').get('value')
+        currency_code = notification_data.get('amount').get('currency_code')
+        assert amount and currency_code, "PayPal: missing amount or currency"
+        assert self.currency_id.compare_amounts(float(amount), self.amount) == 0, \
+            "PayPal: mismatching amounts"
+        assert currency_code == self.currency_id.name, "PayPal: mismatching currency codes"
+
         # Update the provider reference.
-        txn_id = payment_data.get('id')
-        txn_type = payment_data.get('txn_type')
+        txn_id = notification_data.get('id')
+        txn_type = notification_data.get('txn_type')
         if not all((txn_id, txn_type)):
-            self._set_error(_(
-                "Missing value for txn_id (%(txn_id)s) or txn_type (%(txn_type)s).",
-                txn_id=txn_id, txn_type=txn_type
-            ))
-            return
+            raise ValidationError(
+                "PayPal: " + _(
+                    "Missing value for txn_id (%(txn_id)s) or txn_type (%(txn_type)s).",
+                    txn_id=txn_id, txn_type=txn_type
+                )
+            )
         self.provider_reference = txn_id
         self.paypal_type = txn_type
 
@@ -149,17 +171,19 @@ class PaymentTransaction(models.Model):
         ) or self.payment_method_id
 
         # Update the payment state.
-        payment_status = payment_data.get('status')
+        payment_status = notification_data.get('status')
 
         if payment_status in PAYMENT_STATUS_MAPPING['pending']:
-            self._set_pending(state_message=payment_data.get('pending_reason'))
+            self._set_pending(state_message=notification_data.get('pending_reason'))
         elif payment_status in PAYMENT_STATUS_MAPPING['done']:
             self._set_done()
         elif payment_status in PAYMENT_STATUS_MAPPING['cancel']:
             self._set_canceled()
         else:
             _logger.info(
-                "Received data with invalid payment status (%s) for transaction %s.",
+                "received data with invalid payment status (%s) for transaction with reference %s",
                 payment_status, self.reference
             )
-            self._set_error(_("Received data with invalid payment status: %s", payment_status))
+            self._set_error(
+                "PayPal: " + _("Received data with invalid payment status: %s", payment_status)
+            )

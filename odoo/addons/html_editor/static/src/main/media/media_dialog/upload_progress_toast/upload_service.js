@@ -5,6 +5,7 @@ import { _t } from "@web/core/l10n/translation";
 import { checkFileSize } from "@web/core/utils/files";
 import { humanNumber } from "@web/core/utils/numbers";
 import { getDataURLFromFile } from "@web/core/utils/urls";
+import { sprintf } from "@web/core/utils/strings";
 import { reactive } from "@odoo/owl";
 
 export const AUTOCLOSE_DELAY = 3000;
@@ -162,7 +163,7 @@ export const uploadService = {
                     } catch {
                         deleteFile(file.id);
                         env.services.notification.add(
-                            _t('Could not load the file "%s".', sortedFile.name),
+                            sprintf(_t('Could not load the file "%s".'), sortedFile.name),
                             { type: "danger" }
                         );
                         continue;
@@ -177,14 +178,9 @@ export const uploadService = {
                         }
                     };
                     const onLoad = () => (file.progress = 100);
-                    const onFileAbort = () => {
-                        deleteFile(file.id);
-                        file.aborted = true;
-                    };
 
                     currentXHR.upload.addEventListener("progress", onProgress);
                     currentXHR.upload.addEventListener("load", onLoad);
-                    currentXHR.addEventListener("abort", onFileAbort);
 
                     try {
                         addAttachmentRpc = rpc(
@@ -202,7 +198,7 @@ export const uploadService = {
                         );
 
                         const attachment = await addAttachmentRpc;
-                        if (signal.aborted || file.aborted) {
+                        if (signal.aborted) {
                             break;
                         }
 

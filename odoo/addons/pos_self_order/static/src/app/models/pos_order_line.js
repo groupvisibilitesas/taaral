@@ -1,3 +1,5 @@
+/** @odoo-module */
+
 import { PosOrderline } from "@point_of_sale/app/models/pos_order_line";
 import { patch } from "@web/core/utils/patch";
 
@@ -39,13 +41,12 @@ patch(PosOrderline.prototype, {
         return false;
     },
     getDisplayPriceWithQty(qty) {
-        const prices = this.order_id._constructPriceData({ baseLineOpts: { quantity: qty } })
-            .baseLineByLineUuids[this.uuid].tax_details;
+        const prices = this.get_all_prices(qty);
 
         if (this.config.iface_tax_included === "total") {
-            return prices.total_included;
+            return prices.priceWithTax;
         } else {
-            return prices.total_excluded;
+            return prices.priceWithoutTax;
         }
     },
 });

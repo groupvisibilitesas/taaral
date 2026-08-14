@@ -2,21 +2,24 @@
 # This file contains the translation of the following modules:
 # 	* website_profile
 #
+# Translators:
+# Tereza Mokrá, 2024
+# Wil Odoo, 2024
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 18:40+0000\n"
-"PO-Revision-Date: 2026-08-07 19:13+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
-"Language-Team: Slovak <https://translate.odoo.com/projects/odoo-19/"
-"website_profile/sk/>\n"
+"POT-Creation-Date: 2026-04-10 18:39+0000\n"
+"PO-Revision-Date: 2024-09-25 09:42+0000\n"
+"Last-Translator: Wil Odoo, 2024\n"
+"Language-Team: Slovak (https://app.transifex.com/odoo/teams/41243/sk/)\n"
 "Language: sk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 2026.6.1\n"
+"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n "
+">= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);\n"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.email_validation_banner
@@ -48,6 +51,17 @@ msgid "<i class=\"fa fa-arrow-right\"/> Get Badges"
 msgstr ""
 
 #. module: website_profile
+#: model_terms:ir.ui.view,arch_db:website_profile.user_profile_content
+msgid "<i class=\"fa fa-close me-1\"/>Cancel"
+msgstr ""
+
+#. module: website_profile
+#: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
+msgid ""
+"<i class=\"fa fa-pencil fa-1g float-sm-none float-md-start\" title=\"Edit\"/>"
+msgstr ""
+
+#. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_header
 msgid "<i class=\"fa fa-pencil me-1\"/>EDIT"
 msgstr ""
@@ -75,7 +89,12 @@ msgstr ""
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.badge_content
 msgid "<i class=\"text-muted\"> awarded users</i>"
-msgstr ""
+msgstr "<i class=\"text-muted\"> ocenený používatelia</i>"
+
+#. module: website_profile
+#: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
+msgid "<option value=\"\">Country...</option>"
+msgstr "<option value=\"\">Štát...</option>"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_content
@@ -90,6 +109,41 @@ msgstr ""
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_content
 msgid "<small class=\"fw-bold\">Joined</small>"
+msgstr ""
+
+#. module: website_profile
+#: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
+msgid "<span class=\"fw-bold\">Biography</span>"
+msgstr ""
+
+#. module: website_profile
+#: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
+msgid "<span class=\"fw-bold\">City</span>"
+msgstr ""
+
+#. module: website_profile
+#: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
+msgid "<span class=\"fw-bold\">Country</span>"
+msgstr ""
+
+#. module: website_profile
+#: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
+msgid "<span class=\"fw-bold\">Email</span>"
+msgstr ""
+
+#. module: website_profile
+#: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
+msgid "<span class=\"fw-bold\">Name</span>"
+msgstr ""
+
+#. module: website_profile
+#: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
+msgid "<span class=\"fw-bold\">Public Profile</span>"
+msgstr ""
+
+#. module: website_profile
+#: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
+msgid "<span class=\"fw-bold\">Website</span>"
 msgstr ""
 
 #. module: website_profile
@@ -183,11 +237,9 @@ msgid ""
 "                            To validate your email, please click on the "
 "following link:\n"
 "                            </p><div style=\"margin: 16px 0px 16px 0px;\">\n"
-"                                <a t-att-href=\"ctx.get('token_url')\" t-"
-"attf-style=\"background-color: {{object.company_id.email_secondary_color or "
-"'#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: "
-"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
-"font-size:13px;\">\n"
+"                                <a t-att-href=\"ctx.get('token_url')\" "
+"style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-"
+"decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
 "                                    Validate my account\n"
 "                                </a>\n"
 "                            </div>\n"
@@ -246,8 +298,7 @@ msgid ""
 "padding: 8px; border-collapse:separate;\">\n"
 "        <tr><td style=\"text-align: center; font-size: 13px;\">\n"
 "            Powered by <a target=\"_blank\" href=\"https://www.odoo.com?"
-"utm_source=db&amp;utm_medium=forum\" t-attf-style=\"color: "
-"{{object.company_id.email_secondary_color or '#875A7B'}};\">Odoo</a>\n"
+"utm_source=db&amp;utm_medium=forum\" style=\"color: #875A7B;\">Odoo</a>\n"
 "        </td></tr>\n"
 "    </table>\n"
 "</td></tr>\n"
@@ -273,18 +324,12 @@ msgstr ""
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_content
 msgid "About"
-msgstr ""
-
-#. module: website_profile
-#. odoo-python
-#: code:addons/website_profile/controllers/main.py:0
-msgid "All Courses"
-msgstr ""
+msgstr "Približne"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.users_page_header
 msgid "All Users"
-msgstr ""
+msgstr "Všetci používatelia"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.all_user_card
@@ -297,7 +342,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website_profile.rank_badge_main
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_content
 msgid "Badges"
-msgstr ""
+msgstr "Odmena"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.user_badges
@@ -314,16 +359,14 @@ msgid ""
 msgstr ""
 
 #. module: website_profile
-#. odoo-javascript
-#: code:addons/website_profile/static/src/components/profile_dialog/profile_dialog.xml:0
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_content
 msgid "Biography"
-msgstr ""
+msgstr "Biografia"
 
 #. module: website_profile
 #: model:ir.model.fields,field_description:website_profile.field_gamification_badge__can_publish
 msgid "Can Publish"
-msgstr ""
+msgstr "Môžete publikovať"
 
 #. module: website_profile
 #. odoo-python
@@ -334,70 +377,24 @@ msgid ""
 msgstr ""
 
 #. module: website_profile
-#. odoo-javascript
-#: code:addons/website_profile/static/src/components/profile_dialog/profile_dialog.xml:0
-msgid "City"
-msgstr ""
-
-#. module: website_profile
-#. odoo-javascript
-#: code:addons/website_profile/static/src/components/profile_dialog/profile_dialog.xml:0
+#: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
 msgid "Clear"
-msgstr ""
+msgstr "Zmazať"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.email_validation_banner
 msgid "Close"
-msgstr ""
+msgstr "Zatvoriť"
 
 #. module: website_profile
-#. odoo-javascript
-#: code:addons/website_profile/static/src/components/profile_dialog/profile_dialog.xml:0
-msgid "Country"
-msgstr ""
-
-#. module: website_profile
-#. odoo-javascript
-#: code:addons/website_profile/static/src/components/profile_dialog/profile_dialog.xml:0
-msgid "Country..."
-msgstr ""
-
-#. module: website_profile
-#. odoo-javascript
-#: code:addons/website_profile/static/src/components/profile_dialog/profile_dialog.xml:0
-msgid "Discard"
-msgstr ""
-
-#. module: website_profile
-#: model:ir.model.fields,field_description:website_profile.field_gamification_badge__display_name
-#: model:ir.model.fields,field_description:website_profile.field_res_users__display_name
-#: model:ir.model.fields,field_description:website_profile.field_website__display_name
-msgid "Display Name"
-msgstr ""
-
-#. module: website_profile
-#. odoo-javascript
-#: code:addons/website_profile/static/src/components/profile_dialog/profile_dialog.xml:0
+#: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
 msgid "Edit"
-msgstr ""
+msgstr "Upraviť"
 
 #. module: website_profile
-#. odoo-javascript
-#: code:addons/website_profile/static/src/components/profile_dialog/profile_dialog.js:0
+#: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
 msgid "Edit Profile"
-msgstr ""
-
-#. module: website_profile
-#. odoo-javascript
-#: code:addons/website_profile/static/src/components/profile_dialog/profile_dialog.xml:0
-msgid "Email"
-msgstr ""
-
-#. module: website_profile
-#. odoo-python
-#: code:addons/website_profile/controllers/main.py:0
-msgid "Forum"
-msgstr ""
+msgstr "Upraviť profil"
 
 #. module: website_profile
 #: model:mail.template,name:website_profile.validation_email
@@ -407,7 +404,7 @@ msgstr ""
 #. module: website_profile
 #: model:ir.model,name:website_profile.model_gamification_badge
 msgid "Gamification Badge"
-msgstr ""
+msgstr "Ocenenie gemifikácie"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.profile_next_rank_card
@@ -417,7 +414,7 @@ msgstr ""
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_sub_nav
 msgid "Home"
-msgstr ""
+msgstr "Domov"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.rank_badge_main
@@ -430,16 +427,9 @@ msgid "How do I score more points?"
 msgstr ""
 
 #. module: website_profile
-#: model:ir.model.fields,field_description:website_profile.field_gamification_badge__id
-#: model:ir.model.fields,field_description:website_profile.field_res_users__id
-#: model:ir.model.fields,field_description:website_profile.field_website__id
-msgid "ID"
-msgstr ""
-
-#. module: website_profile
 #: model:ir.model.fields,field_description:website_profile.field_gamification_badge__is_published
 msgid "Is Published"
-msgstr ""
+msgstr "Publikované"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.rank_badge_main
@@ -459,13 +449,7 @@ msgstr ""
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_content
 msgid "More info"
-msgstr ""
-
-#. module: website_profile
-#. odoo-javascript
-#: code:addons/website_profile/static/src/components/profile_dialog/profile_dialog.xml:0
-msgid "Name"
-msgstr ""
+msgstr "Viac informácií"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_sub_nav
@@ -499,20 +483,17 @@ msgid "Not have enough karma to view other users' profile."
 msgstr ""
 
 #. module: website_profile
-#. odoo-javascript
-#: code:addons/website_profile/static/src/components/profile_dialog/profile_dialog.xml:0
-msgid "Public Profile"
+#: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
+msgid ""
+"Please enter a valid email address in order to receive notifications from "
+"answers or comments."
 msgstr ""
+"Prosím zadajte platnú emailovú adresu aby ste dostávali notifikácie z "
+"odpovedí alebo komentárov."
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.rank_badge_main
 msgid "Ranks"
-msgstr ""
-
-#. module: website_profile
-#. odoo-python
-#: code:addons/website_profile/controllers/main.py:0
-msgid "Ranks and Badges"
 msgstr ""
 
 #. module: website_profile
@@ -523,7 +504,7 @@ msgstr ""
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_sub_nav
 msgid "Search"
-msgstr ""
+msgstr "Vyhľadávanie"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_sub_nav
@@ -536,59 +517,42 @@ msgid "Sent to forum visitors to confirm their mail address"
 msgstr ""
 
 #. module: website_profile
-#: model:ir.model.fields,help:website_profile.field_gamification_badge__website_absolute_url
-msgid "The full absolute URL to access the document through the website."
-msgstr ""
-
-#. module: website_profile
 #: model:ir.model.fields,help:website_profile.field_gamification_badge__website_url
-msgid "The full relative URL to access the document through the website."
-msgstr ""
+msgid "The full URL to access the document through the website."
+msgstr "Úplná URL na prístup k dokumentu cez webové stránky."
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.users_page_header
 msgid "This month"
-msgstr ""
+msgstr "Tento mesiac"
 
 #. module: website_profile
 #. odoo-python
 #: code:addons/website_profile/controllers/main.py:0
 msgid "This profile is private!"
-msgstr ""
+msgstr "Tento profil je súkromný!"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.users_page_header
 msgid "This week"
-msgstr ""
+msgstr "Tento týždeň"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.all_user_card
 #: model_terms:ir.ui.view,arch_db:website_profile.top3_user_card
 msgid "Unpublished"
-msgstr ""
+msgstr "Nepublikované"
 
 #. module: website_profile
-#. odoo-javascript
-#: code:addons/website_profile/static/src/components/profile_dialog/profile_dialog.xml:0
+#: model_terms:ir.ui.view,arch_db:website_profile.user_biography_editor
+#: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
 msgid "Update"
-msgstr ""
-
-#. module: website_profile
-#. odoo-javascript
-#: code:addons/website_profile/static/src/components/profile_dialog/profile_dialog.js:0
-msgid "Update failed."
-msgstr ""
+msgstr "Aktualizácia"
 
 #. module: website_profile
 #: model:ir.model,name:website_profile.model_res_users
 msgid "User"
-msgstr ""
-
-#. module: website_profile
-#. odoo-python
-#: code:addons/website_profile/controllers/main.py:0
-msgid "User Profiles"
-msgstr ""
+msgstr "Užívateľ"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.top3_user_card
@@ -598,7 +562,7 @@ msgstr ""
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_sub_nav
 msgid "Users"
-msgstr ""
+msgstr "Užívatelia"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.email_validation_banner
@@ -608,24 +572,17 @@ msgstr ""
 #. module: website_profile
 #: model:ir.model.fields,field_description:website_profile.field_gamification_badge__website_published
 msgid "Visible on current website"
-msgstr ""
+msgstr "Viditeľné na aktuálnej webstránke"
 
 #. module: website_profile
-#. odoo-javascript
-#: code:addons/website_profile/static/src/components/profile_dialog/profile_dialog.xml:0
 #: model:ir.model,name:website_profile.model_website
 msgid "Website"
-msgstr ""
-
-#. module: website_profile
-#: model:ir.model.fields,field_description:website_profile.field_gamification_badge__website_absolute_url
-msgid "Website Absolute URL"
-msgstr ""
+msgstr "Webstránka"
 
 #. module: website_profile
 #: model:ir.model.fields,field_description:website_profile.field_gamification_badge__website_url
 msgid "Website URL"
-msgstr ""
+msgstr "URL Webstránok"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.rank_badge_main
@@ -633,8 +590,8 @@ msgid "When you finish a course or reach milestones, you're awarded badges."
 msgstr ""
 
 #. module: website_profile
-#. odoo-javascript
-#: code:addons/website_profile/static/src/components/profile_dialog/profile_dialog.js:0
+#: model_terms:ir.ui.view,arch_db:website_profile.user_biography_editor
+#: model_terms:ir.ui.view,arch_db:website_profile.user_profile_edit_content
 msgid "Write a few words about yourself..."
 msgstr ""
 
@@ -668,12 +625,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website_profile.rank_badge_main
 #: model_terms:ir.ui.view,arch_db:website_profile.user_profile_sub_nav
 msgid "breadcrumb"
-msgstr ""
+msgstr "breadcrumb"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.email_validation_banner
 msgid "or"
-msgstr ""
+msgstr "alebo"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.rank_badge_main
@@ -686,15 +643,9 @@ msgid "s"
 msgstr ""
 
 #. module: website_profile
-#. odoo-python
-#: code:addons/website_profile/controllers/main.py:0
-msgid "slides"
-msgstr ""
-
-#. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.all_user_card
 msgid "this month"
-msgstr ""
+msgstr "tento mesiac"
 
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.all_user_card
@@ -721,6 +672,13 @@ msgstr ""
 #. module: website_profile
 #: model_terms:ir.ui.view,arch_db:website_profile.email_validation_banner
 msgid "your account settings"
+msgstr ""
+
+#. module: website_profile
+#: model_terms:ir.ui.view,arch_db:website_profile.profile_next_rank_card
+msgid ""
+"{{ '%s/%s xp' % (user.karma, next_rank_id.karma_min) if next_rank_id else "
+"''}}"
 msgstr ""
 
 #. module: website_profile

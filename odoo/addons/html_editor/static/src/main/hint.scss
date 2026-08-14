@@ -2,10 +2,10 @@
     position: relative;
 
     &:after {
-        content: attr(o-we-hint-text);
+        content: attr(placeholder);
         position: absolute;
         top: 0;
-        inset-inline-start: var(--placeholder-offset, 0);
+        left: 0;
         display: block;
         color: inherit;
         opacity: 0.4;
@@ -15,11 +15,5 @@
         overflow: hidden;
         text-wrap: nowrap;
         text-overflow: ellipsis;
-    }
-}
-
-div.o-we-hint[class*="col-"] {
-    &:after {
-        left: calc(var(--gutter-x, 0)* .5);
     }
 }

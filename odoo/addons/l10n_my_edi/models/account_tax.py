@@ -1,4 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+
 from odoo import api, fields, models
 
 
@@ -24,10 +25,6 @@ class AccountTax(models.Model):
         store=True,
         readonly=False,
     )
-    l10n_my_tax_exemption_reason = fields.Char(
-        string="Malaysian Tax Exemption Reason",
-        help="The reason for tax exemption, used when submitting consolidated invoices including this tax.",
-    )
 
     # --------------------------------
     # Compute, inverse, search methods
@@ -40,7 +37,7 @@ class AccountTax(models.Model):
             if tax.country_id.code != 'MY':
                 tax.l10n_my_tax_type = False
             else:
-                if tax.amount == 0 and tax.tax_scope:
+                if tax.amount == 0:
                     tax.l10n_my_tax_type = 'E'
                 elif tax.tax_scope == 'consu':
                     tax.l10n_my_tax_type = '01'

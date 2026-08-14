@@ -2,9 +2,9 @@
 from odoo import models
 
 
-class AccountEdiXmlUbl_De(models.AbstractModel):
+class AccountEdiXmlUBLDE(models.AbstractModel):
+    _inherit = "account.edi.xml.ubl_bis3"
     _name = 'account.edi.xml.ubl_de'
-    _inherit = ["account.edi.xml.ubl_bis3"]
     _description = "BIS3 DE (XRechnung)"
 
     # -------------------------------------------------------------------------
@@ -14,24 +14,52 @@ class AccountEdiXmlUbl_De(models.AbstractModel):
     def _export_invoice_filename(self, invoice):
         return f"{invoice.name.replace('/', '_')}_xrechnung.xml"
 
+    def _export_invoice_ecosio_schematrons(self):
+        return {
+            'invoice': 'de.xrechnung:ubl-invoice:2.2.0',
+            'credit_note': 'de.xrechnung:ubl-creditnote:2.2.0',
+        }
+
+    def _export_invoice_vals(self, invoice):
+        # EXTENDS account.edi.xml.ubl_bis3
+        # Old helper not used by default (see _export_invoice override in account.edi.xml.ubl_bis3)
+        # If you change this method, please change the corresponding new helper (at the end of this file).
+        vals = super()._export_invoice_vals(invoice)
+        vals['vals']['customization_id'] = self._get_customization_ids()['xrechnung']
+        if not vals['vals'].get('buyer_reference'):
+            vals['vals']['buyer_reference'] = 'N/A'
+        return vals
+
     def _export_invoice_constraints(self, invoice, vals):
         # EXTENDS account.edi.xml.ubl_bis3
+        # Old helper not used by default (see _export_invoice override in account.edi.xml.ubl_bis3)
+        # If you change this method, please change the corresponding new helper (at the end of this file).
         constraints = super()._export_invoice_constraints(invoice, vals)
 
         constraints.update({
-            'bis3_de_supplier_telephone_required': self._check_required_fields(vals['supplier'], ['phone']),
+            'bis3_de_supplier_telephone_required': self._check_required_fields(vals['supplier'], ['phone', 'mobile']),
             'bis3_de_supplier_electronic_mail_required': self._check_required_fields(vals['supplier'], 'email'),
         })
 
         return constraints
 
-    # -------------------------------------------------------------------------
-    # EXPORT: Templates
-    # -------------------------------------------------------------------------
+    def _get_partner_party_vals(self, partner, role):
+        # EXTENDS account.edi.xml.ubl_bis3
+        # Old helper not used by default (see _export_invoice override in account.edi.xml.ubl_bis3)
+        # If you change this method, please change the corresponding new helper (at the end of this file).
+        vals = super()._get_partner_party_vals(partner, role)
 
-    def _get_customization_id(self, process_type='billing'):
-        if process_type == 'billing':
-            return 'urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0'
+        if not vals.get('endpoint_id') and partner.email:
+            vals.update({
+                'endpoint_id': partner.email,
+                'endpoint_id_attrs': {'schemeID': 'EM'},
+            })
+
+        return vals
+
+    # -------------------------------------------------------------------------
+    # EXPORT: New (dict_to_xml) helpers
+    # -------------------------------------------------------------------------
 
     def _ubl_add_tax_currency_code_node(self, vals):
         # OVERRIDE account.edi.xml.ubl_bis3
@@ -69,7 +97,7 @@ class AccountEdiXmlUbl_De(models.AbstractModel):
             node['_text'] = 'N/A'
 
     def _ubl_add_party_endpoint_id_node(self, vals):
-        # EXTENDS account.edi.xml.ubl_bis3
+        # EXTENDS
         super()._ubl_add_party_endpoint_id_node(vals)
         partner = vals['party_vals']['partner']
 
@@ -80,7 +108,7 @@ class AccountEdiXmlUbl_De(models.AbstractModel):
             }
 
     def _ubl_add_party_tax_scheme_nodes(self, vals):
-        # EXTENDS account.edi.xml.ubl_bis3
+        # EXTENDS
         super()._ubl_add_party_tax_scheme_nodes(vals)
         nodes = vals['party_node']['cac:PartyTaxScheme']
         partner = vals['party_vals']['partner']
@@ -98,7 +126,7 @@ class AccountEdiXmlUbl_De(models.AbstractModel):
             })
 
     def _ubl_add_party_legal_entity_nodes(self, vals):
-        # EXTENDS account.edi.xml.ubl_bis3
+        # EXTENDS
         super()._ubl_add_party_legal_entity_nodes(vals)
         nodes = vals['party_node']['cac:PartyLegalEntity']
         partner = vals['party_vals']['partner']

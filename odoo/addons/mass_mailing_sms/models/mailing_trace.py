@@ -64,11 +64,11 @@ class MailingTrace(models.Model):
             sms_trace.sms_id = sms_trace.sms_id_int
 
     @api.model_create_multi
-    def create(self, vals_list):
-        for values in vals_list:
+    def create(self, values_list):
+        for values in values_list:
             if values.get('trace_type') == 'sms' and not values.get('sms_code'):
                 values['sms_code'] = self._get_random_code()
-        return super().create(vals_list)
+        return super(MailingTrace, self).create(values_list)
 
     @api.model
     def fields_get(self, allfields=None, attributes=None):

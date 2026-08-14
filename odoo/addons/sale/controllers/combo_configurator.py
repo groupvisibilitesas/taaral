@@ -8,7 +8,7 @@ from odoo.tools import groupby
 
 class SaleComboConfiguratorController(Controller):
 
-    @route(route='/sale/combo_configurator/get_data', type='jsonrpc', auth='user', readonly=True)
+    @route(route='/sale/combo_configurator/get_data', type='json', auth='user')
     def sale_combo_configurator_get_data(
         self,
         product_tmpl_id,
@@ -69,18 +69,17 @@ class SaleComboConfiguratorController(Controller):
                        date,
                        currency,
                        pricelist,
-                       quantity=quantity,
                        **kwargs,
                    ) for combo_item in combo.combo_item_ids if combo_item.product_id.active
                 ],
-            } for combo in product_template.sudo().combo_ids],
+            } for combo in product_template.combo_ids.sudo()],
             'currency_id': currency_id,
             **product_template._get_additional_configurator_data(
-                product_template, date, currency, pricelist, quantity=quantity, **kwargs
+                product_template, date, currency, pricelist, **kwargs
             ),
         }
 
-    @route(route='/sale/combo_configurator/get_price', type='jsonrpc', auth='user', readonly=True)
+    @route(route='/sale/combo_configurator/get_price', type='json', auth='user')
     def sale_combo_configurator_get_price(
         self,
         product_tmpl_id,
@@ -149,7 +148,6 @@ class SaleComboConfiguratorController(Controller):
             'extra_price': combo_item.currency_id._convert(
                 combo_item.extra_price, currency, request.env.company, date,
             ) if currency else combo_item.extra_price,
-            'is_preselected': is_preselected,
             'is_selected': bool(selected_combo_item) or is_preselected,
             'is_configurable': is_configurable,
             'product': {
@@ -159,7 +157,6 @@ class SaleComboConfiguratorController(Controller):
                 'ptals': self._get_ptals_data(
                     combo_item.product_id, selected_combo_item, date, currency,
                 ),
-                'description': combo_item.product_id.description_sale,
                 **request.env['product.template']._get_additional_configurator_data(
                     combo_item.product_id, date, currency, pricelist, **kwargs
                 ),

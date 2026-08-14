@@ -36,10 +36,8 @@
         'views/snippets/s_color_blocks_2.xml',
         'views/snippets/s_company_team_shapes.xml',
         'views/snippets/s_company_team_detail.xml',
-        'views/snippets/s_company_team_grid.xml',
         'views/snippets/s_media_list.xml',
         'views/snippets/s_comparisons.xml',
-        'views/snippets/s_comparisons_horizontal.xml',
         'views/snippets/s_product_catalog.xml',
         'views/snippets/s_quadrant.xml',
         'views/snippets/s_unveil.xml',
@@ -60,57 +58,26 @@
         'views/snippets/s_shape_image.xml',
         'views/snippets/s_text_cover.xml',
         'views/snippets/s_empowerment.xml',
-        'views/snippets/s_numbers_boxed.xml',
-        'views/snippets/s_split_intro.xml',
-        'views/snippets/s_numbers_framed.xml',
         'views/new_page_template.xml',
     ],
     'images': [
-        'static/description/beauty_description.webp',
-        'static/description/beauty_screenshot.webp',
+        'static/description/beauty_description.jpg',
+        'static/description/beauty_screenshot.jpg',
     ],
     'images_preview_theme': {
-        'website.library_image_10': '/theme_beauty/static/src/img/snippets/library_image_10.webp',
-        'website.library_image_14': '/theme_beauty/static/src/img/snippets/library_image_14.webp',
-        'website.s_masonry_block_default_image_1': '/theme_beauty/static/src/img/snippets/s_masonry_block.webp',
-        'website.s_text_image_default_image': '/theme_beauty/static/src/img/snippets/s_text_image.webp',
-        'website.s_product_catalog_default_image': '/theme_beauty/static/src/img/snippets/s_product_catalog.webp',
-        'website.library_image_16': '/theme_beauty/static/src/img/snippets/library_image_16.webp',
-        'website.library_image_03': '/theme_beauty/static/src/img/snippets/library_image_03.webp',
-        'website.library_image_13': '/theme_beauty/static/src/img/snippets/library_image_13.webp',
-        'website.s_carousel_default_image_2': '/theme_beauty/static/src/img/snippets/s_carousel_2.webp',
+        'website.library_image_10': '/theme_beauty/static/src/img/snippets/library_image_10.jpg',
+        'website.library_image_14': '/theme_beauty/static/src/img/snippets/library_image_14.jpg',
+        'website.s_masonry_block_default_image_1': '/theme_beauty/static/src/img/snippets/s_masonry_block.jpg',
+        'website.s_text_image_default_image': '/theme_beauty/static/src/img/snippets/s_text_image.jpg',
+        'website.s_product_catalog_default_image': '/theme_beauty/static/src/img/snippets/s_product_catalog.jpg',
+        'website.library_image_16': '/theme_beauty/static/src/img/snippets/library_image_16.jpg',
+        'website.library_image_03': '/theme_beauty/static/src/img/snippets/library_image_03.jpg',
+        'website.library_image_13': '/theme_beauty/static/src/img/snippets/library_image_13.jpg',
+        'website.s_carousel_default_image_2': '/theme_beauty/static/src/img/snippets/s_carousel_2.jpg',
     },
     'configurator_snippets': {
-        'homepage': ['s_intro_pill', 's_masonry_block_mosaic_template', 's_pricelist_boxed', 's_features_wall', 's_image_frame', 's_call_to_action'],
+        'homepage': ['s_intro_pill', 's_masonry_block', 's_pricelist_boxed', 's_features_wall', 's_image_frame', 's_call_to_action'],
     },
-    'configurator_snippets_addons': {
-        'website_sale': {
-            'homepage': [
-                ('website_sale.s_dynamic_snippet_category_list', 'after', 's_masonry_block_mosaic_template'),
-            ],
-        },
-    },
-    'theme_customizations': {
-        'website_sale.s_dynamic_snippet_category_list': {
-            'data_attributes': {
-                'gap': '3',
-            },
-            'background': {
-                'color': 'o_cc2',
-                'shape': {
-                    'data-oe-shape-data': '{"shape":"web_editor/Bold/13", "colors":{"c5":"o-color-4"}}',
-                    'element': """<div class="o_we_shape o_web_editor_Bold_13" style="background-image: url('/web_editor/shape/web_editor/Bold/13.svg?c5=o-color-4');""",
-                },
-            },
-            'add_classes': [
-                'pt80', 'pb104',
-            ],
-            'remove_classes': [
-                'pt64', 'pb64',
-            ],
-        },
-    },
-    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
     'assets': {
         'website.assets_editor': [

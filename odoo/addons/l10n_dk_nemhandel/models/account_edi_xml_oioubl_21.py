@@ -2,8 +2,6 @@ from odoo import _, models, tools
 from odoo.tools import html2plaintext
 from odoo.tools.float_utils import float_round
 
-from odoo.addons.account_edi_ubl_cii.models.account_edi_common import FloatFmt
-
 DANISH_NATIONAL_IT_AND_TELECOM_AGENCY_ID = '320'
 
 UBL_TO_OIOUBL_TAX_CATEGORY_ID_MAPPING = {
@@ -55,11 +53,11 @@ class AccountEdiXmlOIOUBL21(models.AbstractModel):
         # OIOUBL needs the data to be formated to 2 decimals
         return 2
 
-    def _get_customization_id(self, process_type='billing'):
-        if process_type == 'billing':
-            return 'OIOUBL-2.1'
+    def _export_invoice(self, invoice, convert_fixed_taxes=True):
+        # For OIOUBL21 use new helpers
+        return self._export_invoice_new(invoice)
 
-    def _export_invoice_constraints(self, invoice, vals):
+    def _export_invoice_constraints_new(self, invoice, vals):
         # EXTENDS account.edi.xml.ubl_20
         constraints = super()._export_invoice_constraints(invoice, vals)
 
@@ -79,7 +77,7 @@ class AccountEdiXmlOIOUBL21(models.AbstractModel):
         # EXTENDS account.edi.xml.ubl_21
         super()._add_invoice_header_nodes(document_node, vals)
         document_node.update({
-            'cbc:CustomizationID': {'_text': self._get_customization_id()},
+            'cbc:CustomizationID': {'_text': 'OIOUBL-2.1'},
             'cbc:ProfileID': {
                 '_text': 'Procurement-BilSim-1.0',
                 'schemeID': 'urn:oioubl:id:profileid-1.6',
@@ -100,14 +98,16 @@ class AccountEdiXmlOIOUBL21(models.AbstractModel):
             } if vals['document_type'] == 'credit_note' else None,
         })
 
-    def _get_document_type_code_node(self, invoice, invoice_data):
+    def _get_document_type_code_vals(self, invoice, invoice_data):
         # EXTENDS 'account_edi_ubl_cii
         # http://www.datypic.com/sc/ubl20/e-cbc_DocumentTypeCode.html
-        return {
-            '_text': '380' if invoice.move_type == 'out_invoice' else '381',
-            'listAgencyID': '6',
-            'listID': 'UN/ECE 1001',
-        }
+        vals = super()._get_document_type_code_vals(invoice, invoice_data)
+        vals['value'] = "380" if invoice.move_type == 'out_invoice' else "381"
+        vals['attrs'].update({
+            'listAgencyID': "6",
+            'listID': "UN/ECE 1001",
+        })
+        return vals
 
     def _get_address_node(self, vals):
         # EXTENDS account.edi.xml.ubl_20
@@ -215,7 +215,7 @@ class AccountEdiXmlOIOUBL21(models.AbstractModel):
             'currencyID': vals['currency_name'],
         }
         # PrepaidAmount must not be present if equal to 0
-        if document_node[monetary_total_tag].get('cbc:PrepaidAmount') and document_node[monetary_total_tag]['cbc:PrepaidAmount'].get('_text') == FloatFmt(0, 2):
+        if document_node[monetary_total_tag].get('cbc:PrepaidAmount') and document_node[monetary_total_tag]['cbc:PrepaidAmount'].get('_text') == '0.00':
             document_node[monetary_total_tag]['cbc:PrepaidAmount'] = None
 
     def _get_tax_category_node(self, vals):

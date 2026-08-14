@@ -65,7 +65,9 @@ export const setupMultiEditor = async (spec) => {
         };
         peerInfos[peerId] = peerInfo;
         let n = 0;
-        HistoryPlugin.prototype.generateId = () => `fake_id_${n++}`;
+        HistoryPlugin.prototype.generateId = () => {
+            return `fake_id_${n++}`;
+        };
         let selection;
         const defaultPlugins = MAIN_PLUGINS;
         const base = await setupEditor(spec.contentBefore, {
@@ -210,8 +212,8 @@ export function renderTextualSelection(peerInfos) {
         const { anchorNode, anchorOffset, focusNode, focusOffset } = peerSelection;
 
         const peerId = peerInfo.peerId;
-        const focusNodeId = historyPlugin.nodeMap.getId(focusNode);
-        const anchorNodeId = historyPlugin.nodeMap.getId(anchorNode);
+        const focusNodeId = historyPlugin.nodeToIdMap.get(focusNode);
+        const anchorNodeId = historyPlugin.nodeToIdMap.get(anchorNode);
         cursorNodes[focusNodeId] = cursorNodes[focusNodeId] || [];
         cursorNodes[focusNodeId].push({ type: "focus", peerId, offset: focusOffset });
         cursorNodes[anchorNodeId] = cursorNodes[anchorNodeId] || [];
@@ -219,15 +221,15 @@ export function renderTextualSelection(peerInfos) {
     }
 
     for (const nodeId of Object.keys(cursorNodes)) {
-        cursorNodes[nodeId] = cursorNodes[nodeId].sort(
-            (a, b) => b.offset - a.offset || b.peerId.localeCompare(a.peerId)
-        );
+        cursorNodes[nodeId] = cursorNodes[nodeId].sort((a, b) => {
+            return b.offset - a.offset || b.peerId.localeCompare(a.peerId);
+        });
     }
 
     for (const peerInfo of peerInfosList) {
         const historyPlugin = peerInfo.historyPlugin;
         for (const [nodeId, cursorsData] of Object.entries(cursorNodes)) {
-            const node = historyPlugin.nodeMap.getNode(nodeId);
+            const node = historyPlugin.idToNodeMap.get(nodeId);
             for (const cursorData of cursorsData) {
                 const cursorString =
                     cursorData.type === "anchor"

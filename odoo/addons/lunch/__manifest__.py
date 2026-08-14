@@ -43,6 +43,7 @@ If you want to save your employees' time and avoid them to always have coins in 
             'lunch/static/src/components/*',
             'lunch/static/src/mixins/*.js',
             'lunch/static/src/views/*',
+            'lunch/static/src/scss/lunch_view.scss',
             'lunch/static/src/scss/lunch_kanban.scss',
         ],
         'web.assets_tests': [
@@ -52,6 +53,5 @@ If you want to save your employees' time and avoid them to always have coins in 
             'lunch/static/tests/**/*.test.js',
         ],
     },
-    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 }

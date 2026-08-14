@@ -23,6 +23,12 @@ class FetchmailServer(models.Model):
             'the permissions.')
         super(FetchmailServer, self - outlook_servers)._compute_server_type_info()
 
+    @api.depends('server_type')
+    def _compute_is_microsoft_outlook_configured(self):
+        outlook_servers = self.filtered(lambda server: server.server_type == 'outlook')
+        (self - outlook_servers).is_microsoft_outlook_configured = False
+        super(FetchmailServer, outlook_servers)._compute_is_microsoft_outlook_configured()
+
     @api.constrains('server_type', 'is_ssl')
     def _check_use_microsoft_outlook_service(self):
         for server in self:
@@ -40,9 +46,9 @@ class FetchmailServer(models.Model):
             self.microsoft_outlook_refresh_token = False
             self.microsoft_outlook_access_token = False
             self.microsoft_outlook_access_token_expiration = False
-            super().onchange_server_type()
+            super(FetchmailServer, self).onchange_server_type()
 
-    def _imap_login__(self, connection):  # noqa: PLW3201
+    def _imap_login(self, connection):
         """Authenticate the IMAP connection.
 
         If the mail server is Outlook, we use the OAuth2 authentication protocol.
@@ -53,7 +59,7 @@ class FetchmailServer(models.Model):
             connection.authenticate('XOAUTH2', lambda x: auth_string)
             connection.select('INBOX')
         else:
-            super()._imap_login__(connection)
+            super()._imap_login(connection)
 
     def _get_connection_type(self):
         """Return which connection must be used for this mail server (IMAP or POP).

@@ -19,29 +19,25 @@ class PaymentProvider(models.Model):
         help="The brand associated to your AsiaPay account.",
         selection=[("paydollar", "PayDollar"), ("pesopay", "PesoPay"),
                     ("siampay", "SiamPay"), ("bimopay", "BimoPay")],
-        required_if_provider='asiapay',
         default='paydollar',
-        copy=False,
+        required_if_provider='asiapay',
     )
     asiapay_merchant_id = fields.Char(
         string="AsiaPay Merchant ID",
         help="The Merchant ID solely used to identify your AsiaPay account.",
         required_if_provider='asiapay',
-        copy=False,
     )
     asiapay_secure_hash_secret = fields.Char(
         string="AsiaPay Secure Hash Secret",
         required_if_provider='asiapay',
-        copy=False,
         groups='base.group_system',
     )
     asiapay_secure_hash_function = fields.Selection(
         string="AsiaPay Secure Hash Function",
         help="The secure hash function associated to your AsiaPay account.",
         selection=[('sha1', "SHA1"), ('sha256', "SHA256"), ('sha512', 'SHA512')],
-        required_if_provider='asiapay',
         default='sha1',
-        copy=False,
+        required_if_provider='asiapay',
     )
 
     # ==== CONSTRAINT METHODS ===#
@@ -63,15 +59,6 @@ class PaymentProvider(models.Model):
                     "AsiaPay does not support the following currencies: %(currencies)s.",
                     currencies=", ".join(unsupported_currency_codes),
                 ))
-
-    # === CRUD METHODS === #
-
-    def _get_default_payment_method_codes(self):
-        """ Override of `payment` to return the default payment method codes. """
-        self.ensure_one()
-        if self.code != 'asiapay':
-            return super()._get_default_payment_method_codes()
-        return const.DEFAULT_PAYMENT_METHOD_CODES
 
     # === BUSINESS METHODS ===#
 
@@ -102,3 +89,10 @@ class PaymentProvider(models.Model):
         shasign = hashnew(self.asiapay_secure_hash_function)
         shasign.update(signing_string.encode())
         return shasign.hexdigest()
+
+    def _get_default_payment_method_codes(self):
+        """ Override of `payment` to return the default payment method codes. """
+        default_codes = super()._get_default_payment_method_codes()
+        if self.code != 'asiapay':
+            return default_codes
+        return const.DEFAULT_PAYMENT_METHOD_CODES

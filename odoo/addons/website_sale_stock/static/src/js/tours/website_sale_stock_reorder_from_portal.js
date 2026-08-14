@@ -1,4 +1,7 @@
+/** @odoo-module **/
+
 import { registry } from "@web/core/registry";
+import { clickOnElement } from '@website/js/tours/tour_utils';
 
 registry.category("web_tour.tours").add('website_sale_stock_reorder_from_portal', {
         url: '/my/orders',
@@ -9,19 +12,15 @@ registry.category("web_tour.tours").add('website_sale_stock_reorder_from_portal'
             run: "click",
             expectUnloadPage: true,
         },
-        {
-            content: "Reorder Again",
-            trigger: '.o_wsale_reorder_button',
-            run: "click",
-            expectUnloadPage: true,
-        },
+        clickOnElement('Reorder Again', '.o_wsale_reorder_button'),
         {
             content: "Check that there is one out of stock product",
-            trigger: "div.alert-warning:contains('unavailable_product has not been added to your cart since it is not available.')",
+            trigger: "#o_wsale_reorder_body div.text-warning span:contains('This product is out of stock.')",
+            run: "click",
         },
         {
             content: "Check that there is one product that does not have enough stock",
-            trigger: "div.o_cart_product i.fa.fa-warning[title='You ask for 2 products but only 1 is available.']",
+            trigger: "#o_wsale_reorder_body div.text-warning:contains('You ask for 2.0 Units but only 1.0 are available.')",
         },
     ]
 });

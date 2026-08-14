@@ -1,5 +1,7 @@
+/** @odoo-module **/
+
 import { patch } from "@web/core/utils/patch";
-import { VideoSelector } from "@html_editor/main/media/media_dialog/video_selector";
+import { VideoSelector } from '@web_editor/components/media_dialog/video_selector';
 import {
     changeOption,
     insertSnippet,
@@ -27,29 +29,11 @@ registerWebsitePreviewTour('test_replace_media', {
             patch(VideoSelector.prototype, {
                 async _getVideoURLData(src, options) {
                     if (src === VIDEO_URL || src === 'about:blank') {
-                        let resultUrl = 'about:blank'
-                        // Only autoplay handled here for simplicity
-                        if(options.autoplay) {
-                            resultUrl += "?autoplay=1"
-                        }
-                        return {platform: 'youtube', embed_url: resultUrl};
-                    }
-                    if (src === 'about:blank?autoplay=1') {
-                        return {platform: 'youtube', embed_url: src};
+                        return {platform: 'youtube', embed_url: 'about:blank'};
                     }
                     return super._getVideoURLData(...arguments);
                 },
             });
-            // Prevents the VideoSelector from adding 'https:' before
-            // 'about:blank', which makes the URL invalid for URL.canParse
-            patch(VideoSelector.prototype, {
-                async syncOptionsWithUrl() {
-                    if(this.state.urlInput.startsWith("https:about:blank")) {
-                        this.state.urlInput = this.state.urlInput.substring(6);
-                    }
-                    super.syncOptionsWithUrl();
-                }
-            })
         },
     },
     ...insertSnippet({
@@ -64,35 +48,31 @@ registerWebsitePreviewTour('test_replace_media', {
     },
     {
         content: "ensure image size is displayed",
-        trigger: ".o_customize_tab [data-container-title='Image'] .options-container-header:contains('kb')",
+        trigger: "#oe_snippets we-title:contains('Image') .o_we_image_weight:contains('kb')",
     },
-    changeOption("Image", "[data-label='Shape'] .dropdown-toggle"),
+    changeOption("ImageTools", 'we-select[data-name="shape_img_opt"] we-toggler'),
+    changeOption("ImageTools", "we-button[data-set-img-shape]"),
     {
-        content: "Click on the first image shape",
-        trigger: "button[data-action-id='setImageShape']",
-        run: "click",
-    },
-    {
-        content: "Open MediaDialog from an image",
-        trigger: "button[data-action-id='replaceMedia']",
+        content: "replace image",
+        trigger: "#oe_snippets we-button[data-replace-media]",
         run: "click",
     },
     {
         content: "select svg",
-        trigger: ".o_select_media_dialog .o_button_area[aria-label='sample.svg']",
+        trigger: ".o_select_media_dialog img[title='sample.svg']",
         run: "click",
     },
     {
-        content: "ensure the svg does have a shape",
-        trigger: ":iframe .s_picture figure img[data-shape]",
+        content: "ensure the svg doesn't have a shape",
+        trigger: ":iframe .s_picture figure img:not([data-shape])",
     },
     {
-        content: "ensure image size is displayed",
-        trigger: ".o_customize_tab [data-container-title='Image'] span[title='Size']",
+        content: "ensure image size is not displayed",
+        trigger: "#oe_snippets we-title:contains('Image'):not(:has(.o_we_image_weight:visible))",
     },
     {
         content: "replace image",
-        trigger: "button[data-action-id='replaceMedia']",
+        trigger: "#oe_snippets we-button[data-replace-media]",
         run: "click",
     },
     {
@@ -102,12 +82,12 @@ registerWebsitePreviewTour('test_replace_media', {
     },
     {
         content: "select an icon",
-        trigger: ".o_select_media_dialog:has(.nav-link.active:contains('Icons')) .tab-content span.fa-heart",
+        trigger: ".o_select_media_dialog:has(.nav-link.active:contains('Icons')) .tab-content span.fa-lemon-o",
         run: "click",
     },
     {
         content: "ensure icon block is displayed",
-        trigger: ".o_customize_tab [data-container-title='Icon']",
+        trigger: "#oe_snippets we-customizeblock-options we-title:contains('Icon')",
     },
     {
         content: "select footer",
@@ -116,16 +96,16 @@ registerWebsitePreviewTour('test_replace_media', {
     },
     {
         content: "select icon",
-        trigger: ":iframe .s_picture figure span.fa-heart",
+        trigger: ":iframe .s_picture figure span.fa-lemon-o",
         run: "click",
     },
     {
         content: "ensure icon block is still displayed",
-        trigger: ".o_customize_tab [data-container-title='Icon']",
+        trigger: "#oe_snippets we-customizeblock-options we-title:contains('Icon')",
     },
     {
         content: "replace icon",
-        trigger: "button[data-action-id='replaceMedia']",
+        trigger: "#oe_snippets we-button[data-replace-media]",
         run: "click",
     },
     {
@@ -145,33 +125,18 @@ registerWebsitePreviewTour('test_replace_media', {
         trigger: ".o_select_media_dialog div.media_iframe_video [src='about:blank']:iframe body",
     },
     {
-        content: "enable auto-play",
-        trigger: ".o_video_dialog_options label.o_switch",
-        run: "click",
-    },
-    {
         content: "confirm selection",
         trigger: ".o_select_media_dialog .modal-footer .btn-primary",
         run: "click",
     },
     {
         content: "ensure video option block is displayed",
-        trigger: ".o_customize_tab [data-container-title='Video']",
+        trigger: "#oe_snippets we-customizeblock-options we-title:contains('Video')",
     },
     {
         content: "replace image",
-        trigger: ".btn-success[data-action-id='replaceMedia']",
+        trigger: "#oe_snippets we-button[data-replace-media]",
         run: "click",
-    },
-    {
-        content: "check that autoplay is still enabled",
-        trigger: ".o_video_dialog_options label.o_switch",
-        run: () => {
-            const input = document.querySelector(".o_video_dialog_options label.o_switch input");
-            if(!input.value) {
-                throw new Error("Autoplay should be enabled");
-            }
-        },
     },
     {
         content: "go to pictogram tab",
@@ -180,12 +145,12 @@ registerWebsitePreviewTour('test_replace_media', {
     },
     {
         content: "select an icon",
-        trigger: ".o_select_media_dialog:has(.nav-link.active:contains('Icons')) .tab-content span.fa-heart",
+        trigger: ".o_select_media_dialog:has(.nav-link.active:contains('Icons')) .tab-content span.fa-lemon-o",
         run: "click",
     },
     {
         content: "ensure icon block is displayed",
-        trigger: ".o_customize_tab [data-container-title='Icon']",
+        trigger: "#oe_snippets we-customizeblock-options we-title:contains('Icon')",
     },
     {
         content: "select footer",
@@ -194,11 +159,11 @@ registerWebsitePreviewTour('test_replace_media', {
     },
     {
         content: "select icon",
-        trigger: ":iframe .s_picture figure span.fa-heart",
+        trigger: ":iframe .s_picture figure span.fa-lemon-o",
         run: "click",
     },
     {
         content: "ensure icon block is still displayed",
-        trigger: ".o_customize_tab [data-container-title='Icon']",
+        trigger: "#oe_snippets we-customizeblock-options we-title:contains('Icon')",
     },
 ]);

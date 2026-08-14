@@ -3,17 +3,17 @@
 # * microsoft_outlook
 #
 # Translators:
-# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
-# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
-# "Anastasiia Koroleva (koan)" <koan@odoo.com>, 2026.
+# Wil Odoo, 2024
+#
+# "Anastasiia Koroleva (koan)" <koan@odoo.com>, 2025.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 17.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-25 18:36+0000\n"
-"PO-Revision-Date: 2026-08-05 20:04+0000\n"
-"Last-Translator: \"Dylan Kiss (dyki)\" <dyki@odoo.com>\n"
-"Language-Team: Russian <https://translate.odoo.com/projects/odoo-19/"
+"POT-Creation-Date: 2025-12-29 18:37+0000\n"
+"PO-Revision-Date: 2025-10-22 07:19+0000\n"
+"Last-Translator: \"Anastasiia Koroleva (koan)\" <koan@odoo.com>\n"
+"Language-Team: Russian <https://translate.odoo.com/projects/odoo-18/"
 "microsoft_outlook/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
 "(n%100>=11 && n%100<=14)? 2 : 3);\n"
-"X-Generator: Weblate 2026.6.1\n"
+"X-Generator: Weblate 5.12.2\n"
 
 #. module: microsoft_outlook
 #: model_terms:ir.ui.view,arch_db:microsoft_outlook.fetchmail_server_view_form
@@ -67,13 +67,6 @@ msgstr ""
 "                    </span>"
 
 #. module: microsoft_outlook
-#: model:ir.model.fields,field_description:microsoft_outlook.field_fetchmail_server__active
-#: model:ir.model.fields,field_description:microsoft_outlook.field_ir_mail_server__active
-#: model:ir.model.fields,field_description:microsoft_outlook.field_microsoft_outlook_mixin__active
-msgid "Active"
-msgstr "Активный"
-
-#. module: microsoft_outlook
 #. odoo-python
 #: code:addons/microsoft_outlook/models/microsoft_outlook_mixin.py:0
 msgid "An error occurred when fetching the access token. %s"
@@ -105,8 +98,8 @@ msgid ""
 "this server. To extend its use, you should set a \"mail.default.from\" "
 "system parameter."
 msgstr ""
-"Подключите учетную запись Outlook с помощью процесса аутентификации OAuth.  "
-"\n"
+"Подключите учетную запись Outlook с помощью процесса аутентификации "
+"OAuth.  \n"
 "По умолчанию только пользователь с соответствующим адресом электронной почты "
 "сможет использовать этот сервер. Чтобы расширить его использование, "
 "необходимо установить системный параметр \"mail.default.from\"."
@@ -123,25 +116,11 @@ msgstr ""
 "разрешения."
 
 #. module: microsoft_outlook
-#: model:ir.model.fields,field_description:microsoft_outlook.field_fetchmail_server__display_name
-#: model:ir.model.fields,field_description:microsoft_outlook.field_ir_mail_server__display_name
-#: model:ir.model.fields,field_description:microsoft_outlook.field_microsoft_outlook_mixin__display_name
-#: model:ir.model.fields,field_description:microsoft_outlook.field_res_config_settings__display_name
-#: model:ir.model.fields,field_description:microsoft_outlook.field_res_users__display_name
-msgid "Display Name"
-msgstr "Display Name"
-
-#. module: microsoft_outlook
 #: model_terms:ir.ui.view,arch_db:microsoft_outlook.microsoft_outlook_oauth_error
-msgid "Go back"
-msgstr "Назад"
+msgid "Go back to your mail server"
+msgstr "Вернитесь на свой почтовый сервер"
 
 #. module: microsoft_outlook
-#: model:ir.model.fields,field_description:microsoft_outlook.field_fetchmail_server__id
-#: model:ir.model.fields,field_description:microsoft_outlook.field_ir_mail_server__id
-#: model:ir.model.fields,field_description:microsoft_outlook.field_microsoft_outlook_mixin__id
-#: model:ir.model.fields,field_description:microsoft_outlook.field_res_config_settings__id
-#: model:ir.model.fields,field_description:microsoft_outlook.field_res_users__id
 #: model_terms:ir.ui.view,arch_db:microsoft_outlook.res_config_settings_view_form
 msgid "ID"
 msgstr "ID"
@@ -167,6 +146,13 @@ msgstr ""
 "Установите значение «TLS (STARTTLS)»."
 
 #. module: microsoft_outlook
+#: model:ir.model.fields,field_description:microsoft_outlook.field_fetchmail_server__is_microsoft_outlook_configured
+#: model:ir.model.fields,field_description:microsoft_outlook.field_ir_mail_server__is_microsoft_outlook_configured
+#: model:ir.model.fields,field_description:microsoft_outlook.field_microsoft_outlook_mixin__is_microsoft_outlook_configured
+msgid "Is Outlook Credential Configured"
+msgstr "Настроена ли учетная запись Outlook"
+
+#. module: microsoft_outlook
 #: model:ir.model,name:microsoft_outlook.model_ir_mail_server
 msgid "Mail Server"
 msgstr "Почтовый Сервер"
@@ -181,32 +167,6 @@ msgstr "Миксин Microsoft Outlook"
 #: code:addons/microsoft_outlook/models/microsoft_outlook_mixin.py:0
 msgid "Only the administrator can link an Outlook mail server."
 msgstr "Только администратор может связать почтовый сервер Outlook."
-
-#. module: microsoft_outlook
-#. odoo-python
-#: code:addons/microsoft_outlook/models/microsoft_outlook_mixin.py:0
-msgid "Oops, we could not authenticate you. Please try again later."
-msgstr "Упс, не удалось пройти аутентификацию. Пожалуйста, попробуйте позже."
-
-#. module: microsoft_outlook
-#. odoo-python
-#: code:addons/microsoft_outlook/controllers/main.py:0
-msgid ""
-"Oops, you're creating an authorization to send from %(email_login)s but your "
-"address is %(email_server)s. Make sure your addresses match!"
-msgstr ""
-"Упс, вы авторизуете отправку с адреса %(email_login)s, но ваш текущий адрес "
-"– %(email_server)s. Убедитесь, что адреса совпадают!"
-
-#. module: microsoft_outlook
-#: model:ir.model.fields,field_description:microsoft_outlook.field_res_users__outgoing_mail_server_type
-msgid "Outgoing Mail Server Type"
-msgstr "Тип сервера исходящей почты"
-
-#. module: microsoft_outlook
-#: model:ir.model.fields.selection,name:microsoft_outlook.selection__res_users__outgoing_mail_server_type__outlook
-msgid "Outlook"
-msgstr "Outlook"
 
 #. module: microsoft_outlook
 #: model:ir.model.fields,field_description:microsoft_outlook.field_fetchmail_server__microsoft_outlook_access_token
@@ -259,12 +219,6 @@ msgstr "Перед использованием подключитесь к уч
 
 #. module: microsoft_outlook
 #. odoo-python
-#: code:addons/microsoft_outlook/models/microsoft_outlook_mixin.py:0
-msgid "Please enter a valid email address."
-msgstr "Пожалуйста, введите корректный адрес электронной почты."
-
-#. module: microsoft_outlook
-#. odoo-python
 #: code:addons/microsoft_outlook/models/ir_mail_server.py:0
 msgid ""
 "Please fill the \"Username\" field with your Outlook/Office365 username "
@@ -312,6 +266,16 @@ msgid "Server Type"
 msgstr "Тип сервера"
 
 #. module: microsoft_outlook
+#: model_terms:ir.ui.view,arch_db:microsoft_outlook.fetchmail_server_view_form
+#: model_terms:ir.ui.view,arch_db:microsoft_outlook.ir_mail_server_view_form
+msgid ""
+"Setup your Outlook API credentials in the general settings to link a Outlook "
+"account."
+msgstr ""
+"Установите учетные данные Outlook API в общих настройках, чтобы связать "
+"учетную запись Outlook."
+
+#. module: microsoft_outlook
 #: model:ir.model.fields,help:microsoft_outlook.field_fetchmail_server__microsoft_outlook_uri
 #: model:ir.model.fields,help:microsoft_outlook.field_ir_mail_server__microsoft_outlook_uri
 #: model:ir.model.fields,help:microsoft_outlook.field_microsoft_outlook_mixin__microsoft_outlook_uri
@@ -323,38 +287,3 @@ msgstr "URL-адрес для генерации кода авторизации
 #: code:addons/microsoft_outlook/models/microsoft_outlook_mixin.py:0
 msgid "Unknown error."
 msgstr "Неизвестная ошибка."
-
-#. module: microsoft_outlook
-#: model:ir.model,name:microsoft_outlook.model_res_users
-msgid "User"
-msgstr "Пользователь"
-
-#~ msgid "Go back to your mail server"
-#~ msgstr "Вернитесь на свой почтовый сервер"
-
-#~ msgid ""
-#~ "Incorrect Connection Security for Outlook mail server %r. Please set it "
-#~ "to \"TLS (STARTTLS)\"."
-#~ msgstr ""
-#~ "Неверная защита соединения для почтового сервера Outlook %r. Пожалуйста, "
-#~ "установите значение \"TLS (STARTTLS)\"."
-
-#~ msgid "Is Outlook Credential Configured"
-#~ msgstr "Настроена ли учетная запись Outlook"
-
-#~ msgid ""
-#~ "Please leave the password field empty for Outlook mail server %r. The "
-#~ "OAuth process does not require it"
-#~ msgstr ""
-#~ "Пожалуйста, оставьте поле пароля пустым для почтового сервера Outlook %r. "
-#~ "Процесс OAuth не требует этого"
-
-#~ msgid "SSL is required for the server %r."
-#~ msgstr "Для сервера требуется SSL %r."
-
-#~ msgid ""
-#~ "Setup your Outlook API credentials in the general settings to link a "
-#~ "Outlook account."
-#~ msgstr ""
-#~ "Установите учетные данные Outlook API в общих настройках, чтобы связать "
-#~ "учетную запись Outlook."

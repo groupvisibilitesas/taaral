@@ -16,7 +16,6 @@ class ResCompany(models.Model):
         ('sales', "Registered in the sales tax"),
         ('special', "Registered in the special sales tax"),
     ], default='sales')
-    l10n_jo_edi_demo_mode = fields.Boolean(string="JoFotara Demo Mode")
 
     def _l10n_jo_validate_config(self):
         self.ensure_one()
@@ -41,9 +40,6 @@ class ResCompany(models.Model):
         }
 
     def _send_l10n_jo_edi_request(self, params, headers):
-        if self.l10n_jo_edi_demo_mode:
-            return {'EINV_QR': "Demo JoFotara QR"}  # mocked response
-
         try:
             response = requests.post(JOFOTARA_URL, json=params, headers=headers, timeout=50)
         except requests.exceptions.Timeout:

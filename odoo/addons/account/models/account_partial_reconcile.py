@@ -3,12 +3,11 @@ from odoo import api, fields, models, _, Command
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import frozendict
 
-from collections import defaultdict
 from datetime import timedelta
-import json
+
 
 class AccountPartialReconcile(models.Model):
-    _name = 'account.partial.reconcile'
+    _name = "account.partial.reconcile"
     _description = "Partial Reconcile"
 
     # ==== Reconciliation fields ====
@@ -22,10 +21,6 @@ class AccountPartialReconcile(models.Model):
         comodel_name='account.full.reconcile',
         string="Full Reconcile", copy=False, index='btree_not_null')
     exchange_move_id = fields.Many2one(comodel_name='account.move', index='btree_not_null')
-
-    # this field will be used upon the posting of the invoice, to know if we can keep the partial or if the
-    # user has to re-do entirely the reconciliaion (in  case fundamental values changed for the cash basis)
-    draft_caba_move_vals = fields.Json(string="Values that created the draft cash-basis entry")
 
     # ==== Currency fields ====
     company_currency_id = fields.Many2one(
@@ -113,16 +108,15 @@ class AccountPartialReconcile(models.Model):
 
         # Get the payments without journal entry to reset once the amount residual is reset
         to_update_payments = self._get_to_update_payments(from_state='paid')
+
+        # Retrieve the matching number to unlink.
+        full_to_unlink = self.full_reconcile_id
+        all_reconciled = self.debit_move_id + self.credit_move_id
+
         # Retrieve the CABA entries to reverse.
         moves_to_reverse = self.env['account.move'].search([('tax_cash_basis_rec_id', 'in', self.ids)])
         # Same for the exchange difference entries.
         moves_to_reverse += self.exchange_move_id
-
-        # Retrieve the matching number to unlink
-        full_to_unlink = self.full_reconcile_id
-
-        # if the move is draft and can be removed, there is no need to update the matching number
-        all_reconciled = self.debit_move_id + self.credit_move_id
 
         # Unlink partials before doing anything else to avoid 'Record has already been deleted' due to the recursion.
         res = super().unlink()
@@ -130,18 +124,14 @@ class AccountPartialReconcile(models.Model):
         # Remove the matching numbers before reversing the moves to avoid trying to remove the full twice.
         full_to_unlink.unlink()
 
-        # Reverse or unlink CABA/exchange move entries.
+        # Reverse CABA entries.
         if moves_to_reverse:
-            not_draft_moves = moves_to_reverse.filtered(lambda m: m.state != 'draft')
-            draft_moves = moves_to_reverse - not_draft_moves
             default_values_list = [{
                 'date': move._get_accounting_date(move.date, move._affect_tax_report()),
                 'ref': move.env._('Reversal of: %s', move.name),
-            } for move in not_draft_moves]
-            not_draft_moves._reverse_moves(default_values_list, cancel=True)
-            draft_moves.unlink()
+            } for move in moves_to_reverse]
+            moves_to_reverse._reverse_moves(default_values_list, cancel=True)
 
-        all_reconciled = all_reconciled.exists()
         self._update_matching_number(all_reconciled)
         to_update_payments.state = 'in_process'
         return res
@@ -155,8 +145,6 @@ class AccountPartialReconcile(models.Model):
 
     def _get_to_update_payments(self, from_state):
         to_update = []
-        group_payments = defaultdict(float)
-        moves_in_group_payment = list()
         for partial in self:
             matched_payments = (partial.credit_move_id | partial.debit_move_id).move_id.matched_payment_ids
             to_check_payments = matched_payments.filtered(lambda payment: not payment.outstanding_account_id and payment.state == from_state)
@@ -168,19 +156,6 @@ class AccountPartialReconcile(models.Model):
                 if not payment.currency_id.compare_amounts(payment.amount_signed, amount):
                     to_update.append(payment)
                     break
-            # Group payments are not handled because the partial amount never matches the payment amount. It matches the invoice amount instead.
-            # If the partial amount matches the amount of an invoice linked to a group payment, the payment is set aside to potentially be set
-            # as "to update" when the total amount of the group payment will be covered.
-            if len(to_check_payments) == 1 and to_check_payments not in to_update and len(to_check_payments.invoice_ids) > 1 and (
-                moves := to_check_payments.invoice_ids.filtered(
-                    lambda m: m not in moves_in_group_payment and not to_check_payments.currency_id.compare_amounts(m.amount_total_signed, amount)
-                )
-            ):
-                moves_in_group_payment.append(moves[0])
-                group_payments[to_check_payments] += amount
-
-                if not to_check_payments.currency_id.compare_amounts(to_check_payments.amount_signed, group_payments[to_check_payments]):
-                    to_update.append(to_check_payments)
         return self.env['account.payment'].union(*to_update)
 
     @api.model
@@ -322,8 +297,8 @@ class AccountPartialReconcile(models.Model):
                 if source_line.currency_id != counterpart_line.currency_id:
                     # When the invoice and the payment are not sharing the same foreign currency, the rate is computed
                     # on-the-fly using the payment date.
-                    if 'forced_rate_from_register_payment' in self.env.context:
-                        payment_rate = self.env.context['forced_rate_from_register_payment']
+                    if 'forced_rate_from_register_payment' in self._context:
+                        payment_rate = self._context['forced_rate_from_register_payment']
                     else:
                         payment_rate = self.env['res.currency']._get_conversion_rate(
                             counterpart_line.company_currency_id,
@@ -342,7 +317,6 @@ class AccountPartialReconcile(models.Model):
                     'partial': partial,
                     'percentage': percentage,
                     'payment_rate': payment_rate,
-                    'both_move_posted': partial.debit_move_id.move_id.state == 'posted' and partial.credit_move_id.move_id.state == 'posted',
                     'settlement_date': settlement_date,
                     'counterpart_move': counterpart_move,
                 }
@@ -436,6 +410,7 @@ class AccountPartialReconcile(models.Model):
             'partner_id': tax_line.partner_id.id,
             'analytic_distribution': tax_line.analytic_distribution,
             'display_type': tax_line.display_type,
+            # No need to set tax_tag_invert as on the base line; it will be computed from the repartition line
         }
 
     @api.model
@@ -530,13 +505,11 @@ class AccountPartialReconcile(models.Model):
         '''
         tax_cash_basis_values_per_move = self._collect_tax_cash_basis_values()
 
-        moves_to_create_and_post = []
-        moves_to_create_in_draft = []
+        moves_to_create = []
         to_reconcile_after = []
         for move_values in tax_cash_basis_values_per_move.values():
             move = move_values['move']
             pending_cash_basis_lines = []
-            amount_residual_per_tax_line = {line.id: line.amount_residual_currency for line_type, line in move_values['to_process_lines'] if line_type == 'tax'}
 
             for partial_values in move_values['partials']:
                 partial = partial_values['partial']
@@ -562,6 +535,7 @@ class AccountPartialReconcile(models.Model):
                 partial_lines_to_create = {}
 
                 for caba_treatment, line in move_values['to_process_lines']:
+
                     # ==========================================================================
                     # Compute the balance of the current line on the cash basis entry.
                     # This balance is a percentage representing the part of the journal entry
@@ -570,19 +544,6 @@ class AccountPartialReconcile(models.Model):
 
                     # Percentage expressed in the foreign currency.
                     amount_currency = line.currency_id.round(line.amount_currency * partial_values['percentage'])
-                    if (
-                        caba_treatment == 'tax'
-                        and (
-                            move_values['is_fully_paid']
-                            or line.currency_id.compare_amounts(abs(line.amount_residual_currency), abs(amount_currency)) < 0
-                        )
-                        and partial_values == move_values['partials'][-1]
-                    ):
-                        # If the move is supposed to be fully paid, and we're on the last partial for it,
-                        # put the remaining amount to avoid rounding issues
-                        amount_currency = amount_residual_per_tax_line[line.id]
-                    if caba_treatment == 'tax':
-                        amount_residual_per_tax_line[line.id] -= amount_currency
                     balance = partial_values['payment_rate'] and amount_currency / partial_values['payment_rate'] or 0.0
 
                     # ==========================================================================
@@ -657,7 +618,7 @@ class AccountPartialReconcile(models.Model):
                         counterpart_line_vals['sequence'] = sequence + 1
 
                         if tax_line.account_id.reconcile:
-                            move_index = len(moves_to_create_and_post) + len(moves_to_create_in_draft)
+                            move_index = len(moves_to_create)
                             to_reconcile_after.append((tax_line, move_index, counterpart_line_vals['sequence']))
 
                     else:
@@ -670,17 +631,16 @@ class AccountPartialReconcile(models.Model):
 
                     move_vals['line_ids'] += [(0, 0, counterpart_line_vals), (0, 0, line_vals)]
 
-                if partial_values['both_move_posted']:
-                    moves_to_create_and_post.append(move_vals)
-                else:
-                    moves_to_create_in_draft.append(move_vals)
+                moves_to_create.append(move_vals)
 
-        moves = self.env['account.move'].with_context(
-            skip_invoice_sync=True,
-            skip_invoice_line_sync=True,
-            skip_account_move_synchronization=True,
-        ).create(moves_to_create_and_post + moves_to_create_in_draft)
-        moves[:len(moves_to_create_and_post)]._post(soft=False)
+        moves = self.env['account.move']\
+            .with_context(
+                skip_invoice_sync=True,
+                skip_invoice_line_sync=True,
+                skip_account_move_synchronization=True,
+            )\
+            .create(moves_to_create)
+        moves._post(soft=False)
 
         # Reconcile the tax lines being on a reconcile tax basis transfer account.
         reconciliation_plan = []
@@ -700,26 +660,6 @@ class AccountPartialReconcile(models.Model):
 
             reconciliation_plan.append((counterpart_line + lines))
 
-        # passing add_caba_vals in the context to make sure that any exchange diff that would be created for
-        # this cash basis move would set the field draft_caba_move_vals accordingly on the partial
-        self.env['account.move.line'].with_context(add_caba_vals=True)._reconcile_plan(reconciliation_plan)
+        self.env['account.move.line']._reconcile_plan(reconciliation_plan)
+
         return moves
-
-    def _get_draft_caba_move_vals(self):
-        self.ensure_one()
-        debit_vals = self.debit_move_id.move_id._collect_tax_cash_basis_values() or {}
-        credit_vals = self.credit_move_id.move_id._collect_tax_cash_basis_values() or {}
-        if not debit_vals and not credit_vals:
-            return False
-        return json.dumps({
-            'debit_caba_lines': [(aml_type, aml.id) for aml_type, aml in debit_vals.get('to_process_lines', [])],
-            'debit_total_balance': debit_vals.get('total_balance'),
-            'debit_total_amount_currency': debit_vals.get('total_amount_currency'),
-            'credit_caba_lines': [(aml_type, aml.id) for aml_type, aml in credit_vals.get('to_process_lines', [])],
-            'credit_total_balance': credit_vals.get('total_balance'),
-            'credit_total_amount_currency': credit_vals.get('total_amount_currency'),
-        })
-
-    def _set_draft_caba_move_vals(self):
-        for partial in self:
-            partial.draft_caba_move_vals = partial._get_draft_caba_move_vals()

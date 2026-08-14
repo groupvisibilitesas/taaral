@@ -1,16 +1,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import datetime
+from freezegun import freeze_time
 
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo import fields
 from odoo.fields import Command
-from odoo.tests import Form, freeze_time, tagged
-
-from odoo.addons.sale.tests.common import TestSaleCommon
+from odoo.tests import Form, tagged
 
 
 @tagged('post_install', '-at_install')
-class TestStockMoveInvoice(TestSaleCommon):
+class StockMoveInvoice(AccountTestInvoicingCommon):
 
     @classmethod
     def setUpClass(cls):
@@ -52,6 +52,7 @@ class TestStockMoveInvoice(TestSaleCommon):
                 'name': 'Cable Management Box',
                 'product_id': self.product_cable_management_box.id,
                 'product_uom_qty': 2,
+                'product_uom': self.product_uom_unit.id,
                 'price_unit': 750.00,
             })],
         })
@@ -118,6 +119,7 @@ class TestStockMoveInvoice(TestSaleCommon):
                 'name': 'Cable Management Box',
                 'product_id': self.product_cable_management_box.id,
                 'product_uom_qty': 2,
+                'product_uom': self.product_uom_unit.id,
                 'price_unit': 750.00,
             })],
         })
@@ -196,6 +198,7 @@ class TestStockMoveInvoice(TestSaleCommon):
                 "name": "Cable Management Box",
                 "product_id": self.product_cable_management_box.id,
                 "product_uom_qty": 2,
+                "product_uom": self.product_uom_unit.id,
                 "price_unit": 750.00,
             })],
         })
@@ -217,6 +220,7 @@ class TestStockMoveInvoice(TestSaleCommon):
                 "name": "Another product to deliver",
                 "product_id": self.product_11.id,
                 "product_uom_qty": 2,
+                "product_uom": self.product_uom_unit.id,
                 "price_unit": 750.00,
             })],
         })
@@ -247,6 +251,7 @@ class TestStockMoveInvoice(TestSaleCommon):
                 "name": "Cable Management Box",
                 "product_id": self.product_cable_management_box.id,
                 "product_uom_qty": 1,
+                "product_uom": self.product_uom_unit.id,
                 "price_unit": 750.00,
             })],
         })
@@ -271,12 +276,14 @@ class TestStockMoveInvoice(TestSaleCommon):
             'location_dest_id': wh.lot_stock_id.id,
             'move_ids': [
                 Command.create({
+                    'name': self.product_a.name,
                     'product_id': self.product_a.id,
                     'product_uom_qty': 1,
                     'location_id': self.ref('stock.stock_location_customers'),
                     'location_dest_id': wh.lot_stock_id.id,
                 }),
                 Command.create({
+                    'name': self.product_b.name,
                     'product_id': self.product_b.id,
                     'product_uom_qty': 1,
                     'location_id': self.ref('stock.stock_location_customers'),
@@ -288,7 +295,7 @@ class TestStockMoveInvoice(TestSaleCommon):
         today, yesterday = fields.Datetime.now(), fields.Datetime.now() - datetime.timedelta(days=1)
         self.assertEqual(receipt.scheduled_date, today)
         with Form(receipt) as picking_form:
-            with picking_form.move_ids.edit(0) as move:
+            with picking_form.move_ids_without_package.edit(0) as move:
                 move.date = yesterday
         self.assertEqual(receipt.scheduled_date, yesterday)
         self.assertRecordValues(receipt.move_ids, [
@@ -320,9 +327,9 @@ class TestStockMoveInvoice(TestSaleCommon):
                     'name': product.name,
                     'product_id': product.id,
                     'product_uom_qty': 180,
-                    'product_uom_id': product.uom_id.id,
+                    'product_uom': product.uom_id.id,
                     'price_unit': 1.49,
-                    'tax_ids': [Command.set(tax.ids)],
+                    'tax_id': [Command.set(tax.ids)],
                 })],
         })
 

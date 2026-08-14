@@ -11,7 +11,7 @@ import { useService, useOwnedDialogs } from "@web/core/utils/hooks";
 import { PropertyDefinitionSelection } from "./property_definition_selection";
 import { PropertyTags } from "./property_tags";
 import { SelectCreateDialog } from "@web/views/view_dialogs/select_create_dialog";
-import { uuid } from "@web/core/utils/strings";
+import { uuid } from "../../utils";
 
 import { Component, useState, onWillUpdateProps, useEffect, useRef } from "@odoo/owl";
 
@@ -29,9 +29,9 @@ export class PropertyDefinition extends Component {
         PropertyTags,
     };
     static props = {
-        fieldName: { type: String },
         readonly: { type: Boolean, optional: true },
         canChangeDefinition: { type: Boolean, optional: true },
+        checkDefinitionWriteAccess: { type: Function, optional: true },
         propertyDefinition: { optional: true },
         context: { type: Object },
         isNewlyCreated: { type: Boolean, optional: true },
@@ -44,15 +44,7 @@ export class PropertyDefinition extends Component {
         onPropertyMove: { type: Function, optional: true },
         // prop needed by the popover service
         close: { type: Function, optional: true },
-        record: { type: Object, optional: true },
     };
-    static _propertyParametersMap = new Map([
-        ["comodel", ["many2one", "many2many"]],
-        ["currency_field", ["monetary"]],
-        ["domain", ["many2one", "many2many"]],
-        ["selection", ["selection"]],
-        ["tags", ["tags"]],
-    ]);
 
     setup() {
         this.orm = useService("orm");
@@ -117,12 +109,9 @@ export class PropertyDefinition extends Component {
     get availablePropertyTypes() {
         return [
             ["char", _t("Text")],
-            ["text", _t("Multiline Text")],
-            ["html", _t("HTML")],
             ["boolean", _t("Checkbox")],
             ["integer", _t("Integer")],
             ["float", _t("Decimal")],
-            ["monetary", _t("Monetary")],
             ["date", _t("Date")],
             ["datetime", _t("Date & Time")],
             ["selection", _t("Selection")],
@@ -131,17 +120,6 @@ export class PropertyDefinition extends Component {
             ["many2many", _t("Many2many")],
             ["separator", _t("Separator")],
         ];
-    }
-
-    get currencyFields() {
-        return Object
-            .values(this.props.record.fields)
-            .filter((fieldDef) => fieldDef.type === "many2one" && fieldDef.relation === "res.currency");
-    }
-
-    get defaultCurrencyField() {
-        const currencyFields = this.currencyFields.map((fieldDef) => fieldDef.name);
-        return currencyFields.includes("currency_id") ? "currency_id" : currencyFields[0] || false;
     }
 
     /**
@@ -232,7 +210,7 @@ export class PropertyDefinition extends Component {
             ...this.state.propertyDefinition,
             type: newType,
         };
-        if (["integer", "float", "monetary"].includes(newType)) {
+        if (["integer", "float"].includes(newType)) {
             propertyDefinition.value = 0;
             propertyDefinition.default = 0;
         } else {
@@ -240,26 +218,12 @@ export class PropertyDefinition extends Component {
             propertyDefinition.default = false;
         }
 
-        if (newType === "monetary") {
-            propertyDefinition.currency_field = this.defaultCurrencyField;
-        }
-
-        if (newType === "separator") {
-            propertyDefinition.fold_by_default = true;
-        }
-
-        PropertyDefinition._propertyParametersMap.forEach((types, param) => {
-            if (!types.includes(propertyDefinition.type)) {
-                delete propertyDefinition[param];
-            }
-        });
+        delete propertyDefinition.comodel;
 
         this.props.onChange(propertyDefinition);
         this.state.propertyDefinition = propertyDefinition;
-        if (!propertyDefinition.comodel) {
-            this.state.resModel = "";
-            this.state.resModelDescription = "";
-        }
+        this.state.resModel = "";
+        this.state.resModelDescription = "";
         this.state.typeLabel = this._typeLabel(newType);
     }
 
@@ -348,18 +312,6 @@ export class PropertyDefinition extends Component {
     }
 
     /**
-     * @param {Event & { target: HTMLInputElement }} ev
-     */
-    onSuffixChange(ev) {
-        const propertyDefinition = {
-            ...this.state.propertyDefinition,
-            suffix: ev.target.value,
-        };
-        this.props.onChange(propertyDefinition);
-        this.state.propertyDefinition = propertyDefinition;
-    }
-
-    /**
      * We renamed / created / removed tags.
      *
      * @param {array} newTags
@@ -382,28 +334,6 @@ export class PropertyDefinition extends Component {
         const propertyDefinition = {
             ...this.state.propertyDefinition,
             view_in_cards: newValue,
-        };
-        this.props.onChange(propertyDefinition);
-        this.state.propertyDefinition = propertyDefinition;
-    }
-
-    /**
-     * Ensure the section below the separator is folded/unfolded by default
-     * @param {boolean} checked
-     */
-    onFoldByDefaultChange(checked) {
-        const propertyDefinition = {
-            ...this.state.propertyDefinition,
-            fold_by_default: checked,
-        };
-        this.props.onChange(propertyDefinition);
-        this.state.propertyDefinition = propertyDefinition;
-    }
-
-    onCurrencyFieldUpdate(path) {
-        const propertyDefinition = {
-            ...this.state.propertyDefinition,
-            currency_field: path,
         };
         this.props.onChange(propertyDefinition);
         this.state.propertyDefinition = propertyDefinition;
@@ -455,19 +385,20 @@ export class PropertyDefinition extends Component {
      * Update the number of records that match the current domain.
      */
     async _updateMatchingRecordsCount() {
+        let matchingRecordsCount;
         if (this.state.resModel && this.state.resModel.length) {
             const domainList = new Domain(this.state.propertyDefinition.domain || "[]").toList();
-
-            const result = await this.orm.call(
-                this.state.propertyDefinition.comodel,
-                "search_count",
-                [domainList]
-            );
-
-            this.state.matchingRecordsCount = result;
-        } else {
-            this.state.matchingRecordsCount = undefined;
+            try {
+                matchingRecordsCount = await this.orm.call(
+                    this.state.propertyDefinition.comodel,
+                    "search_count",
+                    [domainList]
+                );
+            } catch {
+                // An invalid domain shows no record count.
+            }
         }
+        this.state.matchingRecordsCount = matchingRecordsCount;
     }
 
     /**

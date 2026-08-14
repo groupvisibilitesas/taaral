@@ -1,4 +1,5 @@
 import { MAIN_EMBEDDINGS } from "@html_editor/others/embedded_components/embedding_sets";
+import { EmbeddedFilePlugin } from "@html_editor/others/embedded_components/plugins/embedded_file_plugin/embedded_file_plugin";
 import { EMBEDDED_COMPONENT_PLUGINS, MAIN_PLUGINS } from "@html_editor/plugin_sets";
 import { isZwnbsp } from "@html_editor/utils/dom_info";
 import { describe, expect, test } from "@odoo/hoot";
@@ -12,13 +13,11 @@ import {
     waitFor,
 } from "@odoo/hoot-dom";
 import { onRpc, patchWithCleanup } from "@web/../tests/web_test_helpers";
-import { setupEditor, testEditor } from "./_helpers/editor";
-import { deleteBackward, insertText } from "./_helpers/user_actions";
+import { setupEditor } from "./_helpers/editor";
 import { getContent, setSelection } from "./_helpers/selection";
+import { insertText } from "./_helpers/user_actions";
 import { execCommand } from "./_helpers/userCommands";
-import { expandToolbar } from "./_helpers/toolbar";
 import { nodeSize } from "@html_editor/utils/position";
-import { EmbeddedFilePlugin } from "@html_editor/others/embedded_components/plugins/embedded_file_plugin/embedded_file_plugin";
 
 const configWithEmbeddedFile = {
     Plugins: [
@@ -331,36 +330,6 @@ describe("file command", () => {
     });
 });
 
-test("Should not apply color to file box", async () => {
-    const { editor } = await setupEditor("<p>a[]b</p>", {
-        config: configWithEmbeddedFile,
-    });
-    const mockedUpload = patchUpload(editor);
-    await insertText(editor, "/file");
-    await animationFrame();
-    await press("Enter");
-    await animationFrame();
-    expect(".o_select_media_dialog").toHaveCount(0);
-    await mockedUpload;
-    await press(["Ctrl", "a"]);
-    await animationFrame();
-    await expandToolbar();
-    await click(".o-we-toolbar .o-select-color-foreground");
-    await animationFrame();
-    await click('.o_colorpicker_section [data-color="o-color-1"]');
-    await animationFrame();
-    const fileBox = queryOne(".o_file_box");
-    expect(fileBox).not.toHaveClass("text-o-color-1");
-});
-
-test("should remove contenteditable=false on backspace", async () => {
-    await testEditor({
-        contentBefore: `<p>a<span contenteditable="false">test</span>[]</p>`,
-        stepFunction: deleteBackward,
-        contentAfter: `<p>a[]</p>`,
-    });
-});
-
 describe("document tab in media dialog", () => {
     onRpc("ir.attachment", "search_read", () => [
         {
@@ -392,7 +361,7 @@ describe("document tab in media dialog", () => {
             await animationFrame();
             await click(".nav-link:contains('Documents')");
             await animationFrame();
-            await click(".o_we_attachment_highlight .o_button_area");
+            await click(".o_we_attachment_highlight");
             // wait for the embedded component to be mounted
             await waitFor('[data-embedded="file"] .o_file_name:contains("file.txt")');
             expect('[data-embedded="file"]').toHaveCount(1);
@@ -406,7 +375,7 @@ describe("document tab in media dialog", () => {
             await animationFrame();
             await click(".nav-link:contains('Documents')");
             await animationFrame();
-            await click(".o_we_attachment_highlight .o_button_area");
+            await click(".o_we_attachment_highlight");
             expect(".odoo-editor-editable .o_file_box a:contains('file.txt')").toHaveCount(1);
         });
     });
@@ -472,28 +441,17 @@ describe("zero width no-break space", () => {
 
     test("should not add two contiguous ZWNBSP between two file cards (2)", async () => {
         const { el } = await setupEditor(
-            '<p>abc<span data-embedded="file" class="o_file_box" contenteditable="false"></span>x[]<span data-embedded="file" class="o_file_box" contenteditable="false"></span></p>',
+            '<p>abc<span data-embedded="file" class="o_file_box"></span>x[]<span data-embedded="file" class="o_file_box"></span></p>',
             { config: { ...configWithEmbeddedFile, resources: {} } } // disable embedded component rendering
         );
         expect(getContent(el)).toBe(
-            '<p>abc\ufeff<span data-embedded="file" class="o_file_box" contenteditable="false"></span>\ufeffx[]\ufeff<span data-embedded="file" class="o_file_box" contenteditable="false"></span>\ufeff</p>'
+            '<p>abc\ufeff<span data-embedded="file" class="o_file_box"></span>\ufeffx[]\ufeff<span data-embedded="file" class="o_file_box"></span>\ufeff</p>'
         );
         press("Backspace");
         expect(getContent(el)).toBe(
-            '<p>abc\ufeff<span data-embedded="file" class="o_file_box" contenteditable="false"></span>\ufeff[]<span data-embedded="file" class="o_file_box" contenteditable="false"></span>\ufeff</p>'
+            '<p>abc\ufeff<span data-embedded="file" class="o_file_box"></span>\ufeff[]<span data-embedded="file" class="o_file_box"></span>\ufeff</p>'
         );
     });
-});
-
-test("Should delete the file box", async () => {
-    const { el } = await setupEditor(
-        '<p>[ab<span data-embedded="file" class="o_file_box" contenteditable="false"></span>x<span data-embedded="file" class="o_file_box" contenteditable="false"></span>]</p>',
-        { config: { ...configWithEmbeddedFile, resources: {} } } // disable embedded component rendering
-    );
-    press("Backspace");
-    expect(getContent(el)).toBe(
-        `<p o-we-hint-text='Type "/" for commands' class="o-we-hint">[]<br></p>`
-    );
 });
 
 test("should show the updated file name in the link preview", async () => {
@@ -502,7 +460,6 @@ test("should show the updated file name in the link preview", async () => {
     execCommand(editor, "uploadFile");
     await waitFor('.o_file_box a:contains("file.txt")');
     const fileName = queryOne("a.o_link_readonly");
-    await click(".o_link_readonly");
     fileName.textContent = "Hello";
     setSelection({ anchorNode: fileName, anchorOffset: 0 });
     await waitFor(".o_we_url_link:not(:empty)");

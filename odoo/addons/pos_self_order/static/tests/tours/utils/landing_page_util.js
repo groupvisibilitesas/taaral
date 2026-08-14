@@ -1,9 +1,9 @@
-import { delay } from "@web/core/utils/concurrency";
+import { delay } from "@odoo/hoot-dom";
 
 export function selectLocation(locationName) {
     return {
         content: `Click on location '${locationName}'`,
-        trigger: `.o_self_eating_location_box .preset_btn:contains('${locationName}')`,
+        trigger: `.o_kiosk_eating_location_box h3:contains('${locationName}')`,
         run: "click",
     };
 }
@@ -25,14 +25,14 @@ export function isOpened() {
 export function checkLanguageSelected(language) {
     return {
         content: `Check what the current language is`,
-        trigger: `.o_self_language_selector:contains("${language}")`,
+        trigger: `.self_order_language_selector:contains("${language}")`,
     };
 }
 
 export function checkCountryFlagShown(country_code) {
     return {
         content: `Check what the current flag is`,
-        trigger: `.o_self_language_selector > img[src*=${country_code}]`,
+        trigger: `.self_order_language_selector > img[src*=${country_code}]`,
     };
 }
 
@@ -50,12 +50,5 @@ export function checkCarouselAutoPlaying() {
                 );
             }
         },
-    };
-}
-
-export function checkLocation(locationName) {
-    return {
-        content: `Check on location '${locationName}'`,
-        trigger: `.o_self_eating_location_box .preset_btn:contains('${locationName}')`,
     };
 }

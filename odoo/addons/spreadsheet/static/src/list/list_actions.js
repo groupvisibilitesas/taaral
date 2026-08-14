@@ -1,3 +1,4 @@
+/** @odoo-module */
 // @ts-check
 
 import { astToFormula, helpers } from "@odoo/o-spreadsheet";
@@ -9,11 +10,9 @@ const { isMatrix } = helpers;
 /**
  * @param {import("@odoo/o-spreadsheet").CellPosition} position
  * @param {import("@spreadsheet").SpreadsheetChildEnv} env
- * @param {boolean} newWindow
  * @returns {Promise<void>}
  */
-export const SEE_RECORD_LIST = async (position, env, newWindow) => {
-    position = env.model.getters.getEvaluatedCell(position).origin ?? position;
+export const SEE_RECORD_LIST = async (position, env) => {
     const cell = env.model.getters.getCorrespondingFormulaCell(position);
     const sheetId = position.sheetId;
     if (!cell || !cell.isFormula) {
@@ -51,7 +50,7 @@ export const SEE_RECORD_LIST = async (position, env, newWindow) => {
             views: [[false, "form"]],
             context,
         },
-        { viewType: "form", newWindow }
+        { viewType: "form" }
     );
 };
 
@@ -62,7 +61,6 @@ export const SEE_RECORD_LIST = async (position, env, newWindow) => {
  */
 export const SEE_RECORD_LIST_VISIBLE = (position, getters) => {
     const evaluatedCell = getters.getEvaluatedCell(position);
-    position = evaluatedCell.origin ?? position;
     const cell = getters.getCorrespondingFormulaCell(position);
     return !!(
         evaluatedCell.type !== "empty" &&

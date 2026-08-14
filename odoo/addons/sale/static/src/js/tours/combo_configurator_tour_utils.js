@@ -1,3 +1,5 @@
+import { queryAll, queryValue, waitUntil } from '@odoo/hoot-dom';
+
 function comboSelector(comboName) {
     return `
         .sale-combo-configurator-dialog
@@ -9,7 +11,8 @@ function comboItemSelector(comboItemName, extraClasses=[]) {
     const extraClassesSelector = extraClasses.map(extraClass => `.${extraClass}`).join('');
     return `
         .sale-combo-configurator-dialog
-        .product-card${extraClassesSelector}:has(h6:contains("${comboItemName}"))
+        .combo-item-grid
+        .product-card${extraClassesSelector}:has(.card-title:contains("${comboItemName}"))
     `;
 }
 
@@ -17,12 +20,9 @@ function assertComboCount(count) {
     return {
         content: `Assert that there are ${count} combos`,
         trigger: '.sale-combo-configurator-dialog',
-        run() {
-            const selector = `.sale-combo-configurator-dialog [name="sale_combo_configurator_title"]`;
-            if (document.querySelectorAll(selector).length !== count) {
-                console.error(`Assertion failed`);
-            }
-        },
+        run: () => queryAll(
+            '.sale-combo-configurator-dialog [name="sale_combo_configurator_title"]'
+        ).length === count,
     };
 }
 
@@ -30,12 +30,9 @@ function assertComboItemCount(comboName, count) {
     return {
         content: `Assert that there are ${count} combo items in combo ${comboName}`,
         trigger: comboSelector(comboName),
-        run({ queryAll }) {
-            const selector = `${comboSelector(comboName)} + .row .product-card`;
-            if (queryAll(selector).length !== count) {
-                console.error(`Assertion failed`);
-            }
-        },
+        run: () => queryAll(
+            `${comboSelector(comboName)} + .combo-item-grid .product-card`
+        ).length === count,
     };
 }
 
@@ -43,25 +40,9 @@ function assertSelectedComboItemCount(count) {
     return {
         content: `Assert that there are ${count} selected combo items`,
         trigger: '.sale-combo-configurator-dialog',
-        run() {
-            const selector = `.sale-combo-configurator-dialog .row .product-card.selected`;
-            if (document.querySelectorAll(selector).length !== count) {
-                console.error(`Assertion failed`);
-            }
-        },
-    };
-}
-
-function assertPreselectedComboItemCount(count) {
-    return {
-        content: `Assert that there are ${count} preselected combo items`,
-        trigger: '.sale-combo-configurator-dialog',
-        run() {
-            const selector = '.sale-combo-configurator-dialog div[name="preselected_product_name"]';
-            if (document.querySelectorAll(selector).length !== count) {
-                console.error(`Assertion failed`);
-            }
-        },
+        run: () => queryAll(
+            `.sale-combo-configurator-dialog .combo-item-grid .product-card.selected`
+        ).length === count,
     };
 }
 
@@ -77,13 +58,6 @@ function assertComboItemSelected(comboItemName) {
     return {
         content: `Assert that combo item ${comboItemName} is selected`,
         trigger: comboItemSelector(comboItemName, ['selected']),
-    };
-}
-
-function assertComboItemPreselected(comboItemName) {
-    return {
-        content: `Assert that combo item ${comboItemName} is preselected`,
-        trigger: `[name="preselected_product_name"]:contains(${comboItemName})`,
     };
 }
 
@@ -112,9 +86,12 @@ function setQuantity(quantity) {
 }
 
 function assertQuantity(quantity) {
+    const quantitySelector = '.sale-combo-configurator-dialog input[name="sale_quantity"]';
     return {
         content: `Assert that the combo quantity is ${quantity}`,
-        trigger: `.sale-combo-configurator-dialog input[name="sale_quantity"]:value(${quantity})`,
+        trigger: quantitySelector,
+        run: async () =>
+            await waitUntil(() => queryValue(quantitySelector) === quantity, { timeout: 1000 }),
     };
 }
 
@@ -191,10 +168,8 @@ export default {
     assertComboCount,
     assertComboItemCount,
     assertSelectedComboItemCount,
-    assertPreselectedComboItemCount,
     selectComboItem,
     assertComboItemSelected,
-    assertComboItemPreselected,
     increaseQuantity,
     decreaseQuantity,
     setQuantity,

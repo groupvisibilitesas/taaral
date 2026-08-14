@@ -15,6 +15,9 @@ class AccountAnalyticAccount(models.Model):
         compute='_compute_vendor_bill_count',
     )
 
+    debit = fields.Monetary(groups='account.group_account_readonly')
+    credit = fields.Monetary(groups='account.group_account_readonly')
+
     @api.depends('line_ids')
     def _compute_invoice_count(self):
         sale_types = self.env['account.move'].get_sale_types(include_receipts=True)
@@ -65,7 +68,7 @@ class AccountAnalyticAccount(models.Model):
     def action_view_vendor_bill(self):
         self.ensure_one()
         account_move_lines = self.env['account.move.line'].search_fetch([
-            ('move_id.move_type', 'in', self.env['account.move'].get_purchase_types(include_receipts=True)),
+            ('move_id.move_type', 'in', self.env['account.move'].get_purchase_types()),
             ('analytic_distribution', 'in', self.ids),
         ], ['move_id'])
         return {

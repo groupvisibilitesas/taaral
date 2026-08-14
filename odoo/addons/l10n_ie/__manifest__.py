@@ -13,7 +13,6 @@ This is the base module to manage the accounting chart for Republic of Ireland i
         "account",
         "base_iban",
         "base_vat",
-        "account_edi_ubl_cii",
     ],
     'auto_install': ['account'],
     "data": [

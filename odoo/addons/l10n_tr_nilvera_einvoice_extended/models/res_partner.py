@@ -9,9 +9,8 @@ class ResPartner(models.Model):
     @api.depends('l10n_tr_tax_office_id')
     def _compute_display_name(self):
         super()._compute_display_name()
-        tr_partners_with_tax_office = self.filtered("l10n_tr_tax_office_id")
-        if not self.env.context.get('show_address'):
+        if not self._context.get("show_address"):
             return
+        tr_partners_with_tax_office = self.filtered("l10n_tr_tax_office_id")
         for partner in tr_partners_with_tax_office:
-            if not partner.env.context.get("formatted_display_name"):
-                partner.display_name = (f"{partner.display_name}\n{partner.l10n_tr_tax_office_id.name}")
+            partner.display_name = (f"{partner.display_name}\n{partner.l10n_tr_tax_office_id.name}")

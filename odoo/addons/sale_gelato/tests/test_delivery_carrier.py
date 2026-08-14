@@ -14,7 +14,6 @@ class TestDeliveryCarrier(GelatoCommon, DeliveryCommon):
     def setUpClass(cls):
         super().setUpClass()
         cls.partner.write({
-            'email': 'test@test.com',
             'street': 'Street',
             'city': 'City',
             'zip': '3001',
@@ -61,7 +60,9 @@ class TestDeliveryCarrier(GelatoCommon, DeliveryCommon):
 
     def test_incomplete_partner_address_prevents_delivery(self):
         self.gelato_order.partner_id.street = ''
-        self.assertFalse(self.gelato_delivery.gelato_rate_shipment(self.gelato_order)['success'])
+        self.assertIsNotNone(
+            self.gelato_delivery._ensure_partner_address_is_complete(self.gelato_order.partner_id)
+        )
 
     def test_get_cheapest_normal_delivery_price(self):
         with patch(

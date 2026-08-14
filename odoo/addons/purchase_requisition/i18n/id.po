@@ -3,20 +3,19 @@
 # * purchase_requisition
 #
 # Translators:
-# Martin Trigaux, 2022
-# Abe Manyo, 2023
+# Tiffany Chang, 2024
+# Wil Odoo, 2024
+# Abe Manyo, 2025
 #
-# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
-# "Abe Manyo (abem)" <abem@odoo.com>, 2025, 2026.
 # "Nurul Aini Akrima Sabila (nuaas)" <nuaas@odoo.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0+e\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 18:39+0000\n"
-"PO-Revision-Date: 2026-08-06 06:02+0000\n"
-"Last-Translator: \"Abe Manyo (abem)\" <abem@odoo.com>\n"
-"Language-Team: Indonesian <https://translate.odoo.com/projects/odoo-19/"
+"POT-Creation-Date: 2026-04-10 18:38+0000\n"
+"PO-Revision-Date: 2026-08-04 03:12+0000\n"
+"Last-Translator: \"Nurul Aini Akrima Sabila (nuaas)\" <nuaas@odoo.com>\n"
+"Language-Team: Indonesian <https://translate.odoo.com/projects/odoo-18/"
 "purchase_requisition/id/>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
@@ -53,7 +52,7 @@ msgstr "<strong>Referensi:</strong><br/>"
 #. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__message_needaction
 msgid "Action Needed"
-msgstr "Tindakan Diperlukan"
+msgstr "Tindakan Diperluka"
 
 #. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__active
@@ -84,7 +83,6 @@ msgstr "Ikon Jenis Aktivitas"
 #: model:ir.model.fields,field_description:purchase_requisition.field_product_supplierinfo__purchase_requisition_id
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order__requisition_id
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__name
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_search_inherit
 msgid "Agreement"
 msgstr "Persetujuan"
 
@@ -114,12 +112,6 @@ msgstr "SPB Alternatif"
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_form_inherit
 msgid "Alternative Purchase Order"
 msgstr "Surat Pembelian Barang Alternatif"
-
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/wizard/purchase_requisition_create_alternative.py:0
-msgid "Alternative Purchase Orders"
-msgstr "Purchase Order Alternatif"
 
 #. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_requisition_alternative_warning_form
@@ -201,12 +193,17 @@ msgid "Cancelled by the agreement associated to this quotation."
 msgstr "Dibatalkan oleh persetujuan terkait quotation ini."
 
 #. module: purchase_requisition
+#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__product_uom_category_id
+msgid "Category"
+msgstr "Kategori"
+
+#. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_line_compare_tree
 msgid "Choose"
 msgstr "Pilih"
 
 #. module: purchase_requisition
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_create_alternative__partner_ids
+#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_create_alternative__partner_id
 msgid "Choose a vendor for alternative PO"
 msgstr "Pilih vendor untuk alternatif SPB"
 
@@ -283,6 +280,15 @@ msgid "Confirmed"
 msgstr "Dikonfirmasi"
 
 #. module: purchase_requisition
+#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_line__product_uom_category_id
+msgid ""
+"Conversion between Units of Measure can only occur if they belong to the "
+"same category. The conversion will be made based on the ratios."
+msgstr ""
+"Konversi antara satuan hanya dapat terjadi jika mereka berada pada kategori "
+"yang sama. Konversi akan dibuat berdasarkan rasio."
+
+#. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__copy_products
 msgid "Copy Products"
 msgstr "Salin Produk"
@@ -297,18 +303,19 @@ msgstr "Buat Alternatif"
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_form_inherit
 msgid ""
 "Create a call for tender by adding alternative requests for quotation to "
-"different vendors.                                 Make your choice by "
-"selecting the best combination of lead time, OTD and/or total "
-"amount.                                 By comparing product lines you can "
-"also decide to order some products from one vendor and others from another "
-"vendor."
+"different vendors.\n"
+"                            Make your choice by selecting the best "
+"combination of lead time, OTD and/or total amount.\n"
+"                            By comparing product lines you can also decide "
+"to order some products from one vendor and others from another vendor."
 msgstr ""
 "Buat call for tender dengan menambahkan permintaan RFQ alternatif untuk "
-"vendor-vendor berbeda.                            Buat pilihan Anda dengan "
-"memilih kombinasi terbaik untuk lead time, OTD dan/atau jumlah "
-"total.                            Dengan membandingkan baris produk Anda "
-"juga dapat menentukan untuk memesan beberapa produk dari satu vendor dan "
-"produk lain dari vendor lain."
+"vendor-vendor berbeda.\n"
+"                            Buat pilihan Anda dengan memilih kombinasi "
+"terbaik untuk lead time, OTD dan/atau jumlah total.\n"
+"                            Dengan membandingkan baris produk Anda juga "
+"dapat menentukan untuk memesan beberapa produk dari satu vendor dan produk "
+"lain dari vendor lain."
 
 #. module: purchase_requisition
 #. odoo-python
@@ -333,6 +340,11 @@ msgstr "Dibuat oleh"
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__create_date
 msgid "Created on"
 msgstr "Dibuat pada"
+
+#. module: purchase_requisition
+#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__creation_blocked
+msgid "Creation Blocked"
+msgstr "Pembuatan Diblokir"
 
 #. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__currency_id
@@ -361,16 +373,11 @@ msgid "Discard"
 msgstr "Buang"
 
 #. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_product_product__display_name
-#: model:ir.model.fields,field_description:purchase_requisition.field_product_supplierinfo__display_name
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order__display_name
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order_group__display_name
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order_line__display_name
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__display_name
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_alternative_warning__display_name
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__display_name
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__display_name
-#: model:ir.model.fields,field_description:purchase_requisition.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr "Nama Tampilan"
 
@@ -433,9 +440,9 @@ msgid ""
 "benefit\n"
 "            from the negotiated prices."
 msgstr ""
-"Untuk blanket order, Anda dapat mencatat persetujuan untuk periode tertentu"
-"            (misalnya satu tahun) dan Anda memesan produk dalam persetujuan "
-"ini untuk mengambil keuntungan\n"
+"Untuk blanket order, Anda dapat mencatat persetujuan untuk periode "
+"tertentu            (misalnya satu tahun) dan Anda memesan produk dalam "
+"persetujuan ini untuk mengambil keuntungan\n"
 "            dari harga yang dinegosiasi."
 
 #. module: purchase_requisition
@@ -444,21 +451,28 @@ msgid "Future Activities"
 msgstr "Kegiatan - Kegiatan Mendatang"
 
 #. module: purchase_requisition
+#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
+msgid "Group By"
+msgstr "Dikelompokkan berdasarkan"
+
+#. module: purchase_requisition
+#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order__has_alternatives
+#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_kpis_tree_inherit_purchase_requisition
+#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_tree_inherit_purchase_requisition
+msgid "Has Alternatives"
+msgstr "Memiliki Alternatif"
+
+#. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__has_message
 msgid "Has Message"
 msgstr "Memiliki Pesan"
 
 #. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_product_product__id
-#: model:ir.model.fields,field_description:purchase_requisition.field_product_supplierinfo__id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order__id
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order_group__id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order_line__id
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__id
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_alternative_warning__id
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__id
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__id
-#: model:ir.model.fields,field_description:purchase_requisition.field_res_config_settings__id
 msgid "ID"
 msgstr "ID"
 
@@ -482,6 +496,20 @@ msgstr "Jika dicentang, pesan baru memerlukan penanganan dan perhatian Anda."
 #: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr "Jika dicentang, beberapa pesan mempunyai kesalahan dalam pengiriman."
+
+#. module: purchase_requisition
+#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_create_alternative__creation_blocked
+msgid ""
+"If the chosen vendor or if any of the products in the original PO have a "
+"blocking warning then we prevent creation of alternative PO. This is because "
+"normally these fields are cleared w/warning message within form view, but we "
+"cannot recreate that in this case."
+msgstr ""
+"Bila vendor yang dipilih atau bila produk-produk apapun di SPB original "
+"memiliki peringatan pemblokiran maka kita akan mencegah pembuatan alternatif "
+"SPB. Ini adalah karena biasanya field-field tersebut dikosongkan dengan "
+"pesan peringatan di dalam tampilan formulir, tapi kami tidak dapat melakukan "
+"hal tersebut untuk kasus ini."
 
 #. module: purchase_requisition
 #: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_create_alternative__copy_products
@@ -551,11 +579,6 @@ msgstr "Pesan"
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisition_document
 msgid "Mitchell Admin"
 msgstr "Mitchell Admin"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
-msgid "My Activities"
-msgstr "Aktivitas Saya"
 
 #. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__my_activity_date_deadline
@@ -683,6 +706,11 @@ msgid "Product"
 msgstr "Produk"
 
 #. module: purchase_requisition
+#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__product_uom_id
+msgid "Product Unit of Measure"
+msgstr "Satuan Produk"
+
+#. module: purchase_requisition
 #: model:ir.model,name:purchase_requisition.model_product_product
 msgid "Product Variant"
 msgstr "Varian Produk"
@@ -746,6 +774,11 @@ msgstr "Baris Order Pembelian"
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__purchase_ids
 msgid "Purchase Orders"
 msgstr "Order Pembelian"
+
+#. module: purchase_requisition
+#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_search_inherit
+msgid "Purchase Orders with requisition"
+msgstr "Pesanan pembelian dengan permintaan"
 
 #. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisition_document
@@ -821,6 +854,11 @@ msgid "Request for Quotations"
 msgstr "Permintaan Penawaran"
 
 #. module: purchase_requisition
+#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_search_inherit
+msgid "Requisition"
+msgstr "Daftar Permintaan"
+
+#. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_form
 msgid "Reset to Draft"
 msgstr "Reset ke Draft"
@@ -842,9 +880,8 @@ msgstr "Cari Persetujuan Purchasing"
 
 #. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
-msgid "Show all records whose next activity date is past"
-msgstr ""
-"Tunjukkan semua rekaman yang tanggal kegiatan berikutnya berada di masa lalu"
+msgid "Show all records which has next action date is before today"
+msgstr "Tampilkan semua dokumen dengan aksi berikut sebelum hari ini"
 
 #. module: purchase_requisition
 #. odoo-python
@@ -917,6 +954,18 @@ msgstr "SPB original yang alternatif SPB ini dibuat untuk."
 
 #. module: purchase_requisition
 #. odoo-python
+#: code:addons/purchase_requisition/wizard/purchase_requisition_create_alternative.py:0
+msgid ""
+"The vendor you have selected or at least one of the products you are copying "
+"from the original order has a blocking warning on it and cannot be selected "
+"to create an alternative."
+msgstr ""
+"Vendor yang Anda pilih atau setidaknya salah satu produk yang Anda salin "
+"dari order original memiliki peringatan pemblokiran dan karenanya tidak "
+"dapat dipilih untuk membuat alternatif."
+
+#. module: purchase_requisition
+#. odoo-python
 #: code:addons/purchase_requisition/models/purchase.py:0
 msgid "There are no quantities to clear."
 msgstr "Tidak ada kuantitas untuk dikosongkan."
@@ -930,6 +979,12 @@ msgid ""
 msgstr ""
 "Sudah terdapat open blanket order untuk supplier ini. Kami menyarankan Anda "
 "untuk menyelesaikan open blanket order ini, alih-alih membuat baru."
+
+#. module: purchase_requisition
+#. odoo-python
+#: code:addons/purchase_requisition/wizard/purchase_requisition_create_alternative.py:0
+msgid "This is a blocking warning!\n"
+msgstr "Ini adalah peringatan pemblokiran!\n"
 
 #. module: purchase_requisition
 #. odoo-python
@@ -962,7 +1017,6 @@ msgid "Type of the exception activity on record."
 msgstr "Jenis dari aktivitas pengecualian pada rekaman data."
 
 #. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__product_uom_id
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisition_document
 msgid "Unit"
 msgstr "Unit"
@@ -974,8 +1028,13 @@ msgid "Unit Price"
 msgstr "Harga Satuan"
 
 #. module: purchase_requisition
+#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_form
+msgid "UoM"
+msgstr "Satuan Ukuran"
+
+#. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__vendor_id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__partner_ids
+#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__partner_id
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_line_compare_tree
 msgid "Vendor"
 msgstr "Vendor"
@@ -1019,13 +1078,20 @@ msgstr "Pesan situs"
 #. module: purchase_requisition
 #: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition__website_message_ids
 msgid "Website communication history"
-msgstr "Riwayat komunikasi situs"
+msgstr "Sejarah komunikasi situs"
 
 #. module: purchase_requisition
 #. odoo-python
 #: code:addons/purchase_requisition/models/purchase.py:0
 msgid "What about the alternative Requests for Quotations?"
 msgstr "Bagaimana dengan alternatif untuk RFQ?"
+
+#. module: purchase_requisition
+#: model:ir.model.fields,help:purchase_requisition.field_purchase_order__has_alternatives
+msgid ""
+"Whether or not this purchase order is linked to another purchase order as an "
+"alternative."
+msgstr "Apakah SPB ini di-link ke SPB lain sebagai alternatif. "
 
 #. module: purchase_requisition
 #: model:ir.model,name:purchase_requisition.model_purchase_requisition_alternative_warning
@@ -1111,85 +1177,3 @@ msgstr "misalnya PO0025"
 
 #~ msgid "2023-09-15"
 #~ msgstr "2023-09-15"
-
-#~ msgid "<strong>Date</strong>"
-#~ msgstr "<strong>Tanggal</strong>"
-
-#~ msgid "<strong>Description</strong>"
-#~ msgstr "<strong>Deskripsi</strong>"
-
-#~ msgid "<strong>Qty</strong>"
-#~ msgstr "<strong>Jml</strong>"
-
-#~ msgid "<strong>Scheduled Date</strong>"
-#~ msgstr "<strong>Tanggal Terjadwal</strong>"
-
-#~ msgid "Bid Selection"
-#~ msgstr "Tawaran pilihan"
-
-#~ msgid "Category"
-#~ msgstr "Kategori"
-
-#~ msgid ""
-#~ "Conversion between Units of Measure can only occur if they belong to the "
-#~ "same category. The conversion will be made based on the ratios."
-#~ msgstr ""
-#~ "Konversi antara satuan hanya dapat terjadi jika mereka berada pada "
-#~ "kategori yang sama. Konversi akan dibuat berdasarkan rasio."
-
-#~ msgid "Delivery Date"
-#~ msgstr "Tanggal Pengiriman"
-
-#~ msgid "Group By"
-#~ msgstr "Dikelompokkan berdasarkan"
-
-#~ msgid "Lines"
-#~ msgstr "Baris"
-
-#~ msgid "Number of messages which requires an action"
-#~ msgstr "Jumlah pesan yang butuh tindakan"
-
-#~ msgid "Ongoing"
-#~ msgstr "Terus-menerus"
-
-#~ msgid "Price Unit"
-#~ msgstr "Harga Satuan"
-
-#~ msgid "Product Unit of Measure"
-#~ msgstr "Satuan Produk"
-
-#~ msgid "Purchase Orders with requisition"
-#~ msgstr "Pesanan pembelian dengan permintaan"
-
-#~ msgid "Quantities"
-#~ msgstr "Kuantitas"
-
-#~ msgid "Reference:"
-#~ msgstr "Rujukan"
-
-#~ msgid "Requests for Quotation Details"
-#~ msgstr "Permintaan untuk kutipan rincian"
-
-#~ msgid "Requisition"
-#~ msgstr "Daftar Permintaan"
-
-#~ msgid "Scheduled Date"
-#~ msgstr "Tanggal Terjadwal"
-
-#~ msgid "Select only one RFQ (exclusive)"
-#~ msgstr "Pilih hanya satu PPw (eksklusif)"
-
-#~ msgid "Sequence"
-#~ msgstr "Urutan"
-
-#~ msgid "Show all records which has next action date is before today"
-#~ msgstr "Tampilkan semua dokumen dengan aksi berikut sebelum hari ini"
-
-#~ msgid "Source Document"
-#~ msgstr "Dokumen Sumber"
-
-#~ msgid "UoM"
-#~ msgstr "Satuan"
-
-#~ msgid "Validate"
-#~ msgstr "Validasi"

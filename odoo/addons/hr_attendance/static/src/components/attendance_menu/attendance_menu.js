@@ -1,5 +1,7 @@
-import { Component, onWillStart, useState } from "@odoo/owl";
-import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
+/* @odoo-module */
+
+
+import { Component, useState } from "@odoo/owl";
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 import { useDropdownState } from "@web/core/dropdown/dropdown_hooks";
@@ -16,10 +18,8 @@ export class ActivityMenu extends Component {
     static template = "hr_attendance.attendance_menu";
 
     setup() {
-        this.ui = useService("ui");
-        this.lazySession = useService("lazy_session");
+        this.ui = useState(useService("ui"));
         this.notification = useService("notification");
-        this.dialogService = useService("dialog");
         this.employee = false;
         this.state = useState({
             checkedIn: false,
@@ -27,23 +27,14 @@ export class ActivityMenu extends Component {
         });
         this.date_formatter = registry.category("formatters").get("float_time")
         this.dropdown = useDropdownState();
-        onWillStart(()=> {
-            // access lazy session but do no wait for it, to prevent from delaying the whole webclient
-            this.lazySession.getValue("attendance_user_data", (employee) => {
-                if (employee) {
-                    this.employee = employee;
-                    this._searchReadEmployeeFill();
-                }
-            });
-        });
+        // load data but do not wait for it to render to prevent from delaying
+        // the whole webclient
+        this.searchReadEmployee();
     }
 
     async searchReadEmployee(){
-        this.employee = await rpc("/hr_attendance/attendance_user_data");
-        this._searchReadEmployeeFill();
-    }
-
-    _searchReadEmployeeFill() {
+        const result = await rpc("/hr_attendance/attendance_user_data");
+        this.employee = result;
         if (this.employee.id) {
             this.hoursToday = this.date_formatter(
                 this.employee.hours_today
@@ -65,11 +56,11 @@ export class ActivityMenu extends Component {
 
     async checking(latitude = false, longitude = false) {
         try {
-            this.employee = await rpc("/hr_attendance/systray_check_in_out", {
+            await rpc("/hr_attendance/systray_check_in_out", {
                 latitude,
                 longitude
             })
-            this._searchReadEmployeeFill();
+            this.searchReadEmployee();
         } catch (error) {
             if(error instanceof ConnectionLostError) {
                 this.notification.add(
@@ -88,38 +79,27 @@ export class ActivityMenu extends Component {
         }
     };
 
-    confirmChecking() {
-        this.dialogService.add(ConfirmationDialog, {
-            body: _t("Unable to get a valid location. Do you want to proceed with your check-in/out anyway?"),
-            confirmLabel: _t("Proceed Anyway"),
-            confirm: async () => await this.checking(),
-            cancel: () => this._attendanceInProgress = false,
-        });
-    }
-
     async signInOut() {
         this.dropdown.close();
+
         if (this._attendanceInProgress) {
             return;
         }
         this._attendanceInProgress = true;
 
-        const trackingEnabled = this.employee && this.employee.device_tracking_enabled;
-        if (trackingEnabled && navigator.geolocation && navigator.onLine) {
+        if (navigator.geolocation && navigator.onLine) {
             navigator.geolocation.getCurrentPosition(
                 async ({coords: {latitude, longitude}}) => {
-                    await this.checking(latitude,longitude);
+                    await this.checking(latitude, longitude);
                 },
-                () => {
-                    this.confirmChecking();
+                async () => {
+                    await this.checking();
                 },
                 {
                     enableHighAccuracy: true,
                     timeout: 10000,
                 }
             );
-        } else if (trackingEnabled) {
-            this.confirmChecking();
         } else {
             await this.checking();
         }

@@ -13,8 +13,9 @@ class AccountChartTemplate(models.AbstractModel):
         return res
 
     def _l10n_ec_setup_location_accounts(self, companies):
-        loss_locs = dict(self.env['stock.location']._read_group(domain=[('usage', '=', 'inventory')], groupby=['company_id', 'id']))
-        prod_locs = dict(self.env['stock.location']._read_group(domain=[('usage', '=', 'production')], groupby=['company_id', 'id']))
+        parent_location = self.env.ref('stock.stock_location_locations_virtual', raise_if_not_found=False)
+        loss_locs = dict(self.env['stock.location']._read_group(domain=[('location_id', '=', parent_location.id), ('usage', '=', 'inventory'), ('scrap_location', '=', False)], groupby=['company_id', 'id'])) if parent_location else {}
+        prod_locs = dict(self.env['stock.location']._read_group(domain=[('location_id', '=', parent_location.id), ('usage', '=', 'production'), ('scrap_location', '=', False)], groupby=['company_id', 'id'])) if parent_location else {}
         for company in companies:
             # get template data
             Template = self.env['account.chart.template'].with_company(company)
@@ -25,11 +26,13 @@ class AccountChartTemplate(models.AbstractModel):
             ref = template_data.get('loss_stock_valuation_account')
             if (loss_loc := loss_locs.get(company)) and (loss_loc_account := ref and Template.ref(ref, raise_if_not_found=False)):
                 loss_loc.write({
-                    'valuation_account_id': loss_loc_account.id,
+                    'valuation_in_account_id': loss_loc_account.id,
+                    'valuation_out_account_id': loss_loc_account.id,
                 })
 
             ref = template_data.get('production_stock_valuation_account')
             if (prod_loc := prod_locs.get(company)) and (prod_loc_account := ref and Template.ref(ref, raise_if_not_found=False)):
                 prod_loc.write({
-                    'valuation_account_id': prod_loc_account.id,
+                    'valuation_in_account_id': prod_loc_account.id,
+                    'valuation_out_account_id': prod_loc_account.id,
                 })

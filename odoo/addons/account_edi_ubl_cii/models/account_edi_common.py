@@ -5,7 +5,7 @@ from odoo import _, api, models
 from odoo.addons.account.tools import dict_to_xml
 from odoo.addons.base.models.res_bank import sanitize_account_number
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools import float_compare, float_is_zero, float_repr, html2plaintext
+from odoo.tools import float_compare, float_is_zero, float_repr, format_list, html2plaintext
 from odoo.tools.float_utils import float_round
 from odoo.tools.translate import _lt
 from odoo.tools.misc import clean_context, formatLang, html_escape
@@ -38,8 +38,8 @@ UOM_TO_UNECE_CODE = {
     'uom.product_uom_gal': 'GLL',
     'uom.product_uom_cubic_inch': 'INQ',
     'uom.product_uom_cubic_foot': 'FTQ',
-    'uom.product_uom_square_meter': 'MTK',
-    'uom.product_uom_square_foot': 'FTK',
+    'uom.uom_square_meter': 'MTK',
+    'uom.uom_square_foot': 'FTK',
     'uom.product_uom_yard': 'YRD',
     'uom.product_uom_millimeter': 'MMT',
     'uom.product_uom_kwh': 'KWH',
@@ -64,8 +64,8 @@ EAS_MAPPING = {
     'DK': {'0184': 'vat', '0198': 'vat'},
     'EE': {'9931': 'vat'},
     'ES': {'9920': 'vat'},
-    'FI': {'0216': None},
-    'FR': {'0225': 'peppol_endpoint', '0009': 'company_registry', '9957': 'vat', '0002': None},  # `peppol_endpoint` used as place holder for custom logic via `_get_peppol_endpoint_value`
+    'FI': {'0216': None, '0213': 'vat'},
+    'FR': {'0225': 'peppol_endpoint', '0009': 'siret', '9957': 'vat', '0002': None},  # `peppol_endpoint` used as place holder for custom logic via `_get_peppol_endpoint_value`
     'SG': {'0195': 'l10n_sg_unique_entity_number'},
     'GB': {'9932': 'vat'},
     'GR': {'9933': 'vat'},
@@ -113,105 +113,6 @@ EAS_MAPPING = {
     'TF': {'0009': 'siret', '9957': 'vat', '0002': None},  # French Southern and Antarctic Lands
     'WF': {'0009': 'siret', '9957': 'vat', '0002': None},  # Wallis and Futuna
     'YT': {'0009': 'siret', '9957': 'vat', '0002': None},  # Mayotte
-
-    'AX': {'0216': None},  # Åland Islands
-}
-
-# -------------------------------------------------------------------------
-# MAPPING FOR TAX EXEMPTION
-# -------------------------------------------------------------------------
-TAX_EXEMPTION_MAPPING = {
-    'VATEX-EU-79-C': 'Exempt based on article 79, point c of Council Directive 2006/112/EC',
-    'VATEX-EU-132': 'Exempt based on article 132 of Council Directive 2006/112/EC',
-    'VATEX-EU-132-1A': 'Exempt based on article 132, section 1 (a) of Council Directive 2006/112/EC',
-    'VATEX-EU-132-1B': 'Exempt based on article 132, section 1 (b) of Council Directive 2006/112/EC',
-    'VATEX-EU-132-1C': 'Exempt based on article 132, section 1 (c) of Council Directive 2006/112/EC',
-    'VATEX-EU-132-1D': 'Exempt based on article 132, section 1 (d) of Council Directive 2006/112/EC',
-    'VATEX-EU-132-1E': 'Exempt based on article 132, section 1 (e) of Council Directive 2006/112/EC',
-    'VATEX-EU-132-1F': 'Exempt based on article 132, section 1 (f) of Council Directive 2006/112/EC',
-    'VATEX-EU-132-1G': 'Exempt based on article 132, section 1 (g) of Council Directive 2006/112/EC',
-    'VATEX-EU-132-1H': 'Exempt based on article 132, section 1 (h) of Council Directive 2006/112/EC',
-    'VATEX-EU-132-1I': 'Exempt based on article 132, section 1 (i) of Council Directive 2006/112/EC',
-    'VATEX-EU-132-1J': 'Exempt based on article 132, section 1 (j) of Council Directive 2006/112/EC',
-    'VATEX-EU-132-1K': 'Exempt based on article 132, section 1 (k) of Council Directive 2006/112/EC',
-    'VATEX-EU-132-1L': 'Exempt based on article 132, section 1 (l) of Council Directive 2006/112/EC',
-    'VATEX-EU-132-1M': 'Exempt based on article 132, section 1 (m) of Council Directive 2006/112/EC',
-    'VATEX-EU-132-1N': 'Exempt based on article 132, section 1 (n) of Council Directive 2006/112/EC',
-    'VATEX-EU-132-1O': 'Exempt based on article 132, section 1 (o) of Council Directive 2006/112/EC',
-    'VATEX-EU-132-1P': 'Exempt based on article 132, section 1 (p) of Council Directive 2006/112/EC',
-    'VATEX-EU-132-1Q': 'Exempt based on article 132, section 1 (q) of Council Directive 2006/112/EC',
-    'VATEX-EU-135-1': 'Exempt based on article 135, section 1 of Council Directive 2006/112/EC',
-    'VATEX-EU-143': 'Exempt based on article 143 of Council Directive 2006/112/EC',
-    'VATEX-EU-143-1A': 'Exempt based on article 143, section 1 (a) of Council Directive 2006/112/EC',
-    'VATEX-EU-143-1B': 'Exempt based on article 143, section 1 (b) of Council Directive 2006/112/EC',
-    'VATEX-EU-143-1C': 'Exempt based on article 143, section 1 (c) of Council Directive 2006/112/EC',
-    'VATEX-EU-143-1D': 'Exempt based on article 143, section 1 (d) of Council Directive 2006/112/EC',
-    'VATEX-EU-143-1E': 'Exempt based on article 143, section 1 (e) of Council Directive 2006/112/EC',
-    'VATEX-EU-143-1F': 'Exempt based on article 143, section 1 (f) of Council Directive 2006/112/EC',
-    'VATEX-EU-143-1FA': 'Exempt based on article 143, section 1 (fa) of Council Directive 2006/112/EC',
-    'VATEX-EU-143-1G': 'Exempt based on article 143, section 1 (g) of Council Directive 2006/112/EC',
-    'VATEX-EU-143-1H': 'Exempt based on article 143, section 1 (h) of Council Directive 2006/112/EC',
-    'VATEX-EU-143-1I': 'Exempt based on article 143, section 1 (i) of Council Directive 2006/112/EC',
-    'VATEX-EU-143-1J': 'Exempt based on article 143, section 1 (j) of Council Directive 2006/112/EC',
-    'VATEX-EU-143-1K': 'Exempt based on article 143, section 1 (k) of Council Directive 2006/112/EC',
-    'VATEX-EU-143-1L': 'Exempt based on article 143, section 1 (l) of Council Directive 2006/112/EC',
-    'VATEX-EU-144': 'Exempt based on article 144 of Council Directive 2006/112/EC',
-    'VATEX-EU-146-1E': 'Exempt based on article 146 section 1 (e) of Council Directive 2006/112/EC',
-    'VATEX-EU-148': 'Exempt based on article 148 of Council Directive 2006/112/EC',
-    'VATEX-EU-148-A': 'Exempt based on article 148, section (a) of Council Directive 2006/112/EC',
-    'VATEX-EU-148-B': 'Exempt based on article 148, section (b) of Council Directive 2006/112/EC',
-    'VATEX-EU-148-C': 'Exempt based on article 148, section (c) of Council Directive 2006/112/EC',
-    'VATEX-EU-148-D': 'Exempt based on article 148, section (d) of Council Directive 2006/112/EC',
-    'VATEX-EU-148-E': 'Exempt based on article 148, section (e) of Council Directive 2006/112/EC',
-    'VATEX-EU-148-F': 'Exempt based on article 148, section (f) of Council Directive 2006/112/EC',
-    'VATEX-EU-148-G': 'Exempt based on article 148, section (g) of Council Directive 2006/112/EC',
-    'VATEX-EU-151': 'Exempt based on article 151 of Council Directive 2006/112/EC',
-    'VATEX-EU-151-1A': 'Exempt based on article 151, section 1 (a) of Council Directive 2006/112/EC',
-    'VATEX-EU-151-1AA': 'Exempt based on article 151, section 1 (aa) of Council Directive 2006/112/EC',
-    'VATEX-EU-151-1B': 'Exempt based on article 151, section 1 (b) of Council Directive 2006/112/EC',
-    'VATEX-EU-151-1C': 'Exempt based on article 151, section 1 (c) of Council Directive 2006/112/EC',
-    'VATEX-EU-151-1D': 'Exempt based on article 151, section 1 (d) of Council Directive 2006/112/EC',
-    'VATEX-EU-151-1E': 'Exempt based on article 151, section 1 (e) of Council Directive 2006/112/EC',
-    'VATEX-EU-153': 'Exempt based on article 153 of Council Directive 2006/112/EC',
-    'VATEX-EU-159': 'Exempt based on article 159 of Council Directive 2006/112/EC',
-    'VATEX-EU-309': 'Exempt based on article 309 of Council Directive 2006/112/EC',
-    'VATEX-EU-AE': 'Reverse charge',
-    'VATEX-EU-D': 'Intra-Community acquisition from second hand means of transport',
-    'VATEX-EU-F': 'Intra-Community acquisition of second hand goods',
-    'VATEX-EU-G': 'Export outside the EU',
-    'VATEX-EU-I': 'Intra-Community acquisition of works of art',
-    'VATEX-EU-IC': 'Intra-Community supply',
-    'VATEX-EU-O': 'Not subject to VAT',
-    'VATEX-EU-J': 'Intra-Community acquisition of collectors items and antiques',
-    'VATEX-FR-FRANCHISE': 'France domestic VAT franchise in base',
-    'VATEX-FR-CNWVAT': 'France domestic Credit Notes without VAT, due to supplier forfeit of VAT for discount',
-    'VATEX-FR-CGI261-1': 'Exempt based on 1 of article 261 of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI261-2': 'Exempt based on 2 of article 261 of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI261-3': 'Exempt based on 3 of article 261 of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI261-4': 'Exempt based on 4 of article 261 of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI261-5': 'Exempt based on 5 of article 261 of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI261-7': 'Exempt based on 7 of article 261 of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI261-8': 'Exempt based on 8 of article 261 of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI261A': 'Exempt based on article 261 A of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI261B': 'Exempt based on article 261 B of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI261C-1': 'Exempt based on 1° of article 261 C of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI261C-2': 'Exempt based on 2° of article 261 C of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI261C-3': 'Exempt based on 3° of article 261 C of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI261D-1': 'Exempt based on 1° of article 261 D of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI261D-1BIS': 'Exempt based on 1°bis of article 261 D of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI261D-2': 'Exempt based on 2° of article 261 D of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI261D-3': 'Exempt based on 3° of article 261 D of the Code Général des Impôts (CGI ; General tax code) Exonération de TVA - Article 261 D-3° du Code Général des Impôts',
-    'VATEX-FR-CGI261D-4': 'Exempt based on 4° of article 261 D of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI261E-1': 'Exempt based on 1° of article 261 E of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI261E-2': 'Exempt based on 2° of article 261 E of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI277A': 'Exempt based on article 277 A of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI275': 'Exempt based on article 275 of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-298SEXDECIESA': 'Exempt based on article 298 sexdecies A of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-CGI295': 'Exempt based on article 295 of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-AE': 'Exempt based on 2 of article 283 of the Code Général des Impôts (CGI ; General tax code)',
-    'VATEX-FR-F': 'VATEX-FR-F - Second-hand sales',
-    'VATEX-FR-I': 'VATEX-FR-I - Sales of works of art',
-    'VATEX-FR-J': 'VATEX-FR-J - Sales of antiques',
 }
 
 # -------------------------------------------------------------------------
@@ -236,18 +137,6 @@ COCONTRACTANT_DEFAULT_NOTE = _lt('Reverse charge: In the absence of a written ob
                               'the customer is deemed to acknowledge that they are a taxable person required to file periodic returns. '
                               'If this condition is not met, the customer will be liable for the payment of the tax, interest, '
                               'and penalties due in relation to this condition.')
-
-# -------------------------------------------------------------------------
-# SUPPORTED FILE TYPES FOR IMPORT
-# -------------------------------------------------------------------------
-SUPPORTED_FILE_TYPES = {
-    'application/pdf': '.pdf',
-    'application/vnd.oasis.opendocument.spreadsheet': '.ods',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '.xlsx',
-    'image/jpeg': '.jpeg',
-    'image/png': '.png',
-    'text/csv': '.csv',
-}
 
 
 class FloatFmt(float):
@@ -290,7 +179,7 @@ class FloatFmt(float):
 
 
 class AccountEdiCommon(models.AbstractModel):
-    _name = 'account.edi.common'
+    _name = "account.edi.common"
     _description = "Common functions for EDI documents: generate the data, the constraints, etc"
 
     # -------------------------------------------------------------------------
@@ -352,19 +241,14 @@ class AccountEdiCommon(models.AbstractModel):
         return False
 
     def _get_belgian_cocontractant_note(self, customer, supplier):
-        invoice = self.env.context.get('tax_exemption_reason_invoice')
-        if self._is_cocontractant_fiscal_position(invoice, customer, supplier):
-            note = html2plaintext(invoice.fiscal_position_id.note) if invoice.fiscal_position_id.note else ''
-            return note or COCONTRACTANT_DEFAULT_NOTE
+
+        if (invoice := self.env.context.get('tax_exemption_reason_invoice')) and customer.country_id.code == 'BE' and supplier.country_id == customer.country_id:
+            co_contractant = self.env['account.chart.template'].with_company(invoice.company_id).ref('fiscal_position_template_4', raise_if_not_found=False)
+            if co_contractant and invoice.fiscal_position_id == co_contractant:
+                note = html2plaintext(invoice.fiscal_position_id.note) if invoice.fiscal_position_id.note else ''
+                return note or COCONTRACTANT_DEFAULT_NOTE
         return ''
 
-    def _is_cocontractant_fiscal_position(self, invoice, customer, supplier):
-        return (invoice and
-                customer.country_id.code == 'BE' and
-                supplier.country_id == customer.country_id and
-                (co_contractant := self.env['account.chart.template'].with_company(invoice.company_id).ref('fiscal_position_template_4', raise_if_not_found=False)) and
-                invoice.fiscal_position_id == co_contractant
-        )
     # -------------------------------------------------------------------------
     # TAXES
     # -------------------------------------------------------------------------
@@ -378,36 +262,46 @@ class AccountEdiCommon(models.AbstractModel):
                 error_msg = _("Tax '%(tax_name)s' is invalid: %(error_message)s", tax_name=tax.name, error_message=e.args[0])  # args[0] gives the error message
                 raise ValidationError(error_msg)
 
-    def _get_tax_category_code(self, customer, supplier, tax):
+    def _get_tax_unece_codes(self, customer, supplier, tax):
         """
-        Predicts the tax category code for a tax applied to a given base line.
-        If the tax has a defined category code, it is returned.
-        Otherwise, a reasonable default is provided, though it may not always be accurate.
-
         Source: doc of Peppol (but the CEF norm is also used by factur-x, yet not detailed)
         https://docs.peppol.eu/poacc/billing/3.0/syntax/ubl-invoice/cac-TaxTotal/cac-TaxSubtotal/cac-TaxCategory/cbc-TaxExemptionReasonCode/
         https://docs.peppol.eu/poacc/billing/3.0/codelist/vatex/
         https://docs.peppol.eu/poacc/billing/3.0/codelist/UNCL5305/
+        :returns: {
+            tax_category_code: str,
+            tax_exemption_reason_code: str,
+            tax_exemption_reason: str,
+        }
         """
+
+        def create_dict(tax_category_code=None, tax_exemption_reason_code=None, tax_exemption_reason=None):
+            return {
+                'tax_category_code': tax_category_code,
+                'tax_exemption_reason_code': tax_exemption_reason_code,
+                'tax_exemption_reason': tax_exemption_reason,
+            }
+
         # add Norway, Iceland, Liechtenstein
-        if not tax:
-            return 'E'
-
-        if tax.ubl_cii_tax_category_code:
-            return tax.ubl_cii_tax_category_code
-
         if customer.country_id.code == 'ES' and customer.zip:
             if customer.zip[:2] in ('35', '38'):  # Canary
                 # [BR-IG-10]-A VAT breakdown (BG-23) with VAT Category code (BT-118) "IGIC" shall not have a VAT
                 # exemption reason code (BT-121) or VAT exemption reason text (BT-120).
-                return 'L'
+                return create_dict(tax_category_code='L')
             if customer.zip[:2] in ('51', '52'):
-                return 'M'  # Ceuta & Mellila
+                return create_dict(tax_category_code='M')  # Ceuta & Mellila
+
+        if cocontractant_note := not tax.amount and self._get_belgian_cocontractant_note(customer, supplier):
+            return create_dict(
+                tax_category_code='AE',
+                tax_exemption_reason_code='VATEX-EU-AE',
+                tax_exemption_reason=cocontractant_note
+            )
 
         if supplier.country_id == customer.country_id:
             if not tax or tax.amount == 0:
                 # in theory, you should indicate the precise law article
-                return 'E'
+                return create_dict(tax_category_code='E')
             elif tax.has_negative_factor:
                 # Special case: Purchase reverse-charge taxes for self-billed invoices.
                 # From the buyer's perspective, this is a standard tax with a non-zero percentage but
@@ -416,62 +310,69 @@ class AccountEdiCommon(models.AbstractModel):
                 # to the buyer).
                 # For a self-billed invoice we, the buyer, create the invoice on behalf of the seller.
                 # So in the XML we put the zero-percent tax with code 'AE' that the seller would have used.
-                return 'AE'
+                return create_dict(tax_category_code='AE')
             else:
-                return 'S'  # standard VAT
+                return create_dict(tax_category_code='S')  # standard VAT
 
         if supplier.country_id.code in EUROPEAN_ECONOMIC_AREA_COUNTRY_CODES and supplier.vat:
             if tax.amount != 0 and not tax.has_negative_factor:
-                # Special case: Purchase reverse-charge taxes for self-billed invoices.
-                # See explanation above.
-                # In the XML we put the zero-percent tax with code 'G' or 'K' that the buyer would have used.
-                return 'S'
+                # otherwise, the validator will complain because G and K code should be used with 0% tax
+                # For purchase reverse-charge taxes for self-billed invoices, we put the zero-percent tax
+                # with code 'G' or 'K' that the buyer would have used, see explanation above.
+                return create_dict(tax_category_code='S')
             if customer.country_id.code not in EUROPEAN_ECONOMIC_AREA_COUNTRY_CODES:
-                return 'G'
+                return create_dict(
+                    tax_category_code='G',
+                    tax_exemption_reason_code='VATEX-EU-G',
+                    tax_exemption_reason=_('Export outside the EU'),
+                )
             if customer.country_id.code in EUROPEAN_ECONOMIC_AREA_COUNTRY_CODES:
-                return 'K'
+                return create_dict(
+                    tax_category_code='K',
+                    tax_exemption_reason_code='VATEX-EU-IC',
+                    tax_exemption_reason=_('Intra-Community supply'),
+                )
 
         if tax.amount != 0:
-            return 'S'
+            return create_dict(tax_category_code='S')
         else:
+            return create_dict(tax_category_code='E')
+
+    def _get_tax_category_code(self, customer, supplier, tax):
+        if not tax:
             return 'E'
+        return self._get_tax_unece_codes(customer, supplier, tax).get('tax_category_code')
 
     def _get_tax_exemption_reason(self, customer, supplier, tax):
-        """ Returns the reason and code from the tax if available.
-            If not, it falls back to the default tax exemption reason defined for the respective tax category code.
-
-            Note: In Peppol, taxes should be grouped by tax category code but *not* by
-            exemption reason, see https://docs.peppol.eu/poacc/billing/3.0/bis/#_calculation_of_vat
-        """
-
-        if reason := tax and not tax.amount and self._get_belgian_cocontractant_note(customer, supplier):
+        if not tax:
             return {
-                'tax_exemption_reason_code': 'VATEX-EU-AE',
-                'tax_exemption_reason': reason,
+                'tax_exemption_reason': _("Exempt from tax"),
+                'tax_exemption_reason_code': None,
             }
-
-        if tax and (code := tax.ubl_cii_tax_exemption_reason_code):
-            return {
-                'tax_exemption_reason_code': code,
-                'tax_exemption_reason': TAX_EXEMPTION_MAPPING.get(code, _("Exempt from tax") if tax.ubl_cii_requires_exemption_reason else None),
-            }
-
-        tax_category_code = self._get_tax_category_code(customer, supplier, tax)
-        tax_exemption_reason = tax_exemption_reason_code = None
-
-        if not tax or tax_category_code == 'E':
-            tax_exemption_reason = _("Exempt from tax")
-        elif tax_category_code == 'G':
-            tax_exemption_reason = _('Export outside the EU')
-            tax_exemption_reason_code = 'VATEX-EU-G'
-        elif tax_category_code == 'K':
-            tax_exemption_reason = _('Intra-Community supply')
-            tax_exemption_reason_code = 'VATEX-EU-IC'
-
+        res = self._get_tax_unece_codes(customer, supplier, tax)
         return {
-            'tax_exemption_reason': tax_exemption_reason,
-            'tax_exemption_reason_code': tax_exemption_reason_code,
+            'tax_exemption_reason': res.get('tax_exemption_reason'),
+            'tax_exemption_reason_code': res.get('tax_exemption_reason_code'),
         }
+
+    def _get_tax_category_list(self, customer, supplier, taxes):
+        """ Full list: https://unece.org/fileadmin/DAM/trade/untdid/d16b/tred/tred5305.htm
+        Subset: https://docs.peppol.eu/poacc/billing/3.0/codelist/UNCL5305/
+
+        :param taxes:   account.tax records.
+        :return:        A list of values to fill the TaxCategory foreach template.
+        """
+        res = []
+        for tax in taxes:
+            tax_unece_codes = self._get_tax_unece_codes(customer, supplier, tax)
+            res.append({
+                'id': tax_unece_codes.get('tax_category_code'),
+                'percent': tax.amount if tax.amount_type == 'percent' else False,
+                'name': tax_unece_codes.get('tax_exemption_reason'),
+                'tax_scheme_vals': {'id': 'VAT'},
+                **tax_unece_codes,
+            })
+        return res
 
     # -------------------------------------------------------------------------
     # CONSTRAINTS
@@ -487,7 +388,7 @@ class AccountEdiCommon(models.AbstractModel):
         :return: an Error message or None
         """
         if not record:
-            return custom_warning_message or _("The element %(record)s is required on %(field_list)s.", record=record, field_list=field_names)
+            return custom_warning_message or _("The element %(record)s is required on %(field_list)s.", record=record, field_list=format_list(self.env, field_names))
 
         if not isinstance(field_names, (list, tuple)):
             field_names = (field_names,)
@@ -502,7 +403,7 @@ class AccountEdiCommon(models.AbstractModel):
             return custom_warning_message or _(
                 "The element %(record)s is required on %(field_list)s.",
                 record=record,
-                field_list=field_names,
+                field_list=format_list(self.env, field_names),
             )
 
         display_field_names = record.fields_get(field_names)
@@ -510,7 +411,7 @@ class AccountEdiCommon(models.AbstractModel):
             display_field = f"'{display_field_names[field_names[0]]['string']}'"
             return _("The field %(field)s is required on %(record)s.", field=display_field, record=record.display_name)
         else:
-            display_fields = [f"'{display_field_names[x]['string']}'" for x in display_field_names]
+            display_fields = format_list(self.env, [f"'{display_field_names[x]['string']}'" for x in display_field_names])
             return _("At least one of the following fields %(field_list)s is required on %(record)s.", field_list=display_fields, record=record.display_name)
 
     # -------------------------------------------------------------------------
@@ -519,7 +420,7 @@ class AccountEdiCommon(models.AbstractModel):
 
     def _invoice_constraints_common(self, invoice):
         # check that there is a tax on each line
-        for line in invoice.invoice_line_ids.filtered(lambda x: x.display_type not in ('line_section', 'line_subsection', 'line_note') and x._check_edi_line_tax_required()):
+        for line in invoice.invoice_line_ids.filtered(lambda x: x.display_type not in ('line_note', 'line_section') and x._check_edi_line_tax_required()):
             if not line.tax_ids:
                 return {'tax_on_line': _("Each invoice line should have at least one tax.")}
         return {}
@@ -529,10 +430,6 @@ class AccountEdiCommon(models.AbstractModel):
     # -------------------------------------------------------------------------
 
     def _import_invoice_ubl_cii(self, invoice, file_data, new=False):
-        invoice.ensure_one()
-        if invoice.invoice_line_ids:
-            return invoice._reason_cannot_decode_has_invoice_lines()
-
         tree = file_data['xml_tree']
 
         # Not able to decode the move_type from the xml.
@@ -561,7 +458,17 @@ class AccountEdiCommon(models.AbstractModel):
         # Update the invoice.
         invoice.move_type = move_type
         with invoice._get_edi_creation() as invoice:
-            fill_invoice_logs = self._import_fill_invoice(invoice, tree, qty_factor)
+            logs = self._import_fill_invoice(invoice, tree, qty_factor)
+        if invoice:
+            body = Markup("<strong>%s</strong>") % \
+                _("Format used to import the invoice: %s",
+                  self.env['ir.model']._get(self._name).name)
+
+            if logs:
+                body += Markup("<ul>%s</ul>") % \
+                    Markup().join(Markup("<li>%s</li>") % l for l in logs)
+
+            invoice.message_post(body=body)
 
         # For UBL, we should override the computed tax amount if it is less than 0.05 different of the one in the xml.
         # In order to support use case where the tax total is adapted for rounding purpose.
@@ -570,72 +477,44 @@ class AccountEdiCommon(models.AbstractModel):
             self._correct_invoice_tax_amount(tree, invoice)
 
         # Set XML as ubl_cii_xml_file (XML used to import)
-        if file_data['attachment'] and invoice.is_purchase_document(include_receipts=True):
+        if invoice.is_purchase_document(include_receipts=True):
             file_data['attachment'].write({
                 'res_field': 'ubl_cii_xml_file',
                 'res_model': invoice._name,
                 'res_id': invoice.id,
             })
 
-        source_attachment = file_data['attachment'] or self.env['ir.attachment']
-        attachments = source_attachment + self._import_attachments(invoice, tree)
+        attachments = self._import_attachments(invoice, tree)
+        if attachments:
+            invoice.with_context(no_new_invoice=True).message_post(attachment_ids=attachments.ids)
 
-        self._log_import_invoice_ubl_cii(invoice, invoice_logs=fill_invoice_logs, attachments=attachments)
-
-    def _add_logs_import_invoice_ubl_cii(self, invoice, invoice_logs=None):
-        invoice.ensure_one()
-        if invoice_logs is None:
-            invoice_logs = []
-        format_log = self.env._("Format: %s", self.env['ir.model']._get(self._name).name)
-        return [format_log] + invoice_logs
-
-    def _log_import_invoice_ubl_cii(self, invoice, title_logs=None, invoice_logs=None, attachments=None):
-        invoice.ensure_one()
-        body = Markup("<strong>%s</strong>") % (title_logs or self.env._("Invoice imported"))
-        if invoice_logs := self._add_logs_import_invoice_ubl_cii(invoice, invoice_logs=invoice_logs):
-            body += Markup("<ul>%s</ul>") % \
-                    Markup().join(Markup("<li>%s</li>") % l for l in invoice_logs)
-        invoice.message_post(body=body, attachment_ids=attachments.ids if attachments else None)
+        return True
 
     def _import_attachments(self, invoice, tree):
         # Import the embedded documents in the xml if some are found
         attachments = self.env['ir.attachment']
-        if invoice.message_main_attachment_id.mimetype == 'application/pdf':
+        if invoice.message_main_attachment_id:
             # Invoice look like it was already imported, don't import attachments again
             return attachments
-        additional_docs = tree.findall('./{*}AdditionalDocumentReference')
-        for document in additional_docs:
-            attachment_name = document.find('{*}ID')
-            attachment_data = document.find('{*}Attachment/{*}EmbeddedDocumentBinaryObject')
-            if attachment_name is not None and attachment_data is not None:
-                mimetype = attachment_data.attrib.get('mimeCode')
-                if not (extension := SUPPORTED_FILE_TYPES.get(mimetype)):
-                    continue
-                text = attachment_data.text
-                # Normalize the name of the file : some e-fff emitters put the full path of the file
-                # (Windows or Linux style) and/or the name of the xml instead of the pdf.
-                # Get only the filename with the right extension.
-                name = (attachment_name.text or 'invoice').split('\\')[-1].split('/')[-1].split('.')[0] + extension
-                attachment = self.env['ir.attachment'].create({
-                    'name': name,
-                    'res_id': invoice.id,
-                    'res_model': 'account.move',
-                    'datas': text + '=' * (len(text) % 3),  # Fix incorrect padding
-                    'type': 'binary',
-                    'mimetype': mimetype,
-                })
-                # Upon receiving an email (containing an xml) with a configured alias to create invoice, the xml is
-                # set as the main_attachment. To be rendered in the form view, the pdf should be the main_attachment.
-                if invoice.message_main_attachment_id and \
-                        invoice.message_main_attachment_id.name.endswith('.xml') and \
-                        'pdf' not in invoice.message_main_attachment_id.mimetype and \
-                        mimetype == 'application/pdf':
-                    invoice._message_set_main_attachment_id(attachment, force=True, filter_xml=False)
-                attachments |= attachment
 
+        attachments_data = attachments._extract_additional_documents(tree)
+        for data in attachments_data:
+            data.update({
+                'res_id': invoice.id,
+                'res_model': invoice._name,
+            })
+        attachments = self.env['ir.attachment'].create(attachments_data)
+        # Upon receiving an email (containing an xml) with a configured alias to create invoice, the xml is
+        # set as the main_attachment. To be rendered in the form view, the pdf should be the main_attachment.
+        for attachment in attachments:
+            if invoice.message_main_attachment_id and \
+                    invoice.message_main_attachment_id.name.endswith('.xml') and \
+                    'pdf' not in invoice.message_main_attachment_id.mimetype and \
+                    attachment.mimetype == 'application/pdf':
+                invoice._message_set_main_attachment_id(attachment, force=True, filter_xml=False)
         return attachments
 
-    def _import_partner(self, company_id, name, phone, email, vat, *, peppol_eas=False, peppol_endpoint=False, postal_address={}, **kwargs):
+    def _import_partner(self, company_id, name, phone, email, vat, country_code=False, peppol_eas=False, peppol_endpoint=False, street=False, street2=False, city=False, zip_code=False):
         """ Retrieve the partner, if no matching partner is found, create it (only if he has a vat and a name) """
         logs = []
         if peppol_eas and peppol_endpoint:
@@ -645,42 +524,29 @@ class AccountEdiCommon(models.AbstractModel):
         partner = self.env['res.partner'] \
             .with_company(company_id) \
             ._retrieve_partner(name=name, phone=phone, email=email, vat=vat, domain=domain)
-        country_code = postal_address.get('country_code')
-        country = self.env['res.country'].search([('code', '=', country_code.upper())]) if country_code else self.env['res.country']
-        state_code = postal_address.get('state_code')
-        state = self.env['res.country.state'].search(
-            [('country_id', '=', country.id), ('code', '=', state_code)],
-            limit=1,
-        ) if state_code and country else self.env['res.country.state']
         if not partner and name and vat:
-            partner_vals = {'name': name, 'email': email, 'phone': phone, 'is_company': True}
+            partner_vals = {'name': name, 'email': email, 'phone': phone, 'street': street, 'street2': street2,
+                            'zip': zip_code, 'city': city, 'is_company': True}
             if peppol_eas and peppol_endpoint:
                 partner_vals.update({'peppol_eas': peppol_eas, 'peppol_endpoint': peppol_endpoint})
+            if country_code == 'GB':
+                # While the code is gb, the xml_id is uk
+                country_code = 'UK'
+            country = self.env.ref(f'base.{country_code.lower()}', raise_if_not_found=False) if country_code else False
+            if country:
+                partner_vals['country_id'] = country.id
             partner = self.env['res.partner'].create(partner_vals)
-            if vat:
-                partner.vat, _country_code = self.env['res.partner']._run_vat_checks(country, vat, validation='setnull')
+            if vat and self.env['res.partner']._run_vat_test(vat, country, partner.is_company):
+                partner.vat = vat
             logs.append(_("Could not retrieve a partner corresponding to '%s'. A new partner was created.", name))
-        elif not partner and not logs:
-            logs.append(_("Could not retrieve partner with details: Name: %(name)s, Vat: %(vat)s, Phone: %(phone)s, Email: %(email)s",
-                  name=name, vat=vat, phone=phone, email=email))
-        if not partner.country_id and not partner.street and not partner.street2 and not partner.city and not partner.zip and not partner.state_id:
-            partner.write({
-                'country_id': country.id,
-                'street': postal_address.get('street'),
-                'street2': postal_address.get('additional_street'),
-                'city': postal_address.get('city'),
-                'zip': postal_address.get('zip'),
-                'state_id': state.id,
-            })
         return partner, logs
 
     def _import_partner_bank(self, invoice, bank_details):
-        partner = None
         if invoice.move_type in ('out_refund', 'in_invoice'):
             partner = invoice.partner_id
         elif invoice.move_type in ('out_invoice', 'in_refund'):
             partner = invoice.company_id.partner_id
-        if not partner:
+        else:
             return
 
         banks = self.env['res.partner.bank']
@@ -772,40 +638,24 @@ class AccountEdiCommon(models.AbstractModel):
             logs.append(_("A payment of %s was detected.", formatted_amount))
         return logs
 
-    def _import_lines(self, record, tree, xpath, document_type=False, tax_type=False, qty_factor=1):
-        logs = []
-        lines_values = []
-        for line_tree in tree.iterfind(xpath):
-            line_values = self.with_company(record.company_id)._retrieve_invoice_line_vals(line_tree, document_type, qty_factor)
-            if line_values is None:
-                continue
-
-            line_values['tax_ids'], tax_logs = self._retrieve_taxes(record, line_values, tax_type)
-            logs += tax_logs
-            if not line_values['product_uom_id']:
-                line_values.pop('product_uom_id')  # if no uom, pop it so it's inferred from the product_id
-            lines_values.append(line_values)
-            lines_values += self._retrieve_line_charges(record, line_values, line_values['tax_ids'])
-        return lines_values, logs
-
-    def _import_rounding_amount(self, invoice, tree, xpath, document_type=False, qty_factor=1):
+    def _import_rounding_amount(self, invoice, tree, xpath, qty_factor):
         """
         Add an invoice line representing the rounding amount given in the document.
         - The amount is assumed to be in document currency
         """
         logs = []
-        lines_values = []
+        line_vals = []
 
         currency = invoice.currency_id
         rounding_amount_currency = currency.round(qty_factor * float(tree.findtext(xpath) or 0))
 
         if invoice.currency_id.is_zero(rounding_amount_currency):
-            return lines_values, logs
+            return line_vals, logs
 
         inverse_rate = abs(invoice.amount_total_signed) / invoice.amount_total if invoice.amount_total else 0
         rounding_amount = invoice.company_id.currency_id.round(rounding_amount_currency * inverse_rate)
 
-        lines_values.append({
+        line_vals.append({
             'display_type': 'product',
             'name': _('Rounding'),
             'quantity': 1,
@@ -821,6 +671,24 @@ class AccountEdiCommon(models.AbstractModel):
         formatted_amount = formatLang(self.env, rounding_amount_currency, currency_obj=currency)
         logs.append(_("A rounding amount of %s was detected.", formatted_amount))
 
+        return line_vals, logs
+
+    def _import_invoice_lines(self, invoice, tree, xpath, qty_factor):
+        logs = []
+        lines_values = []
+        for line_tree in tree.iterfind(xpath):
+            line_values = self.with_company(invoice.company_id)._retrieve_invoice_line_vals(line_tree, invoice.move_type, qty_factor)
+            if line_values is None:
+                continue
+
+            line_values['tax_ids'], tax_logs = self._retrieve_taxes(
+                invoice, line_values, invoice.journal_id.type,
+            )
+            logs += tax_logs
+            if not line_values['product_uom_id']:
+                line_values.pop('product_uom_id')  # if no uom, pop it so it's inferred from the product_id
+            lines_values.append(line_values)
+            lines_values += self._retrieve_line_charges(invoice, line_values, line_values['tax_ids'])
         return lines_values, logs
 
     def _retrieve_invoice_line_vals(self, tree, document_type=False, qty_factor=1):
@@ -940,7 +808,7 @@ class AccountEdiCommon(models.AbstractModel):
                 uom_infered_xmlid = {v: k for k, v in UOM_TO_UNECE_CODE.items()}.get(uom_xml)
                 if uom_infered_xmlid:
                     product_uom = self.env.ref(uom_infered_xmlid, raise_if_not_found=False) or self.env['uom.uom']
-        if product and product_uom and not product_uom._has_common_reference(product.product_tmpl_id.uom_id):
+        if product and product_uom and product_uom.category_id != product.product_tmpl_id.uom_id.category_id:
             # uom incompatibility
             product_uom = self.env['uom.uom']
 
@@ -1046,9 +914,8 @@ class AccountEdiCommon(models.AbstractModel):
         # if no results, try to fetch the price_include=True taxes. If results, need to adapt the price_unit.
         logs = []
         taxes = []
-        fpos_domain = [('fiscal_position_ids', '=', record.fiscal_position_id.id)]
-        if record.fiscal_position_id.is_domestic:
-            fpos_domain = ['|', ('fiscal_position_ids', '=', False)] + fpos_domain
+        fpos_dest_ids = record.fiscal_position_id.tax_ids.mapped('tax_dest_id').ids if record.fiscal_position_id else []
+        fpos_domain = [('id', 'in', fpos_dest_ids)] if fpos_dest_ids else []
         for tax_node in line_values.pop('tax_nodes'):
             amount = float(tax_node.text)
             domain = [
@@ -1076,9 +943,9 @@ class AccountEdiCommon(models.AbstractModel):
                         exigibility=tax_exigibility,
                         line=line_values['name']),
                     )
-            if not tax:
+            if not tax and fpos_domain:
                 tax = self.env['account.tax'].search(domain + fpos_domain + [('price_include', '=', False)], limit=1)
-            if not tax:
+            if not tax and fpos_domain:
                 tax = self.env['account.tax'].search(domain + fpos_domain + [('price_include', '=', True)], limit=1)
             if not tax:
                 tax = self.env['account.tax'].search(domain + [('price_include', '=', False)], limit=1)

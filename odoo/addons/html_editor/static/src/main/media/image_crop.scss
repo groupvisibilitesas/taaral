@@ -8,10 +8,6 @@
 
     .o_we_cropper_wrapper {
         position: absolute;
-
-        .cropper-face.cropper-move {
-            opacity: .2;
-        }
     }
 
     .o_we_crop_buttons {
@@ -21,11 +17,7 @@
         bottom: 1rem;
 
         input[type=radio] {
-            // Hide radios visually but keep them focusable for keyboard
-            // navigation.
-            position: absolute;
-            opacity: 0;
-            pointer-events: none;
+            display: none;
         }
 
         .btn-group {
@@ -47,7 +39,7 @@
             }
         }
 
-        button:not(.btn), label, label:active {
+        button:not(.btn), label {
             margin: 0;
             border: none;
             border-right: 1px solid $o-we-bg;
@@ -64,12 +56,6 @@
                 border-bottom-right-radius: 0.25rem;
                 border-right: none;
             }
-        }
-
-        button:focus-visible, label:focus-within {
-            box-shadow: unset;
-            outline: 1px solid $o-we-color;
-            z-index: 1;
         }
     }
 }

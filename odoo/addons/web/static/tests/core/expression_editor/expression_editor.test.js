@@ -1,32 +1,25 @@
 import { beforeEach, expect, test } from "@odoo/hoot";
-import { click, edit, press, queryAllTexts, queryOne } from "@odoo/hoot-dom";
-import { animationFrame, mockDate } from "@odoo/hoot-mock";
-import { Component, xml } from "@odoo/owl";
+import { click, edit, queryAllTexts, queryOne } from "@odoo/hoot-dom";
+import { animationFrame } from "@odoo/hoot-mock";
 import {
+    Country,
+    Partner,
+    Player,
+    Product,
+    Stage,
+    Team,
     addNewRule,
     clearNotSupported,
     clickOnButtonAddBranch,
-    clickOnButtonAddRule,
+    clickOnButtonAddNewRule,
     clickOnButtonDeleteNode,
-    Country,
     editValue,
-    formatExpr,
-    getCurrentOperator,
-    getCurrentValue,
     getOperatorOptions,
     getTreeEditorContent,
     getValueOptions,
     isNotSupportedPath,
-    label,
     openModelFieldSelectorPopover,
-    Partner,
-    Player,
-    Product,
     selectOperator,
-    selectValue,
-    Stage,
-    Team,
-    toggleConnector,
     SELECTORS as treeEditorSELECTORS,
 } from "@web/../tests/core/tree_editor/condition_tree_editor_test_helpers";
 import {
@@ -38,7 +31,7 @@ import {
 } from "@web/../tests/web_test_helpers";
 import { ExpressionEditor } from "@web/core/expression_editor/expression_editor";
 
-import { getPickerCell } from "@web/../tests/core/datetime/datetime_test_helpers";
+import { Component, xml } from "@odoo/owl";
 import { pick } from "@web/core/utils/objects";
 
 const SELECTORS = {
@@ -54,6 +47,14 @@ async function editExpression(value) {
 
     await edit(value);
     await animationFrame();
+}
+
+/**
+ * @param {string} value
+ */
+async function selectConnector(value) {
+    await contains(`${SELECTORS.connector} .dropdown-toggle`).click();
+    await contains(`.dropdown-menu .dropdown-item:contains(${value})`).click();
 }
 
 async function makeExpressionEditor(params = {}) {
@@ -113,7 +114,7 @@ test("rendering of falsy values", async () => {
         await parent.set(expr);
         expect(getTreeEditorContent()).toEqual([
             { value: "all", level: 0 },
-            { value: ["0", label("="), "1"], level: 1 },
+            { value: ["0", "=", "1"], level: 1 },
         ]);
     }
 });
@@ -168,20 +169,11 @@ test("copy a complex condition", async () => {
         { value: "all", level: 0 },
         { value: "expr", level: 1 },
     ]);
-    await clickOnButtonAddBranch();
+    await clickOnButtonAddNewRule();
     expect(getTreeEditorContent()).toEqual([
-        { level: 0, value: "all" },
-        { level: 1, value: "expr" },
-        { level: 1, value: "any" },
-        { level: 2, value: "expr" },
-    ]);
-    await clickOnButtonAddRule();
-    expect(getTreeEditorContent()).toEqual([
-        { level: 0, value: "all" },
-        { level: 1, value: "expr" },
-        { level: 1, value: "any" },
-        { level: 2, value: "expr" },
-        { level: 2, value: "expr" },
+        { value: "all", level: 0 },
+        { value: "expr", level: 1 },
+        { value: "expr", level: 1 },
     ]);
 });
 
@@ -190,15 +182,16 @@ test("change path, operator and value", async () => {
     await makeExpressionEditor({ expression: `bar != "blabla"` });
     expect(getTreeEditorContent()).toEqual([
         { level: 0, value: "all" },
-        { level: 1, value: ["Bar", label("!="), "blabla"] },
+        { level: 1, value: ["Bar", "is not", "blabla"] },
     ]);
+    const tree = getTreeEditorContent({ node: true });
     await openModelFieldSelectorPopover();
     await contains(".o_model_field_selector_popover_item_name:eq(5)").click();
-    await selectOperator("=");
-    await editValue("Doku");
+    await selectOperator("not in", 0, tree[1].node);
+    await editValue(["Doku", "Lukaku", "KDB"]);
     expect(getTreeEditorContent()).toEqual([
         { level: 0, value: "all" },
-        { level: 1, value: ["Foo", label("="), "Doku"] },
+        { level: 1, value: ["Foo", "is not in", "Doku,Lukaku,KDB"] },
     ]);
 });
 
@@ -213,7 +206,8 @@ test("create a new branch from a complex condition control panel", async () => {
         { level: 0, value: "all" },
         { level: 1, value: "expr" },
         { level: 1, value: "any" },
-        { level: 2, value: "expr" },
+        { level: 2, value: ["Id", "=", "1"] },
+        { level: 2, value: ["Id", "=", "1"] },
     ]);
 });
 
@@ -221,12 +215,12 @@ test("rendering of a valid fieldName in fields", async () => {
     const parent = await makeExpressionEditor({ fieldFilters: ["foo"] });
 
     const toTests = [
-        { expr: `foo`, condition: ["Foo", label("set")] },
-        { expr: `foo == "a"`, condition: ["Foo", label("="), "a"] },
-        { expr: `foo != "a"`, condition: ["Foo", label("!="), "a"] },
+        { expr: `foo`, condition: ["Foo", "is set"] },
+        { expr: `foo == "a"`, condition: ["Foo", "=", "a"] },
+        { expr: `foo != "a"`, condition: ["Foo", "!=", "a"] },
         // { expr: `foo is "a"`, complexCondition: `foo is "a"` },
         // { expr: `foo is not "a"`, complexCondition: `foo is not "a"` },
-        { expr: `not foo`, condition: ["Foo", label("not set")] },
+        { expr: `not foo`, condition: ["Foo", "is not set"] },
         { expr: `foo + "a"`, complexCondition: `foo + "a"` },
     ];
 
@@ -253,18 +247,18 @@ test("rendering of simple conditions", async () => {
     const parent = await makeExpressionEditor({ fieldFilters: ["foo", "bar"] });
 
     const toTests = [
-        { expr: `bar == "a"`, condition: ["Bar", label("="), "a"] },
-        { expr: `foo == expr`, condition: ["Foo", label("="), "expr"] },
-        { expr: `"a" == foo`, condition: ["Foo", label("="), "a"] },
-        { expr: `expr == foo`, condition: ["Foo", label("="), "expr"] },
+        { expr: `bar == "a"`, condition: ["Bar", "=", "a"] },
+        { expr: `foo == expr`, condition: ["Foo", "=", "expr"] },
+        { expr: `"a" == foo`, condition: ["Foo", "=", "a"] },
+        { expr: `expr == foo`, condition: ["Foo", "=", "expr"] },
         { expr: `foo == bar`, complexCondition: `foo == bar` },
         { expr: `"a" == "b"`, complexCondition: `"a" == "b"` },
         { expr: `expr1 == expr2`, complexCondition: `expr1 == expr2` },
 
-        { expr: `foo < "a"`, condition: ["Foo", label("<"), "a"] },
-        { expr: `foo < expr`, condition: ["Foo", label("<"), "expr"] },
-        { expr: `"a" < foo`, condition: ["Foo", label(">"), "a"] },
-        { expr: `expr < foo`, condition: ["Foo", label(">"), "expr"] },
+        { expr: `foo < "a"`, condition: ["Foo", "<", "a"] },
+        { expr: `foo < expr`, condition: ["Foo", "<", "expr"] },
+        { expr: `"a" < foo`, condition: ["Foo", ">", "a"] },
+        { expr: `expr < foo`, condition: ["Foo", ">", "expr"] },
         { expr: `foo < bar`, complexCondition: `foo < bar` },
         { expr: `"a" < "b"`, complexCondition: `"a" < "b"` },
         { expr: `expr1 < expr2`, complexCondition: `expr1 < expr2` },
@@ -297,14 +291,14 @@ test("rendering of simple conditions", async () => {
 
 test("rendering of connectors", async () => {
     await makeExpressionEditor({ expression: `expr and foo == "abc" or not bar` });
-    expect(queryAllTexts(SELECTORS.connectorValue)).toEqual(["any", "all"]);
+    expect(queryAllTexts(`${SELECTORS.connector} .dropdown-toggle`)).toEqual(["any", "all"]);
     const tree = getTreeEditorContent();
     expect(tree).toEqual([
         { level: 0, value: "any" },
         { level: 1, value: "all" },
         { level: 2, value: "expr" },
-        { level: 2, value: ["Foo", label("="), "abc"] },
-        { level: 1, value: ["Bar", label("not set")] },
+        { level: 2, value: ["Foo", "=", "abc"] },
+        { level: 1, value: ["Bar", "is", "not set"] },
     ]);
 });
 
@@ -315,20 +309,21 @@ test("rendering of connectors (2)", async () => {
             expect.step(expression);
         },
     });
-    expect(SELECTORS.connectorValue).toHaveText("none");
+    expect(`${SELECTORS.connector} .dropdown-toggle:only`).toHaveText("none");
     expect(getTreeEditorContent()).toEqual([
         { level: 0, value: "none" },
         { level: 1, value: "expr" },
-        { level: 1, value: ["Foo", label("="), "abc"] },
+        { level: 1, value: ["Foo", "=", "abc"] },
     ]);
     expect.verifySteps([]);
     expect(queryOne(SELECTORS.debugArea)).toHaveValue(`not (expr or foo == "abc")`);
 
-    await toggleConnector();
+    await selectConnector("all");
+    expect(`${SELECTORS.connector} .dropdown-toggle:only`).toHaveText("all");
     expect(getTreeEditorContent()).toEqual([
         { level: 0, value: "all" },
         { level: 1, value: "expr" },
-        { level: 1, value: ["Foo", label("="), "abc"] },
+        { level: 1, value: ["Foo", "=", "abc"] },
     ]);
     expect.verifySteps([`expr and foo == "abc"`]);
     expect(queryOne(SELECTORS.debugArea)).toHaveValue(`expr and foo == "abc"`);
@@ -339,11 +334,11 @@ test("rendering of if else", async () => {
     expect(getTreeEditorContent()).toEqual([
         { level: 0, value: "any" },
         { level: 1, value: "all" },
-        { level: 2, value: ["0", label("="), "1"] },
-        { level: 2, value: ["1", label("="), "1"] },
+        { level: 2, value: ["0", "=", "1"] },
+        { level: 2, value: ["1", "=", "1"] },
         { level: 1, value: "all" },
-        { level: 2, value: ["1", label("="), "1"] },
-        { level: 2, value: ["0", label("="), "1"] },
+        { level: 2, value: ["1", "=", "1"] },
+        { level: 2, value: ["0", "=", "1"] },
     ]);
 });
 
@@ -355,7 +350,7 @@ test("check condition by default when creating a new rule", async () => {
     expect(getTreeEditorContent()).toEqual([
         { level: 0, value: "all" },
         { level: 1, value: "expr" },
-        { level: 1, value: ["Country ID", label("="), ""] },
+        { level: 1, value: ["Country ID", "=", ""] },
     ]);
 });
 
@@ -363,21 +358,21 @@ test("allow selection of boolean field", async () => {
     await makeExpressionEditor({ expression: "id" });
     expect(getTreeEditorContent()).toEqual([
         { level: 0, value: "all" },
-        { level: 1, value: ["Id", label("set")] },
+        { level: 1, value: ["Id", "is set"] },
     ]);
     await openModelFieldSelectorPopover();
     await contains(".o_model_field_selector_popover_item_name").click();
     expect(getTreeEditorContent()).toEqual([
         { level: 0, value: "all" },
-        { level: 1, value: ["Bar", label("set")] },
+        { level: 1, value: ["Bar", "is", "set"] },
     ]);
 });
 
 test("render false and true leaves", async () => {
     await makeExpressionEditor({ expression: `False and True` });
-    expect(getOperatorOptions()).toEqual([label("=")]);
+    expect(getOperatorOptions()).toEqual(["="]);
     expect(getValueOptions()).toEqual(["1"]);
-    expect(getOperatorOptions(-1)).toEqual([label("=")]);
+    expect(getOperatorOptions(-1)).toEqual(["="]);
     expect(getValueOptions(-1)).toEqual(["1"]);
 });
 
@@ -398,7 +393,7 @@ test("no field of type properties in model field selector", async () => {
     });
     expect(getTreeEditorContent()).toEqual([
         { level: 0, value: "all" },
-        { level: 1, value: ["Properties", label("set")] },
+        { level: 1, value: ["Properties", "is set"] },
     ]);
     expect(isNotSupportedPath()).toBe(true);
     await clearNotSupported();
@@ -411,19 +406,23 @@ test("no field of type properties in model field selector", async () => {
 test("no special fields in fields", async () => {
     serverState.debug = "";
     await makeExpressionEditor({
-        expression: `True`,
+        expression: `bar`,
         fieldFilters: ["foo", "bar", "properties"],
         update(expression) {
             expect.step(expression);
         },
     });
-    expect(getTreeEditorContent()).toEqual([{ level: 0, value: "all" }]);
+    expect(getTreeEditorContent()).toEqual([
+        { level: 0, value: "all" },
+        { level: 1, value: ["Bar", "is not", "not set"] },
+    ]);
     await addNewRule();
     expect(getTreeEditorContent()).toEqual([
         { level: 0, value: "all" },
-        { level: 1, value: ["Foo", label("="), ""] },
+        { level: 1, value: ["Bar", "is not", "not set"] },
+        { level: 1, value: ["Foo", "=", ""] },
     ]);
-    expect.verifySteps([`foo == ""`]);
+    expect.verifySteps([`bar and foo == ""`]);
 });
 
 test("between operator", async () => {
@@ -434,273 +433,17 @@ test("between operator", async () => {
         },
     });
     expect(getOperatorOptions()).toEqual([
-        label("="),
-        label("!="),
-        label("<"),
-        label(">"),
-        label("between"),
+        "=",
+        "!=",
+        ">",
+        ">=",
+        "<",
+        "<=",
+        "is between",
+        "is set",
+        "is not set",
     ]);
     expect.verifySteps([]);
     await selectOperator("between");
     expect.verifySteps([`id >= 1 and id <= 1`]);
-});
-
-test(`"in range" operator`, async () => {
-    await makeExpressionEditor({
-        expression: `date`,
-        update(expression) {
-            expect.step(expression);
-        },
-    });
-    await selectOperator("in range");
-    expect.verifySteps([
-        formatExpr(
-            `
-                date >= context_today().strftime("%Y-%m-%d")
-                    and
-                date < (context_today() + relativedelta(days = 1)).strftime("%Y-%m-%d")
-            `
-        ),
-    ]);
-    expect(getTreeEditorContent()).toEqual([
-        { level: 0, value: "all" },
-        {
-            level: 1,
-            value: ["Date", "is in", "Today"],
-        },
-    ]);
-});
-
-test(`date: "in range" operator`, async () => {
-    mockDate("2023-04-20 17:00:00", 0);
-    await makeExpressionEditor({
-        expression: `id`,
-        update(expression) {
-            expect.step(expression);
-        },
-    });
-    await openModelFieldSelectorPopover();
-    await contains(
-        ".o_model_field_selector_popover .o_model_field_selector_popover_item_name:eq(2)"
-    ).click();
-    expect(getCurrentOperator()).toBe(label("in range"));
-    expect(getCurrentValue()).toBe("Today");
-    expect.verifySteps([
-        formatExpr(
-            `date >= context_today().strftime("%Y-%m-%d") and date < (context_today() + relativedelta(days = 1)).strftime("%Y-%m-%d")`
-        ),
-    ]);
-
-    expect(getValueOptions()).toEqual([
-        "Today",
-        "Last 7 days",
-        "Last 30 days",
-        "Month to date",
-        "Last month",
-        "Year to date",
-        "Last 12 months",
-        "Custom range",
-    ]);
-
-    await selectValue("last 7 days");
-    expect(getCurrentValue()).toBe("Last 7 days");
-    expect.verifySteps([
-        formatExpr(
-            `date >= (context_today() + relativedelta(days = -7)).strftime("%Y-%m-%d") and date < context_today().strftime("%Y-%m-%d")`
-        ),
-    ]);
-
-    await selectValue("last 30 days");
-    expect(getCurrentValue()).toBe("Last 30 days");
-    expect.verifySteps([
-        formatExpr(
-            `date >= (context_today() + relativedelta(days = -30)).strftime("%Y-%m-%d") and date < context_today().strftime("%Y-%m-%d")`
-        ),
-    ]);
-
-    await selectValue("month to date");
-    expect(getCurrentValue()).toBe("Month to date");
-    expect.verifySteps([
-        formatExpr(
-            `date >= (context_today() + relativedelta(day = 1)).strftime("%Y-%m-%d") and date < (context_today() + relativedelta(days = 1)).strftime("%Y-%m-%d")`
-        ),
-    ]);
-
-    await selectValue("last month");
-    expect(getCurrentValue()).toBe("Last month");
-    expect.verifySteps([
-        formatExpr(
-            `date >= (context_today() + relativedelta(day = 1, months = -1)).strftime("%Y-%m-%d") and date < (context_today() + relativedelta(day = 1)).strftime("%Y-%m-%d")`
-        ),
-    ]);
-
-    await selectValue("year to date");
-    expect(getCurrentValue()).toBe("Year to date");
-    expect.verifySteps([
-        formatExpr(
-            `date >= (context_today() + relativedelta(day = 1, month = 1)).strftime("%Y-%m-%d") and date < (context_today() + relativedelta(days = 1)).strftime("%Y-%m-%d")`
-        ),
-    ]);
-
-    await selectValue("last 12 months");
-    expect(getCurrentValue()).toBe("Last 12 months");
-    expect.verifySteps([
-        formatExpr(
-            `date >= (context_today() + relativedelta(day = 1, months = -12)).strftime("%Y-%m-%d") and date < (context_today() + relativedelta(day = 1)).strftime("%Y-%m-%d")`
-        ),
-    ]);
-
-    await selectValue("custom range");
-    expect(queryOne(`${SELECTORS.valueEditor} select`).value).toBe('"custom range"');
-    expect.verifySteps([formatExpr(`date >= "2023-04-20" and date <= "2023-04-20"`)]);
-
-    await contains(".o_datetime_input:last").click();
-    await contains(getPickerCell("26", true)).click();
-    await press("enter");
-    await animationFrame();
-    expect.verifySteps([formatExpr(`date >= "2023-04-20" and date <= "2023-04-26"`)]);
-
-    await selectValue("today");
-    expect(getCurrentOperator()).toBe(label("in range"));
-    expect(getCurrentValue()).toBe("Today");
-    expect.verifySteps([
-        formatExpr(
-            `date >= context_today().strftime("%Y-%m-%d") and date < (context_today() + relativedelta(days = 1)).strftime("%Y-%m-%d")`
-        ),
-    ]);
-});
-
-test(`datetime: "in range" operator`, async () => {
-    mockDate("2023-04-20 17:00:00", 0);
-    await makeExpressionEditor({
-        expression: `id`,
-        update(expression) {
-            expect.step(expression);
-        },
-    });
-    await openModelFieldSelectorPopover();
-    await contains(
-        ".o_model_field_selector_popover .o_model_field_selector_popover_item_name:eq(3)"
-    ).click();
-    expect(getCurrentOperator()).toBe(label("in range"));
-    expect(getCurrentValue()).toBe("Today");
-    expect.verifySteps([
-        formatExpr(
-            `
-                datetime >= datetime.datetime.combine(context_today(), datetime.time(0, 0, 0)).to_utc().strftime("%Y-%m-%d %H:%M:%S")
-                    and
-                datetime < datetime.datetime.combine(context_today() + relativedelta(days = 1), datetime.time(0, 0, 0)).to_utc().strftime("%Y-%m-%d %H:%M:%S")
-            `
-        ),
-    ]);
-
-    expect(getValueOptions()).toEqual([
-        "Today",
-        "Last 7 days",
-        "Last 30 days",
-        "Month to date",
-        "Last month",
-        "Year to date",
-        "Last 12 months",
-        "Custom range",
-    ]);
-
-    await selectValue("last 7 days");
-    expect(getCurrentValue()).toBe("Last 7 days");
-    expect.verifySteps([
-        formatExpr(
-            `
-                datetime >= datetime.datetime.combine(context_today() + relativedelta(days = -7), datetime.time(0, 0, 0)).to_utc().strftime("%Y-%m-%d %H:%M:%S")
-                    and
-                datetime < datetime.datetime.combine(context_today(), datetime.time(0, 0, 0)).to_utc().strftime("%Y-%m-%d %H:%M:%S")
-            `
-        ),
-    ]);
-
-    await selectValue("last 30 days");
-    expect(getCurrentValue()).toBe("Last 30 days");
-    expect.verifySteps([
-        formatExpr(
-            `
-                datetime >= datetime.datetime.combine(context_today() + relativedelta(days = -30), datetime.time(0, 0, 0)).to_utc().strftime("%Y-%m-%d %H:%M:%S")
-                    and
-                datetime < datetime.datetime.combine(context_today(), datetime.time(0, 0, 0)).to_utc().strftime("%Y-%m-%d %H:%M:%S")
-            `
-        ),
-    ]);
-
-    await selectValue("month to date");
-    expect(getCurrentValue()).toBe("Month to date");
-    expect.verifySteps([
-        formatExpr(
-            `
-                datetime >= datetime.datetime.combine(context_today() + relativedelta(day = 1), datetime.time(0, 0, 0)).to_utc().strftime("%Y-%m-%d %H:%M:%S")
-                    and
-                datetime < datetime.datetime.combine(context_today() + relativedelta(days = 1), datetime.time(0, 0, 0)).to_utc().strftime("%Y-%m-%d %H:%M:%S")
-            `
-        ),
-    ]);
-
-    await selectValue("last month");
-    expect(getCurrentValue()).toBe("Last month");
-    expect.verifySteps([
-        formatExpr(
-            `
-                datetime >= datetime.datetime.combine(context_today() + relativedelta(day = 1, months = -1), datetime.time(0, 0, 0)).to_utc().strftime("%Y-%m-%d %H:%M:%S")
-                    and
-                datetime < datetime.datetime.combine(context_today() + relativedelta(day = 1), datetime.time(0, 0, 0)).to_utc().strftime("%Y-%m-%d %H:%M:%S")
-            `
-        ),
-    ]);
-
-    await selectValue("year to date");
-    expect(getCurrentValue()).toBe("Year to date");
-    expect.verifySteps([
-        formatExpr(
-            `
-                datetime >= datetime.datetime.combine(context_today() + relativedelta(day = 1, month = 1), datetime.time(0, 0, 0)).to_utc().strftime("%Y-%m-%d %H:%M:%S")
-                    and
-                datetime < datetime.datetime.combine(context_today() + relativedelta(days = 1), datetime.time(0, 0, 0)).to_utc().strftime("%Y-%m-%d %H:%M:%S")
-            `
-        ),
-    ]);
-
-    await selectValue("last 12 months");
-    expect(getCurrentValue()).toBe("Last 12 months");
-    expect.verifySteps([
-        formatExpr(
-            `
-                datetime >= datetime.datetime.combine(context_today() + relativedelta(day = 1, months = -12), datetime.time(0, 0, 0)).to_utc().strftime("%Y-%m-%d %H:%M:%S")
-                    and
-                datetime < datetime.datetime.combine(context_today() + relativedelta(day = 1), datetime.time(0, 0, 0)).to_utc().strftime("%Y-%m-%d %H:%M:%S")
-            `
-        ),
-    ]);
-
-    await selectValue("custom range");
-    expect(queryOne(`${SELECTORS.valueEditor} select`).value).toBe('"custom range"');
-    expect.verifySteps([
-        formatExpr(`datetime >= "2023-04-20 00:00:00" and datetime <= "2023-04-20 23:59:59"`),
-    ]);
-
-    await contains(".o_datetime_input:last").click();
-    await contains(getPickerCell("26", true)).click();
-    await press("enter");
-    await animationFrame();
-    expect.verifySteps([
-        formatExpr(`datetime >= "2023-04-20 00:00:00" and datetime <= "2023-04-26 23:59:59"`),
-    ]);
-
-    await selectValue("today");
-    expect(getCurrentOperator()).toBe(label("in range"));
-    expect(getCurrentValue()).toBe("Today");
-    expect.verifySteps([
-        formatExpr(
-            `
-                datetime >= datetime.datetime.combine(context_today(), datetime.time(0, 0, 0)).to_utc().strftime("%Y-%m-%d %H:%M:%S")
-                    and
-                datetime < datetime.datetime.combine(context_today() + relativedelta(days = 1), datetime.time(0, 0, 0)).to_utc().strftime("%Y-%m-%d %H:%M:%S")
-            `
-        ),
-    ]);
 });

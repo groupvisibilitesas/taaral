@@ -4,7 +4,7 @@
 from odoo import api, models, fields
 
 
-class StockReturnPicking(models.TransientModel):
+class ReturnPicking(models.TransientModel):
     _inherit = 'stock.return.picking'
 
     def _prepare_picking_default_values(self):
@@ -14,12 +14,12 @@ class StockReturnPicking(models.TransientModel):
         return vals
 
 
-class StockReturnPickingLine(models.TransientModel):
+class ReturnPickingLine(models.TransientModel):
     _inherit = 'stock.return.picking.line'
 
     def _prepare_move_default_values(self, new_picking):
         vals = super()._prepare_move_default_values(new_picking)
-        if self.move_id.is_subcontract and new_picking.picking_type_code == 'outgoing':
+        if self.move_id.is_subcontract:
             vals['location_dest_id'] = new_picking.partner_id.with_company(new_picking.company_id).property_stock_subcontractor.id
         vals['is_subcontract'] = False
         return vals

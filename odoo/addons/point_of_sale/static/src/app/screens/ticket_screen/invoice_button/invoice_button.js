@@ -1,9 +1,9 @@
 import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
-import { usePos } from "@point_of_sale/app/hooks/pos_hook";
+import { usePos } from "@point_of_sale/app/store/pos_hook";
 import { Component } from "@odoo/owl";
-import { ask, makeAwaitable } from "@point_of_sale/app/utils/make_awaitable_dialog";
+import { ask, makeAwaitable } from "@point_of_sale/app/store/make_awaitable_dialog";
 import { PartnerList } from "../../partner_list/partner_list";
 
 export class InvoiceButton extends Component {
@@ -34,13 +34,14 @@ export class InvoiceButton extends Component {
     }
     async _downloadInvoice(orderId) {
         try {
-            const orders = await this.pos.data.loadServerOrders([["id", "=", orderId]]);
-            const order = orders[0];
+            const orderWithInvoice = await this.pos.data.read("pos.order", [orderId], [], {
+                load: false,
+            });
+            const order = orderWithInvoice[0];
             const accountMoveId = order.raw.account_move;
             if (accountMoveId) {
                 await this.invoiceService.downloadPdf(accountMoveId);
             }
-            return order;
         } catch (error) {
             if (error instanceof Error) {
                 throw error;
@@ -49,7 +50,6 @@ export class InvoiceButton extends Component {
                 this.dialog.add(AlertDialog, {
                     title: _t("Network Error"),
                     body: _t("Unable to download invoice."),
-                    showReloadButton: true,
                 });
             }
         }
@@ -73,7 +73,7 @@ export class InvoiceButton extends Component {
 
         // Part 1: Handle missing partner.
         // Write to pos.order the selected partner.
-        let partner = order.getPartner();
+        let partner = order.get_partner();
         if (!partner) {
             const _confirmed = await ask(this.dialog, {
                 title: _t("Need customer to invoice"),
@@ -102,7 +102,6 @@ export class InvoiceButton extends Component {
         // Part 3: Download invoice.
         await this._downloadInvoice(orderId);
         this.props.onInvoiceOrder(orderId);
-        return true;
     }
     async click() {
         if (this.lock) {

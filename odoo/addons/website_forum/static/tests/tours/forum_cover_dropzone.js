@@ -11,7 +11,7 @@ registerWebsitePreviewTour(
         {
             content: "Click on the Text snippet group.",
             trigger:
-                '.o_block_tab:not(.o_we_ongoing_insertion) #snippet_groups .o_snippet[name="Text"].o_draggable .o_snippet_thumbnail_area',
+                '#oe_snippets .oe_snippet[name="Text"].o_we_draggable .oe_snippet_thumbnail:not(.o_we_ongoing_insertion)',
             run: "click",
         },
         {
@@ -26,9 +26,8 @@ registerWebsitePreviewTour(
         // Add a snippet with drag and drop.
         {
             content: "Drag the Form snippet group into the forum cover.",
-            trigger:
-                '.o_block_tab:not(.o_we_ongoing_insertion) #snippet_groups .o_snippet[name="Contact & Forms"].o_draggable .o_snippet_thumbnail_area',
-            run: "drag_and_drop :iframe #wrapwrap .s_cover .oe_drop_zone:last",
+            trigger: `#oe_snippets .oe_snippet[name="Contact & Forms"].o_we_draggable .oe_snippet_thumbnail:not(.o_we_ongoing_insertion)`,
+            run: "drag_and_drop :iframe #wrapwrap .s_cover",
         },
         {
             content: "Select the 'Title - Form' snippet in the dialog",
@@ -43,13 +42,13 @@ registerWebsitePreviewTour(
         {
             content: "Open the Content snippet group.",
             trigger:
-                '.o_block_tab:not(.o_we_ongoing_insertion) #snippet_groups .o_snippet[name="Content"].o_draggable .o_snippet_thumbnail_area',
-            run: "drag_and_drop :iframe #wrapwrap .s_cover .oe_drop_zone:last",
+                '#oe_snippets .oe_snippet[name="Content"].o_we_draggable .oe_snippet_thumbnail:not(.o_we_ongoing_insertion)',
+            run: "click",
         },
         {
             content: "Type 'embed' in the searchbar to find for the embed_code snippet",
             trigger: '.o_add_snippet_dialog input[type="search"]',
-            run: "edit embed_code",
+            run: "edit embed",
         },
         {
             content: "Check that the search returns no results.",

@@ -149,7 +149,6 @@ class TestWebAssetsCursors(HttpCase):
         """
         cursors = []
         original_cursor = self.env.registry.cursor
-
         def cursor(readonly=False):
             cursor = original_cursor(readonly=readonly)
             cursors.append(('ro' if cursor.readonly else 'rw', '(ro_requested)' if readonly else '(rw_requested)'))
@@ -159,7 +158,9 @@ class TestWebAssetsCursors(HttpCase):
             response = self.url_open(f'/web/assets/{self.bundle_version}/{self.bundle_name}.min.css', allow_redirects=False)
             self.assertEqual(response.status_code, 200)
 
-        return cursors
+        # remove the check_signaling cursor
+        self.assertEqual(cursors[0][1], '(rw_requested)', "the first cursor used for match and check signaling should be rw")
+        return cursors[1:]
 
     def test_web_binary_keep_cursor_ro(self):
         """
@@ -183,7 +184,7 @@ class TestWebAssetsCursors(HttpCase):
         )
 
     def test_web_binary_keep_cursor_rw(self):
-        self.set_registry_readonly_mode(False)
+        self.env.registry.test_readonly_enabled = False
         self.assertEqual(
             self._get_generate_cursors_readwriteness(),
             [

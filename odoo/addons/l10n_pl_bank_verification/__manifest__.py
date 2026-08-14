@@ -21,6 +21,5 @@ in l10n_pl in 19.4
         'views/account_payment_view.xml',
         'wizard/account_payment_register_views.xml',
     ],
-    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 }

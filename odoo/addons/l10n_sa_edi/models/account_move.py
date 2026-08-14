@@ -20,22 +20,6 @@ class AccountMove(models.Model):
         string="ZATCA chain index", copy=False, readonly=True,
         help="Invoice index in chain, set if and only if an in-chain XML was submitted and did not error",
     )
-    l10n_sa_edi_chain_head_id = fields.Many2one(
-      'account.move',
-      string="ZATCA chain stopping move",
-      copy=False,
-      readonly=True,
-      help="Technical field to know if the chain has been stopped by a previous invoice",
-  )
-
-    def _l10n_gcc_get_invoice_title(self):
-        # DEPRECATED - to be removed in master
-        # EXTENDS l10n_gcc_invoice
-        self.ensure_one()
-        if self.company_id.country_code == 'SA' and self._l10n_sa_is_simplified():
-            return self.env._('Simplified Tax Invoice')
-
-        return super()._l10n_gcc_get_invoice_title()
 
     def _l10n_sa_is_simplified(self):
         # DEPRECATED - to be removed in master
@@ -51,16 +35,6 @@ class AccountMove(models.Model):
             else self.partner_id.company_type == "person"
         )
 
-    @api.ondelete(at_uninstall=False)
-    def _prevent_zatca_rejected_invoice_deletion(self):
-        # Prevent deletion of ZATCA-rejected invoices in production mode
-        descr = 'Rejected ZATCA Document not to be deleted - ثيقة ZATCA المرفوضة لا يجوز حذفها'
-        for move in self:
-            if move.country_code == "SA" and \
-               move.company_id.l10n_sa_edi_is_production and \
-               move.attachment_ids.filtered(lambda a: a.description == descr and a.res_model == 'account.move'):
-                raise UserError(_("The Invoice(s) are linked to a validated EDI document and cannot be modified according to ZATCA rules"))
-
     @api.depends('amount_total_signed', 'amount_tax_signed', 'l10n_sa_confirmation_datetime', 'company_id',
                  'company_id.vat', 'journal_id', 'journal_id.l10n_sa_production_csid_json', 'edi_document_ids',
                  'l10n_sa_invoice_signature', 'l10n_sa_chain_index', 'state')
@@ -72,12 +46,12 @@ class AccountMove(models.Model):
             if move.country_code == 'SA' and move.move_type in ('out_invoice', 'out_refund') and zatca_document and move.state != 'draft':
                 qr_code_str = ''
                 if move._l10n_sa_is_simplified():
-                    x509_cert = move.journal_id.l10n_sa_production_csid_certificate_id
+                    x509_cert_sudo = move.journal_id.sudo().l10n_sa_production_csid_certificate_id
                     xml_content = self.env.ref('l10n_sa_edi.edi_sa_zatca')._l10n_sa_generate_zatca_template(move)
-                    qr_code_str = move._l10n_sa_get_qr_code(move.company_id, xml_content, x509_cert,
+                    qr_code_str = move._l10n_sa_get_qr_code(move.company_id, xml_content, x509_cert_sudo,
                                                             move.l10n_sa_invoice_signature, True)
                     qr_code_str = b64encode(qr_code_str).decode()
-                elif zatca_document.state == 'sent' and zatca_document.attachment_id.datas:
+                elif zatca_document.state == 'sent' and zatca_document.sudo().attachment_id.datas:
                     document_xml = zatca_document.attachment_id.with_context(bin_size=False).datas.decode()
                     root = etree.fromstring(b64decode(document_xml))
                     qr_node = root.xpath('//*[local-name()="ID"][text()="QR"]/following-sibling::*/*')[0]
@@ -98,12 +72,12 @@ class AccountMove(models.Model):
         company_name_length_encoding = len(field).to_bytes(length=int_length, byteorder='big')
         return company_name_tag_encoding + company_name_length_encoding + field
 
-    def _l10n_sa_check_billing_reference(self):
+    def _l10n_sa_check_refund_reason(self):
         """
-            Make sure credit/debit notes have a either a reveresed move or debited move or a customer reference
+            Make sure credit/debit notes have a valid reason and reversal reference
         """
         self.ensure_one()
-        return self.debit_origin_id or self.reversed_entry_id or self.ref
+        return self.reversed_entry_id or self.ref
 
     @api.model
     def _l10n_sa_get_qr_code(self, company_id, unsigned_xml, certificate, signature, is_b2c=False):
@@ -129,6 +103,7 @@ class AccountMove(models.Model):
         invoice_datetime = datetime.strptime(invoice_date + ' ' + invoice_time, '%Y-%m-%d %H:%M:%S')
 
         if invoice_datetime and company_id.vat and certificate and signature:
+
             prehash_content = etree.tostring(root)
             invoice_hash = edi_format._l10n_sa_generate_invoice_xml_hash(prehash_content, 'digest')
 
@@ -165,14 +140,12 @@ class AccountMove(models.Model):
     def _compute_show_reset_to_draft_button(self):
         """
             Override to hide the Reset to Draft button for ZATCA Invoices that have been successfully submitted
-            in Production mode.
         """
         super()._compute_show_reset_to_draft_button()
         for move in self:
-            # The "Reset to Draft" button should be hidden in the following cases:
-            # - Invoice has been successfully submitted in Production mode.
-            # - The invoice submission encountered a timed out, regardless of the API mode.
-            if move.l10n_sa_chain_index and (move.company_id.l10n_sa_edi_is_production or not move._l10n_sa_is_in_chain()):
+            # An invoice should only have an index chain if it was successfully submitted without rejection,
+            # or if the submission timed out. In both cases, a user should not be able to reset it to draft.
+            if move.l10n_sa_chain_index:
                 move.show_reset_to_draft_button = False
 
     def button_draft(self):
@@ -213,7 +186,7 @@ class AccountMove(models.Model):
             Save submitted invoice XML hash in case of either Rejection or Acceptance.
         """
         self.ensure_one()
-        bootstrap_cls, title, subtitle, content = ("success", _("Success: Invoice accepted by ZATCA"), "", "" if (not error or not response_data) else response_data)
+        bootstrap_cls, title, subtitle, content = ("success", _("Invoice Successfully Submitted to ZATCA"), "", "" if (not error or not response_data) else response_data)
         status_code = response_data.get('status_code')
         attachment = False
         if error:
@@ -228,12 +201,12 @@ class AccountMove(models.Model):
                 'type': 'binary',
                 'mimetype': 'application/xml',
             })
-            bootstrap_cls, title = ("danger", _("Error: Invoice rejected by ZATCA"))
-            subtitle = _('Please check the details below and retry after addressing them:')
+            bootstrap_cls, title = ("danger", _("Invoice was rejected by ZATCA"))
+            subtitle = _('The invoice was rejected by ZATCA. Please, check the response below:')
             content = response_data['error']
         if response_data and response_data.get('validationResults', {}).get('warningMessages'):
-            bootstrap_cls, title = ("warning", _("Warning: Invoice accepted by ZATCA with warnings"))
-            subtitle = _('Please check the details below:')
+            bootstrap_cls, title = ("warning", _("Invoice was Accepted by ZATCA (with Warnings)"))
+            subtitle = _('The invoice was accepted by ZATCA, but returned warnings. Please, check the response below:')
             content = Markup("""<b>%(status_code)s</b>%(errors)s""") % {
                 "status_code": f"[{status_code}] " if status_code else "",
                 "errors": Markup("<br/>").join([
@@ -241,15 +214,15 @@ class AccountMove(models.Model):
                         "code": m['code'],
                         "message": m['message'],
                     } for m in response_data['validationResults']['warningMessages']
-                ]),
+                ])
             }
         if response_data.get("error") and response_data.get("excepted"):
             bootstrap_cls, title = ("warning", _("Warning: Unable to Retrieve a Response from ZATCA"))
-            subtitle = _('Please check the details below:')
+            subtitle = _('Unable to retrieve response from ZATCA. Please, check the response below:')
             content = response_data['error']
         if status_code == 409:
             bootstrap_cls, title = ("warning", _("Warning: Invoice was already successfully reported to ZATCA"))
-            subtitle = _("Please check the details below:")
+            subtitle = _("This invoice was already successfully reported to ZATCA. Please, check the response below:")
             content = Markup("""<b>%(status_code)s</b>%(errors)s""") % {
                 "status_code": f"[{status_code}] " if status_code else "",
                 "errors": Markup("<br/>").join([
@@ -265,12 +238,12 @@ class AccountMove(models.Model):
             return
 
         if not response_data.get("excepted"):
-            self.journal_id.l10n_sa_latest_submission_hash = self.env['account.edi.xml.ubl_21.zatca']._l10n_sa_generate_invoice_xml_hash(xml_content)
+            self.journal_id.sudo().l10n_sa_latest_submission_hash = self.env['account.edi.xml.ubl_21.zatca']._l10n_sa_generate_invoice_xml_hash(xml_content)
 
-        self.message_post(body=Markup("""
+        self.with_context(no_new_invoice=True).message_post(body=Markup("""
                 <div role='alert' class='alert alert-%s'>
-                    <h4 class='alert-heading my-0'>%s</h4>
-                    <p class='mb-0 mt-1'>
+                    <h4 class='alert-heading'>%s</h4>
+                    <p class='mb-0'>
                         %s
                     </p>
                     %s
@@ -279,7 +252,7 @@ class AccountMove(models.Model):
                     </p>
                 </div>
             """) % (bootstrap_cls, title, subtitle, Markup("<hr>") if content else "", content),
-            attachment_ids=(attachment and [attachment.id]) or [],
+            attachment_ids=attachment and [attachment.id] or []
         )
 
     def _is_l10n_sa_eligibile_invoice(self):
@@ -305,10 +278,10 @@ class AccountMove(models.Model):
             return self.with_context(l10n_sa_file_format=False).env['account.edi.xml.ubl_21.zatca']._export_invoice_filename(self)
         return super()._get_report_base_filename()
 
-    def _get_invoice_report_filename(self, extension='pdf', report=None):
+    def _get_invoice_report_filename(self, extension='pdf'):
         if self._is_l10n_sa_eligibile_invoice():
             return self.with_context(l10n_sa_file_format=extension).env['account.edi.xml.ubl_21.zatca']._export_invoice_filename(self)
-        return super()._get_invoice_report_filename(extension, report)
+        return super()._get_invoice_report_filename(extension)
 
     def _l10n_sa_is_in_chain(self):
         """
@@ -329,27 +302,19 @@ class AccountMove(models.Model):
 
     def _get_l10n_sa_totals(self):
         self.ensure_one()
-        invoice_node = self.env['account.edi.xml.ubl_21.zatca']._get_invoice_node({'invoice': self})
+        invoice_vals = self.env['account.edi.xml.ubl_21.zatca']._export_invoice_vals(self)
         return {
-            'total_amount': invoice_node['cac:LegalMonetaryTotal']['cbc:TaxInclusiveAmount']['_text'],
-            'total_tax': invoice_node['cac:TaxTotal'][-1]['cbc:TaxAmount']['_text'],
+            'total_amount': invoice_vals['vals']['monetary_total_vals']['tax_inclusive_amount'],
+            'total_tax': invoice_vals['vals']['tax_total_vals'][-1]['tax_amount'],
         }
 
-    def _retry_edi_documents_error(self):
-        """
-            Hook to reset the chain head error prior to retrying the submission
-        """
-        self.filtered(lambda m: m.country_code == 'SA').write({'l10n_sa_edi_chain_head_id': False})
+    def _retry_edi_documents_error_hook(self):
+        ''' Overriden to reset the attachment and allow re-submission of ZATCA invoices,
+            Ensures that reciepts on POS are updated after a failed submission.
+        '''
         zatca = self.env.ref('l10n_sa_edi.edi_sa_zatca')
         self.filtered(lambda m: m._get_edi_document(zatca))._detach_attachments()
-        return super()._retry_edi_documents_error()
-
-    def action_show_chain_head(self):
-        """
-            Action to show the chain head of the invoice
-        """
-        self.ensure_one()
-        return self.l10n_sa_edi_chain_head_id._get_records_action(name=_("Chain Head"))
+        return super()._retry_edi_documents_error_hook()
 
 
 class AccountMoveLine(models.Model):

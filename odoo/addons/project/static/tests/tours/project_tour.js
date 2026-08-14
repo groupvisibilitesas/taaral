@@ -1,5 +1,7 @@
+/** @odoo-module */
+
 import { registry } from "@web/core/registry";
-import { stepUtils } from "@web_tour/tour_utils";
+import { stepUtils } from "@web_tour/tour_service/tour_utils";
 
 registry.category("web_tour.tours").add('project_test_tour', {
     url: '/odoo',
@@ -13,10 +15,6 @@ registry.category("web_tour.tours").add('project_test_tour', {
     },
     {
         trigger: '.o-kanban-button-new',
-        run: "click",
-    }, {
-        isActive: ['.o-kanban-button-new.dropdown'], // if the project template dropdown is active
-        trigger: 'button.o-dropdown-item:contains("New Project")',
         run: "click",
     }, {
         trigger: '.o_project_name input',

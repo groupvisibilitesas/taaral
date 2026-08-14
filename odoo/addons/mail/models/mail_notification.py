@@ -4,7 +4,6 @@ from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models
 from odoo.exceptions import AccessError
-from odoo.tools.constants import GC_UNLINK_LIMIT
 from odoo.tools.translate import _
 from odoo.addons.mail.tools.discuss import Store
 
@@ -22,9 +21,6 @@ class MailNotification(models.Model):
     mail_mail_id = fields.Many2one('mail.mail', 'Mail', index=True, help='Optional mail_mail ID. Used mainly to optimize searches.')
     # recipient
     res_partner_id = fields.Many2one('res.partner', 'Recipient', index=True, ondelete='cascade')
-    # set if no matching partner exists (mass mail)
-    # must be normalized except if notification is cancel/failure from invalid email
-    mail_email_address = fields.Char(help='Recipient email address')
     # status
     notification_type = fields.Selection([
         ('inbox', 'Inbox'), ('email', 'Email')
@@ -45,33 +41,38 @@ class MailNotification(models.Model):
         ("unknown", "Unknown error"),
         # mail
         ("mail_bounce", "Bounce"),
-        ("mail_spam", "Detected As Spam"),
         ("mail_email_invalid", "Invalid email address"),
         ("mail_email_missing", "Missing email address"),
         ("mail_from_invalid", "Invalid from address"),
         ("mail_from_missing", "Missing from address"),
         ("mail_smtp", "Connection failed (outgoing mail server problem)"),
-        # mass mode
-        ("mail_bl", "Blacklisted Address"),
-        ("mail_optout", "Opted Out"),
-        ("mail_dup", "Duplicated Email")], string='Failure type')
+        ], string='Failure type')
     failure_reason = fields.Text('Failure reason', copy=False)
 
-    _notification_partner_required = models.Constraint(
-        "CHECK(notification_type != 'inbox' OR res_partner_id IS NOT NULL)",
-        'Customer is required for inbox notification',
-    )
-    _notification_partner_or_email_required = models.Constraint(
-        "CHECK(notification_type != 'email' OR failure_type IS NOT NULL OR res_partner_id IS NOT NULL OR COALESCE(mail_email_address, '') != '')",
-        'Customer or email is required for inbox / email notification',
-    )
-    _res_partner_id_is_read_notification_status_mail_message_id = models.Index("(res_partner_id, is_read, notification_status, mail_message_id)")
-    _author_id_notification_status_failure = models.Index("(author_id, notification_status) WHERE notification_status IN ('bounce', 'exception')")
-    _unique_mail_message_id_res_partner_id_ = models.UniqueIndex("(mail_message_id, res_partner_id) WHERE res_partner_id IS NOT NULL")
+    _sql_constraints = [
+        # email notification: partner is required
+        ('notification_partner_required',
+         "CHECK(notification_type NOT IN ('email', 'inbox') OR res_partner_id IS NOT NULL)",
+         'Customer is required for inbox / email notification'),
+    ]
 
     # ------------------------------------------------------------
     # CRUD
     # ------------------------------------------------------------
+
+    def init(self):
+        self._cr.execute("""
+            CREATE INDEX IF NOT EXISTS mail_notification_res_partner_id_is_read_notification_status_mail_message_id
+                                    ON mail_notification (res_partner_id, is_read, notification_status, mail_message_id);
+            CREATE INDEX IF NOT EXISTS mail_notification_author_id_notification_status_failure
+                                    ON mail_notification (author_id, notification_status)
+                                 WHERE notification_status IN ('bounce', 'exception');
+        """)
+        self.env.cr.execute(
+            """CREATE UNIQUE INDEX IF NOT EXISTS unique_mail_message_id_res_partner_id_if_set
+                                              ON %s (mail_message_id, res_partner_id)
+                                           WHERE res_partner_id IS NOT NULL""" % self._table
+        )
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -97,9 +98,10 @@ class MailNotification(models.Model):
             ('res_partner_id.partner_share', '=', False),
             ('notification_status', 'in', ('sent', 'canceled'))
         ]
-        records = self.search(domain, limit=GC_UNLINK_LIMIT)
-        records.unlink()
-        return len(records), len(records) == GC_UNLINK_LIMIT  # done, remaining
+        records = self.search(domain, limit=models.GC_UNLINK_LIMIT)
+        if len(records) >= models.GC_UNLINK_LIMIT:
+            self.env.ref('base.autovacuum_job')._trigger()
+        return records.unlink()
 
     # ------------------------------------------------------------
     # TOOLS
@@ -108,7 +110,7 @@ class MailNotification(models.Model):
     def format_failure_reason(self):
         self.ensure_one()
         if self.failure_type != 'unknown':
-            return dict(self._fields['failure_type']._description_selection(self.env)).get(self.failure_type, _('No Error'))
+            return dict(self._fields['failure_type'].selection).get(self.failure_type, _('No Error'))
         else:
             if self.failure_reason:
                 return _("Unknown error: %(error)s", error=self.failure_reason)
@@ -121,27 +123,24 @@ class MailNotification(models.Model):
     def _filtered_for_web_client(self):
         """Returns only the notifications to show on the web client."""
         def _filter_unimportant_notifications(notif):
+            # sudo: 'mail.notification' - to check partner_share for all recipients of message regardless of company in multi-company setup
             if notif.notification_status in ['bounce', 'exception', 'canceled'] \
-                    or notif.res_partner_id.partner_share or notif.mail_email_address:
+                    or notif.sudo().res_partner_id.partner_share:
                 return True
             subtype = notif.mail_message_id.subtype_id
             return not subtype or subtype.track_recipients
 
         return self.filtered(_filter_unimportant_notifications)
 
-    def _to_store_defaults(self, target):
-        return [
-            "mail_email_address",
-            "failure_type",
-            "mail_message_id",
-            "notification_status",
-            "notification_type",
-            Store.One(
-                "res_partner_id",
-                [
-                    "name",
-                    "email",
-                    Store.Attr("display_name", predicate=lambda p: not p.name),
-                ],
-            ),
-        ]
+    def _to_store(self, store: Store, /):
+        """Returns the current notifications in the format expected by the web
+        client."""
+        for notif in self:
+            data = notif._read_format(
+                ["failure_type", "notification_status", "notification_type"], load=False
+            )[0]
+            data["message"] = Store.one(notif.mail_message_id, only_id=True)
+            fields = ["name"] if notif.sudo().res_partner_id.name else ["name", "display_name"]
+            # sudo: 'mail.notification' - to show all recipients of message regardless of company in multi-company setup
+            data["persona"] = Store.one(notif.sudo().res_partner_id, fields=fields)
+            store.add(notif, data)

@@ -3,31 +3,43 @@
 # * uom
 #
 # Odoo Translation Bot <c3p@odoo.com>, 2025.
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 18:40+0000\n"
-"PO-Revision-Date: 2026-08-07 05:39+0000\n"
+"POT-Creation-Date: 2026-04-10 18:39+0000\n"
+"PO-Revision-Date: 2025-11-25 11:13+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Kabyle <https://translate.odoo.com/projects/odoo-19/uom/kab/>"
-"\n"
+"Language-Team: Kabyle <https://translate.odoo.com/projects/odoo-18/uom/kab/"
+">\n"
 "Language: kab\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2026.6.1\n"
+"X-Generator: Weblate 5.14.3\n"
 
 #. module: uom
-#: model:ir.model.fields,field_description:uom.field_uom_uom__factor
-msgid "Absolute Quantity"
+#: model_terms:ir.ui.view,arch_db:uom.product_uom_form_view
+msgid ""
+"<span class=\"oe_grey oe_inline\">\n"
+"                                    e.g: 1*(reference unit)=ratio*(this "
+"unit)\n"
+"                                </span>"
+msgstr ""
+
+#. module: uom
+#: model_terms:ir.ui.view,arch_db:uom.product_uom_form_view
+msgid ""
+"<span class=\"oe_grey oe_inline\">\n"
+"                                    e.g: 1*(this unit)=ratio*(reference "
+"unit)\n"
+"                                </span>"
 msgstr ""
 
 #. module: uom
 #: model:ir.model.fields,field_description:uom.field_uom_uom__active
-#, fuzzy
 msgid "Active"
 msgstr "Urmid"
 
@@ -37,38 +49,68 @@ msgid "Add a new unit of measure"
 msgstr ""
 
 #. module: uom
+#: model_terms:ir.actions.act_window,help:uom.product_uom_categ_form_action
+msgid "Add a new unit of measure category"
+msgstr ""
+
+#. module: uom
 #: model_terms:ir.ui.view,arch_db:uom.uom_uom_view_search
-#, fuzzy
 msgid "Archived"
 msgstr "Yettwaɣbeṛ"
 
 #. module: uom
-#: model:ir.model.fields,field_description:uom.field_uom_uom__relative_factor
-#, fuzzy
-msgid "Contains"
-msgstr "Igber"
+#: model:ir.model.fields,field_description:uom.field_uom_uom__factor_inv
+msgid "Bigger Ratio"
+msgstr ""
 
 #. module: uom
+#: model:ir.model.fields.selection,name:uom.selection__uom_uom__uom_type__bigger
+msgid "Bigger than the reference Unit of Measure"
+msgstr ""
+
+#. module: uom
+#: model:ir.model.fields,field_description:uom.field_uom_uom__category_id
+#: model_terms:ir.ui.view,arch_db:uom.uom_uom_view_search
+msgid "Category"
+msgstr "Taggayt"
+
+#. module: uom
+#: model:ir.model.fields,field_description:uom.field_uom_uom__color
+msgid "Color"
+msgstr "Ini"
+
+#. module: uom
+#: model:ir.model.fields,field_description:uom.field_uom_uom__ratio
+msgid "Combined Ratio"
+msgstr ""
+
+#. module: uom
+#: model:ir.model.fields,help:uom.field_uom_uom__category_id
+msgid ""
+"Conversion between Units of Measure can only occur if they belong to the "
+"same category. The conversion will be made based on the ratios."
+msgstr ""
+
+#. module: uom
+#: model:ir.model.fields,field_description:uom.field_uom_category__create_uid
 #: model:ir.model.fields,field_description:uom.field_uom_uom__create_uid
-#, fuzzy
 msgid "Created by"
 msgstr "Yerna-t"
 
 #. module: uom
+#: model:ir.model.fields,field_description:uom.field_uom_category__create_date
 #: model:ir.model.fields,field_description:uom.field_uom_uom__create_date
-#, fuzzy
 msgid "Created on"
 msgstr "Yerna di"
 
 #. module: uom
 #: model:uom.uom,name:uom.product_uom_day
-#, fuzzy
 msgid "Days"
 msgstr "Ussan"
 
 #. module: uom
+#: model:ir.model.fields,field_description:uom.field_uom_category__display_name
 #: model:ir.model.fields,field_description:uom.field_uom_uom__display_name
-#, fuzzy
 msgid "Display Name"
 msgstr "Isem n Ubeqqeḍ"
 
@@ -78,21 +120,37 @@ msgid "Dozens"
 msgstr ""
 
 #. module: uom
+#: model:uom.category,name:uom.product_uom_categ_energy
+msgid "Energy"
+msgstr ""
+
+#. module: uom
+#: model_terms:ir.ui.view,arch_db:uom.uom_uom_view_search
+msgid "Group By"
+msgstr "Sdukel s"
+
+#. module: uom
 #: model:uom.uom,name:uom.product_uom_hour
-#, fuzzy
 msgid "Hours"
 msgstr "Asragen"
 
 #. module: uom
-#: model:ir.model.fields,help:uom.field_uom_uom__relative_factor
+#: model:ir.model.fields,help:uom.field_uom_uom__factor_inv
 msgid ""
-"How much bigger or smaller this unit is compared to the reference UoM for "
-"this unit"
+"How many times this Unit of Measure is bigger than the reference Unit of "
+"Measure in this category: 1 * (this unit) = ratio * (reference unit)"
 msgstr ""
 
 #. module: uom
+#: model:ir.model.fields,help:uom.field_uom_uom__factor
+msgid ""
+"How much bigger or smaller this unit is compared to the reference Unit of "
+"Measure for this category: 1 * (reference unit) = ratio * (this unit)"
+msgstr ""
+
+#. module: uom
+#: model:ir.model.fields,field_description:uom.field_uom_category__id
 #: model:ir.model.fields,field_description:uom.field_uom_uom__id
-#, fuzzy
 msgid "ID"
 msgstr "Asulay"
 
@@ -107,16 +165,21 @@ msgid "L"
 msgstr ""
 
 #. module: uom
+#: model:ir.model.fields,field_description:uom.field_uom_category__write_uid
 #: model:ir.model.fields,field_description:uom.field_uom_uom__write_uid
-#, fuzzy
 msgid "Last Updated by"
 msgstr "Aleqqem aneggaru sɣuṛ"
 
 #. module: uom
+#: model:ir.model.fields,field_description:uom.field_uom_category__write_date
 #: model:ir.model.fields,field_description:uom.field_uom_uom__write_date
-#, fuzzy
 msgid "Last Updated on"
 msgstr "Aleqqem aneggaru di"
+
+#. module: uom
+#: model:uom.category,name:uom.uom_categ_length
+msgid "Length / Distance"
+msgstr ""
 
 #. module: uom
 #: model:res.groups,name:uom.group_uom
@@ -129,56 +192,29 @@ msgid "Minutes"
 msgstr ""
 
 #. module: uom
-#: model:uom.uom,name:uom.product_uom_pack_6
-msgid "Pack of 6"
-msgstr ""
-
-#. module: uom
-#: model:ir.model.fields,field_description:uom.field_uom_uom__parent_path
-msgid "Parent Path"
-msgstr ""
-
-#. module: uom
-#. odoo-javascript
-#: code:addons/uom/static/src/components/many2one_uom/many2one_uom_field.js:0
-#: code:addons/uom/static/src/components/many2x_uom_tags/many2x_uom_tags.js:0
-msgid "Product Field Name"
-msgstr ""
-
-#. module: uom
 #: model:ir.model,name:uom.model_uom_uom
-#, fuzzy
 msgid "Product Unit of Measure"
 msgstr "Aferdis n usɣel n ufaris"
 
 #. module: uom
-#: model_terms:ir.ui.view,arch_db:uom.product_uom_form_view
-#, fuzzy
-msgid "Quantity"
-msgstr "Tanecta"
-
-#. module: uom
-#. odoo-javascript
-#: code:addons/uom/static/src/components/many2one_uom/many2one_uom_field.js:0
-#: code:addons/uom/static/src/components/many2x_uom_tags/many2x_uom_tags.js:0
-msgid "Quantity Field Name"
+#: model:ir.model,name:uom.model_uom_category
+msgid "Product UoM Categories"
 msgstr ""
 
 #. module: uom
-#: model:ir.model.fields,field_description:uom.field_uom_uom__relative_uom_id
-#: model_terms:ir.ui.view,arch_db:uom.product_uom_form_view
-msgid "Reference Unit"
+#: model:ir.model.fields,field_description:uom.field_uom_uom__factor
+#: model_terms:ir.ui.view,arch_db:uom.product_uom_categ_form_view
+msgid "Ratio"
 msgstr ""
 
 #. module: uom
-#. odoo-python
-#: code:addons/uom/models/uom_uom.py:0
-msgid "Reference unit of measure is missing."
+#: model:ir.model.fields.selection,name:uom.selection__uom_uom__uom_type__reference
+msgid "Reference Unit of Measure for this category"
 msgstr ""
 
 #. module: uom
-#: model:ir.model.fields,field_description:uom.field_uom_uom__related_uom_ids
-msgid "Related UoMs"
+#: model:ir.model.fields,field_description:uom.field_uom_category__reference_uom_id
+msgid "Reference UoM"
 msgstr ""
 
 #. module: uom
@@ -192,10 +228,14 @@ msgid "Search UOM"
 msgstr ""
 
 #. module: uom
-#: model:ir.model.fields,field_description:uom.field_uom_uom__sequence
-#, fuzzy
-msgid "Sequence"
-msgstr "Agzum"
+#: model_terms:ir.ui.view,arch_db:uom.uom_categ_view_search
+msgid "Search UoM Category"
+msgstr ""
+
+#. module: uom
+#: model:ir.model.fields.selection,name:uom.selection__uom_uom__uom_type__smaller
+msgid "Smaller than the reference Unit of Measure"
+msgstr ""
 
 #. module: uom
 #. odoo-python
@@ -206,8 +246,22 @@ msgid ""
 "\n"
 "As units of measure impact the whole system, this may cause critical "
 "issues.\n"
+"E.g. modifying the rounding could disturb your inventory balance.\n"
+"\n"
 "Therefore, changing core units of measure in a running database is not "
 "recommended."
+msgstr ""
+
+#. module: uom
+#: model:uom.category,name:uom.uom_categ_surface
+msgid "Surface"
+msgstr ""
+
+#. module: uom
+#: model:ir.model.fields,help:uom.field_uom_uom__rounding
+msgid ""
+"The computed quantity will be a multiple of this value. Use 1.0 for a Unit "
+"of Measure that cannot be further split, such as a piece."
 msgstr ""
 
 #. module: uom
@@ -225,9 +279,35 @@ msgid ""
 msgstr ""
 
 #. module: uom
-#: model:uom.uom,name:uom.product_uom_ton
-msgid "Ton"
+#: model:ir.model.constraint,message:uom.constraint_uom_uom_factor_reference_is_one
+msgid "The reference unit must have a conversion factor equal to 1."
 msgstr ""
+
+#. module: uom
+#: model:ir.model.constraint,message:uom.constraint_uom_uom_rounding_gt_zero
+msgid "The rounding precision must be strictly positive."
+msgstr ""
+
+#. module: uom
+#. odoo-python
+#: code:addons/uom/models/uom_uom.py:0
+msgid ""
+"The unit of measure %(unit)s defined on the order line doesn't belong to the "
+"same category as the unit of measure %(product_unit)s defined on the "
+"product. Please correct the unit of measure defined on the order line or on "
+"the product. They should belong to the same category."
+msgstr ""
+
+#. module: uom
+#. odoo-python
+#: code:addons/uom/models/uom_uom.py:0
+msgid "The value of ratio could not be Zero"
+msgstr ""
+
+#. module: uom
+#: model:ir.model.fields,field_description:uom.field_uom_uom__uom_type
+msgid "Type"
+msgstr "Tawsit"
 
 #. module: uom
 #: model:ir.model.fields,help:uom.field_uom_uom__active
@@ -236,8 +316,18 @@ msgid ""
 msgstr ""
 
 #. module: uom
+#: model:uom.category,name:uom.product_uom_categ_unit
+msgid "Unit"
+msgstr ""
+
+#. module: uom
 #: model:ir.model.fields,field_description:uom.field_uom_uom__name
-msgid "Unit Name"
+msgid "Unit of Measure"
+msgstr "Aferdis"
+
+#. module: uom
+#: model:ir.model.fields,field_description:uom.field_uom_category__name
+msgid "Unit of Measure Category"
 msgstr ""
 
 #. module: uom
@@ -247,26 +337,81 @@ msgstr ""
 
 #. module: uom
 #: model:ir.actions.act_window,name:uom.product_uom_form_action
-#: model_terms:ir.ui.view,arch_db:uom.product_uom_tree_view
-msgid "Units & Packagings"
-msgstr ""
-
-#. module: uom
+#: model_terms:ir.ui.view,arch_db:uom.product_uom_categ_form_view
 #: model_terms:ir.ui.view,arch_db:uom.product_uom_form_view
-#, fuzzy
+#: model_terms:ir.ui.view,arch_db:uom.product_uom_tree_view
 msgid "Units of Measure"
 msgstr "Iferdisen n usɣel"
 
 #. module: uom
-#. odoo-javascript
-#: code:addons/uom/static/src/components/many2one_uom/many2one_uom_field.js:0
-msgid "Unnamed"
+#: model:ir.actions.act_window,name:uom.product_uom_categ_form_action
+msgid "Units of Measure Categories"
+msgstr ""
+
+#. module: uom
+#: model_terms:ir.ui.view,arch_db:uom.product_uom_categ_form_view
+#: model_terms:ir.ui.view,arch_db:uom.product_uom_categ_tree_view
+msgid "Units of Measure categories"
+msgstr ""
+
+#. module: uom
+#: model_terms:ir.actions.act_window,help:uom.product_uom_categ_form_action
+msgid ""
+"Units of measure belonging to the same category can be\n"
+"            converted between each others. For example, in the category\n"
+"            <i>'Time'</i>, you will have the following units of measure:\n"
+"            Hours, Days."
 msgstr ""
 
 #. module: uom
 #. odoo-python
 #: code:addons/uom/models/uom_uom.py:0
+msgid "UoM category %s must have at least one reference unit of measure."
+msgstr ""
+
+#. module: uom
+#. odoo-python
+#: code:addons/uom/models/uom_uom.py:0
+msgid "UoM category %s should have a reference unit of measure."
+msgstr ""
+
+#. module: uom
+#. odoo-python
+#: code:addons/uom/models/uom_uom.py:0
+msgid "UoM category %s should only have one reference unit of measure."
+msgstr ""
+
+#. module: uom
+#: model:ir.model.fields,field_description:uom.field_uom_category__uom_ids
+msgid "Uom"
+msgstr ""
+
+#. module: uom
+#: model:uom.category,name:uom.product_uom_categ_vol
+msgid "Volume"
+msgstr "Ableɣ"
+
+#. module: uom
+#. odoo-python
+#: code:addons/uom/models/uom_uom.py:0
 msgid "Warning for %s"
+msgstr ""
+
+#. module: uom
+#: model:uom.category,name:uom.product_uom_categ_kgm
+msgid "Weight"
+msgstr "taẓayt"
+
+#. module: uom
+#: model:uom.category,name:uom.uom_categ_wtime
+msgid "Working Time"
+msgstr "Akud n umahil"
+
+#. module: uom
+#: model_terms:ir.actions.act_window,help:uom.product_uom_form_action
+msgid ""
+"You must define a conversion rate between several Units of\n"
+"            Measure within the same category."
 msgstr ""
 
 #. module: uom
@@ -285,7 +430,7 @@ msgid "ft"
 msgstr ""
 
 #. module: uom
-#: model:uom.uom,name:uom.product_uom_square_foot
+#: model:uom.uom,name:uom.uom_square_foot
 msgid "ft²"
 msgstr ""
 
@@ -340,17 +485,12 @@ msgid "mi"
 msgstr ""
 
 #. module: uom
-#: model:uom.uom,name:uom.product_uom_milliliter
-msgid "ml"
-msgstr ""
-
-#. module: uom
 #: model:uom.uom,name:uom.product_uom_millimeter
 msgid "mm"
 msgstr ""
 
 #. module: uom
-#: model:uom.uom,name:uom.product_uom_square_meter
+#: model:uom.uom,name:uom.uom_square_meter
 msgid "m²"
 msgstr ""
 
@@ -367,6 +507,11 @@ msgstr ""
 #. module: uom
 #: model:uom.uom,name:uom.product_uom_qt
 msgid "qt (US)"
+msgstr ""
+
+#. module: uom
+#: model:uom.uom,name:uom.product_uom_ton
+msgid "t"
 msgstr ""
 
 #. module: uom

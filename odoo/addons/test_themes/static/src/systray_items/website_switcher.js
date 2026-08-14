@@ -2,10 +2,10 @@
 
 import { patch } from "@web/core/utils/patch";
 import { useService } from '@web/core/utils/hooks';
-import { WebsiteSwitcherSystrayItem } from "@website/client_actions/website_preview/website_switcher_systray_item";
+import { WebsiteSwitcherSystray } from '@website/systray_items/website_switcher';
 import { onMounted, useState } from "@odoo/owl";
 
-patch(WebsiteSwitcherSystrayItem.prototype, {
+patch(WebsiteSwitcherSystray.prototype, {
     setup() {
         super.setup();
 
@@ -39,5 +39,5 @@ patch(WebsiteSwitcherSystrayItem.prototype, {
         });
     },
 
-    template: "test_themes.WebsiteSwitcherSystrayItem",
+    template: 'test_themes.WebsiteSwitcherSystray',
 });

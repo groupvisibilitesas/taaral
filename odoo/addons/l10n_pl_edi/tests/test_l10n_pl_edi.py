@@ -876,6 +876,18 @@ class TestL10nPlEdi(AccountTestInvoicingCommon, CronMixinCase):
         xml = invoice._l10n_pl_edi_render_xml()
         self.assertEqual(self._get_xml_value(xml, "//ns:Podmiot2/ns:DaneIdentyfikacyjne/ns:NIP"), '1111111111')
 
+    def test_import_invoice_discount_is_correctly_set(self):
+        self._assert_import_invoice('invoice_with_discount.xml', [
+            {
+                "price_unit": 41.37,
+                "price_subtotal": 103.43
+            },
+            {
+                "price_unit": 118.3,
+                "price_subtotal": 1064.7
+            }
+        ])
+
     def test_cron_creates_empty_move_on_parsing_error(self):
         """ Create empty journal entry for malformed XML """
 
@@ -917,18 +929,6 @@ class TestL10nPlEdi(AccountTestInvoicingCommon, CronMixinCase):
         self.assertFalse(bad_invoice.invoice_line_ids, "Bad invoice should have no lines")
         self.assertTrue(any("Simulated error" in body for body in bad_invoice.message_ids.mapped('body')))
 
-    def test_import_invoice_discount_is_correctly_set(self):
-        self._assert_import_invoice('invoice_with_discount.xml', [
-            {
-                "price_unit": 41.37,
-                "price_subtotal": 103.43
-            },
-            {
-                "price_unit": 118.3,
-                "price_subtotal": 1064.7
-            }
-        ])
-
     def test_l10n_pl_edi_download_bill_same_db(self):
         """
         Test that when company_1 sends an invoice to company_2 via KSeF (out_invoice with a ksef number),
@@ -957,7 +957,7 @@ class TestL10nPlEdi(AccountTestInvoicingCommon, CronMixinCase):
             patch.object(KsefApiService, 'query_invoice_metadata', side_effect=query_invoice_metadata),
             patch.object(KsefApiService, 'get_invoice_by_ksef_number', side_effect=get_invoice_by_ksef_number) as capt,
         ):
-            self.env['account.move'].sudo()._cron_l10n_pl_edi_download_bills()
+            self.env.ref('l10n_pl_edi.cron_l10n_pl_edi_ksef_download_bills').method_direct_trigger()
 
         capt.assert_called_once_with(ksef_number)
         bill = self.env['account.move'].search([

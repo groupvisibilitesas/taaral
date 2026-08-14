@@ -86,7 +86,6 @@ const DRAGGABLE_CLASS = "o_draggable";
 export const DRAGGED_CLASS = "o_dragged";
 
 const DEFAULT_ACCEPTED_PARAMS = {
-    allowDisconnected: [Boolean], // do not use, introduced for stable versions, to challenge in master
     enable: [Boolean, Function],
     preventDrag: [Function],
     ref: [Object],
@@ -101,7 +100,6 @@ const DEFAULT_ACCEPTED_PARAMS = {
     iframeWindow: [Object, Function],
 };
 const DEFAULT_DEFAULT_PARAMS = {
-    allowDisconnected: false,
     elements: `.${DRAGGABLE_CLASS}`,
     enable: true,
     preventDrag: () => false,
@@ -529,9 +527,6 @@ export function makeDraggableHook(hookParams) {
                     dom.addStyle(ctx.current.element, {
                         width: `${width}px`,
                         height: `${height}px`,
-                        // Limit the impact of width and height !important on the dragged element
-                        "max-width": `${width}px`,
-                        "max-height": `${height}px`,
                         position: "fixed !important",
                     });
 
@@ -579,10 +574,7 @@ export function makeDraggableHook(hookParams) {
                 if (state.dragging) {
                     preventClick = true;
                     if (!inErrorState) {
-                        if (
-                            target &&
-                            (params.allowDisconnected || ctx.current.element.isConnected)
-                        ) {
+                        if (target && ctx.current.element.isConnected) {
                             callBuildHandler("onDrop", { target });
                         }
                         callBuildHandler("onDragEnd");
@@ -683,20 +675,6 @@ export function makeDraggableHook(hookParams) {
             };
 
             /**
-             * Document "visibilitychange" event handler.
-             * Cancels the drag sequence as soon as the tab is no longer visible:
-             * pointer and keyboard states (e.g. "Control" being released) cannot
-             * be tracked while the document is hidden, which would lead to
-             * inconsistent behaviors when returning to the tab.
-             * @param {Event} ev
-             */
-            const onVisibilityChange = (ev) => {
-                if (ev.target.visibilityState === "hidden") {
-                    dragEnd(null);
-                }
-            };
-
-            /**
              * Global (= ref) "pointerdown" event handler.
              * @param {PointerEvent} ev
              */
@@ -728,7 +706,6 @@ export function makeDraggableHook(hookParams) {
                 // https://bugzilla.mozilla.org/show_bug.cgi?id=1352061
                 // https://bugzilla.mozilla.org/show_bug.cgi?id=339293
                 safePrevent(ev);
-                ev.target.focus();
                 let activeElement = document.activeElement;
                 while (activeElement?.nodeName === "IFRAME") {
                     activeElement = activeElement.contentDocument?.activeElement;
@@ -807,7 +784,7 @@ export function makeDraggableHook(hookParams) {
                         return;
                     }
                     dragStart();
-                } else if (!params.allowDisconnected && !ctx.current.element.isConnected) {
+                } else if (!ctx.current.element.isConnected) {
                     return dragEnd(null);
                 }
 
@@ -1095,7 +1072,6 @@ export function makeDraggableHook(hookParams) {
             addWindowListener(useMouseEvents ? "mouseup" : "pointerup", onPointerUp);
             addWindowListener("pointercancel", onPointerCancel);
             addWindowListener("keydown", onKeyDown, { capture: true });
-            setupHooks.addListener(document, "visibilitychange", onVisibilityChange);
             setupHooks.teardown(() => dragEnd(null));
 
             return state;

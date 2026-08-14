@@ -81,10 +81,6 @@
         'test_assetsbundle.file_not_found':[
           'test_assetsbundle/static/invalid_src/xml/file_not_found.xml',
         ],
-        'web.assets_unit_tests': [
-            'test_assetsbundle/static/tests/lazy_component.test.js',
-        ],
     },
-    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 }

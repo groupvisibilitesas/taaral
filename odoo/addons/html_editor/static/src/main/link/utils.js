@@ -31,7 +31,7 @@ const httpCapturedRegex = `(https?:\\/\\/)`;
 
 export const URL_REGEX = new RegExp(`((?:(?:${httpCapturedRegex}${urlRegexBase})`, "i");
 export const EMAIL_REGEX = /^(mailto:)?[\w-.]+@(?:[\w-]+\.)+[\w-]{2,4}$/i;
-export const PHONE_REGEX = /^(?=.*\d)(tel:(?:\/\/)?)?\+? ?[\d(][\d .\-()/]{2,24}$/;
+export const PHONE_REGEX = /^(tel:(?:\/\/)?)?\+?[\d\s.\-()/]{3,25}$/;
 
 export function cleanZWChars(text) {
     return text.replace(/\u200B|\uFEFF/g, "");
@@ -64,7 +64,7 @@ export function deduceURLfromText(text, link) {
             // Avoid converting a http link to https.
             return currentHttpProtocol + match[0];
         } else {
-            return "https://" + match[0];
+            return "http://" + match[0];
         }
     }
     // Check for telephone url.

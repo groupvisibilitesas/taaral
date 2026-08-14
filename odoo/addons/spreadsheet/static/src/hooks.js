@@ -1,14 +1,16 @@
+/** @odoo-module */
+
 import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
 
 import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 
 import { stores } from "@odoo/o-spreadsheet";
-import { useEffect, useEnv, useExternalListener, useState } from "@odoo/owl";
+import { useEffect, useExternalListener, useState } from "@odoo/owl";
 
 import { loadBundle } from "@web/core/assets";
 
-const { useStore, useStoreProvider, NotificationStore, GridRenderer } = stores;
+const { useStore, useStoreProvider, NotificationStore } = stores;
 /**
  * Hook that will capture the 'Ctrl+p' press that corresponds to the user intent to print a spreadsheet.
  * It will prepare the spreadsheet for printing by:
@@ -25,7 +27,6 @@ const { useStore, useStoreProvider, NotificationStore, GridRenderer } = stores;
 export function useSpreadsheetPrint(model) {
     let frozenPrintState = undefined;
     const printState = useState({ active: false });
-    const env = useEnv();
 
     useExternalListener(
         window,
@@ -86,30 +87,16 @@ export function useSpreadsheetPrint(model) {
         };
         frozenPrintState = {
             viewRect,
-            offset: model().getters.getActiveSheetScrollInfo(),
+            offset: model().getters.getActiveSheetDOMScrollInfo(),
             mode: model().config.mode,
         };
-        const startPrinting = () => {
-            // reset the viewport to A1 visibility
-            model().dispatch("SET_VIEWPORT_OFFSET", { offsetX: 0, offsetY: 0 });
-            model().dispatch("RESIZE_SHEETVIEW", { ...getPrintRect() });
-            printState.active = true;
-        };
-        if (model().getters.isDashboard()) {
-            startPrinting();
-            return;
-        }
-        // FIXME: updateMode is not meant fore production use,
-        // we should render a specific component with limited interface instead
         model().updateMode("dashboard");
-        // loaded here as the store provider might be empty (no Model store) when the hook is used
-        const gridRendererStore = env.getStore(GridRenderer);
-        const intervalId = setInterval(() => {
-            if (!gridRendererStore.animations.size) {
-                clearInterval(intervalId);
-                startPrinting();
-            }
-        }, 50);
+        // reset the viewport to A1 visibility
+        model().dispatch("SET_VIEWPORT_OFFSET", { offsetX: 0, offsetY: 0 });
+        model().dispatch("RESIZE_SHEETVIEW", {
+            ...getPrintRect(),
+        });
+        printState.active = true;
     }
 
     function afterPrint() {

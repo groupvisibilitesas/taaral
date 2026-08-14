@@ -1,5 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import api, fields, models
+
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -48,7 +49,7 @@ class ResConfigSettings(models.TransientModel):
 
         if not result.get('success'):
             # If we get a result, it should always be successful as we only archive. If for any reason it is not, we will raise an error.
-            raise UserError(proxy_user.env._("An unexpected error occurred while unregistering. Please try again later."))
+            raise UserError(_("An unexpected error occurred while unregistering. Please try again later."))
 
         # If all goes well we can deactivate the local user.
         proxy_user.active = False

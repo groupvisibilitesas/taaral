@@ -32,7 +32,6 @@ class TestL10nAccountWithholdingTaxesAmounts(TestTaxCommon):
             'reconcile': False,  # On purpose for testing.
             'account_type': 'asset_current'
         })
-        cls.company_data['company'].tax_calculation_rounding_method = 'round_per_line'
 
     def test_case_a(self):
         vat_tax_incl_affecting = self.percent_tax(15, price_include_override='tax_included', include_base_amount=True)
@@ -66,8 +65,8 @@ class TestL10nAccountWithholdingTaxesAmounts(TestTaxCommon):
             {'balance': 900.0,     'tax_ids': []},
             {'balance': -1000.0,   'tax_ids': []},
             {'balance': 100.0,     'tax_ids': []},
-            {'balance': 1000.0,    'tax_ids': []},
-            {'balance': -1000.0,   'tax_ids': wth_tax_affecting.ids},
+            {'balance': 1000.0,    'tax_ids': wth_tax_affecting.ids},
+            {'balance': -1000.0,   'tax_ids': []},
         ])
 
     def test_case_b(self):
@@ -102,8 +101,8 @@ class TestL10nAccountWithholdingTaxesAmounts(TestTaxCommon):
             {'balance': 913.04,    'tax_ids': []},
             {'balance': -1000.0,   'tax_ids': []},
             {'balance': 86.96,     'tax_ids': []},
-            {'balance': 869.57,    'tax_ids': []},
-            {'balance': -869.57,   'tax_ids': wth_tax_affecting.ids},
+            {'balance': 869.57,    'tax_ids': wth_tax_affecting.ids},
+            {'balance': -869.57,   'tax_ids': []},
         ])
 
     def test_case_c(self):
@@ -138,8 +137,8 @@ class TestL10nAccountWithholdingTaxesAmounts(TestTaxCommon):
             {'balance': 1035.0,    'tax_ids': []},
             {'balance': -1150.0,   'tax_ids': []},
             {'balance': 115.0,     'tax_ids': []},
-            {'balance': 1150.0,    'tax_ids': []},
-            {'balance': -1150.0,   'tax_ids': wth_tax_affecting.ids},
+            {'balance': 1150.0,    'tax_ids': wth_tax_affecting.ids},
+            {'balance': -1150.0,   'tax_ids': []},
         ])
 
     def test_case_d(self):
@@ -174,8 +173,8 @@ class TestL10nAccountWithholdingTaxesAmounts(TestTaxCommon):
             {'balance': 1050.0,    'tax_ids': []},
             {'balance': -1150.0,   'tax_ids': []},
             {'balance': 100.0,     'tax_ids': []},
-            {'balance': 1000.0,    'tax_ids': []},
-            {'balance': -1000.0,   'tax_ids': wth_tax_affecting.ids},
+            {'balance': 1000.0,    'tax_ids': wth_tax_affecting.ids},
+            {'balance': -1000.0,   'tax_ids': []},
         ])
 
     def test_case_e(self):
@@ -211,8 +210,8 @@ class TestL10nAccountWithholdingTaxesAmounts(TestTaxCommon):
             {'balance': 1035.0,    'tax_ids': []},
             {'balance': -1150.0,   'tax_ids': []},
             {'balance': 115.0,     'tax_ids': []},
-            {'balance': 1150.0,    'tax_ids': []},
-            {'balance': -1150.0,   'tax_ids': wth_tax_affecting.ids},
+            {'balance': 1150.0,    'tax_ids': wth_tax_affecting.ids},
+            {'balance': -1150.0,   'tax_ids': []},
         ])
 
     def test_case_f(self):
@@ -248,8 +247,8 @@ class TestL10nAccountWithholdingTaxesAmounts(TestTaxCommon):
             {'balance': 1050.0,    'tax_ids': []},
             {'balance': -1150.0,   'tax_ids': []},
             {'balance': 100.0,     'tax_ids': []},
-            {'balance': 1000.0,    'tax_ids': []},
-            {'balance': -1000.0,   'tax_ids': wth_tax_affecting.ids},
+            {'balance': 1000.0,    'tax_ids': wth_tax_affecting.ids},
+            {'balance': -1000.0,   'tax_ids': []},
         ])
 
     def test_case_g(self):
@@ -285,8 +284,8 @@ class TestL10nAccountWithholdingTaxesAmounts(TestTaxCommon):
             {'balance': 1017.4,    'tax_ids': []},
             {'balance': -1130.44,   'tax_ids': []},
             {'balance': 113.04,     'tax_ids': []},
-            {'balance': 1130.44,    'tax_ids': []},
-            {'balance': -1130.44,   'tax_ids': wth_tax_affecting.ids},
+            {'balance': 1130.44,    'tax_ids': wth_tax_affecting.ids},
+            {'balance': -1130.44,   'tax_ids': []},
         ])
 
     def test_case_h(self):
@@ -322,8 +321,8 @@ class TestL10nAccountWithholdingTaxesAmounts(TestTaxCommon):
             {'balance': 1030.44,    'tax_ids': []},
             {'balance': -1130.44,   'tax_ids': []},
             {'balance': 100.00,     'tax_ids': []},
-            {'balance': 1000.00,    'tax_ids': []},
-            {'balance': -1000.00,   'tax_ids': wth_tax_affecting.ids},
+            {'balance': 1000.00,    'tax_ids': wth_tax_affecting.ids},
+            {'balance': -1000.00,   'tax_ids': []},
         ])
 
     def test_case_i(self):
@@ -359,8 +358,8 @@ class TestL10nAccountWithholdingTaxesAmounts(TestTaxCommon):
             {'balance': 1030.44,    'tax_ids': []},
             {'balance': -1130.44,   'tax_ids': []},
             {'balance': 100.00,     'tax_ids': []},
-            {'balance': 1000.01,    'tax_ids': []},
-            {'balance': -1000.01,   'tax_ids': wth_tax_affecting.ids},
+            {'balance': 1000.01,    'tax_ids': wth_tax_affecting.ids},
+            {'balance': -1000.01,   'tax_ids': []},
         ])
 
     def test_case_j(self):
@@ -396,8 +395,8 @@ class TestL10nAccountWithholdingTaxesAmounts(TestTaxCommon):
             {'balance': 1043.48,    'tax_ids': []},
             {'balance': -1130.44,   'tax_ids': []},
             {'balance': 86.96,      'tax_ids': []},
-            {'balance': 869.57,     'tax_ids': []},
-            {'balance': -869.57,    'tax_ids': wth_tax_affecting.ids},
+            {'balance': 869.57,     'tax_ids': wth_tax_affecting.ids},
+            {'balance': -869.57,    'tax_ids': []},
         ])
 
     # Note, tests were written based on a spreadsheet that was worked on collaboratively, which is why test case K was skipped.
@@ -435,8 +434,8 @@ class TestL10nAccountWithholdingTaxesAmounts(TestTaxCommon):
             {'balance': 1050.00,    'tax_ids': []},
             {'balance': -1150.00,   'tax_ids': []},
             {'balance': 100.00,      'tax_ids': []},
-            {'balance': 1000.00,     'tax_ids': []},
-            {'balance': -1000.00,    'tax_ids': wth_tax_affecting.ids},
+            {'balance': 1000.00,     'tax_ids': wth_tax_affecting.ids},
+            {'balance': -1000.00,    'tax_ids': []},
         ])
 
     def test_case_m(self):
@@ -477,10 +476,10 @@ class TestL10nAccountWithholdingTaxesAmounts(TestTaxCommon):
             {'balance': -1150.00,   'tax_ids': []},
             {'balance': 115.00,     'tax_ids': []},
             {'balance': 103.50,     'tax_ids': []},
-            {'balance': 1150.00,    'tax_ids': []},
-            {'balance': -1150.00,   'tax_ids': wth_tax_affecting.ids},
-            {'balance': 1035.00,    'tax_ids': []},
-            {'balance': -1035.00,   'tax_ids': wth_tax.ids},
+            {'balance': 1150.00,    'tax_ids': wth_tax_affecting.ids},
+            {'balance': -1150.00,   'tax_ids': []},
+            {'balance': 1035.00,    'tax_ids': wth_tax.ids},
+            {'balance': -1035.00,   'tax_ids': []},
         ])
 
     def test_case_n(self):
@@ -521,10 +520,10 @@ class TestL10nAccountWithholdingTaxesAmounts(TestTaxCommon):
             {'balance': -1150.00,    'tax_ids': []},
             {'balance': 115.00,      'tax_ids': []},
             {'balance': 100.00,      'tax_ids': []},
-            {'balance': 1150.00,     'tax_ids': []},
-            {'balance': -1150.00,    'tax_ids': wth_tax_affecting.ids},
-            {'balance': 1000.00,     'tax_ids': []},
-            {'balance': -1000.00,    'tax_ids': wth_tax_affected.ids},
+            {'balance': 1150.00,     'tax_ids': wth_tax_affecting.ids},
+            {'balance': -1150.00,    'tax_ids': []},
+            {'balance': 1000.00,     'tax_ids': wth_tax_affected.ids},
+            {'balance': -1000.00,    'tax_ids': []},
         ])
 
     def test_invoice_total_unaffected(self):

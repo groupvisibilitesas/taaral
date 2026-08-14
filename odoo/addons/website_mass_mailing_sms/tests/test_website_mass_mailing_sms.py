@@ -14,13 +14,13 @@ class TestWebsiteMassMailingSMS(WebsiteMassMailingMultiCompanyCommon, MassSMSCom
             {
                 'name': 'Test Recipient A',
                 'country_id': country_be.id,
-                'phone': '0456000011',
+                'mobile': '0456000011',
                 'company_id': cls.company_admin.id,
             },
             {
                 'name': 'Test Recipient B',
                 'country_id': country_be.id,
-                'phone': '0456000022',
+                'mobile': '0456000022',
                 'company_id': cls.company_2.id,
             },
         ])

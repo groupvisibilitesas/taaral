@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { registry } from "@web/core/registry";
 import * as wsTourUtils from "@website_sale/js/tours/tour_utils";
 
@@ -22,9 +24,12 @@ registry.category("web_tour.tours").add('event_buy_last_ticket', {
         trigger: '#wrap:not(:has(a[href*="/event"]:contains("Last ticket test")))',
     },
     {
-        content: "Edit 2 units of `VIP` ticket type",
-        trigger: ".modal input:eq(1)",
-        run: "edit 2",
+        content: "Select 2 units of `VIP` ticket type",
+        trigger: ".modal select:eq(0)",
+        run: "select 2",
+    },
+    {
+        trigger: ".modal select:eq(0):has(option:contains(2):selected)",
     },
     {
         content: "Click on `Register` button",
@@ -53,10 +58,14 @@ registry.category("web_tour.tours").add('event_buy_last_ticket', {
         run: "click",
         expectUnloadPage: true,
     },
-    ...wsTourUtils.payWithTransfer({
-        redirect: true,
-        expectUnloadPage: true,
-        waitFinalizeYourPayment: true,
+    ...wsTourUtils.fillAdressForm({
+        name: "test1",
+        phone: "111 111",
+        email: "test@example.com",
+        street: "street test 1",
+        city: "testCity",
+        zip: "123",
     }),
+    ...wsTourUtils.payWithTransfer(true),
     ],
 });

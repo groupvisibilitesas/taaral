@@ -1,3 +1,4 @@
+import { LivechatButton } from "@im_livechat/embed/common/livechat_button";
 import {
     defineLivechatModels,
     loadDefaultEmbedConfig,
@@ -5,7 +6,7 @@ import {
 import { SuggestionService } from "@mail/core/common/suggestion_service";
 import { click, contains, insertText, start } from "@mail/../tests/mail_test_helpers";
 import { describe, expect, test } from "@odoo/hoot";
-import { patchWithCleanup } from "@web/../tests/web_test_helpers";
+import { mountWithCleanup, patchWithCleanup } from "@web/../tests/web_test_helpers";
 
 describe.current.tags("desktop");
 defineLivechatModels();
@@ -13,6 +14,7 @@ defineLivechatModels();
 test("Visitor cannot use @ mentions in livechat", async () => {
     await loadDefaultEmbedConfig();
     await start({ authenticateAs: false });
+    await mountWithCleanup(LivechatButton);
     await click(".o-livechat-LivechatButton");
     await contains(".o-mail-Message", { text: "Hello, how may I help you?" });
     patchWithCleanup(SuggestionService.prototype, {
@@ -23,6 +25,6 @@ test("Visitor cannot use @ mentions in livechat", async () => {
         },
     });
     await insertText(".o-mail-Composer-input", "@");
-    await expect.waitForSteps(["#,::,:,/"]);
+    await expect.waitForSteps(["#,:,/"]);
     await contains(".o-mail-Composer-suggestion", { count: 0 });
 });

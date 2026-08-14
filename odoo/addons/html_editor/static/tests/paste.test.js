@@ -2,20 +2,13 @@ import { CLIPBOARD_WHITELISTS } from "@html_editor/core/clipboard_plugin";
 import { beforeEach, describe, expect, test } from "@odoo/hoot";
 import { manuallyDispatchProgrammaticEvent as dispatch, press, waitFor } from "@odoo/hoot-dom";
 import { animationFrame, tick } from "@odoo/hoot-mock";
-import { dataURItoBlob, onRpc, patchWithCleanup } from "@web/../tests/web_test_helpers";
+import { onRpc, patchWithCleanup } from "@web/../tests/web_test_helpers";
 import { setupEditor, testEditor } from "./_helpers/editor";
 import { cleanLinkArtifacts, unformat } from "./_helpers/format";
 import { getContent, setSelection } from "./_helpers/selection";
 import { pasteHtml, pasteOdooEditorHtml, pasteText, undo } from "./_helpers/user_actions";
 import { createBaseContainer } from "@html_editor/utils/base_container";
 import { expectElementCount } from "./_helpers/ui_expectations";
-import {
-    EMBEDDED_COMPONENT_PLUGINS,
-    MAIN_PLUGINS,
-    NO_EMBEDDED_COMPONENTS_FALLBACK_PLUGINS,
-} from "@html_editor/plugin_sets";
-import { MAIN_EMBEDDINGS } from "@html_editor/others/embedded_components/embedding_sets";
-import { nodeSize } from "@html_editor/utils/position";
 
 function isInline(node) {
     return ["I", "B", "U", "S", "EM", "STRONG", "IMG", "BR", "A", "FONT"].includes(node);
@@ -49,7 +42,7 @@ describe("Html Paste cleaning - whitelist", () => {
                         pasteHtml(editor, `a<${tagDescription}>b</${tagName}>c`);
                     },
                     contentAfter: "<p>123" + html + "[]4</p>",
-                    config: { baseContainers: ["DIV", "P"] },
+                    config: { baseContainer: "DIV" },
                 });
             });
         }
@@ -75,7 +68,7 @@ describe("Html Paste cleaning - whitelist", () => {
                 );
             },
             contentAfter:
-                '<p>123a</p><table class="table table-bordered o_table"><tbody><tr><th class="o_table_header">h</th></tr><tr><td>b</td></tr></tbody></table><p>d[]</p>',
+                '<p>123a</p><table class="table table-bordered o_table"><tbody><tr><td>h</td></tr><tr><td>b</td></tr></tbody></table><p>d[]</p>',
         });
     });
 
@@ -102,10 +95,11 @@ describe("Html Paste cleaning - whitelist", () => {
                 <table class="table table-bordered o_table">
                     <tbody>
                         <tr>
-                            <td><p>[]<br></p></td>
+                            <td><p><br></p></td>
                         </tr>
                     </tbody>
                 </table>
+                <p>[]<br></p>
             `),
         });
     });
@@ -173,7 +167,6 @@ describe("Html Paste cleaning - whitelist", () => {
         });
     });
 
-    test.tags("font-dependent");
     test("should remove b, keep p, and remove unwanted styles when pasting list from gdocs", async () => {
         await testEditor({
             contentBefore: "<p>[]<br></p>",
@@ -188,7 +181,6 @@ describe("Html Paste cleaning - whitelist", () => {
         });
     });
 
-    test.tags("font-dependent");
     test("should remove unwanted styles and keep tags when pasting list from gdoc", async () => {
         await testEditor({
             contentBefore: "<p>[]<br></p>",
@@ -453,15 +445,6 @@ describe("Simple text", () => {
                 },
                 contentAfter: "<div>ab</div><div>cd[]</div>",
             });
-        });
-    });
-    test("should not paste a text when in contenteditable=false", async () => {
-        await testEditor({
-            contentBefore: '<div contenteditable="false">a[b]c</div>',
-            stepFunction: async (editor) => {
-                pasteText(editor, "xyz");
-            },
-            contentAfter: '<div contenteditable="false">a[b]c</div>',
         });
     });
 });
@@ -886,7 +869,7 @@ describe("Simple html elements containing <br>", () => {
                     pasteHtml(editor, "<div>abc<br>def</div>");
                 },
                 contentAfter: `<div>abc</div><div>def[]</div>`,
-                config: { baseContainers: ["DIV", "P"] },
+                config: { baseContainer: "DIV" },
             });
         });
 
@@ -2291,7 +2274,7 @@ describe("Complex html div", () => {
                 pasteHtml(editor, complexHtmlData);
             },
             contentAfter: `<div>abcdef</div><div dir="rtl">ghijkl</div><div>jklmno[]</div>`,
-            config: { baseContainers: ["DIV", "P"] },
+            config: { baseContainer: "DIV" },
         });
     });
 
@@ -2313,7 +2296,7 @@ describe("Complex html div", () => {
                 pasteHtml(editor, copiedHtmlData);
             },
             contentAfter: `<p>12</p><ol><li><div>abc</div></li><li><div>def</div><div>ghi</div><div>jkl[]</div></li></ol><p>3</p>`,
-            config: { baseContainers: ["DIV", "P"] },
+            config: { baseContainer: "DIV" },
         });
     });
 
@@ -2465,7 +2448,8 @@ describe("Special cases", () => {
                         unformat(`
                             <ul>
                                 <li>abc</li>
-                                <li>def
+                                <li>def</li>
+                                <li class="oe-nested">
                                     <ul>
                                         <li>123</li>
                                         <li>456</li>
@@ -2479,7 +2463,8 @@ describe("Special cases", () => {
                     <ol>
                         <li>Alpha</li>
                         <li>abc</li>
-                        <li><p>def</p>
+                        <li>def</li>
+                        <li class="oe-nested">
                             <ol>
                                 <li>123</li>
                                 <li>456[]</li>
@@ -2520,7 +2505,8 @@ describe("Special cases", () => {
                 },
                 contentAfter: unformat(`
                     <ul>
-                        <li><p>Alpha</p>
+                        <li>Alpha</li>
+                        <li class="oe-nested">
                             <ul>
                                 <li class="oe-nested">
                                     <ul>
@@ -2550,10 +2536,12 @@ describe("Special cases", () => {
                         unformat(`
                             <ul>
                                 <li>ab</li>
-                                <li>cd
+                                <li>cd</li>
+                                <li class="oe-nested">
                                     <ol>
                                         <li>ef</li>
-                                        <li>gh
+                                        <li>gh</li>
+                                        <li class="oe-nested">
                                             <ul class="o_checklist">
                                                 <li>ij</li>
                                                 <li>kl</li>
@@ -2568,10 +2556,12 @@ describe("Special cases", () => {
                 contentAfter: unformat(`
                     <ol>
                         <li>ab</li>
-                        <li><p>cd</p>
+                        <li>cd</li>
+                        <li class="oe-nested">
                             <ol>
                                 <li>ef</li>
-                                <li><p>gh</p>
+                                <li>gh</li>
+                                <li class="oe-nested">
                                     <ol>
                                         <li>ij</li>
                                         <li>kl[]</li>
@@ -2593,10 +2583,12 @@ describe("Special cases", () => {
                         unformat(`
                             <ul>
                                 <li>ab</li>
-                                <li>cd
+                                <li>cd</li>
+                                <li class="oe-nested">
                                     <ol>
                                         <li>ef</li>
-                                        <li>gh
+                                        <li>gh</li>
+                                        <li class="oe-nested">
                                             <ul class="o_checklist">
                                                 <li>ij</li>
                                                 <li>kl</li>
@@ -2611,10 +2603,12 @@ describe("Special cases", () => {
                 contentAfter: unformat(`
                     <ul>
                         <li>ab</li>
-                        <li><p>cd</p>
+                        <li>cd</li>
+                        <li class="oe-nested">
                             <ul>
                                 <li>ef</li>
-                                <li><p>gh</p>
+                                <li>gh</li>
+                                <li class="oe-nested">
                                     <ul>
                                         <li>ij</li>
                                         <li>kl[]</li>
@@ -2721,10 +2715,12 @@ describe("Special cases", () => {
                 },
                 contentAfter: unformat(`
                     <ul>
-                        <li><p>ab</p>
+                        <li>ab</li>
+                        <li class="oe-nested">
                             <ul>
                                 <li>cd</li>
-                                <li><p>ef</p>
+                                <li>ef</li>
+                                <li class="oe-nested">
                                     <ul>
                                         <li>gh</li>
                                         <li>ij</li>
@@ -2733,7 +2729,8 @@ describe("Special cases", () => {
                                     </ul>
                                 </li>
                                 <li>op</li>
-                                <li><p>qr</p>
+                                <li>qr</li>
+                                <li class="oe-nested">
                                     <ul>
                                         <li>st</li>
                                         <li>uv[]</li>
@@ -2746,7 +2743,6 @@ describe("Special cases", () => {
             });
         });
 
-        test.tags("font-dependent");
         test("should paste checklist from gdoc", async () => {
             await testEditor({
                 contentBefore: "<p>[]<br></p>",
@@ -3006,8 +3002,7 @@ describe("link", () => {
 
         test("should replace link for new content when pasting in an empty link (collapsed)", async () => {
             await testEditor({
-                contentBefore:
-                    '<p><a href="http://test.test/" oe-zws-empty-inline="">[]\u200B</a></p>',
+                contentBefore: '<p><a href="#" oe-zws-empty-inline="">[]\u200B</a></p>',
                 stepFunction: async (editor) => {
                     pasteText(editor, "abc");
                 },
@@ -3016,8 +3011,7 @@ describe("link", () => {
         });
         test("should replace link for new content when pasting in an empty link (collapsed)(2)", async () => {
             await testEditor({
-                contentBefore:
-                    '<p>xy<a href="http://test.test/" oe-zws-empty-inline="">\u200B[]</a>z</p>',
+                contentBefore: '<p>xy<a href="#" oe-zws-empty-inline="">\u200B[]</a>z</p>',
                 stepFunction: async (editor) => {
                     pasteText(editor, "abc");
                 },
@@ -3027,7 +3021,7 @@ describe("link", () => {
 
         test("should replace link for new content (url) when pasting in an empty link (collapsed)", async () => {
             const { el, editor } = await setupEditor(
-                `<p>xy<a href="http://test.test/" oe-zws-empty-inline="">\u200B[]</a>z</p>`
+                `<p>xy<a href="#" oe-zws-empty-inline="">\u200B[]</a>z</p>`
             );
             pasteText(editor, "http://odoo.com");
             await animationFrame();
@@ -3038,11 +3032,9 @@ describe("link", () => {
         });
 
         test("should replace link for new content (imgUrl) when pasting in an empty link (collapsed) (1)", async () => {
-            const { el, editor } = await setupEditor(
-                `<p>xy<a href="http://test.test/">[]</a>z</p>`
-            );
+            const { el, editor } = await setupEditor(`<p>xy<a href="#">[]</a>z</p>`);
             expect(getContent(el)).toBe(
-                `<p>xy\ufeff<a href="http://test.test/" class="o_link_in_selection">\ufeff[]\ufeff</a>\ufeffz</p>`
+                `<p>xy\ufeff<a href="#" class="o_link_in_selection">\ufeff[]</a>\ufeffz</p>`
             );
             pasteText(editor, imgUrl);
             await animationFrame();
@@ -3055,7 +3047,7 @@ describe("link", () => {
 
         test("should replace link for new content (url) when pasting in an empty link (collapsed) (2)", async () => {
             const { el, editor } = await setupEditor(
-                `<p>xy<a href="http://test.test/" oe-zws-empty-inline="">\u200B[]</a>z</p>`
+                `<p>xy<a href="#" oe-zws-empty-inline="">\u200B[]</a>z</p>`
             );
             pasteText(editor, imgUrl);
             await animationFrame();
@@ -3073,7 +3065,7 @@ describe("link", () => {
 
         test("should paste and transform plain text content over an empty link (collapsed) (1)", async () => {
             await testEditor({
-                contentBefore: '<p><a href="http://test.test/">[]\u200B</a></p>',
+                contentBefore: '<p><a href="#">[]\u200B</a></p>',
                 stepFunction: async (editor) => {
                     pasteText(editor, "abc www.odoo.com xyz");
                 },
@@ -3083,7 +3075,7 @@ describe("link", () => {
 
         test("should paste and transform plain text content over an empty link (collapsed) (2)", async () => {
             await testEditor({
-                contentBefore: '<p><a href="http://test.test/">[]\u200B</a></p>',
+                contentBefore: '<p><a href="#">[]\u200B</a></p>',
                 stepFunction: async (editor) => {
                     pasteText(editor, "odoo.com\ngoogle.com");
                 },
@@ -3095,7 +3087,7 @@ describe("link", () => {
 
         test("should paste html content over an empty link (collapsed)", async () => {
             await testEditor({
-                contentBefore: '<p><a href="http://test.test/">[]\u200B</a></p>',
+                contentBefore: '<p><a href="#">[]\u200B</a></p>',
                 stepFunction: async (editor) => {
                     pasteHtml(
                         editor,
@@ -3108,7 +3100,7 @@ describe("link", () => {
         });
         test("should paste html content over an empty link (collapsed) (2)", async () => {
             await testEditor({
-                contentBefore: '<p><a href="http://test.test/">[]\u200B</a></p>',
+                contentBefore: '<p><a href="#">[]\u200B</a></p>',
                 stepFunction: async (editor) => {
                     pasteHtml(
                         editor,
@@ -3127,10 +3119,6 @@ describe("link", () => {
             await expectElementCount(".o-we-powerbox", 0);
             expect(cleanLinkArtifacts(getContent(el))).toBe(
                 `<p>abc <a href="${url}">${url}</a> def[]</p>`
-            );
-            undo(editor);
-            expect(cleanLinkArtifacts(getContent(el))).toBe(
-                `<p o-we-hint-text='Type "/" for commands' class="o-we-hint">[]</p>`
             );
         });
 
@@ -3162,10 +3150,6 @@ describe("link", () => {
             expect(cleanLinkArtifacts(getContent(el))).toBe(
                 `<p><a href="${url}">${url}</a> <a href="${videoUrl}">${videoUrl}</a> <a href="${imgUrl}">${imgUrl}</a>[]</p>`
             );
-            undo(editor);
-            expect(cleanLinkArtifacts(getContent(el))).toBe(
-                `<p o-we-hint-text='Type "/" for commands' class="o-we-hint">[]</p>`
-            );
         });
 
         test("should paste and transform multiple URLs (collapsed) (2)", async () => {
@@ -3176,19 +3160,15 @@ describe("link", () => {
             expect(cleanLinkArtifacts(getContent(el))).toBe(
                 `<p><a href="${url}">${url}</a> abc <a href="${videoUrl}">${videoUrl}</a> def <a href="${imgUrl}">${imgUrl}</a>[]</p>`
             );
-            undo(editor);
-            expect(cleanLinkArtifacts(getContent(el))).toBe(
-                `<p o-we-hint-text='Type "/" for commands' class="o-we-hint">[]</p>`
-            );
         });
 
         test("should paste plain text inside non empty link (collapsed)", async () => {
             await testEditor({
-                contentBefore: '<p><a href="http://test.test/">a[]b</a></p>',
+                contentBefore: '<p><a href="#">a[]b</a></p>',
                 stepFunction: async (editor) => {
                     pasteHtml(editor, "<span>123</span>");
                 },
-                contentAfter: '<p><a href="http://test.test/">a123[]b</a></p>',
+                contentAfter: '<p><a href="#">a123[]b</a></p>',
             });
         });
 
@@ -3199,18 +3179,6 @@ describe("link", () => {
                     pasteText(editor, "http://www.xyz.com");
                 },
                 contentAfter: "<pre>http://www.xyz.com[]</pre>",
-            });
-        });
-
-        test("should not merge consecutive pastes of the same URL into a single anchor", async () => {
-            await testEditor({
-                contentBefore: "<p>[]</p>",
-                stepFunction: async (editor) => {
-                    pasteText(editor, "http://www.xyz.com");
-                    pasteText(editor, "http://www.xyz.com");
-                },
-                contentAfter:
-                    '<p><a href="http://www.xyz.com">http://www.xyz.com</a><a href="http://www.xyz.com">http://www.xyz.com</a>[]</p>',
             });
         });
 
@@ -3603,9 +3571,9 @@ describe("images", () => {
             // select xxx in "<p>ab[xxx]cd</p>""
             const p = editor.editable.querySelector("p");
             const selection = {
-                anchorNode: p.childNodes[0],
+                anchorNode: p.childNodes[1],
                 anchorOffset: 2,
-                focusNode: p.childNodes[0],
+                focusNode: p.childNodes[1],
                 focusOffset: 5,
             };
             setSelection(selection);
@@ -3650,7 +3618,6 @@ describe("images", () => {
 });
 
 describe("youtube video", () => {
-    const config = { Plugins: [...MAIN_PLUGINS, ...NO_EMBEDDED_COMPONENTS_FALLBACK_PLUGINS] };
     describe("range collapsed", () => {
         beforeEach(() => {
             onRpc("/html_editor/video_url/data", async (request) => {
@@ -3660,7 +3627,7 @@ describe("youtube video", () => {
         });
 
         test("should paste and transform a youtube URL in a p (1)", async () => {
-            const { el, editor } = await setupEditor("<p>ab[]cd</p>", { config });
+            const { el, editor } = await setupEditor("<p>ab[]cd</p>");
             pasteText(editor, videoUrl);
             await animationFrame();
             await expectElementCount(".o-we-powerbox", 1);
@@ -3674,9 +3641,7 @@ describe("youtube video", () => {
         });
 
         test("should paste and transform a youtube URL in a span (1)", async () => {
-            const { el, editor } = await setupEditor('<p>a<span class="a">b[]c</span>d</p>', {
-                config,
-            });
+            const { el, editor } = await setupEditor('<p>a<span class="a">b[]c</span>d</p>');
             pasteText(editor, "https://youtu.be/dQw4w9WgXcQ");
             await animationFrame();
             await expectElementCount(".o-we-powerbox", 1);
@@ -3691,8 +3656,7 @@ describe("youtube video", () => {
 
         test("should paste and not transform a youtube URL in a existing link", async () => {
             const { el, editor, plugins } = await setupEditor(
-                '<p>a<a href="http://existing.com">b[]c</a>d</p>',
-                { config }
+                '<p>a<a href="http://existing.com">b[]c</a>d</p>'
             );
             pasteText(editor, "https://youtu.be/dQw4w9WgXcQ");
             // Ensure the powerbox is active
@@ -3705,7 +3669,7 @@ describe("youtube video", () => {
 
         test("should paste a youtube URL as a link in a p (1)", async () => {
             const url = "https://youtu.be/dQw4w9WgXcQ";
-            const { el, editor } = await setupEditor("<p>[]</p>", { config });
+            const { el, editor } = await setupEditor("<p>[]</p>");
             pasteText(editor, url);
             await animationFrame();
             await expectElementCount(".o-we-powerbox", 1);
@@ -3717,7 +3681,7 @@ describe("youtube video", () => {
 
         test("should not revert a history step when pasting a youtube URL as a link (1)", async () => {
             const url = "https://youtu.be/dQw4w9WgXcQ";
-            const { el, editor } = await setupEditor("<p>[]</p>", { config });
+            const { el, editor } = await setupEditor("<p>[]</p>");
             // paste text to have a history step recorded
             pasteText(editor, "*should not disappear*");
             pasteText(editor, url);
@@ -3741,7 +3705,7 @@ describe("youtube video", () => {
         });
 
         test("should paste and transform a youtube URL in a p (2)", async () => {
-            const { el, editor } = await setupEditor("<p>ab[xxx]cd</p>", { config });
+            const { el, editor } = await setupEditor("<p>ab[xxx]cd</p>");
             pasteText(editor, "https://youtu.be/dQw4w9WgXcQ");
             await animationFrame();
             await expectElementCount(".o-we-powerbox", 1);
@@ -3756,8 +3720,7 @@ describe("youtube video", () => {
 
         test("should paste and transform a youtube URL in a span (2)", async () => {
             const { el, editor } = await setupEditor(
-                '<p>a<span class="a">b[x<a href="http://existing.com">546</a>x]c</span>d</p>',
-                { config }
+                '<p>a<span class="a">b[x<a href="http://existing.com">546</a>x]c</span>d</p>'
             );
             pasteText(editor, videoUrl);
             await animationFrame();
@@ -3773,8 +3736,7 @@ describe("youtube video", () => {
 
         test("should paste and not transform a youtube URL in a existing link", async () => {
             const { el, editor, plugins } = await setupEditor(
-                '<p>a<a href="http://existing.com">b[qsdqsd]c</a>d</p>',
-                { config }
+                '<p>a<a href="http://existing.com">b[qsdqsd]c</a>d</p>'
             );
             pasteText(editor, videoUrl);
             // Ensure the powerbox is active
@@ -3786,7 +3748,7 @@ describe("youtube video", () => {
         });
 
         test("should paste a youtube URL as a link in a p (2)", async () => {
-            const { el, editor } = await setupEditor("<p>ab[xxx]cd</p>", { config });
+            const { el, editor } = await setupEditor("<p>ab[xxx]cd</p>");
             pasteText(editor, videoUrl);
             await animationFrame();
             await expectElementCount(".o-we-powerbox", 1);
@@ -3799,15 +3761,15 @@ describe("youtube video", () => {
         });
 
         test("should not revert a history step when pasting a youtube URL as a link (2)", async () => {
-            const { el, editor } = await setupEditor("<p>[]</p>", { config });
+            const { el, editor } = await setupEditor("<p>[]</p>");
             // paste text (to have a history step recorded)
             pasteText(editor, "abxxxcd");
             // select xxx in "<p>ab[xxx]cd</p>"
             const p = editor.editable.querySelector("p");
             const selection = {
-                anchorNode: p.childNodes[0],
+                anchorNode: p.childNodes[1],
                 anchorOffset: 2,
-                focusNode: p.childNodes[0],
+                focusNode: p.childNodes[1],
                 focusOffset: 5,
             };
             setSelection(selection);
@@ -3826,7 +3788,7 @@ describe("youtube video", () => {
         });
 
         test("should restore selection after pasting video URL followed by UNDO (1)", async () => {
-            const { el, editor } = await setupEditor("<p>[abc]</p>", { config });
+            const { el, editor } = await setupEditor("<p>[abc]</p>");
             pasteText(editor, videoUrl);
             await animationFrame();
             await expectElementCount(".o-we-powerbox", 1);
@@ -3838,7 +3800,7 @@ describe("youtube video", () => {
         });
 
         test("should restore selection after pasting video URL followed by UNDO (2)", async () => {
-            const { el, editor } = await setupEditor("<p>[abc]</p>", { config });
+            const { el, editor } = await setupEditor("<p>[abc]</p>");
             pasteText(editor, videoUrl);
             await animationFrame();
             await expectElementCount(".o-we-powerbox", 1);
@@ -3849,39 +3811,6 @@ describe("youtube video", () => {
             undo(editor);
             expect(getContent(el)).toBe("<p>[abc]</p>");
         });
-    });
-});
-
-describe("youtube video with embedded components", () => {
-    beforeEach(() => {
-        onRpc("/html_editor/video_url/data", async (request) => {
-            const { params } = await request.json();
-            return { platform: "youtube", video_id: params.video_url.split("v=")[1] };
-        });
-    });
-    const config = {
-        Plugins: [...MAIN_PLUGINS, ...EMBEDDED_COMPONENT_PLUGINS],
-        resources: { embedded_components: MAIN_EMBEDDINGS },
-    };
-    test("should embed a video on youtube URL paste", async () => {
-        const { editor } = await setupEditor("<p>[]<br></p>", { config });
-        pasteText(editor, videoUrl);
-        await waitFor(".o-we-powerbox");
-        // Pick first command (Embed video)
-        await press("Enter");
-        await waitFor(`[data-embedded="video"] iframe`);
-        expect(`[data-embedded="video"] iframe`).toHaveCount(1);
-    });
-    test("should paste a youtube URL as a link in a p", async () => {
-        const { el, editor } = await setupEditor("<p>[]<br></p>", { config });
-        pasteText(editor, videoUrl);
-        await waitFor(".o-we-powerbox");
-        // Pick the second command (Paste as URL)
-        await press("ArrowDown");
-        await press("Enter");
-        expect(cleanLinkArtifacts(getContent(el))).toBe(
-            `<p><a href="${videoUrl}">${videoUrl}</a>[]</p>`
-        );
     });
 });
 
@@ -3912,42 +3841,6 @@ describe("editable in iframe", () => {
         const { el, editor } = await setupEditor("<p>[]</p>", { props: { iframe: true } });
         pasteOdooEditorHtml(editor, `<p>text<b>bold text</b>more text</p>`);
         expect(getContent(el)).toBe("<p>text<b>bold text</b>more text[]</p>");
-    });
-});
-
-describe("paste in contenteditable span", () => {
-    test("should unwrap block when pasting inside a contenteditable span", async () => {
-        const { el, editor } = await setupEditor(
-            `<p contenteditable="false"><span contenteditable="true">[]</span></p>`
-        );
-        pasteOdooEditorHtml(editor, `<h1>text<b>bold text</b>more text</h1>`);
-        expect(getContent(el)).toBe(
-            `<p data-selection-placeholder=""><br></p><p contenteditable="false"><span contenteditable="true">text<b>bold text</b>more text[]</span></p><p data-selection-placeholder="" style="margin: -9px 0px 8px;"><br></p>`
-        );
-    });
-    test("should unwrap block with br between them when pasting inside a contenteditable span", async () => {
-        const { el, editor } = await setupEditor(
-            `<p contenteditable="false"><span contenteditable="true">[]</span></p>`
-        );
-        pasteOdooEditorHtml(
-            editor,
-            `<p>a paragraph</p><h1>text<b>bold text</b>more text</h1><p>another</p>`
-        );
-        expect(getContent(el)).toBe(
-            `<p data-selection-placeholder=""><br></p><p contenteditable="false"><span contenteditable="true">a paragraph<br>text<b>bold text</b>more text<br>another[]</span></p><p data-selection-placeholder="" style="margin: -9px 0px 8px;"><br></p>`
-        );
-    });
-    test("should unwrap block with br between them when pasting in text inside a contenteditable span", async () => {
-        const { el, editor } = await setupEditor(
-            `<p contenteditable="false"><span contenteditable="true">ab[]cd</span></p>`
-        );
-        pasteOdooEditorHtml(
-            editor,
-            `<p>a paragraph</p><h1>text<b>bold text</b>more text</h1><p>another</p>`
-        );
-        expect(getContent(el)).toBe(
-            `<p data-selection-placeholder=""><br></p><p contenteditable="false"><span contenteditable="true">aba paragraph<br>text<b>bold text</b>more text<br>another[]cd</span></p><p data-selection-placeholder="" style="margin: -9px 0px 8px;"><br></p>`
-        );
     });
 });
 
@@ -4184,9 +4077,9 @@ ${"            "}
             </tr>
             <tr>
                 <td>14pt MONO TEXT
-                []</td>
+                </td>
             </tr>
-        </tbody></table>`,
+        </tbody></table><p>[]<br></p>`,
         });
     });
 
@@ -4294,10 +4187,10 @@ ${"        "}
                     text on color background</td>
             </tr>
             <tr>
-                <td>14pt MONO TEXT[]</td>
+                <td>14pt MONO TEXT</td>
             </tr>
         </tbody>
-    </table>`,
+    </table><p>[]<br></p>`,
         });
     });
 
@@ -4423,10 +4316,10 @@ ${"        "}
         </tr>
         <tr>
             <td>
-                14pt MONO TEXT[]
+                14pt MONO TEXT
             </td>
         </tr>
-    </tbody></table>`,
+    </tbody></table><p>[]<br></p>`,
         });
     });
 
@@ -4453,10 +4346,11 @@ ${"        "}
                 <table class="table table-bordered o_table">
                     <tbody>
                         <tr>
-                            <td><p>[]<br></p></td>
+                            <td><p><br></p></td>
                         </tr>
                     </tbody>
                 </table>
+                <p>[]<br></p>
             `),
         });
     });
@@ -4493,8 +4387,8 @@ ${"        "}
                         <table class="table table-bordered o_table">
                             <tbody>
                                 <tr>
-                                    <th class="o_table_header">1</th>
-                                    <th class="o_table_header">2</th>
+                                    <td>1</td>
+                                    <td>2</td>
                                 </tr>
                                 <tr>
                                     <td>1</td>
@@ -4502,10 +4396,11 @@ ${"        "}
                                 </tr>
                                 <tr>
                                     <td>1</td>
-                                    <td>2[]</td>
+                                    <td>2</td>
                                 </tr>
                             </tbody>
                         </table>
+                        <p>[]<br></p>
                     `),
         });
     });
@@ -4531,11 +4426,12 @@ ${"        "}
                         <table class="table table-bordered o_table">
                             <tbody>
                                 <tr>
-                                    <th class="o_table_header">1</th>
-                                    <th class="o_table_header">2[]</th>
+                                    <td>1</td>
+                                    <td>2</td>
                                 </tr>
                             </tbody>
                         </table>
+                        <p>[]<br></p>
                     `),
         });
     });
@@ -4614,9 +4510,9 @@ describe("onDrop", () => {
         const dragdata = new DataTransfer();
         await dispatch(imgElement, "dragstart", { dataTransfer: dragdata });
         await animationFrame();
-        const imageHTML = dragdata.getData("application/vnd.odoo.odoo-editor");
+        const imageHTML = dragdata.getData("application/vnd.odoo.odoo-editor-node");
         expect(imageHTML).toBe(
-            `<p><img class="img-fluid" data-file-name="image.png" src="${base64Image}"></p>`
+            `<img class="img-fluid" data-file-name="image.png" src="${base64Image}">`
         );
 
         const dropData = new DataTransfer();
@@ -4624,212 +4520,85 @@ describe("onDrop", () => {
             "text/html",
             `<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"><img src="${base64Image}">`
         );
-        // Simulate the application/vnd.odoo.odoo-editor data that the browser would do.
-        dropData.setData("application/vnd.odoo.odoo-editor", imageHTML);
+        // Simulate the application/vnd.odoo.odoo-editor-node data that the browser would do.
+        dropData.setData("application/vnd.odoo.odoo-editor-node", imageHTML);
         await dispatch(pElement, "drop", { dataTransfer: dropData });
         await animationFrame();
 
         expect(getContent(el)).toBe(
-            `<p>ab<img src="${base64Image}" data-file-name="image.png" class="img-fluid">[]c</p>`
+            `<p>ab<img class="img-fluid" data-file-name="image.png" src="${base64Image}">[]c</p>`
         );
     });
-    test("should drag and drop an image after another image", async () => {
-        const base64Image =
-            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII=";
-        const base64Image2 =
-            "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUA\n        AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO\n            9TXL0Y4OHwAAAABJRU5ErkJggg==";
-
-        const { el } = await setupEditor(
-            `<p>[<img class="img-fluid" data-file-name="image.png" src="${base64Image}">]<img class="img-fluid" data-file-name="image.png" src="${base64Image2}"></p>`
-        );
-        const pElement = el.firstChild;
-        const firstImage = pElement.childNodes[0];
-
-        patchWithCleanup(document, {
-            caretPositionFromPoint: () => ({
-                offsetNode: pElement,
-                offset: pElement.childNodes.length,
-            }),
-        });
-
-        const dragdata = new DataTransfer();
-        await dispatch(firstImage, "dragstart", { dataTransfer: dragdata });
-        await animationFrame();
-        const imageHTML = dragdata.getData("application/vnd.odoo.odoo-editor");
-        expect(imageHTML).toBe(
-            `<p><img class="img-fluid" data-file-name="image.png" src="${base64Image}"></p>`
-        );
-
-        const dropData = new DataTransfer();
-        dropData.setData(
-            "text/html",
-            `<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"><img src="${base64Image}">`
-        );
-        // Simulate the application/vnd.odoo.odoo-editor data that the browser would do.
-        dropData.setData("application/vnd.odoo.odoo-editor", imageHTML);
-        await dispatch(pElement, "drop", { dataTransfer: dropData });
-        await animationFrame();
-
-        expect(getContent(el)).toBe(
-            `<p><img class="img-fluid" data-file-name="image.png" src="${base64Image2}"><img src="${base64Image}" data-file-name="image.png" class="img-fluid">[]</p>`
-        );
-    });
-    test("should drag and drop third image after first image", async () => {
-        const base64Image1 =
-            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVR42mP8z8BQz0AEYBxVSF+FABJADveWkH6oAAAAAElFTkSuQmCC";
-        const base64Image2 =
-            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII=";
-        const base64Image3 =
-            "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUA\n        AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO\n            9TXL0Y4OHwAAAABJRU5ErkJggg==";
-
-        const { el } = await setupEditor(
-            `<p><img class="img-fluid" data-file-name="image.png" src="${base64Image1}"><img class="img-fluid" data-file-name="image.png" src="${base64Image2}">[<img class="img-fluid" data-file-name="image.png" src="${base64Image3}">]</p>`
-        );
-        const pElement = el.firstChild;
-        const firstImage = pElement.childNodes[0];
-
-        patchWithCleanup(document, {
-            caretPositionFromPoint: () => ({ offsetNode: pElement, offset: 1 }),
-        });
-
-        const dragdata = new DataTransfer();
-        await dispatch(firstImage, "dragstart", { dataTransfer: dragdata });
-        await animationFrame();
-        const imageHTML = dragdata.getData("application/vnd.odoo.odoo-editor");
-        expect(imageHTML).toBe(
-            `<p><img class="img-fluid" data-file-name="image.png" src="${base64Image3}"></p>`
-        );
-
-        const dropData = new DataTransfer();
-        dropData.setData(
-            "text/html",
-            `<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"><img src="${base64Image3}">`
-        );
-        // Simulate the application/vnd.odoo.odoo-editor data that the browser would do.
-        dropData.setData("application/vnd.odoo.odoo-editor", imageHTML);
-        await dispatch(pElement, "drop", { dataTransfer: dropData });
-        await animationFrame();
-
-        expect(getContent(el)).toBe(
-            `<p><img class="img-fluid" data-file-name="image.png" src="${base64Image1}"><img src="${base64Image3}" data-file-name="image.png" class="img-fluid">[]<img class="img-fluid" data-file-name="image.png" src="${base64Image2}"></p>`
-        );
-    });
-    test("should drag and drop multiple images after another image", async () => {
-        const base64Image1 =
-            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVR42mP8z8BQz0AEYBxVSF+FABJADveWkH6oAAAAAElFTkSuQmCC";
-        const base64Image2 =
-            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII=";
-        const base64Image3 =
-            "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUA\n        AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO\n            9TXL0Y4OHwAAAABJRU5ErkJggg==";
-
-        const { el } = await setupEditor(
-            `<p>[<img class="img-fluid" data-file-name="image.png" src="${base64Image1}"><img class="img-fluid" data-file-name="image.png" src="${base64Image2}">]<img class="img-fluid" data-file-name="image.png" src="${base64Image3}"></p>`
-        );
-        const pElement = el.firstChild;
-        const firstImage = pElement.childNodes[0];
-
-        patchWithCleanup(document, {
-            caretPositionFromPoint: () => ({
-                offsetNode: pElement,
-                offset: pElement.childNodes.length,
-            }),
-        });
-
-        const dragdata = new DataTransfer();
-        await dispatch(firstImage, "dragstart", { dataTransfer: dragdata });
-        await animationFrame();
-        const imageHTML = dragdata.getData("application/vnd.odoo.odoo-editor");
-        expect(imageHTML).toBe(
-            `<p><img class="img-fluid" data-file-name="image.png" src="${base64Image1}"><img class="img-fluid" data-file-name="image.png" src="${base64Image2}"></p>`
-        );
-
-        const dropData = new DataTransfer();
-        dropData.setData(
-            "text/html",
-            `<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"><img src="${base64Image1}"><img src="${base64Image2}">`
-        );
-        // Simulate the application/vnd.odoo.odoo-editor data that the browser would do.
-        dropData.setData("application/vnd.odoo.odoo-editor", imageHTML);
-        await dispatch(pElement, "drop", { dataTransfer: dropData });
-        await animationFrame();
-
-        expect(getContent(el)).toBe(
-            `<p><img class="img-fluid" data-file-name="image.png" src="${base64Image3}"><img src="${base64Image1}" data-file-name="image.png" class="img-fluid"><img src="${base64Image2}" data-file-name="image.png" class="img-fluid">[]</p>`
-        );
-    });
-    test("should drag and drop banner", async () => {
-        const { el } = await setupEditor(
-            `<p>[a</p>
-            <div class="o_editor_banner user-select-none o-contenteditable-false lh-1 d-flex align-items-center alert alert-info pb-0 pt-3" data-oe-role="status" contenteditable="false" role="status">
-                <i class="o_editor_banner_icon mb-3 fst-normal" data-oe-aria-label="Banner Info" aria-label="Banner Info">💡</i>
-                <div class="o_editor_banner_content o-contenteditable-true w-100 px-3" contenteditable="true">
-                    <p>Test</p>
-                </div>
-            </div>
-            <p>b]</p>
-            <p>c</p>`
-        );
-
-        const bannerElement = el.querySelector(".o_editor_banner");
-        const targetNodeForDrop = el.lastChild;
-        patchWithCleanup(document, {
-            caretPositionFromPoint: () => ({
-                offsetNode: targetNodeForDrop,
-                offset: nodeSize(targetNodeForDrop),
-            }),
-        });
-
-        const dragdata = new DataTransfer();
-        await dispatch(bannerElement, "dragstart", { dataTransfer: dragdata });
-        await animationFrame();
-        const odooEditorData = dragdata.getData("application/vnd.odoo.odoo-editor");
-        const textHtml = dragdata.getData("text/html");
-        const dropData = new DataTransfer();
-        dropData.setData("text/html", textHtml);
-        // Simulate the application/vnd.odoo.odoo-editor data that the browser would do.
-        dropData.setData("application/vnd.odoo.odoo-editor", odooEditorData);
-        await dispatch(targetNodeForDrop, "drop", { dataTransfer: dropData });
-        await animationFrame();
-
-        expect(getContent(el)).toBe(
-            `<p><br></p><p>ca
-            </p><div role="status" contenteditable="false" data-oe-role="status" class="o_editor_banner user-select-none o-contenteditable-false lh-1 d-flex align-items-center alert alert-info pb-0 pt-3">
-                <i aria-label="Banner Info" data-oe-aria-label="Banner Info" class="o_editor_banner_icon mb-3 fst-normal">💡</i>
-                <div contenteditable="true" class="o_editor_banner_content o-contenteditable-true w-100 px-3">
-                    <p>Test</p>
-                </div>
-            </div><p>b[]</p>`
-        );
-    });
-    test("should drag and drop icon", async () => {
-        const { el } = await setupEditor(
-            `<p>[a</p><p><span class="fa fa-heart"></span>b]</p><p>c</p>`
-        );
+    test("should be able to drag and drop icon", async () => {
+        const { el } = await setupEditor(`<p>a<span class="fa fa-heart">[]</span>bc</p><p>def</p>`);
+        const pElement = el.lastElementChild;
         const iconElement = el.querySelector(".fa");
-        const targetNodeForDrop = el.lastChild;
+        const defTextNode = pElement.firstChild;
 
         patchWithCleanup(document, {
             caretPositionFromPoint: () => ({
-                offsetNode: targetNodeForDrop,
-                offset: nodeSize(targetNodeForDrop),
+                offsetNode: defTextNode,
+                offset: defTextNode.textContent.length,
+            }),
+        });
+        setSelection({
+            anchorNode: iconElement,
+            anchorOffset: 0,
+        });
+        await animationFrame();
+        const dragdata = new DataTransfer();
+        await dispatch(iconElement, "dragstart", { dataTransfer: dragdata });
+
+        const dropData = new DataTransfer();
+        // Simulate the text/html data with unwanted styles that the browser would do.
+        dropData.setData(
+            "text/html",
+            `<span class="fa fa-heart" contenteditable="false" style="font-weight: normal">\u200b</span>`
+        );
+        await dispatch(pElement, "drop", { dataTransfer: dropData });
+        await animationFrame();
+
+        expect(getContent(el)).toBe(
+            '<p>abc</p><p>def\ufeff<span class="fa fa-heart" contenteditable="false">\u200b</span>\ufeff[]</p>'
+        );
+    });
+    test("should be able to drag and drop icon along with text", async () => {
+        const { el } = await setupEditor(`<p>a[b<span class="fa fa-heart"></span>cd]</p><p>ef</p>`);
+        const pElement = el.lastElementChild;
+        const iconElement = el.querySelector(".fa");
+        const efTextNode = pElement.firstChild;
+
+        patchWithCleanup(document, {
+            caretPositionFromPoint: () => ({
+                offsetNode: efTextNode,
+                offset: efTextNode.textContent.length,
             }),
         });
 
         const dragdata = new DataTransfer();
         await dispatch(iconElement, "dragstart", { dataTransfer: dragdata });
-        await animationFrame();
 
-        const odooEditorData = dragdata.getData("application/vnd.odoo.odoo-editor");
-        const textHtml = dragdata.getData("text/html");
         const dropData = new DataTransfer();
-        dropData.setData("text/html", textHtml);
-        // Simulate the application/vnd.odoo.odoo-editor-node data that the browser would do.
-        dropData.setData("application/vnd.odoo.odoo-editor-node", odooEditorData);
-        await dispatch(targetNodeForDrop, "drop", { dataTransfer: dropData });
+        // Simulate the text/html data with unwanted styles that the browser would do.
+        dropData.setData(
+            "text/html",
+            `<span style="font-weight: normal">b<span class="fa fa-heart" contenteditable="false" style="font-weight: normal">\u200b</span>cd</span>`
+        );
+        await dispatch(pElement, "drop", { dataTransfer: dropData });
         await animationFrame();
 
         expect(getContent(el)).toBe(
-            '<p><br></p><p>ca</p><p>\ufeff<span class="fa fa-heart" contenteditable="false">\u200b</span>\ufeffb[]</p>'
+            '<p>a</p><p>efb\ufeff<span class="fa fa-heart" contenteditable="false">\u200b</span>\ufeffcd[]</p>'
         );
     });
 });
+
+function dataURItoBlob(dataURI) {
+    const binary = atob(dataURI.split(",")[1]);
+    const array = [];
+    const mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
+    for (let i = 0; i < binary.length; i++) {
+        array.push(binary.charCodeAt(i));
+    }
+    return new Blob([new Uint8Array(array)], { type: mimeString });
+}

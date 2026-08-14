@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from contextlib import contextmanager
 from unittest.mock import patch
 
 import odoo
 from odoo import http
 from odoo.addons.base.tests.common import HttpCaseWithUserPortal, HttpCaseWithUserDemo
-from odoo.exceptions import AccessError, UserError
+from odoo.exceptions import AccessError
 
 from datetime import datetime, timedelta
 
@@ -23,14 +22,6 @@ class TestAuthSignupFlow(HttpCaseWithUserPortal, HttpCaseWithUserDemo):
 
     def _get_free_signup_url(self):
         return '/web/signup'
-
-    @contextmanager
-    def patch_captcha_signup(self):
-        def _verify_request_recaptcha_token(self, captcha):
-            if captcha != 'signup':
-                raise UserError("CAPTCHA test")
-        with patch.object(self.env.registry['ir.http'], '_verify_request_recaptcha_token', _verify_request_recaptcha_token):
-            yield
 
     def test_confirmation_mail_free_signup(self):
         """
@@ -55,45 +46,19 @@ class TestAuthSignupFlow(HttpCaseWithUserPortal, HttpCaseWithUserDemo):
         }
 
         # Override unlink to not delete the email if the send works.
-        with patch.object(odoo.addons.mail.models.mail_mail.MailMail, 'unlink', lambda self: None), self.patch_captcha_signup():
+        with patch.object(odoo.addons.mail.models.mail_mail.MailMail, 'unlink', lambda self: None):
             # Call the controller
             url_free_signup = self._get_free_signup_url()
-            response = self.url_open(url_free_signup, data=payload)
-            self.assertIn('/web/login_successful?account_created=True', response.url)
+            self.url_open(url_free_signup, data=payload)
             # Check if an email is sent to the new userw
             new_user = self.env['res.users'].search([('name', '=', name)])
             self.assertTrue(new_user)
             mail = self.env['mail.message'].search([('message_type', '=', 'email_outgoing'), ('model', '=', 'res.users'), ('res_id', '=', new_user.id)], limit=1)
             self.assertTrue(mail, "The new user must be informed of his registration")
 
-    def test_free_signup_case_insensitive_email(self):
-        """ Signing up with a case variant of an existing user's email is rejected. """
-        self._activate_free_signup()
-        url = self._get_free_signup_url()
-
-        def _signup(login, name):
-            self.authenticate(None, None)
-            return self.url_open(url, data={
-                'login': login,
-                'name': name,
-                'password': 'mypassword',
-                'confirm_password': 'mypassword',
-                'csrf_token': http.Request.csrf_token(self),
-            })
-
-        with patch.object(odoo.addons.mail.models.mail_mail.MailMail, 'unlink', lambda self: None), \
-                self.patch_captcha_signup():
-            _signup('TwinCase@example.com', 'Twin')
-            response = _signup('twincase@EXAMPLE.com', 'Twin Bis')
-
-        users = self.env['res.users'].with_context(active_test=False).search(
-            [('login', '=ilike', 'twincase@example.com')])
-        self.assertEqual(len(users), 1, "Case-variant signup must not create a second user.")
-        self.assertIn("Another user is already registered using this email address.", response.text)
-
     def test_compute_signup_url(self):
         user = self.user_demo
-        user.group_ids -= self.env.ref('base.group_partner_manager')
+        user.groups_id -= self.env.ref('base.group_partner_manager')
 
         partner = self.partner_portal
         partner.signup_prepare()
@@ -120,5 +85,28 @@ class TestAuthSignupFlow(HttpCaseWithUserPortal, HttpCaseWithUserDemo):
         ])
         for u in users:
             u.create_date = datetime.now() - timedelta(days=5, minutes=10)
+        self.env.flush_all()
         with self.registry.cursor() as cr:
             users.with_env(users.env(cr=cr)).send_unregistered_user_reminder(after_days=5, batch_size=100)
+
+    def test_alert_new_device_lang(self):
+        self.env['res.lang']._activate_lang('fr_BE')
+        user = self.user_demo
+        user.lang = 'fr_BE'
+
+        view = self.env.ref('auth_signup.alert_login_new_device')
+        view.with_context(lang='en_US').arch = '<div>EN</div>'
+        view.update_field_translations('arch_db', {
+           'fr_BE': {
+                'EN': 'FR',
+            }
+        })
+
+        self.env['mail.mail'].search([]).sudo().unlink()
+        with (
+            patch.object(self.env.registry['mail.mail'], 'unlink', lambda m: None),
+            patch.object(self.env.registry['res.users'], '_should_alert_new_device', lambda u: True),
+        ):
+            self.authenticate('demo', 'demo')
+            mail = self.env['mail.mail'].search([], limit=1)
+            self.assertEqual(mail.body_html, '<div>FR</div>')

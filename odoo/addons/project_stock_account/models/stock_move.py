@@ -2,7 +2,8 @@
 
 from odoo import _, models
 from odoo.exceptions import ValidationError
-from odoo.fields import Domain
+from odoo.osv.expression import OR
+from odoo.tools import format_list
 
 
 class StockMove(models.Model):
@@ -24,9 +25,11 @@ class StockMove(models.Model):
     def _get_valid_moves_domain(self):
         return ['&', ('picking_id.project_id', '!=', False), ('picking_type_id.analytic_costs', '!=', False)]
 
-    def _create_analytic_move(self):
-        domain = Domain.OR([[('picking_id', '=', False)], self._get_valid_moves_domain()])
-        super(StockMove, self.filtered_domain(domain))._create_analytic_move()
+    def _account_analytic_entry_move(self):
+        domain = self._get_valid_moves_domain()
+        domain = OR([[('picking_id', '=', False)], domain])
+        valid_moves = self.filtered_domain(domain)
+        super(StockMove, valid_moves)._account_analytic_entry_move()
 
     def _prepare_analytic_lines(self):
         res = super()._prepare_analytic_lines()
@@ -38,7 +41,7 @@ class StockMove(models.Model):
             if missing_plan_names:
                 raise ValidationError(_(
                     "'%(missing_plan_names)s' analytic plan(s) required on the project '%(project_name)s' linked to the stock picking.",
-                    missing_plan_names=missing_plan_names,
+                    missing_plan_names=format_list(self.env, missing_plan_names),
                     project_name=project.name,
                 ))
         return res

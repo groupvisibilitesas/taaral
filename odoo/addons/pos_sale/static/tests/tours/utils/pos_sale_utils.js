@@ -1,6 +1,8 @@
-import * as ProductScreen from "@point_of_sale/../tests/pos/tours/utils/product_screen_util";
-import * as Dialog from "@point_of_sale/../tests/generic_helpers/dialog_util";
-import * as Numpad from "@point_of_sale/../tests/generic_helpers/numpad_util";
+/** @odoo-module */
+
+import * as ProductScreen from "@point_of_sale/../tests/tours/utils/product_screen_util";
+import * as Dialog from "@point_of_sale/../tests/tours/utils/dialog_util";
+import * as Numpad from "@point_of_sale/../tests/tours/utils/numpad_util";
 
 export function selectNthOrder(n) {
     return [
@@ -63,7 +65,7 @@ export function downPaymentFirstOrder(amount) {
             run: "click",
         },
         Numpad.click(amount),
-        Dialog.confirm("Apply"),
+        Dialog.confirm("Ok"),
     ];
 }
 

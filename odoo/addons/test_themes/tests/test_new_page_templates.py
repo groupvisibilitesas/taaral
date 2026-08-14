@@ -5,7 +5,7 @@ from lxml import etree, html
 import logging
 import re
 
-from odoo.addons.http_routing.tests.common import MockRequest
+from odoo.addons.website.tools import MockRequest
 from odoo.tests import tagged, TransactionCase
 from odoo.tools import escape_psql
 
@@ -37,12 +37,7 @@ CONFLICTUAL_CLASSES = [
 CONFLICTUAL_CLASSES_RE = {
     # Align
     re.compile(r'^align-(?!(self|items)-).+'): [],
-    re.compile(r'^align-self-(?:start|center|end)$'): [],
-    re.compile(r'^align-self-sm-(?:start|center|end)$'): [],
-    re.compile(r'^align-self-md-(?:start|center|end)$'): [],
-    re.compile(r'^align-self-lg-(?:start|center|end)$'): [],
-    re.compile(r'^align-self-xl-(?:start|center|end)$'): [],
-    re.compile(r'^align-self-xxl-(?:start|center|end)$'): [],
+    re.compile(r'^align-self-.+'): [],
     re.compile(r'^align-items-.+'): [],
     # BG
     re.compile(r'^bg(-|_)'): [
@@ -62,10 +57,9 @@ CONFLICTUAL_CLASSES_RE = {
     re.compile(r'^m(x|e)-\d$'): [],
     re.compile(r'^m(y|t)-\d$'): [],
     re.compile(r'^m(y|b)-\d$'): [],
-    re.compile(r'^p-?\d+$'): [],
-    re.compile(r'^(p(x|s)-?\d+|padding-.+)$'): [],
-    re.compile(r'^(p(x|e)-?\d+|padding-.+)$'): [],
-    re.compile(r'^(p(y|t)-?\d+|padding-.+)$'): [],
+    re.compile(r'^(p(x|s)?-?\d+|padding-.+)$'): [],
+    re.compile(r'^(p(x|e)?-?\d+|padding-.+)$'): [],
+    re.compile(r'^(p(y|t)?-?\d+|padding-.+)$'): [],
     # p0+pb32 appears in Bewise and Graphene
     re.compile(r'^(p(y|b)?-?\d+|padding-.+)$'): ['p0'],
     # Font awesome
@@ -77,7 +71,30 @@ CONFLICTUAL_CLASSES_RE = {
     # Shadow
     re.compile(r'^shadow-.+'): [],
     # Shapes
-    re.compile(r'^o_html_builder_[A-Z].+'): [],
+    re.compile(r'^o_web_editor_[A-Z].+'): [],
+    # Snippets
+    re.compile(r'^s_.*'): [
+        's_alert_md',
+        's_blockquote_with_icon', 's_blockquote',
+        's_carousel_default', 's_carousel_rounded', 's_carousel_boxed',
+        's_carousel_indicators_dots', 's_carousel_indicators_hidden', 's_carousel_controllers_indicators_outside',
+        's_quotes_carousel',
+        's_dynamic', 's_dynamic_empty',
+        's_dynamic_snippet_blog_posts', 's_blog_posts_effect_marley', 's_blog_post_big_picture', 's_blog_posts_post_picture_size_default',
+        's_event_upcoming_snippet', 's_event_event_picture',
+        's_col_no_bgcolor', 's_col_no_resize',
+        's_image_gallery', 's_image_gallery_indicators_arrows_boxed', 's_image_gallery_indicators_arrows_rounded',
+        's_image_gallery_indicators_dots', 's_image_gallery_indicators_squared', 's_image_gallery_indicators_rounded', 's_image_gallery_indicators_hidden', 's_image_gallery_indicators_bars', 's_image_gallery_indicators_outside','s_image_gallery_controllers_outside_arrows_right', 's_image_gallery_controllers_outside',
+        's_newsletter_list', 's_newsletter_subscribe_form',
+        's_parallax_is_fixed', 's_parallax_no_overflow_hidden',
+        's_process_steps_connector_line',
+        's_product_catalog_dish_name', 's_product_catalog_dish_dot_leaders',
+        's_progress_bar_label_hidden', 's_progress_bar_label_inline',
+        's_table_of_content_vertical_navbar', 's_table_of_content_navbar_sticky', 's_table_of_content_navbar_wrap',
+        's_timeline_card',
+        's_website_form_custom', 's_website_form_dnone', 's_website_form_field', 's_website_form_input', 's_website_form_mark', 's_website_form_submit', 's_website_form_no_submit_label',
+        's_donation_btn', 's_donation_custom_btn',
+    ],
     # Text
     re.compile(r'^text-(?!(center|end|start|bg-|lg-)).*$'): [
         'text-break', 'text-decoration-none', 'text-reset',
@@ -87,44 +104,6 @@ CONFLICTUAL_CLASSES_RE = {
     # Width
     re.compile(r'^w-\d*$'): [],
 }
-# Special case for "s_" classes that respect our convention: classes that share
-# the same base and follow the naming pattern (s_some, s_some_button) are not
-# flagged as conflicting. Explicitly whitelist exceptions that don't follow the
-# pattern only.
-# TODO all these classes were processed but we might want to re-check them all
-# to minimize the list if possible.
-S_CLASSES_WHITELIST = [
-    # Classes that rightfully belong here at the moment
-    's_col_no_bgcolor', 's_col_no_resize', 's_allow_columns',
-    's_nb_column_fixed', 's_dialog_preview',
-    's_parallax_is_fixed', 's_parallax_bg', 's_parallax_no_overflow_hidden',
-    's_carousel_cards_card', 's_timeline_card', 's_blog_posts', 's_events',
-    's_appointments',
-
-    # Classes that should not be here... but are here by compatibility (not
-    # following our "s_" conventions correctly).
-    's_process_step', 's_process_step_svg_defs', 's_number', 's_tabs_common',
-    's_process_steps_connector_line', 's_tabs_nav', 's_tabs_main',
-    's_tabs_nav_vertical', 's_tabs_nav_with_descriptions', 's_tabs_content',
-    's_carousel', 's_carousel_default', 's_carousel_boxed', 's_carousel_intro',
-    's_carousel_rounded', 's_carousel_cards', 's_carousel_indicators_numbers',
-    's_carousel_indicators_dots', 's_quotes_carousel', 's_rating_no_title',
-    's_blog_post_big_picture', 's_blog_post_card', 's_blog_post_horizontal',
-    's_blog_post_list', 's_blog_post_single_aside', 's_blog_post_single_full',
-    's_blog_post_single_circle', 's_blog_post_single_badge',
-    's_event_event_picture', 's_event_event_card', 's_event_event_single_card',
-    's_event_event_single_entry', 's_event_event_single_offset',
-    's_event_event_single_badge', 's_event_event_single_aside',
-    's_appointment_type_card', 's_appointment_type_picture',
-    's_appointment_type_list', 's_newsletter_list', 's_event_upcoming_snippet',
-    's_event_event_picture', 's_newsletter_subscribe_form',
-    's_carousel_indicators_hidden',
-
-    # FIXME those classes have no reason to be here... missing data-snippet?
-    's_hr', 's_accordion', 's_accordion_highlight', 's_media_list_item',
-    's_media_list_img_wrapper', 's_media_list_body', 's_media_list_img',
-    's_website_form_datetime',
-]
 
 
 @tagged('post_install', '-at_install')
@@ -160,13 +139,12 @@ class TestNewPageTemplates(TransactionCase):
                 for view in views:
                     try:
                         self.env['ir.qweb']._render(view.id)
-                    except Exception as e:  # noqa: BLE001
-                        errors.append("View %s cannot be rendered (%r)" % (view.key, e))
+                    except Exception:
+                        errors.append("View %s cannot be rendered" % view.key)
         _logger.info("Tested %s views", len(view_ids))
         self.assertGreater(len(view_ids), 1250, "Test should have encountered a lot of views")
         self.assertFalse(errors, "No error should have been collected")
 
-    # TODO should handle the fact that grid items can't have padding classes
     def test_render_applied_templates(self):
         View = self.env['ir.ui.view']
         errors = []
@@ -192,109 +170,35 @@ class TestNewPageTemplates(TransactionCase):
                         html_text = self.env['ir.qweb']._render(view.id)
                         if not html_text:
                             continue
-                        html_tree = html.fromstring(f'<wrap>{html_text}</wrap>')
+                        html_tree = html.fromstring(html_text)
                         blocks_el = html_tree.xpath("//*[@id='o_scroll']")
                         if blocks_el:
                             # Only look at blocks in website.snippets
                             html_tree = blocks_el[0]
-
                         for el in html_tree.xpath('//*[@class]'):
                             classes = el.attrib['class'].split()
                             classes_inventory.update(classes)
                             if len(classes) != len(set(classes)):
-                                errors.append(
-                                    "Using %r, view %r contains duplicate classes: %r"
-                                    % (theme_name, view.key, classes)
-                                )
+                                errors.append("Using %r, view %r contains duplicate classes: %r" % (theme_name, view.key, classes))
                             for conflicting_classes in CONFLICTUAL_CLASSES:
                                 conflict = set(classes).intersection(conflicting_classes)
                                 if len(conflict) > 1:
-                                    errors.append(
-                                        "Using %r, view %r contains conflicting classes: %r in %r"
-                                        % (theme_name, view.key, conflict, classes)
-                                    )
-                            for conflicting_classes_re, white_list in CONFLICTUAL_CLASSES_RE.items():
-                                conflict = set(filter(conflicting_classes_re.findall, set(classes)))
+                                    errors.append("Using %r, view %r contains conflicting classes: %r in %r" % (theme_name, view.key, conflict, classes))
+                            for conflicting_classes_re in CONFLICTUAL_CLASSES_RE:
+                                conflict = {cl for cl in filter(conflicting_classes_re.findall, set(classes))}
+                                white_list = CONFLICTUAL_CLASSES_RE[conflicting_classes_re]
                                 conflict.difference_update(white_list)
                                 if len(conflict) > 1:
-                                    errors.append(
-                                        "Using %r, view %r contains conflicting classes: %r in %r (according to pattern %r)"
-                                        % (theme_name, view.key, conflict, classes, conflicting_classes_re.pattern)
-                                    )
-
-                            # Special handling for snippet classes following
-                            # naming convention: if classes match the
-                            # 's_snippet_name_*' pattern, they are allowed.
-                            non_whitelisted_s_classes = {
-                                cl for cl in classes
-                                if cl.startswith('s_') and cl not in S_CLASSES_WHITELIST
-                            }
-                            if non_whitelisted_s_classes:
-                                # Check the element classes itself first: if
-                                # there is a s_XXX class, s_something_XXX is
-                                # automatically accepted as it indicates a
-                                # variant of s_XXX (e.g. s_nice_popup being a
-                                # variant of s_popup).
-                                non_whitelisted_s_classes = {
-                                    cl for cl in non_whitelisted_s_classes
-                                    if not any(cl != other_cl and cl.endswith(f'_{other_cl[2:]}')
-                                                for other_cl in non_whitelisted_s_classes)
-                                }
-
-                                # Find all parent elements classes that start
-                                # with 's_' (including on the current element).
-                                # and only accept classes that are prefixed by
-                                # a parent class (+ '_') (e.g. s_table_item
-                                # would be accepted inside a s_table (as it is
-                                # a sub-element of s_table), and s_table_xs
-                                # would be accepted as an option of s_table)).
-                                all_parent_s_classes = set()
-                                parent_el = el
-                                # This also looks for the presence of non-
-                                # whitelisted 's_' classes in non-snippets.
-                                is_in_snippet = view.key.startswith('website.configurator_')
-                                while parent_el is not None:
-                                    parent_classes = set(parent_el.attrib.get('class', '').split())
-                                    all_parent_s_classes.update({cl for cl in parent_classes if cl.startswith('s_')})
-                                    if parent_el.attrib.get('data-snippet'):
-                                        is_in_snippet = True
-                                        break
-                                    parent_el = parent_el.getparent()
-
-                                if is_in_snippet:
-                                    non_whitelisted_s_classes = {
-                                        cl for cl in non_whitelisted_s_classes
-                                        if not any(cl.startswith(f'{parent_cls}_') for parent_cls in all_parent_s_classes)
-                                    }
-                                    is_snippet_root = el.attrib.get('data-snippet') \
-                                        or el.getparent().tag == 'wrap' and view.key.startswith('website.configurator_')
-                                    if len(non_whitelisted_s_classes) > (1 if is_snippet_root else 0):
-                                        errors.append(
-                                            "Using %r, view %r contains 's_' classes that do not respect our conventions: %r in %r"
-                                            % (theme_name, view.key, non_whitelisted_s_classes, classes)
-                                        )
-                                else:
-                                    errors.append(
-                                        "Using %r, view %r contains 's_' classes (%r) that are not in a snippet"
-                                        % (theme_name, view.key, non_whitelisted_s_classes)
-                                    )
-
+                                    errors.append("Using %r, view %r contains conflicting classes: %r in %r (according to pattern %r)" % (theme_name, view.key, conflict, classes, conflicting_classes_re.pattern))
                         for el in html_tree.xpath('//*[@style]'):
                             styles = el.attrib['style'].split(';')
                             non_empty_styles = filter(lambda style: style, styles)
-                            property_names = [style.split(':')[0].strip() for style in non_empty_styles]
+                            property_names = list(map(lambda style: style.split(':')[0].strip(), non_empty_styles))
                             if len(property_names) != len(set(property_names)):
-                                errors.append(
-                                    "Using %r, view %r contains duplicate style properties: %r"
-                                    % (theme_name, view.key, el.attrib['style'])
-                                )
-
+                                errors.append("Using %r, view %r contains duplicate style properties: %r" % (theme_name, view.key, el.attrib['style']))
                         for grid_el in html_tree.xpath("//div[contains(concat(' ', normalize-space(@class), ' '), ' o_grid_mode ')]"):
                             if 'data-row-count' not in grid_el.attrib:
-                                errors.append(
-                                    "Using %r, view %r defines a grid mode row without row count"
-                                    % (theme_name, view.key)
-                                )
+                                errors.append("Using %r, view %r defines a grid mode row without row count" % (theme_name, view.key))
                                 continue
                             row_count = int(grid_el.attrib['data-row-count'])
                             max_row = 0
@@ -303,54 +207,32 @@ class TestNewPageTemplates(TransactionCase):
                                 styles = item_el.attrib['style'].split(';')
                                 grid_area_style = list(filter(lambda style: style.strip().startswith('grid-area:'), styles))
                                 if not grid_area_style:
-                                    errors.append(
-                                        "Using %r, view %r does not specify a grid-area for its grid item"
-                                        % (theme_name, view.key)
-                                    )
+                                    errors.append("Using %r, view %r does not specify a grid-area for its grid item" % (theme_name, view.key))
                                     continue
                                 grid_area = grid_area_style[0].split(':')[1].strip()
                                 top, left, bottom, right = map(int, grid_area.split('/'))
                                 max_row = max(max_row, bottom)
                                 height_class = f'g-height-{bottom - top}'
                                 if height_class not in classes:
-                                    errors.append(
-                                        "Using %r, view %r does not specify %r for grid item %r (%r)"
-                                        % (theme_name, view.key, height_class, grid_area, classes)
-                                    )
+                                    errors.append("Using %r, view %r does not specify %r for grid item %r (%r)" % (theme_name, view.key, height_class, grid_area, classes))
                                 width_class = f'g-col-lg-{right - left}'
                                 if width_class not in classes:
-                                    errors.append(
-                                        "Using %r, view %r does not specify %r for grid item %r (%r)"
-                                        % (theme_name, view.key, width_class, grid_area, classes)
-                                    )
+                                    errors.append("Using %r, view %r does not specify %r for grid item %r (%r)" % (theme_name, view.key, width_class, grid_area, classes))
                                 non_grid_width_class = f'col-lg-{right - left}'
                                 if non_grid_width_class not in classes:
-                                    errors.append(
-                                        "Using %r, view %r does not specify %r for grid item %r (%r)"
-                                        % (theme_name, view.key, non_grid_width_class, grid_area, classes)
-                                    )
-                                padding_classes = list(filter(lambda klass: klass.startswith(('pb', 'pt')), classes))
+                                    errors.append("Using %r, view %r does not specify %r for grid item %r (%r)" % (theme_name, view.key, non_grid_width_class, grid_area, classes))
+                                padding_classes = list(filter(lambda klass: klass.startswith('pb') or klass.startswith('pt'), classes))
                                 if padding_classes:
-                                    errors.append(
-                                        "Using %r, view %r specifies unnecessary padding classes on grid item %r"
-                                        % (theme_name, view.key, padding_classes)
-                                    )
+                                    errors.append("Using %r, view %r specifies unnecessary padding classes on grid item %r" % (theme_name, view.key, padding_classes))
                             if row_count != max_row - 1:
-                                errors.append(
-                                    "Using %r, view %r defines %r as row count while %r is reached"
-                                    % (theme_name, view.key, row_count, max_row)
-                                )
-
+                                errors.append("Using %r, view %r defines %r as row count while %r is reached" % (theme_name, view.key, row_count, max_row))
                         for el in html_tree.xpath('//*[@data-row-count]'):
                             classes = el.attrib['class'].split()
                             if 'o_grid_mode' not in classes:
-                                errors.append(
-                                    "Using %r, view %r defines a row count on a non-grid mode row"
-                                    % (theme_name, view.key)
-                                )
-                    except Exception as e:  # noqa: BLE001
-                        _logger.error("Using %r, view %r cannot be rendered (%r)", theme_name, view.key, e)
-                        errors.append("Using %r, view %r cannot be rendered (%r)" % (theme_name, view.key, e))
+                                errors.append("Using %r, view %r defines a row count on a non-grid mode row" % (theme_name, view.key))
+                    except Exception:
+                        _logger.error("Using %r, view %r cannot be rendered", theme_name, view.key)
+                        errors.append("Using %r, view %r cannot be rendered" % (theme_name, view.key))
                 return len(views)
 
         view_count += check('no theme', self.env.ref('website.default_website'))
@@ -365,8 +247,8 @@ class TestNewPageTemplates(TransactionCase):
         for known_classes in CONFLICTUAL_CLASSES_RE.values():
             classes_inventory.difference_update(known_classes)
         for known_classes_re in CONFLICTUAL_CLASSES_RE:
-            classes_inventory = list(filter(lambda cl: not known_classes_re.findall(cl), classes_inventory))
-        _logger.info("Unknown classes encountered: %r", sorted(classes_inventory))
+            classes_inventory = [cl for cl in filter(lambda cl: not known_classes_re.findall(cl), classes_inventory)]
+        _logger.info("Unknown classes encountered: %r", sorted(list(classes_inventory)))
         self.assertFalse(errors, "No error should have been collected")
 
     def test_attribute_separator(self):
@@ -380,7 +262,7 @@ class TestNewPageTemplates(TransactionCase):
         errors = []
         view_count = 0
 
-        for module_name in ['website', *(website.theme_id.name for website in self.env['website'].get_test_themes_websites())]:
+        for module_name in ['website', *map(lambda website: website.theme_id.name, self.env['website'].get_test_themes_websites())]:
             views = View.search([
                 '|', '|',
                 ('key', 'like', escape_psql(f'{module_name}.s_')),
@@ -400,10 +282,7 @@ class TestNewPageTemplates(TransactionCase):
                         current_separator = el.attrib.get('separator', ',')
                         expected_separator = ATTRIBUTE_SEPARATORS[attribute_name]
                         if current_separator != expected_separator:
-                            errors.append(
-                                "Using %r, view %r uses separator %r to modify attribute %r"
-                                % (module_name, view.key, current_separator, attribute_name)
-                            )
+                            errors.append("Using %r, view %r uses separator %r to modify attribute %r" % (module_name, view.key, current_separator, attribute_name))
             view_count += len(views)
 
         _logger.info("Tested %s views", view_count)

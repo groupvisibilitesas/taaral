@@ -21,9 +21,8 @@
     'uninstall_hook': 'uninstall_hook',
     'assets': {
         'web.assets_frontend': [
-            'payment_adyen/static/src/interactions/payment_form.js',
+            'payment_adyen/static/src/js/payment_form.js',
         ],
     },
-    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 }

@@ -3,7 +3,7 @@ import { useChildRef, useService } from "@web/core/utils/hooks";
 import { CallbackRecorder } from "@web/search/action_hook";
 import { View } from "@web/views/view";
 
-import { Component } from "@odoo/owl";
+import { Component, onMounted } from "@odoo/owl";
 
 export class FormViewDialog extends Component {
     static template = "web.FormViewDialog";
@@ -13,11 +13,12 @@ export class FormViewDialog extends Component {
         resModel: String,
 
         context: { type: Object, optional: true },
-        expandedFormRef: { type: String, optional: true },
         nextRecordsContext: { type: Object, optional: true },
-        readonly: { type: Boolean, optional: true },
+        mode: {
+            optional: true,
+            validate: (m) => ["edit", "readonly"].includes(m),
+        },
         onRecordSaved: { type: Function, optional: true },
-        onRecordSave: { type: Function, optional: true },
         onRecordDiscarded: { type: Function, optional: true },
         removeRecord: { type: Function, optional: true },
         resId: { type: [Number, Boolean], optional: true },
@@ -25,7 +26,6 @@ export class FormViewDialog extends Component {
         viewId: { type: [Number, Boolean], optional: true },
         preventCreate: { type: Boolean, optional: true },
         preventEdit: { type: Boolean, optional: true },
-        canExpand: { type: Boolean, optional: true },
         isToMany: { type: Boolean, optional: true },
         size: Dialog.props.size,
     };
@@ -33,7 +33,6 @@ export class FormViewDialog extends Component {
         onRecordSaved: () => {},
         preventCreate: false,
         preventEdit: false,
-        canExpand: true,
         isToMany: false,
     };
 
@@ -50,36 +49,31 @@ export class FormViewDialog extends Component {
 
         this.currentResId = this.props.resId;
 
-        if (this.props.canExpand) {
-            this.onExpandCallback = this.onExpand.bind(this);
-        }
-
         this.viewProps = {
             type: "form",
             buttonTemplate,
 
             context: this.props.context || {},
             display: { controlPanel: false },
-            readonly: this.props.readonly,
+            mode: this.props.mode || "edit",
             resId: this.props.resId || false,
             resModel: this.props.resModel,
             viewId: this.props.viewId || false,
             preventCreate: this.props.preventCreate,
             preventEdit: this.props.preventEdit,
             discardRecord: this.discardRecord.bind(this),
-            saveRecord: async (record, params) => {
-                let saved;
-                if (this.props.onRecordSave) {
-                    saved = await this.props.onRecordSave(record);
-                } else {
-                    saved = await record.save({ reload: false });
-                    if (saved) {
-                        this.currentResId = record.resId;
-                        await this.props.onRecordSaved(record);
-                    }
-                }
+            saveRecord: async (record, { saveAndNew }) => {
+                const saved = await record.save({ reload: false });
                 if (saved) {
-                    await this.onRecordSaved(record, params);
+                    this.currentResId = record.resId;
+                    await this.props.onRecordSaved(record);
+                    if (saveAndNew) {
+                        this.currentResId = false;
+                        const context = this.props.nextRecordsContext || this.props.context || {};
+                        await record.model.load({ resId: false, context });
+                    } else {
+                        this.props.close();
+                    }
                 }
                 return saved;
             },
@@ -92,21 +86,17 @@ export class FormViewDialog extends Component {
                 this.props.close();
             };
         }
-    }
 
-    /**
-     * overridable method defining what to do on save
-     * @param {*} record, record that was saved
-     * @param {*} params, additional parameters passed to "save"
-     */
-    async onRecordSaved(record, params) {
-        if (params?.saveAndNew) {
-            this.currentResId = false;
-            const context = this.props.nextRecordsContext || this.props.context || {};
-            await record.model.load({ resId: false, context });
-        } else {
-            this.props.close();
-        }
+        onMounted(() => {
+            if (this.modalRef.el.querySelector(".modal-footer").childElementCount > 1) {
+                const defaultButton = this.modalRef.el.querySelector(
+                    ".modal-footer button.o-default-button"
+                );
+                if (defaultButton) {
+                    defaultButton.classList.add("d-none");
+                }
+            }
+        });
     }
 
     async discardRecord() {
@@ -127,7 +117,6 @@ export class FormViewDialog extends Component {
                 views: [[false, "form"]],
                 context: {
                     ...this.props.context,
-                    form_view_ref: this.props.expandedFormRef,
                 },
             });
         }

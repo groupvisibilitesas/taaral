@@ -41,7 +41,7 @@ class TestSlidesManagement(slides_common.SlidesCase, HttpCase):
             self.assertTrue(slide.active, "All slide should be archived when a channel is archived")
             self.assertTrue(slide.is_published, "All slide should be unpublished when a channel is archived")
 
-        self.channel.action_archive()
+        self.channel.toggle_active()
         self.assertFalse(self.channel.active)
         self.assertFalse(self.channel.is_published)
         # channel_partner should still NOT be marked as completed
@@ -66,14 +66,6 @@ class TestSlidesManagement(slides_common.SlidesCase, HttpCase):
             'visibility': 'public',
             'is_published': True,
         })
-
-        # test the behavior on both employees and portal users
-        users = self.user_emp | self.user_portal
-        channel.sudo()._action_add_members(users.partner_id)
-        memberships = self.env['slide.channel.partner'].sudo().search([('partner_id', 'in', users.partner_id.ids)])
-
-        # with no slides, next_slide_id is False for all memberships
-        self.assertFalse(memberships.next_slide_id)
 
         category_1, category_2 = self.env['slide.slide'].create([{
             'name': 'Category %s' % i,
@@ -101,8 +93,10 @@ class TestSlidesManagement(slides_common.SlidesCase, HttpCase):
         } for i in [3, 4]])
 
         self.assertEqual(channel.slide_content_ids, slide_1 | slide_2 | slide_3 | slide_4)
-        # force recompute next slide based on added slides
-        memberships.invalidate_recordset(fnames=['next_slide_id'])
+        # test the behavior on both employees and portal users
+        users = self.user_emp | self.user_portal
+        channel.sudo()._action_add_members(users.partner_id)
+        memberships = self.env['slide.channel.partner'].sudo().search([('partner_id', 'in', users.partner_id.ids)])
 
         for membership in memberships:
             for slide in channel.slide_content_ids:
@@ -207,8 +201,7 @@ class TestSlidesManagement(slides_common.SlidesCase, HttpCase):
             })],
             'completed_template_id': mail_template.id
         })
-        # sudo because creator has no rights to modify templates
-        self.channel.sudo().completed_template_id.body_html = '<p>TestBodyTemplate</p>'
+        self.channel.completed_template_id.body_html = '<p>TestBodyTemplate</p>'
 
         all_channels = self.channel | channel_2
         all_channels.sudo()._action_add_members(self.user_officer.partner_id)
@@ -323,7 +316,7 @@ class TestSlidesManagement(slides_common.SlidesCase, HttpCase):
             return 13.37
 
         with patch(
-            'odoo.addons.website_slides.models.slide_slide.SlideSlide._get_completion_time_pdf',
+            'odoo.addons.website_slides.models.slide_slide.Slide._get_completion_time_pdf',
             new=_get_completion_time_pdf
         ):
             slides_1 = self.env['slide.slide'].create({

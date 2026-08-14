@@ -1,3 +1,5 @@
+/** @odoo-module */
+
 import { getWebSocketWorker } from "@bus/../tests/mock_websocket";
 import { models } from "@web/../tests/web_test_helpers";
 
@@ -27,9 +29,7 @@ export class BusBus extends models.Model {
         }
         const values = [];
         const authenticatedUserId =
-            "res.users" in this.env
-                ? this.env.cookie.get("authenticated_user_sid") ?? this.env.uid
-                : null;
+            "res.users" in this.env && this.env.cookie.get("authenticated_user_sid");
         const channels = [
             ...IrWebSocket._build_bus_channel_list(this.channelsByUser[authenticatedUserId] || []),
         ];
@@ -37,15 +37,6 @@ export class BusBus extends models.Model {
             channels.some((channel) => {
                 if (typeof target === "string") {
                     return channel === target;
-                }
-                if (Array.isArray(target) && Array.isArray(channel)) {
-                    const [target0, target1] = target;
-                    const [channel0, channel1] = channel;
-                    return (
-                        channel0?._name === target0?.model &&
-                        channel0?.id === target0?.id &&
-                        channel1 === target1
-                    );
                 }
                 return channel?._name === target?.model && channel?.id === target?.id;
             })
@@ -60,7 +51,7 @@ export class BusBus extends models.Model {
                 message: { payload: JSON.parse(JSON.stringify(payload)), type },
             });
         }
-        getWebSocketWorker().broadcast("BUS:NOTIFICATION", values);
+        getWebSocketWorker().broadcast("notification", values);
     }
 
     /**

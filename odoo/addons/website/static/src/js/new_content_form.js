@@ -1,5 +1,7 @@
-import { formView } from "@web/views/form/form_view";
-import { registry } from "@web/core/registry";
+/** @odoo-module **/
+
+import {formView} from "@web/views/form/form_view";
+import {registry} from "@web/core/registry";
 
 export class NewContentFormController extends formView.Controller {
     /**
@@ -24,7 +26,7 @@ export class NewContentFormController extends formView.Controller {
 
 export const NewContentFormView = {
     ...formView,
-    display: { controlPanel: false },
+    display: {controlPanel: false},
     Controller: NewContentFormController,
 };
 

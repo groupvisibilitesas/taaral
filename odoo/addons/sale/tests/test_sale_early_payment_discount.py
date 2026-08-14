@@ -3,12 +3,11 @@
 from odoo.tests import tagged
 from odoo.fields import Command
 
-from odoo.addons.account.tests.test_taxes_tax_totals_summary import TestTaxesTaxTotalsSummary
 from odoo.addons.sale.tests.common import TestTaxCommonSale
 
 
 @tagged('post_install', '-at_install')
-class TestSaleEarlyPaymentDiscount(TestTaxCommonSale, TestTaxesTaxTotalsSummary):
+class TestSaleEarlyPaymentDiscount(TestTaxCommonSale):
 
     def test_apply_mixed_epd_discount(self):
         """
@@ -37,7 +36,7 @@ class TestSaleEarlyPaymentDiscount(TestTaxCommonSale, TestTaxesTaxTotalsSummary)
                 Command.create({
                     'product_id': self.product.id,
                     'price_unit': 100,
-                    'tax_ids': [Command.set(tax_a.ids)],
+                    'tax_id': [Command.set(tax_a.ids)],
                 }),
             ],
         })
@@ -78,7 +77,7 @@ class TestSaleEarlyPaymentDiscount(TestTaxCommonSale, TestTaxesTaxTotalsSummary)
                 Command.create({
                     'product_id': self.product.id,
                     'price_unit': 100,
-                    'tax_ids': [Command.set(tax_a.ids)],
+                    'tax_id': [Command.set(tax_a.ids)],
                 }),
             ],
         })
@@ -120,7 +119,7 @@ class TestSaleEarlyPaymentDiscount(TestTaxCommonSale, TestTaxesTaxTotalsSummary)
                 Command.create({
                     'product_id': self.product.id,
                     'price_unit': 100,
-                    'tax_ids': [Command.set((tax_a + tax_b).ids)],
+                    'tax_id': [Command.set((tax_a + tax_b).ids)],
                 }),
             ],
         })

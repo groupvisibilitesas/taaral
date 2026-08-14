@@ -28,7 +28,7 @@ class DashboardShareRoute(http.Controller):
         )
 
     @http.route(["/dashboard/download/<int:share_id>/<token>"],
-                type='http', auth='user', readonly=True)
+                type='http', auth='user')
     def download(self, token=None, share_id=None):
         share = request.env["spreadsheet.dashboard.share"].sudo().browse(share_id)
         share._check_dashboard_access(token)
@@ -44,7 +44,6 @@ class DashboardShareRoute(http.Controller):
         type="http",
         auth="public",
         methods=["GET"],
-        readonly=True,
     )
     def get_shared_dashboard_data(self, share_id, token):
         share = (

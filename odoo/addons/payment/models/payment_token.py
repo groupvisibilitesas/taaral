@@ -1,5 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import logging
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
@@ -25,7 +27,7 @@ class PaymentToken(models.Model):
     payment_details = fields.Char(
         string="Payment Details", help="The clear part of the payment method's payment details.",
     )
-    partner_id = fields.Many2one(string="Partner", comodel_name='res.partner', required=True, index=True)
+    partner_id = fields.Many2one(string="Partner", comodel_name='res.partner', required=True)
     provider_ref = fields.Char(
         string="Provider Reference",
         help="The provider reference of the token of the transaction.",
@@ -36,18 +38,18 @@ class PaymentToken(models.Model):
     )
     active = fields.Boolean(string="Active", default=True)
 
-    # === COMPUTE METHODS === #
+    #=== COMPUTE METHODS ===#
 
     @api.depends('payment_details', 'create_date')
     def _compute_display_name(self):
         for token in self:
             token.display_name = token._build_display_name()
 
-    # === CRUD METHODS === #
+    #=== CRUD METHODS ===#
 
     @api.model_create_multi
-    def create(self, vals_list):
-        for values in vals_list:
+    def create(self, values_list):
+        for values in values_list:
             if 'provider_id' in values:
                 provider = self.env['payment.provider'].browse(values['provider_id'])
 
@@ -56,7 +58,7 @@ class PaymentToken(models.Model):
             else:
                 pass  # Let psycopg warn about the missing required field.
 
-        return super().create(vals_list)
+        return super().create(values_list)
 
     @api.model
     def _get_specific_create_values(self, provider_code, values):
@@ -73,15 +75,15 @@ class PaymentToken(models.Model):
         """
         return dict()
 
-    def write(self, vals):
+    def write(self, values):
         """ Prevent unarchiving tokens and handle their archiving.
 
         :return: The result of the call to the parent method.
         :rtype: bool
         :raise UserError: If at least one token is being unarchived.
         """
-        if 'active' in vals:
-            if vals['active']:
+        if 'active' in values:
+            if values['active']:
                 if any(
                     not token.payment_method_id.active
                     or token.provider_id.state == 'disabled'
@@ -95,7 +97,7 @@ class PaymentToken(models.Model):
                 # Call the handlers in sudo mode because this method might have been called by RPC.
                 self.filtered('active').sudo()._handle_archiving()
 
-        return super().write(vals)
+        return super().write(values)
 
     @api.constrains('partner_id')
     def _check_partner_is_never_public(self):
@@ -114,7 +116,7 @@ class PaymentToken(models.Model):
         """
         return
 
-    # === BUSINESS METHODS === #
+    #=== BUSINESS METHODS ===#
 
     def _get_available_tokens(self, providers_ids, partner_id, is_validation=False, **kwargs):
         """ Return the available tokens linked to the given providers and partner.

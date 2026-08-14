@@ -1,7 +1,7 @@
 from odoo import models
 
 
-class ThemeUtils(models.AbstractModel):
+class ThemeEnark(models.AbstractModel):
     _inherit = 'theme.utils'
 
     def _theme_enark_post_copy(self, mod):

@@ -83,7 +83,7 @@ class Animal extends models.Model {
             is_default: true,
             name: "My favorite",
             sort: "[]",
-            user_ids: [2],
+            user_id: [2, "Mitchell Admin"],
         },
     ];
 }
@@ -368,6 +368,7 @@ test("rendering with given searchViewId", async function () {
                     sortable: true,
                     store: true,
                     groupable: true,
+                    aggregator: "sum",
                     type: "integer",
                     name: "id",
                 },
@@ -532,7 +533,7 @@ test("rendering with given arch, fields, searchViewId, searchViewArch, searchVie
                     is_default: true,
                     name: "My favorite",
                     sort: "[]",
-                    user_ids: [2],
+                    user_id: [2, "Mitchell Admin"],
                 },
             ]);
         },
@@ -574,7 +575,7 @@ test("rendering with given arch, fields, searchViewId, searchViewArch, searchVie
             is_default: false,
             name: "My favorite",
             sort: "[]",
-            user_ids: [2],
+            user_id: [2, "Mitchell Admin"],
         },
     ];
     patchWithCleanup(ToyController.prototype, {
@@ -1146,48 +1147,4 @@ test("react to prop 'domain' changes", async function () {
     const parent = await mountWithCleanup(Parent);
     parent.state.domain = [["type", "=", "herbivorous"]];
     await animationFrame();
-});
-
-////////////////////////////////////////////////////////////////////////////
-// cache
-////////////////////////////////////////////////////////////////////////////
-
-test("Cache: refresh with debug mode", async () => {
-    const env = await makeMockEnv();
-
-    onRpc("get_views", ({ kwargs }) => {
-        expect.step("Fetch, debug = " + !!kwargs.options.debug);
-        return {
-            models: {
-                "res.partner": {
-                    fields: {},
-                },
-            },
-            views: {},
-        };
-    });
-
-    const services = env.services;
-
-    const context = {
-        context: {},
-        resModel: "res.partner",
-        views: [],
-    };
-
-    const expected = {
-        fields: {},
-        relatedModels: {
-            "res.partner": {
-                fields: {},
-            },
-        },
-        views: {},
-    };
-
-    env.debug = "";
-    expect(await services.view.loadViews(context)).toEqual(expected);
-    env.debug = "1";
-    expect(await services.view.loadViews(context)).toEqual(expected);
-    expect.verifySteps(["Fetch, debug = false", "Fetch, debug = true"]);
 });

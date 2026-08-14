@@ -1,14 +1,8 @@
 import { expect, test } from "@odoo/hoot";
-import { click, edit, press, queryAllTexts, queryOne, queryAll } from "@odoo/hoot-dom";
+import { click, edit, press, queryAllTexts, queryOne } from "@odoo/hoot-dom";
 import { animationFrame, runAllTimers } from "@odoo/hoot-mock";
 import { Component, useState, xml } from "@odoo/owl";
-import {
-    contains,
-    editSelectMenu,
-    getMockEnv,
-    mountWithCleanup,
-    patchWithCleanup,
-} from "@web/../tests/web_test_helpers";
+import { mountWithCleanup, patchWithCleanup } from "@web/../tests/web_test_helpers";
 
 import { MainComponentsContainer } from "@web/core/main_components_container";
 import { SelectMenu } from "@web/core/select_menu/select_menu";
@@ -70,19 +64,6 @@ class Parent extends Component {
 async function open() {
     await click(".o_select_menu_toggler");
     await animationFrame();
-    if (getMockEnv().isSmall) {
-        // In BottomSheet, the search input is not focused by default.
-        // For the following tests, it's easier to expect a focused
-        // input for any display of SelectMenu.
-        await contains(".o_select_menu_input").click();
-    }
-    await animationFrame();
-}
-
-async function editInput(value) {
-    await edit(value);
-    await runAllTimers();
-    await animationFrame();
 }
 
 test("Can be rendered", async () => {
@@ -93,13 +74,13 @@ test("Can be rendered", async () => {
 
     await open();
     expect(".o_select_menu_menu").toHaveCount(1);
-    expect(".o_select_menu_item").toHaveCount(2);
-    expect(queryAllTexts(".o_select_menu_item")).toEqual(["Hello", "World"]);
+    expect(".o_select_menu_item_label").toHaveCount(2);
+    expect(queryAllTexts(".o_select_menu_item_label")).toEqual(["Hello", "World"]);
 });
 
 test("Default value correctly set", async () => {
     await mountSingleApp(Parent);
-    expect(".o_select_menu_toggler").toHaveValue("World");
+    expect(".o_select_menu_toggler_slot").toHaveText("World");
 });
 
 test("Selecting a choice calls onSelect and the displayed value is updated", async () => {
@@ -132,16 +113,20 @@ test("Selecting a choice calls onSelect and the displayed value is updated", asy
     }
     await mountSingleApp(MyParent);
 
-    expect(".o_select_menu_toggler").toHaveValue("World");
+    expect(".o_select_menu_toggler_slot").toHaveText("World");
 
-    await editSelectMenu(".o_select_menu input", { index: 0 });
+    await open();
+    await click(".o_select_menu_item_label:eq(0)");
+    await animationFrame();
 
-    expect(".o_select_menu_toggler").toHaveValue("Hello");
+    expect(".o_select_menu_toggler_slot").toHaveText("Hello");
     expect.verifySteps(["hello"]);
 
-    await editSelectMenu(".o_select_menu input", { index: 1 });
+    await open();
+    await click(".o_select_menu_item_label:eq(1)");
+    await animationFrame();
 
-    expect(".o_select_menu_toggler").toHaveValue("World");
+    expect(".o_select_menu_toggler_slot").toHaveText("World");
     expect.verifySteps(["world"]);
 });
 
@@ -153,11 +138,7 @@ test("Close dropdown on click outside", async () => {
     await open();
     expect(".o_select_menu_menu").toHaveCount(1);
 
-    if (getMockEnv().isSmall) {
-        await click(".o_bottom_sheet_backdrop");
-    } else {
-        await click(document.body);
-    }
+    await click(document.body);
     await animationFrame();
 
     expect(".o_select_menu_menu").toHaveCount(0);
@@ -177,67 +158,19 @@ test("Close dropdown on escape keydown", async () => {
     expect(".o_select_menu_menu").toHaveCount(0);
 });
 
-test("Search input should be present as a toggler, but cannot be edited if searchable=false", async () => {
-    class MyParent extends Component {
-        static props = ["*"];
-        static components = { SelectMenu };
-        static template = xml`
-            <SelectMenu choices="choices" searchable="false" />
-        `;
-        setup() {
-            this.choices = [
-                { label: "Hello", value: "hello" },
-                { label: "World", value: "world" },
-            ];
-        }
-    }
-    await mountSingleApp(MyParent);
+test.tags("desktop");
+test("Search input should be present and auto-focused", async () => {
+    await mountSingleApp(Parent);
     await open();
-    expect(".o_select_menu_input").not.toBeFocused();
-});
-
-test("Search input should be present in a dropdown with a custom toggler", async () => {
-    class MyParent extends Component {
-        static props = ["*"];
-        static components = { SelectMenu };
-        static template = xml`
-            <SelectMenu choices="choices">
-                <span class="select_menu_test">Select something</span>
-            </SelectMenu>
-        `;
-        setup() {
-            this.choices = [
-                { label: "Hello", value: "hello" },
-                { label: "World", value: "world" },
-            ];
-        }
-    }
-    await mountSingleApp(MyParent);
-    await open();
-    expect(".o_select_menu_menu input").toHaveCount(1);
-    expect(".o_select_menu_menu input").toBeFocused();
+    expect("input.o_select_menu_sticky").toHaveCount(1);
+    expect("input.o_select_menu_sticky").toBeFocused();
 });
 
 test.tags("mobile");
-test("Search input should behave as a toggler only and an input should be present in a dropdown on small+touch screen", async () => {
-    class MyParent extends Component {
-        static props = ["*"];
-        static components = { SelectMenu };
-        static template = xml`
-            <SelectMenu choices="choices" />
-        `;
-        setup() {
-            this.choices = [
-                { label: "Hello", value: "hello" },
-                { label: "World", value: "world" },
-            ];
-        }
-    }
-    await mountSingleApp(MyParent);
-    await click(".o_select_menu_toggler");
-    await animationFrame();
-    expect(".o_select_menu_menu input").toHaveCount(1);
-    expect(".o_select_menu_menu input").not.toBeFocused();
+test("Search input should be present", async () => {
+    await mountSingleApp(Parent);
+    await open();
+    expect("input.o_select_menu_sticky").toHaveCount(1);
 });
 
 test("Value with no corresponding choices displays as if no choice was selected", async () => {
@@ -262,7 +195,7 @@ test("Value with no corresponding choices displays as if no choice was selected"
         }
     }
     await mountSingleApp(MyParent);
-    expect(".o_select_menu_toggler").toHaveValue("");
+    expect(".o_select_menu_toggler_slot").toHaveText("");
 });
 
 test("Changing value props properly updates the selected choice", async () => {
@@ -287,11 +220,11 @@ test("Changing value props properly updates the selected choice", async () => {
         }
     }
     const comp = await mountSingleApp(MyParent);
-    expect(".o_select_menu_toggler").toHaveValue("A");
+    expect(".o_select_menu_toggler_slot").toHaveText("A");
 
     comp.setValue("world");
     await animationFrame();
-    expect(".o_select_menu_toggler").toHaveValue("Z");
+    expect(".o_select_menu_toggler_slot").toHaveText("Z");
 });
 
 test("Use a null value for choices", async () => {
@@ -318,11 +251,11 @@ test("Use a null value for choices", async () => {
         }
     }
     const comp = await mountSingleApp(MyParent);
-    expect(".o_select_menu_toggler").toHaveValue("Nothing");
+    expect(".o_select_menu_toggler_slot").toHaveText("Nothing");
 
     comp.setValue("things");
     await animationFrame();
-    expect(".o_select_menu_toggler").toHaveValue("Everything");
+    expect(".o_select_menu_toggler_slot").toHaveText("Everything");
 });
 
 test("Use an empty string as the value for a choice display the corresponding choice", async () => {
@@ -347,19 +280,19 @@ test("Use an empty string as the value for a choice display the corresponding ch
         }
     }
     const comp = await mountSingleApp(MyParent);
-    expect(".o_select_menu_toggler").toHaveValue("Empty");
+    expect(".o_select_menu_toggler_slot").toHaveText("Empty");
 
     comp.setValue("full");
     await animationFrame();
-    expect(".o_select_menu_toggler").toHaveValue("Full");
+    expect(".o_select_menu_toggler_slot").toHaveText("Full");
 
     comp.setValue(null);
     await animationFrame();
-    expect(".o_select_menu_toggler").toHaveValue("");
+    expect(".o_select_menu_toggler_slot").toHaveText("");
 });
 
-test("Clear the input calls 'onSelect' with null value and appears only when value is not null", async () => {
-    expect.assertions(4);
+test("Clear button calls 'onSelect' with null value and appears only when value is not null", async () => {
+    expect.assertions(5);
     class MyParent extends Component {
         static props = ["*"];
         static components = { SelectMenu };
@@ -384,13 +317,16 @@ test("Clear the input calls 'onSelect' with null value and appears only when val
         }
     }
     await mountSingleApp(MyParent);
-    expect(".o_select_menu_toggler").toHaveValue("Hello");
-    await editSelectMenu(".o_select_menu input", { value: "" });
+    expect(".o_select_menu_toggler_clear").toHaveCount(1);
+    expect(".o_select_menu_toggler_slot").toHaveText("Hello");
+
+    await click(".o_select_menu_toggler_clear");
+    await animationFrame();
     expect.verifySteps(["Cleared"]);
-    expect(".o_select_menu_toggler").toHaveValue("");
+    expect(".o_select_menu_toggler_clear").toHaveCount(0);
 });
 
-test("When the 'required' props is set to true, the input cannot be cleared", async () => {
+test("When the 'required' props is set to true, the clear button is not shown", async () => {
     class MyParent extends Component {
         static props = ["*"];
         static components = { SelectMenu };
@@ -415,40 +351,8 @@ test("When the 'required' props is set to true, the input cannot be cleared", as
     const comp = await mountSingleApp(MyParent);
     expect(".o_select_menu_toggler_clear").toHaveCount(0);
     comp.setValue("hello");
-    await editSelectMenu(".o_select_menu input", { value: "" });
-    expect(".o_select_menu_toggler").toHaveValue("Hello");
-});
-
-test("When the 'required' props is set to true, the clear button is not shown", async () => {
-    class MyParent extends Component {
-        static props = ["*"];
-        static components = { SelectMenu };
-        static template = xml`
-            <SelectMenu
-                required="true"
-                choices="choices"
-                value="state.value"
-            >
-                <span class="select_menu_test">Select something</span>
-            </SelectMenu>
-        `;
-        setup() {
-            this.state = useState({ value: null });
-            this.choices = [
-                { label: "Hello", value: "hello" },
-                { label: "World", value: "world" },
-            ];
-        }
-        setValue(newValue) {
-            this.state.value = newValue;
-        }
-    }
-    const comp = await mountSingleApp(MyParent);
-    expect(".o_select_menu_toggler_clear").toHaveCount(0);
-    comp.setValue("hello");
     await animationFrame();
-    await contains(".o_select_menu_toggler").click();
-    expect(".o_select_menu_menu input").toHaveValue("Hello");
+    expect(".o_select_menu_toggler_slot").toHaveText("Hello");
     expect(".o_select_menu_toggler_clear").toHaveCount(0);
 });
 
@@ -472,7 +376,7 @@ test("Items are sorted based on their label by default", async () => {
     }
     await mountSingleApp(MyParent);
     await open();
-    expect(queryAllTexts(".o_select_menu_item")).toEqual(["Bar", "Foo", "Hello", "World"]);
+    expect(queryAllTexts(".o_select_menu_item_label")).toEqual(["Bar", "Foo", "Hello", "World"]);
 });
 
 test("autoSort props set to false", async () => {
@@ -491,7 +395,7 @@ test("autoSort props set to false", async () => {
     }
     await mountSingleApp(MyParent);
     await open();
-    expect(queryAllTexts(".o_select_menu_item")).toEqual(["Hello", "World", "Foo", "Bar"]);
+    expect(queryAllTexts(".o_select_menu_item_label")).toEqual(["Hello", "World", "Foo", "Bar"]);
 });
 
 test("Custom toggler using default slot", async () => {
@@ -514,7 +418,7 @@ test("Custom toggler using default slot", async () => {
     expect(".select_menu_test").toHaveCount(1);
 
     await open();
-    expect(queryAllTexts(".o_select_menu_item")).toEqual(["Hello", "World"]);
+    expect(queryAllTexts(".o_select_menu_item_label")).toEqual(["Hello", "World"]);
 });
 
 test("Custom choice template using a slot", async () => {
@@ -540,6 +444,48 @@ test("Custom choice template using a slot", async () => {
     await open();
     expect(".coolClass").toHaveCount(2);
     expect(".coolClass:eq(0)").toHaveText("Hello");
+});
+
+test("Custom template for the bottom area of the dropdown using a slot", async () => {
+    class MyParent extends Component {
+        static props = ["*"];
+        static components = { SelectMenu };
+        static template = xml`
+            <SelectMenu
+                choices="choices"
+                multiSelect="true"
+                onSelect.bind="onSelect"
+                value="state.value"
+            >
+                <span class="select_menu_test">Select something</span>
+                <t t-set-slot="bottomArea" t-slot-scope="select">
+                <span class="o_select_menu_bottom_area">
+                    <t t-esc="state.value.length"/> items selected
+                </span>
+                </t>
+            </SelectMenu>
+        `;
+        setup() {
+            this.choices = [
+                { label: "Hello", value: "hello" },
+                { label: "World", value: "world" },
+                { label: "How", value: "how" },
+                { label: "Are", value: "are" },
+                { label: "You", value: "you" },
+            ];
+            this.state = useState({ value: ["world", "you"] });
+        }
+        onSelect(newValue) {
+            this.state.value = newValue;
+        }
+    }
+    await mountSingleApp(MyParent);
+    await open();
+    expect(".o_select_menu_bottom_area").toHaveText("2 items selected");
+    await click(".o_select_menu_item:nth-child(3)");
+    await animationFrame();
+    await open();
+    expect(".o_select_menu_bottom_area").toHaveText("3 items selected");
 });
 
 test("Custom slot for the bottom area sends the current search value", async () => {
@@ -574,7 +520,9 @@ test("Custom slot for the bottom area sends the current search value", async () 
     expect(".coolClass").toHaveCount(0);
 
     await click("input");
-    await editInput("coucou");
+    await edit("coucou");
+    await runAllTimers();
+    await animationFrame();
 
     expect(".coolClass").toHaveCount(1);
 
@@ -603,7 +551,7 @@ test("Groups properly added in the select", async () => {
     await mountSingleApp(MyParent);
     await open();
     expect(".o_select_menu_group").toHaveCount(1);
-    expect(queryAllTexts(".o_select_menu_item")).toEqual(["Hello", "World"]);
+    expect(queryAllTexts(".o_select_menu_item_label")).toEqual(["Hello", "World"]);
 });
 
 test("Items are properly sorted but still in their respective group", async () => {
@@ -689,7 +637,7 @@ test("When they are a lot of choices, not all are show at first and scrolling lo
     );
 });
 
-test("When multiSelect is enable, value is an array of values, multiple choices should display as selected and tags should be displayed", async () => {
+test("When multiSelect is enable, value is an array of values, mutliple choices should display as selected and tags should be displayed", async () => {
     class MyParent extends Component {
         static props = ["*"];
         static components = { SelectMenu };
@@ -699,6 +647,7 @@ test("When multiSelect is enable, value is an array of values, multiple choices 
                 value="this.state.value"
                 choices="this.choices"
                 onSelect.bind="this.onSelect"
+                searchable="false"
             />
         `;
         setup() {
@@ -711,7 +660,7 @@ test("When multiSelect is enable, value is an array of values, multiple choices 
         }
 
         onSelect(newValue) {
-            expect.step(newValue);
+            expect.step(JSON.stringify(newValue));
             this.state.value = newValue;
         }
     }
@@ -720,24 +669,30 @@ test("When multiSelect is enable, value is an array of values, multiple choices 
     expect(".o_select_menu .o_tag_badge_text").toHaveCount(0);
 
     // Select first choice
-    await editSelectMenu(".o_select_menu input", { index: 0 });
+    await open();
+    expect(".o_select_menu_sticky.top-0").toHaveCount(0);
+    expect(".o_select_menu_item.o_select_active").toHaveCount(0);
 
-    expect.verifySteps([["a"]]);
+    await click(".o_select_menu_item:nth-child(1)");
+    await animationFrame();
+
+    expect.verifySteps([`["a"]`]);
 
     expect(".o_select_menu .o_tag_badge_text").toHaveCount(1);
     expect(".o_select_menu .o_tag_badge_text").toHaveText("A");
 
     // Select second choice
     await open();
-    expect(".o_select_menu_item:nth-of-type(1).selected").toHaveCount(1);
+    expect(".o_select_menu_item:nth-child(1).o_select_active").toHaveCount(1);
 
-    await editSelectMenu(".o_select_menu input", { index: 1 });
-    expect.verifySteps([["a", "b"]]);
+    await click(".o_select_menu_item:nth-child(2)");
+    await animationFrame();
+    expect.verifySteps([`["a","b"]`]);
 
     expect(".o_select_menu .o_tag_badge_text").toHaveCount(2);
 
     await open();
-    expect(".o_select_menu_item.selected").toHaveCount(2);
+    expect(".o_select_menu_item.o_select_active").toHaveCount(2);
 });
 
 test("When multiSelect is enable, allow deselecting elements by clicking the selected choices inside the dropdown or by clicking the tags", async () => {
@@ -750,6 +705,7 @@ test("When multiSelect is enable, allow deselecting elements by clicking the sel
                 value="this.state.value"
                 choices="this.choices"
                 onSelect.bind="this.onSelect"
+                searchable="false"
             />
         `;
         setup() {
@@ -762,7 +718,7 @@ test("When multiSelect is enable, allow deselecting elements by clicking the sel
         }
 
         onSelect(newValue) {
-            expect.step(newValue);
+            expect.step(JSON.stringify(newValue));
             this.state.value = newValue;
         }
     }
@@ -770,19 +726,21 @@ test("When multiSelect is enable, allow deselecting elements by clicking the sel
     await mountSingleApp(MyParent);
     expect(".o_select_menu .o_tag_badge_text").toHaveCount(2);
 
-    await editSelectMenu(".o_select_menu input", { index: 0 });
+    await open();
+    await click(".o_select_menu_item:nth-child(1)");
+    await animationFrame();
 
-    expect.verifySteps([["b"]]);
+    expect.verifySteps([`["b"]`]);
 
     expect(".o_select_menu .o_tag_badge_text").toHaveCount(1);
     expect(".o_select_menu .o_tag_badge_text").toHaveText("B");
 
     await open();
-    expect(".o_select_menu_item.selected").toHaveCount(1);
+    expect(".o_select_menu_item.o_select_active").toHaveCount(1);
 
     await click(".o_tag .o_delete");
     await animationFrame();
-    expect.verifySteps([[]]);
+    expect.verifySteps(["[]"]);
 
     expect(".o_select_menu .o_tag").toHaveCount(0);
 });
@@ -816,26 +774,26 @@ test("Navigation is possible from the input when it is focused", async () => {
 
     await mountSingleApp(MyParent);
     await open();
-    expect(".o_select_menu input").toBeFocused();
+    expect("input.o_select_menu_sticky").toBeFocused();
 
     await press("arrowdown");
     await animationFrame();
 
+    expect(".focus").toHaveText("A");
+    expect("input.o_select_menu_sticky").toBeFocused();
+
+    await press("arrowdown");
+    await animationFrame();
     expect(".focus").toHaveText("B");
-    expect(".o_select_menu input").toBeFocused();
-
-    await press("arrowdown");
-    await animationFrame();
-    expect(".focus").toHaveText("C");
 
     await press("arrowdown");
     await press("arrowdown");
     await animationFrame();
 
-    expect(".focus").toHaveText("B");
+    expect(".focus").toHaveText("A");
     await press("enter");
     await animationFrame();
-    expect.verifySteps([]);
+    expect.verifySteps(["a"]);
 });
 
 test.tags("desktop");
@@ -867,7 +825,8 @@ test("When only one choice is displayed, 'enter' key should select the value", a
 
     await mountSingleApp(MyParent);
     await open();
-    await editInput("a");
+    await edit("a");
+    await animationFrame();
 
     await press("enter");
 
@@ -895,11 +854,7 @@ test("Props onInput is executed when the search changes", async () => {
             });
         }
 
-        onInput(searchString) {
-            if (!searchString) {
-                expect.step("call with empty search");
-                return;
-            }
+        onInput() {
             // This test adds items from the list of choices given by the parent.
             // It can be used as a reference to fetch and load content dynamically to the SelectMenu
             this.state.choices = [
@@ -915,22 +870,26 @@ test("Props onInput is executed when the search changes", async () => {
     }
 
     await mountSingleApp(MyParent);
-    expect(".o_select_menu_toggler").toHaveValue("Hello");
+    expect(".o_select_menu_toggler_slot").toHaveText("Hello");
 
     await open();
-    expect.verifySteps(["call with empty search"]);
-    expect(queryAllTexts(".o_select_menu_item")).toEqual(["Hello"]);
+    expect(".o_select_menu_menu").toHaveText("Hello");
 
-    await editInput("cou");
-    expect(queryAllTexts(".o_select_menu_item")).toEqual(["Coucou"]);
+    await click("input");
+    await edit("cou");
+    await runAllTimers();
+    await animationFrame();
 
-    await editSelectMenu(".o_select_menu input", { index: 0 });
+    expect(".o_select_menu_menu").toHaveText("Coucou");
+
+    await click(".o_select_menu_item_label:eq(0)");
+    await animationFrame();
+
     expect.verifySteps(["hello2"]);
-    expect(".o_select_menu_toggler").toHaveValue("Coucou");
+    expect(".o_select_menu_toggler_slot").toHaveText("Coucou");
 
     await open();
-    expect.verifySteps(["call with empty search"]);
-    expect(queryAllTexts(".o_select_menu_item")).toEqual(["Coucou", "Hello"]);
+    expect(".o_select_menu_menu").toHaveText("Coucou\nHello");
 });
 
 test("Choices are updated and filtered when props change", async () => {
@@ -955,10 +914,7 @@ test("Choices are updated and filtered when props change", async () => {
             });
         }
 
-        onInput(searchString) {
-            if (!searchString) {
-                return;
-            }
+        onInput() {
             this.state.choices = [
                 { label: "Coucou", value: "hello2" },
                 { label: "Good afternoon", value: "hello3" },
@@ -972,23 +928,29 @@ test("Choices are updated and filtered when props change", async () => {
     }
 
     await mountSingleApp(MyParent);
-    expect(".o_select_menu_toggler").toHaveValue("Hello");
+    expect(".o_select_menu_toggler_slot").toHaveText("Hello");
 
     await open();
-    expect(queryAllTexts(".o_select_menu_item")).toEqual(["Coucou", "Hello"]);
+    expect(".o_select_menu_menu").toHaveText("Coucou\nHello");
 
     // edit the input, to trigger onInput and update the props
-    await editInput("aft");
+    await click("input");
+    await edit("aft");
+    await runAllTimers();
+    await animationFrame();
 
-    await editSelectMenu(".o_select_menu input", { index: 0 });
+    await click(".o_select_menu_item_label:eq(0await)");
+    await animationFrame();
     expect.verifySteps(["hello3"]);
-    expect(".o_select_menu_toggler").toHaveValue("Good afternoon");
+    expect(".o_select_menu_toggler_slot").toHaveText("Good afternoon");
 
     await open();
-    expect(queryAllTexts(".o_select_menu_item")).toEqual(["Coucou", "Good afternoon"]);
+    expect(".o_select_menu_menu").toHaveText("Coucou\nGood afternoon");
 });
 
 test("SelectMenu group items only after being opened", async () => {
+    let count = 0;
+
     patchWithCleanup(SelectMenu.prototype, {
         filterOptions(args) {
             expect.step("filterOptions");
@@ -1022,9 +984,11 @@ test("SelectMenu group items only after being opened", async () => {
             });
         }
 
-        onInput(searchString) {
+        onInput() {
+            count++;
             // options have been filtered when typing on the search input",
-            if (searchString === "option d") {
+            expect.verifySteps(["filterOptions"]);
+            if (count === 1) {
                 this.state.choices = [{ label: "Option C", value: "optionC" }];
                 this.state.groups = [
                     {
@@ -1051,18 +1015,22 @@ test("SelectMenu group items only after being opened", async () => {
 
     await open();
     expect(".o_select_menu_menu").toHaveText("Option A\nGroup A\nOption B\nOption C");
-    expect.verifySteps(["filterOptions", "filterOptions"]);
+    expect.verifySteps(["filterOptions"]);
 
-    await editInput("option d");
+    await click("input");
+    await edit("option d");
+    await runAllTimers();
+    await animationFrame();
 
     expect(".o_select_menu_menu").toHaveText("Group B\nOption D");
-    expect.verifySteps(["filterOptions", "filterOptions"]);
-    await editInput("");
+    expect.verifySteps(["filterOptions"]);
+    await edit("");
+    await runAllTimers();
 
     await animationFrame();
 
     expect(".o_select_menu_menu").toHaveText("Option A\nGroup A\nOption B\nOption C");
-    expect.verifySteps(["filterOptions", "filterOptions"]);
+    expect.verifySteps(["filterOptions"]);
 });
 
 test("search value is cleared when reopening the menu", async () => {
@@ -1090,79 +1058,18 @@ test("search value is cleared when reopening the menu", async () => {
     }
     await mountSingleApp(MyParent);
     await open();
-    expect.verifySteps(["search="]);
-    await editInput("a");
+    expect.verifySteps([]);
+    await click("input");
+    await edit("a");
+    await runAllTimers();
     expect.verifySteps(["search=a"]);
 
-    // opening the menu should clear the search input, and trigger onInput with an empty string and update the awaitprops
+    // opening the menu should clear the search string, trigger onInput and update the awaitprops
     await press("escape");
     await animationFrame();
     await open();
     expect.verifySteps(["search="]);
-    expect(".o_select_menu input").toHaveValue("");
-});
-
-test("Groups can be member of sections", async () => {
-    class Parent extends Component {
-        static props = ["*"];
-        static components = { SelectMenu };
-        static template = xml`
-            <SelectMenu choices="choices" groups="groups" sections="sections" />
-        `;
-        setup() {
-            this.choices = [{ label: "Hello", value: "hello" }];
-            this.sections = [
-                { label: "Group A", name: "sectionA" },
-                { label: "Group B", name: "sectionB" },
-            ];
-            this.groups = [
-                {
-                    label: "Subgroup 1",
-                    choices: [
-                        { label: "Option I", value: "optionI" },
-                        { label: "Option II", value: "optionII" },
-                    ],
-                    section: "sectionA",
-                },
-                {
-                    label: "Subgroup 1B",
-                    choices: [{ label: "Option B.2", value: "optionB_2" }],
-                    section: "sectionB",
-                },
-                {
-                    label: "Subgroup 2",
-                    choices: [{ label: "Option 2.I", value: "option2_I" }],
-                    section: "sectionA",
-                },
-            ];
-        }
-    }
-    await mountSingleApp(Parent);
-    await open();
-    expect(".o_select_menu_group").toHaveCount(5);
-    expect(".o_select_menu_item").toHaveCount(5);
-    expect(queryAllTexts(".o_select_menu_group")).toEqual([
-        "Group A",
-        "Subgroup 1",
-        "Subgroup 2",
-        "Group B",
-        "Subgroup 1B",
-    ]);
-    expect(queryAllTexts(".o_select_menu_item")).toEqual([
-        "Hello",
-        "Option I",
-        "Option II",
-        "Option 2.I",
-        "Option B.2",
-    ]);
-    await editInput("option 2");
-    expect(queryAllTexts(".o_select_menu_group")).toEqual([
-        "Group A",
-        "Subgroup 2",
-        "Group B",
-        "Subgroup 1B",
-    ]);
-    expect(queryAllTexts(".o_select_menu_item")).toEqual(["Option 2.I", "Option B.2"]);
+    expect(".o_select_menu_sticky").toHaveValue("");
 });
 
 test("Can add custom data to choices", async () => {
@@ -1194,7 +1101,6 @@ test("placeholder added succesfully", async () => {
                 choices="this.choices"
                 value="this.state.value"
                 placeholder="'Choose any option'"
-                searchPlaceholder="'Search...'"
             />
         `;
         setup() {
@@ -1207,9 +1113,9 @@ test("placeholder added succesfully", async () => {
         }
     }
     await mountSingleApp(MyParent);
-    expect(".o_select_menu_toggler").toHaveAttribute("placeholder", "Choose any option");
+    expect(".o_select_menu_toggler_slot").toHaveText("Choose any option");
     await open();
-    expect(".o_select_menu_toggler").toHaveAttribute("placeholder", "Search...");
+    expect(".o_select_menu_toggler_slot").toHaveText("Choose any option");
 });
 
 test("disabled select list", async () => {
@@ -1259,117 +1165,9 @@ test("Fetch choices", async () => {
     }
     await mountSingleApp(MyParent);
     await open();
-    await editInput("test");
-    expect(queryAllTexts(".o_select_menu_item")).toEqual(["test"]);
-});
-
-test("Typing is preserved if choices rerender before the debounced search runs", async () => {
-    class MyParent extends Component {
-        static props = ["*"];
-        static components = { SelectMenu };
-        static template = xml`
-            <SelectMenu
-                value="this.state.value"
-                onInput.bind="loadChoice"
-                choices="state.choices"
-            />
-        `;
-        setup() {
-            this.state = useState({ choices: [] }, { value: "" });
-        }
-        loadChoice(searchString) {
-            this.state.choices = [{ label: searchString || "test", value: searchString || "test" }];
-        }
-    }
-    const parent = await mountSingleApp(MyParent);
-    await open();
-    for (const char of "test") {
-        await press(char);
-        await animationFrame();
-        if (char === "e") {
-            parent.state.choices = [{ label: "forced rerender", value: "forced" }];
-            await animationFrame();
-        }
-    }
-    expect(".o_select_menu input").toHaveValue("test");
-});
-
-test.tags("mobile");
-test("In the BottomSheet, a 'Clear' button is present", async () => {
-    class MyParent extends Component {
-        static props = ["*"];
-        static components = { SelectMenu };
-        static template = xml`
-            <SelectMenu
-                choices="choices"
-                value="'test'"
-                onSelect.bind="this.onSelect"
-            />
-        `;
-        setup() {
-            this.state = useState({ value: "hello" });
-            this.choices = [{ label: "Test", value: "test" }];
-        }
-        onSelect(value) {
-            expect.step("Cleared");
-            expect(value).toBe(null);
-        }
-    }
-    await mountSingleApp(MyParent);
-    await contains(".o_select_menu_toggler").click();
-    expect(".o_select_menu_menu .o_clear_button").toHaveCount(1);
-    await contains(".o_select_menu_menu .o_clear_button").click();
-    expect.verifySteps(["Cleared"]);
-});
-
-test("Ensure items are properly sorted", async () => {
-    class MyParent extends Component {
-        static props = ["*"];
-        static components = { SelectMenu };
-        static template = xml`
-            <SelectMenu
-                groups="state.groups"
-                choices="state.choices"
-            />
-        `;
-
-        setup() {
-            this.state = useState({
-                choices: [{ label: "item-group-none", value: 0 }],
-                groups: [
-                    {
-                        label: "Group Z",
-                        section: "Group Z",
-                        choices: [{ label: "item-group-z", value: 1 }],
-                    },
-                    {
-                        label: "Group A",
-                        section: "Group A",
-                        choices: [{ label: "item-group-a", value: 2 }],
-                    },
-                    {
-                        section: "Z",
-                        choices: [{ label: "item-z", value: 3 }],
-                    },
-                    {
-                        section: "World",
-                        choices: [{ label: "item-world", value: 5 }],
-                    },
-                ],
-            });
-        }
-    }
-
-    await mountSingleApp(MyParent);
-    await click(".o_select_menu_toggler");
+    await click("input");
+    await edit("test");
+    await runAllTimers();
     await animationFrame();
-
-    const elements = [...queryAll(".o_select_menu_group, .o_select_menu_item")];
-    expect(elements[0]).toHaveText("item-group-none");
-    expect(elements[1]).toHaveText("Group A");
-    expect(elements[2]).toHaveText("item-group-a");
-    expect(elements[3]).toHaveText("Group Z");
-    expect(elements[4]).toHaveText("item-group-z");
-    expect(elements[5]).toHaveText("item-world");
-    expect(elements[6]).toHaveText("item-z");
+    expect(queryAllTexts(".o_select_menu_item_label")).toEqual(["test"]);
 });

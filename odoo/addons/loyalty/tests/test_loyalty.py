@@ -1,13 +1,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from unittest.mock import patch
-
 from psycopg2 import IntegrityError
 
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Command
-from odoo.tests import Form, TransactionCase, tagged
+from odoo.tests import tagged, TransactionCase, Form
 from odoo.tools import mute_logger
+
+from unittest.mock import patch
 
 
 @tagged('post_install', '-at_install')
@@ -67,8 +67,10 @@ class TestLoyalty(TransactionCase):
 
     def test_discount_product_unlink(self):
         # Test that we can not unlink discount line product id
-        with mute_logger('odoo.sql_db'), self.assertRaises(IntegrityError):
-            self.program.reward_ids.discount_line_product_id.unlink()
+        with mute_logger('odoo.sql_db'):
+            with self.assertRaises(IntegrityError):
+                with self.cr.savepoint():
+                    self.program.reward_ids.discount_line_product_id.unlink()
 
     def test_loyalty_mail(self):
         # Test basic loyalty_mail functionalities
@@ -174,8 +176,8 @@ class TestLoyalty(TransactionCase):
             ],
         })
         before_archived_reward_ids = self.program.reward_ids
-        self.program.action_archive()
-        self.program.action_unarchive()
+        self.program.toggle_active()
+        self.program.toggle_active()
         after_archived_reward_ids = self.program.reward_ids
         self.assertEqual(before_archived_reward_ids, after_archived_reward_ids)
 
@@ -191,17 +193,18 @@ class TestLoyalty(TransactionCase):
     def test_prevent_archiving_product_linked_to_active_loyalty_reward(self):
         self.program.program_type = 'promotion'
         self.program.flush_recordset()
+        product = self.product
         reward = self.env['loyalty.reward'].create({
             'program_id': self.program.id,
-            'discount_line_product_id': self.product.id,
+            'discount_line_product_id': product.id,
         })
         self.program.write({
             'reward_ids': [Command.link(reward.id)],
         })
         with self.assertRaises(ValidationError):
-            self.product.action_archive()
+            product.action_archive()
         self.program.action_archive()
-        self.product.action_archive()
+        product.action_archive()
 
     def test_prevent_archiving_product_used_for_discount_reward(self):
         """
@@ -228,20 +231,21 @@ class TestLoyalty(TransactionCase):
         We just have to archive the free product that has been created while creating
         the program itself not the product we already had before.
         """
+        product = self.product
         loyalty_program = self.env['loyalty.program'].create({
             'name': 'Test Program',
             'program_type': 'buy_x_get_y',
             'reward_ids': [
                 Command.create({
                     'description': 'Test Product',
-                    'reward_product_id': self.product.id,
+                    'reward_product_id': product.id,
                     'reward_type': 'product'
                 }),
             ],
         })
         loyalty_program.action_archive()
         # Make sure that the main product didn't get archived
-        self.assertTrue(self.product.active)
+        self.assertTrue(product.active)
 
     def test_merge_loyalty_cards(self):
         """Test merging nominative loyalty cards from source partners to a destination partner
@@ -338,23 +342,3 @@ class TestLoyalty(TransactionCase):
         # attempt to unarchive both programs together
         with self.assertRaises(ValidationError):
             (program1 + program2).action_unarchive()
-
-    def test_discount_description_translation(self):
-        """A discount product's name field should automatically update for all languages for which changes
-        are made on the reward's description"""
-        self.env['res.lang']._activate_lang('fr_FR')
-        program = self.env['loyalty.program'].create({
-            'name': 'Test Program',
-            'reward_ids': [(0, 0, {})],
-        })
-        reward = self.env['loyalty.reward'].with_context(lang='en_US').create({
-            'program_id': program.id,
-            'reward_type': 'discount',
-            'description': 'My Discount'
-        })
-        product = reward.discount_line_product_id
-        translations = {'en_US': 'Test Discount EN', 'fr_FR': 'Test Discount FR'}
-        reward.update_field_translations('description', translations)
-        product.invalidate_recordset(['name'])
-        self.assertEqual(product.with_context(lang='en_US').name, 'Test Discount EN')
-        self.assertEqual(product.with_context(lang='fr_FR').name, 'Test Discount FR')

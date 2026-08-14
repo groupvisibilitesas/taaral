@@ -1,5 +1,7 @@
+/** @odoo-module **/
+
 import { registry } from "@web/core/registry";
-import { stepUtils } from "@web_tour/tour_utils";
+import { stepUtils } from "@web_tour/tour_service/tour_utils";
 
 registry.category("web_tour.tours").add("hr_skills_tour", {
     url: "/odoo",
@@ -26,13 +28,13 @@ registry.category("web_tour.tours").add("hr_skills_tour", {
             run: "click",
         },
         {
-            content: "Add Experience",
-            trigger: ".nav-link:contains('Resume')",
-            run: "click",
+        content: "Open the Resume tab",
+        trigger: ".o_notebook_headers a.nav-link[name='skills_resume']",
+        run: "click",
         },
         {
             content: "Add a new Resume experience",
-            trigger: ".o_field_resume_one2many button.btn-secondary",
+            trigger: ".o_field_resume_one2many tr.o_resume_group_header button.btn-secondary",
             run: "click",
         },
         {
@@ -40,11 +42,6 @@ registry.category("web_tour.tours").add("hr_skills_tour", {
             trigger:
                 ".modal:contains(new resume line) .modal-body .o_field_widget[name='name'] input",
             run: "edit Mamie Rock",
-        },
-        {
-            trigger: ".modal:contains(new resume line) .o_field_widget[name='date_start'] button",
-            content: "open date picker",
-            run: "click",
         },
         {
             content: "Set start date",
@@ -71,7 +68,12 @@ registry.category("web_tour.tours").add("hr_skills_tour", {
         },
         {
             content: "Change type",
-            trigger: ".modal:contains(new resume line) .o_field_widget[name='line_type_id'] .o_selection_badge:contains(Other Experience)",
+            trigger: ".modal:contains(new resume line) .o_field_widget[name='line_type_id'] input",
+            run: "edit Experience",
+        },
+        {
+            content: "Choose experience",
+            trigger: '.ui-autocomplete .ui-menu-item a:contains("Experience")',
             run: "click",
         },
         {
@@ -89,22 +91,33 @@ registry.category("web_tour.tours").add("hr_skills_tour", {
         },
         {
             content: "Select Music",
-            trigger: ".o_field_widget[name='skill_type_id'] span:contains('Best Music')",
+            trigger:
+                ".modal:contains(select skills) .o_field_widget[name='skill_type_id'] label:contains('Best Music')",
             run: "click",
+        },
+        {
+            content: "Select a song",
+            trigger: ".modal:contains(select skills) .o_field_widget[name='skill_id'] input",
+            run: "edit Fortun",
         },
         {
             content: "Choose the song",
-            trigger: ".o_field_widget[name='skill_id'] span:contains('Fortunate Son')",
+            trigger: '.ui-autocomplete .ui-menu-item a:contains("Fortunate Son")',
             run: "click",
         },
         {
+            content: "Select a level",
+            trigger: ".modal:contains(select skills) .o_field_widget[name='skill_level_id'] input",
+            run: "edit Level",
+        },
+        {
             content: "Choose the level",
-            trigger: ".o_field_widget[name='skill_level_id'] span:contains('Level 2')",
+            trigger: '.ui-autocomplete .ui-menu-item a:contains("Level 2")',
             run: "click",
         },
         {
             content: "Save new skill",
-            trigger: ".modal:contains(update skills) .o_form_button_save:contains(save & close)",
+            trigger: ".modal:contains(select skills) .o_form_button_save:contains(save & close)",
             run: "click",
         },
         {
@@ -122,38 +135,33 @@ registry.category("web_tour.tours").add("hr_skills_tour", {
             run: "click",
         },
         {
-            content: "Select Certification",
-            trigger: ".o_field_widget[name='skill_type_id'] span:contains('Music Certification')",
+            content: "Music should be already selected",
+            trigger:
+                ".modal:contains(select skills) .o_field_widget[name=skill_id] input:value(Fortunate Son)",
+        },
+        {
+            content: "Select a song",
+            trigger: ".modal:contains(select skills) .o_field_widget[name='skill_id'] input",
+            run: "edit Mary",
+        },
+        {
+            content: "Choose the song",
+            trigger: '.ui-autocomplete .ui-menu-item a:contains("Oh Mary")',
             run: "click",
         },
         {
-            content: "Choose the instrument",
-            trigger: ".o_field_widget[name='skill_id'] span:contains('Piano')",
+            content: "Select a level",
+            trigger: ".modal:contains(select skills) .o_field_widget[name='skill_level_id'] input",
+            run: "edit Level 7",
+        },
+        {
+            content: "Choose the level",
+            trigger: '.ui-autocomplete .ui-menu-item a:contains("Level 7")',
             run: "click",
-        },
-        {
-            content: "Choose the level",
-            trigger: "div[name='valid_from'] button",
-            run: "click",
-        },
-        {
-            content: "Choose the level",
-            trigger: ".o_field_widget[name='valid_from'] input",
-            run: "edit 02/03/2025",
-        },
-        {
-            content: "Choose the level",
-            trigger: ".o_field_widget[name='valid_to']",
-            run: "click",
-        },
-        {
-            content: "Choose the level",
-            trigger: ".o_field_widget[name='valid_to'] input",
-            run: "edit 03/04/2025",
         },
         {
             content: "Save new skill",
-            trigger: ".modal:contains(update skills) .o_form_button_save:contains(save & close)",
+            trigger: ".modal:contains(select skills) .o_form_button_save:contains(save & close)",
             run: "click",
         },
         {
@@ -162,8 +170,61 @@ registry.category("web_tour.tours").add("hr_skills_tour", {
         },
         {
             content: "Check if item is added",
-            trigger: ".o_data_row td.o_data_cell:contains('Piano')",
+            trigger: ".o_data_row td.o_data_cell:contains('Oh Mary')",
         },
-        ...stepUtils.saveForm(),
+        {
+            content: "wait for save completion",
+            trigger: ".o_form_readonly, .o_form_saved",
+        },
+        {
+            content: "Add a new Skill",
+            trigger: ".o_field_skills_one2many button:contains('ADD')",
+            run: "click",
+        },
+        {
+            content: "Select a song",
+            trigger: ".modal:contains(select skills) .o_field_widget[name='skill_id'] input",
+            run: "edit Mary",
+        },
+        {
+            content: "Choose the song",
+            trigger: '.ui-autocomplete .ui-menu-item a:contains("Oh Mary")',
+            run: "click",
+        },
+        {
+            content: "Save new skill",
+            trigger: ".modal:contains(select skills) .o_form_button_save:contains(save & close)",
+            run: "click",
+        },
+        {
+            content: "Close validation error popup",
+            trigger: ".modal:contains(validation error) .modal-footer .btn-primary",
+            run: "click",
+        },
+        {
+            content: "Close skill dialog",
+            trigger: ".modal:contains(select skills) .modal-header .btn-close",
+            run: "click",
+        },
+        {
+            content: "Wait for modal to close",
+            trigger: "body:not(:has(.modal))",
+        },
+        {
+            content: "Check that no duplicate skill was added",
+            trigger: ".o_data_row td.o_data_cell:contains('Oh Mary')",
+            run: function() {
+                const fortunateSonCount = Array.from(document.querySelectorAll(".o_data_row td.o_data_cell"))
+                    .filter(cell => cell.textContent.includes("Fortunate Son")).length;
+                if (fortunateSonCount !== 1) {
+                    console.error("Duplicate skill 'Fortunate Son' was added despite validation error");
+                }
+            },
+        },
+        {
+            content: "Discard changes",
+            trigger: ".o_form_button_cancel",
+            run: "click",
+        },
     ],
 });

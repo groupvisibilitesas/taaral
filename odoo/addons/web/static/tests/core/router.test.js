@@ -10,10 +10,12 @@ import {
     router,
     routerBus,
     startRouter,
+    stateToUrl,
+    urlToState,
 } from "@web/core/browser/router";
 import { redirect } from "@web/core/utils/urls";
 
-const _urlToState = (url) => router.urlToState(new URL(url));
+const _urlToState = (url) => urlToState(new URL(url));
 
 function createRouter(params = {}) {
     if (params.onPushState) {
@@ -102,70 +104,63 @@ describe("parseSearchQuery", () => {
 
 describe("stateToUrl", () => {
     test("encodes URI compatible strings", (assert) => {
-        expect(router.stateToUrl({})).toBe("/odoo");
-        expect(router.stateToUrl({ a: "11", b: "summer wine" })).toBe("/odoo?a=11&b=summer%20wine");
-        expect(router.stateToUrl({ b: "2", c: "", e: "kloug,gloubi" })).toBe(
+        expect(stateToUrl({})).toBe("/odoo");
+        expect(stateToUrl({ a: "11", b: "summer wine" })).toBe("/odoo?a=11&b=summer%20wine");
+        expect(stateToUrl({ b: "2", c: "", e: "kloug,gloubi" })).toBe(
             "/odoo?b=2&c=&e=kloug%2Cgloubi"
         );
     });
 
     test("backwards compatibility: no action stack, action encoded in path", (assert) => {
-        expect(router.stateToUrl({})).toBe("/odoo");
+        expect(stateToUrl({})).toBe("/odoo");
         // action
-        expect(router.stateToUrl({ action: "some-path" })).toBe("/odoo/some-path");
-        expect(router.stateToUrl({ active_id: 5, action: "some-path" })).toBe("/odoo/5/some-path");
-        expect(router.stateToUrl({ active_id: "some-active_id", action: "some-path" })).toBe(
+        expect(stateToUrl({ action: "some-path" })).toBe("/odoo/some-path");
+        expect(stateToUrl({ active_id: 5, action: "some-path" })).toBe("/odoo/5/some-path");
+        expect(stateToUrl({ active_id: "some-active_id", action: "some-path" })).toBe(
             "/odoo/some-path?active_id=some-active_id",
             { message: "only numeric active_id are encoded in path" }
         );
-        expect(router.stateToUrl({ action: "some-path", resId: 2 })).toBe("/odoo/some-path/2");
-        expect(router.stateToUrl({ action: "some-path", resId: "some-resId" })).toBe(
+        expect(stateToUrl({ action: "some-path", resId: 2 })).toBe("/odoo/some-path/2");
+        expect(stateToUrl({ action: "some-path", resId: "some-resId" })).toBe(
             "/odoo/some-path?resId=some-resId",
             { message: "only numeric resId are encoded in path" }
         );
-        expect(router.stateToUrl({ active_id: 5, action: "some-path", resId: 2 })).toBe(
+        expect(stateToUrl({ active_id: 5, action: "some-path", resId: 2 })).toBe(
             "/odoo/5/some-path/2"
         );
-        expect(router.stateToUrl({ active_id: 5, action: "some-path", resId: "new" })).toBe(
+        expect(stateToUrl({ active_id: 5, action: "some-path", resId: "new" })).toBe(
             "/odoo/5/some-path/new"
         );
-        expect(router.stateToUrl({ action: 1, resId: 2 })).toBe("/odoo/action-1/2", {
+        expect(stateToUrl({ action: 1, resId: 2 })).toBe("/odoo/action-1/2", {
             message: "action id instead of path/tag",
         });
-        expect(router.stateToUrl({ action: "module.xml_id", resId: 2 })).toBe(
+        expect(stateToUrl({ action: "module.xml_id", resId: 2 })).toBe(
             "/odoo/action-module.xml_id/2",
             { message: "action xml_id instead of path/tag" }
         );
         // model
-        expect(router.stateToUrl({ model: "some.model" })).toBe("/odoo/some.model");
-        expect(router.stateToUrl({ model: "some.model", resId: 2 })).toBe("/odoo/some.model/2");
-        expect(router.stateToUrl({ active_id: 5, model: "some.model" })).toBe("/odoo/5/some.model");
-        expect(router.stateToUrl({ active_id: 5, model: "some.model", resId: 2 })).toBe(
+        expect(stateToUrl({ model: "some.model" })).toBe("/odoo/some.model");
+        expect(stateToUrl({ model: "some.model", resId: 2 })).toBe("/odoo/some.model/2");
+        expect(stateToUrl({ active_id: 5, model: "some.model" })).toBe("/odoo/5/some.model");
+        expect(stateToUrl({ active_id: 5, model: "some.model", resId: 2 })).toBe(
             "/odoo/5/some.model/2"
         );
-        expect(router.stateToUrl({ active_id: 5, model: "some.model", resId: "new" })).toBe(
+        expect(stateToUrl({ active_id: 5, model: "some.model", resId: "new" })).toBe(
             "/odoo/5/some.model/new"
         );
-        expect(
-            router.stateToUrl({ active_id: 5, model: "some.model", view_type: "some_viewtype" })
-        ).toBe("/odoo/5/some.model?view_type=some_viewtype");
+        expect(stateToUrl({ active_id: 5, model: "some.model", view_type: "some_viewtype" })).toBe(
+            "/odoo/5/some.model?view_type=some_viewtype"
+        );
         // edge cases
         expect(
-            router.stateToUrl({
-                active_id: 5,
-                action: "some-path",
-                resId: 2,
-                some_key: "some_value",
-            })
+            stateToUrl({ active_id: 5, action: "some-path", resId: 2, some_key: "some_value" })
         ).toBe("/odoo/5/some-path/2?some_key=some_value", {
             message: "pieces of state unrelated to actions are added as query string",
         });
         expect(
-            router.stateToUrl({ active_id: 5, action: "some-path", model: "some.model", resId: 2 })
+            stateToUrl({ active_id: 5, action: "some-path", model: "some.model", resId: 2 })
         ).toBe("/odoo/5/some-path/2", { message: "action has priority on model" });
-        expect(
-            router.stateToUrl({ active_id: 5, model: "some.model", resId: 2, view_type: "list" })
-        ).toBe(
+        expect(stateToUrl({ active_id: 5, model: "some.model", resId: 2, view_type: "list" })).toBe(
             "/odoo/5/some.model/2?view_type=list",
             { message: "view_type and resId aren't incompatible" }
             // Should they be? view_type will just be stripped by action_service
@@ -173,60 +168,49 @@ describe("stateToUrl", () => {
     });
 
     test("actionStack: one action", () => {
-        expect(router.stateToUrl({ actionStack: [] })).toBe("/odoo");
+        expect(stateToUrl({ actionStack: [] })).toBe("/odoo");
         // action
-        expect(router.stateToUrl({ actionStack: [{ action: "some-path" }] })).toBe(
-            "/odoo/some-path"
-        );
-        expect(router.stateToUrl({ actionStack: [{ active_id: 5, action: "some-path" }] })).toBe(
+        expect(stateToUrl({ actionStack: [{ action: "some-path" }] })).toBe("/odoo/some-path");
+        expect(stateToUrl({ actionStack: [{ active_id: 5, action: "some-path" }] })).toBe(
             "/odoo/5/some-path"
         );
-        expect(router.stateToUrl({ actionStack: [{ action: "some-path", resId: 2 }] })).toBe(
+        expect(stateToUrl({ actionStack: [{ action: "some-path", resId: 2 }] })).toBe(
             "/odoo/some-path/2"
         );
-        expect(
-            router.stateToUrl({ actionStack: [{ active_id: 5, action: "some-path", resId: 2 }] })
-        ).toBe("/odoo/5/some-path/2");
-        expect(
-            router.stateToUrl({
-                actionStack: [{ active_id: 5, action: "some-path", resId: "new" }],
-            })
-        ).toBe("/odoo/5/some-path/new");
-        expect(router.stateToUrl({ actionStack: [{ action: 1, resId: 2 }] })).toBe(
-            "/odoo/action-1/2",
-            {
-                message: "numerical action id instead of path",
-            }
+        expect(stateToUrl({ actionStack: [{ active_id: 5, action: "some-path", resId: 2 }] })).toBe(
+            "/odoo/5/some-path/2"
         );
-        expect(router.stateToUrl({ actionStack: [{ action: "module.xml_id", resId: 2 }] })).toBe(
+        expect(
+            stateToUrl({ actionStack: [{ active_id: 5, action: "some-path", resId: "new" }] })
+        ).toBe("/odoo/5/some-path/new");
+        expect(stateToUrl({ actionStack: [{ action: 1, resId: 2 }] })).toBe("/odoo/action-1/2", {
+            message: "numerical action id instead of path",
+        });
+        expect(stateToUrl({ actionStack: [{ action: "module.xml_id", resId: 2 }] })).toBe(
             "/odoo/action-module.xml_id/2",
             { message: "action xml_id instead of path" }
         );
         // model
-        expect(router.stateToUrl({ actionStack: [{ model: "some.model" }] })).toBe(
-            "/odoo/some.model"
-        );
-        expect(router.stateToUrl({ actionStack: [{ model: "some.model", resId: 2 }] })).toBe(
+        expect(stateToUrl({ actionStack: [{ model: "some.model" }] })).toBe("/odoo/some.model");
+        expect(stateToUrl({ actionStack: [{ model: "some.model", resId: 2 }] })).toBe(
             "/odoo/some.model/2"
         );
-        expect(router.stateToUrl({ actionStack: [{ active_id: 5, model: "some.model" }] })).toBe(
+        expect(stateToUrl({ actionStack: [{ active_id: 5, model: "some.model" }] })).toBe(
             "/odoo/5/some.model"
         );
+        expect(stateToUrl({ actionStack: [{ active_id: 5, model: "some.model", resId: 2 }] })).toBe(
+            "/odoo/5/some.model/2"
+        );
         expect(
-            router.stateToUrl({ actionStack: [{ active_id: 5, model: "some.model", resId: 2 }] })
-        ).toBe("/odoo/5/some.model/2");
-        expect(
-            router.stateToUrl({
-                actionStack: [{ active_id: 5, model: "some.model", resId: "new" }],
-            })
+            stateToUrl({ actionStack: [{ active_id: 5, model: "some.model", resId: "new" }] })
         ).toBe("/odoo/5/some.model/new");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ active_id: 5, model: "some.model", view_type: "some_viewtype" }],
             })
         ).toBe("/odoo/5/some.model", { message: "view_type is ignored in the action stack" });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ active_id: 5, model: "some.model" }],
                 view_type: "some_viewtype",
             })
@@ -234,11 +218,11 @@ describe("stateToUrl", () => {
             message: "view_type is added if it's on the state itself",
         });
         expect(
-            router.stateToUrl({ actionStack: [{ active_id: 5, model: "model_no_dot", resId: 2 }] })
+            stateToUrl({ actionStack: [{ active_id: 5, model: "model_no_dot", resId: 2 }] })
         ).toBe("/odoo/5/m-model_no_dot/2");
         // edge cases
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { active_id: 5, action: "some-path", resId: 2, some_key: "some_value" },
                 ],
@@ -247,7 +231,7 @@ describe("stateToUrl", () => {
             message: "pieces of state unrelated to actions are ignored in the actionStack",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ active_id: 5, action: "some-path", resId: 2 }],
                 some_key: "some_value",
             })
@@ -256,12 +240,12 @@ describe("stateToUrl", () => {
                 "pieces of state unrelated to actions are added as query string even with actionStack",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ active_id: 5, action: "some-path", model: "some.model", resId: 2 }],
             })
         ).toBe("/odoo/5/some-path/2", { message: "action has priority on model" });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ active_id: 5, model: "some.model", resId: 2 }],
                 view_type: "list",
             })
@@ -275,15 +259,15 @@ describe("stateToUrl", () => {
     test("actionStack: multiple actions", () => {
         // different actions
         expect(
-            router.stateToUrl({ actionStack: [{ action: "some-path" }, { action: "other-path" }] })
+            stateToUrl({ actionStack: [{ action: "some-path" }, { action: "other-path" }] })
         ).toBe("/odoo/some-path/other-path");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ active_id: 5, action: "some-path" }, { action: "other-path" }],
             })
         ).toBe("/odoo/5/some-path/other-path");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ action: "some-path" }, { active_id: 7, action: "other-path" }],
             })
         ).toBe(
@@ -292,7 +276,7 @@ describe("stateToUrl", () => {
             "/odoo/some-path/7/other-path"
         );
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ action: "some-path", resId: 2 }, { action: "other-path" }],
             })
         ).toBe(
@@ -301,7 +285,7 @@ describe("stateToUrl", () => {
             "/odoo/some-path/2/other-path"
         );
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ action: "some-path" }, { action: "other-path", resId: 2 }],
             })
         ).toBe(
@@ -310,7 +294,7 @@ describe("stateToUrl", () => {
             "/odoo/some-path/other-path/2"
         );
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { active_id: 5, action: "some-path", resId: 2 },
                     { action: "other-path" },
@@ -318,7 +302,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/5/some-path/2/other-path");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "some-path" },
                     { active_id: 5, action: "other-path", resId: 2 },
@@ -326,7 +310,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/some-path/5/other-path/2");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "some-path" },
                     { active_id: 5, action: "other-path", resId: "new" },
@@ -334,7 +318,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/some-path/5/other-path/new");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "some-path", resId: 5 },
                     { active_id: 5, action: "other-path" },
@@ -345,7 +329,7 @@ describe("stateToUrl", () => {
                 "action with resId followed by action with same value as active_id is not duplicated",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "some-path", resId: 5 },
                     { active_id: 5, action: "other-path", resId: 2 },
@@ -353,12 +337,12 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/some-path/5/other-path/2");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ action: 1 }, { active_id: 5, action: 6, resId: 2 }],
             })
         ).toBe("/odoo/action-1/5/action-6/2", { message: "numerical actions" });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "module.xml_id" },
                     { active_id: 5, action: "module.other_xml_id", resId: 2 },
@@ -369,19 +353,19 @@ describe("stateToUrl", () => {
         });
         // same action twice
         expect(
-            router.stateToUrl({ actionStack: [{ action: "some-path" }, { action: "some-path" }] })
+            stateToUrl({ actionStack: [{ action: "some-path" }, { action: "some-path" }] })
         ).toBe("/odoo/some-path", {
             message: "consolidates identical actions into one path segment",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ active_id: 5, action: "some-path" }, { action: "some-path" }],
             })
         ).toBe("/odoo/5/some-path/some-path", {
             message: "doesn't consolidate the same action with different active_id",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "some-path", resId: 7 },
                     { active_id: 7, action: "some-path" },
@@ -392,12 +376,12 @@ describe("stateToUrl", () => {
                 "doesn't remove multirecord action if it follows the same action in mono-record mode",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ action: "some-path", resId: 2 }, { action: "some-path" }],
             })
         ).toBe("/odoo/some-path/2/some-path");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { active_id: 7, action: "some-path", resId: 7 },
                     { active_id: 7, action: "some-path" },
@@ -408,14 +392,14 @@ describe("stateToUrl", () => {
                 "doesn't remove multirecord action if it follows the same action in mono-record mode even if the active_id are the same",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ action: "some-path" }, { action: "some-path", resId: 2 }],
             })
         ).toBe("/odoo/some-path/2", {
             message: "consolidates multi-record action with mono-record action",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { active_id: 5, action: "some-path" },
                     { active_id: 5, action: "some-path", resId: 2 },
@@ -426,7 +410,7 @@ describe("stateToUrl", () => {
                 "consolidates multi-record action with mono-record action if they have the same active_id",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { active_id: 5, action: "some-path", resId: 2 },
                     { action: "some-path" },
@@ -434,7 +418,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/5/some-path/2/some-path");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "some-path" },
                     { active_id: 5, action: "some-path", resId: 2 },
@@ -445,7 +429,7 @@ describe("stateToUrl", () => {
                 "doesn't consolidate mono-record action into preceding multi-record action if active_id is not the same",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "some-path" },
                     { active_id: 5, action: "some-path", resId: "new" },
@@ -453,7 +437,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/some-path/5/some-path/new");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "some-path", resId: 5 },
                     { active_id: 5, action: "some-path" },
@@ -464,7 +448,7 @@ describe("stateToUrl", () => {
                 "action with resId followed by action with same value as active_id is not duplicated",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "some-path", resId: 5 },
                     { active_id: 5, action: "some-path", resId: 2 },
@@ -474,7 +458,7 @@ describe("stateToUrl", () => {
             message: "doesn't consolidate two mono-record actions",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { active_id: 5, action: "some-path", resId: 5 },
                     { active_id: 5, action: "some-path", resId: 2 },
@@ -484,12 +468,12 @@ describe("stateToUrl", () => {
             message: "doesn't consolidate two mono-record actions even with same active_id",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ action: 1 }, { active_id: 5, action: 1, resId: 2 }],
             })
         ).toBe("/odoo/action-1/5/action-1/2", { message: "numerical actions" });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "module.xml_id" },
                     { active_id: 5, action: "module.xml_id", resId: 2 },
@@ -500,30 +484,30 @@ describe("stateToUrl", () => {
         });
         // model
         expect(
-            router.stateToUrl({ actionStack: [{ model: "some.model" }, { model: "other.model" }] })
+            stateToUrl({ actionStack: [{ model: "some.model" }, { model: "other.model" }] })
         ).toBe("/odoo/some.model/other.model");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ active_id: 5, model: "some.model" }, { model: "other.model" }],
             })
         ).toBe("/odoo/5/some.model/other.model");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ model: "some.model" }, { active_id: 7, model: "other.model" }],
             })
         ).toBe("/odoo/some.model/7/other.model");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ model: "some.model", resId: 2 }, { model: "other.model" }],
             })
         ).toBe("/odoo/some.model/2/other.model");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ model: "some.model" }, { model: "other.model", resId: 2 }],
             })
         ).toBe("/odoo/some.model/other.model/2");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { active_id: 5, model: "some.model", resId: 2 },
                     { model: "other.model" },
@@ -531,7 +515,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/5/some.model/2/other.model");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { model: "some.model" },
                     { active_id: 5, model: "other.model", resId: 2 },
@@ -539,7 +523,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/some.model/5/other.model/2");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { model: "some.model" },
                     { active_id: 5, model: "other.model", resId: "new" },
@@ -547,7 +531,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/some.model/5/other.model/new");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { model: "some.model", resId: 5 },
                     { active_id: 5, model: "other.model" },
@@ -558,7 +542,7 @@ describe("stateToUrl", () => {
                 "action with resId followed by action with same value as active_id is not duplicated",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { model: "some.model", resId: 5 },
                     { active_id: 5, model: "other.model", resId: 2 },
@@ -566,7 +550,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/some.model/5/other.model/2");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { model: "model_no_dot", resId: 5 },
                     { active_id: 5, model: "no_dot_model", resId: 2 },
@@ -575,30 +559,30 @@ describe("stateToUrl", () => {
         ).toBe("/odoo/m-model_no_dot/5/m-no_dot_model/2");
         // action + model
         expect(
-            router.stateToUrl({ actionStack: [{ action: "some-path" }, { model: "some.model" }] })
+            stateToUrl({ actionStack: [{ action: "some-path" }, { model: "some.model" }] })
         ).toBe("/odoo/some-path/some.model");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ active_id: 5, action: "some-path" }, { model: "some.model" }],
             })
         ).toBe("/odoo/5/some-path/some.model");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ action: "some-path" }, { active_id: 7, model: "some.model" }],
             })
         ).toBe("/odoo/some-path/7/some.model");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ action: "some-path", resId: 2 }, { model: "some.model" }],
             })
         ).toBe("/odoo/some-path/2/some.model");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ action: "some-path" }, { model: "some.model", resId: 2 }],
             })
         ).toBe("/odoo/some-path/some.model/2");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { active_id: 5, action: "some-path", resId: 2 },
                     { model: "some.model" },
@@ -606,7 +590,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/5/some-path/2/some.model");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "some-path" },
                     { active_id: 5, model: "some.model", resId: 2 },
@@ -614,7 +598,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/some-path/5/some.model/2");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "some-path" },
                     { active_id: 5, model: "some.model", resId: "new" },
@@ -622,7 +606,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/some-path/5/some.model/new");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "some-path", resId: 5 },
                     { active_id: 5, model: "some.model" },
@@ -633,7 +617,7 @@ describe("stateToUrl", () => {
                 "action with resId followed by action with same value as active_id is not duplicated",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "some-path", resId: 5 },
                     { active_id: 5, model: "some.model", resId: 2 },
@@ -641,7 +625,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/some-path/5/some.model/2");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: 1, resId: 5 },
                     { active_id: 5, model: "model_no_dot", resId: 2 },
@@ -649,7 +633,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/action-1/5/m-model_no_dot/2");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "module.xml_id", resId: 5 },
                     { active_id: 5, model: "model_no_dot", resId: 2 },
@@ -658,30 +642,30 @@ describe("stateToUrl", () => {
         ).toBe("/odoo/action-module.xml_id/5/m-model_no_dot/2");
         // model + action
         expect(
-            router.stateToUrl({ actionStack: [{ model: "some.model" }, { action: "other-path" }] })
+            stateToUrl({ actionStack: [{ model: "some.model" }, { action: "other-path" }] })
         ).toBe("/odoo/some.model/other-path");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ active_id: 5, model: "some.model" }, { action: "other-path" }],
             })
         ).toBe("/odoo/5/some.model/other-path");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ model: "some.model" }, { active_id: 7, action: "other-path" }],
             })
         ).toBe("/odoo/some.model/7/other-path");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ model: "some.model", resId: 2 }, { action: "other-path" }],
             })
         ).toBe("/odoo/some.model/2/other-path");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [{ model: "some.model" }, { action: "other-path", resId: 2 }],
             })
         ).toBe("/odoo/some.model/other-path/2");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { active_id: 5, model: "some.model", resId: 2 },
                     { action: "other-path" },
@@ -689,7 +673,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/5/some.model/2/other-path");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { model: "some.model" },
                     { active_id: 5, action: "other-path", resId: 2 },
@@ -697,7 +681,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/some.model/5/other-path/2");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { model: "some.model" },
                     { active_id: 5, action: "other-path", resId: "new" },
@@ -705,7 +689,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/some.model/5/other-path/new");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { model: "some.model", resId: 5 },
                     { active_id: 5, action: "other-path" },
@@ -716,7 +700,7 @@ describe("stateToUrl", () => {
                 "action with resId followed by action with same value as active_id is not duplicated",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { model: "some.model", resId: 5 },
                     { active_id: 5, action: "other-path", resId: 2 },
@@ -724,7 +708,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/some.model/5/other-path/2");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { model: "model_no_dot", resId: 5 },
                     { active_id: 5, action: 1, resId: 2 },
@@ -732,7 +716,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/m-model_no_dot/5/action-1/2");
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { model: "model_no_dot", resId: 5 },
                     { active_id: 5, action: "module.xml_id", resId: 2 },
@@ -742,7 +726,7 @@ describe("stateToUrl", () => {
 
         // edge cases
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "some-path", resId: 5, some_key: "some_value" },
                     { active_id: 5, action: "other-path", resId: 2, other_key: "other_value" },
@@ -752,7 +736,7 @@ describe("stateToUrl", () => {
             message: "pieces of state unrelated to actions are ignored in the actionStack",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "some-path", resId: 5 },
                     { active_id: 5, action: "other-path", resId: 2 },
@@ -764,7 +748,7 @@ describe("stateToUrl", () => {
                 "pieces of state unrelated to actions are added as query string even with actionStack",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "some-path", model: "some.model", resId: 5 },
                     { active_id: 5, action: "other-path", model: "other.model", resId: 2 },
@@ -772,7 +756,7 @@ describe("stateToUrl", () => {
             })
         ).toBe("/odoo/some-path/5/other-path/2", { message: "action has priority on model" });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "some-path", resId: 5 },
                     { active_id: 5, model: "some.model", resId: 2 },
@@ -783,7 +767,7 @@ describe("stateToUrl", () => {
             message: "view_type and resId aren't incompatible",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "some-path", resId: 2 },
                     { active_id: 5, action: "other-path" },
@@ -794,7 +778,7 @@ describe("stateToUrl", () => {
                 "action with resId followed by action with different active_id gets both ids in a row",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { model: "some.model", resId: 2 },
                     { active_id: 5, model: "other.model" },
@@ -805,7 +789,7 @@ describe("stateToUrl", () => {
                 "action with resId followed by action with different active_id gets both ids in a row",
         });
         expect(
-            router.stateToUrl({
+            stateToUrl({
                 actionStack: [
                     { action: "other-path", resId: 5 },
                     { active_id: 5, action: "some-path" },

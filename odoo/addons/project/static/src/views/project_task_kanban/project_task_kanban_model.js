@@ -1,7 +1,8 @@
+/** @odoo-module */
+
 import { RelationalModel } from "@web/model/relational_model/relational_model";
 import { Record } from "@web/model/relational_model/record";
 import { makeActiveField } from "@web/model/relational_model/utils";
-import { ProjectTaskRelationalModel } from "../project_task_relational_model";
 
 export class ProjectTaskKanbanDynamicGroupList extends RelationalModel.DynamicGroupList {
     get isGroupedByStage() {
@@ -9,7 +10,7 @@ export class ProjectTaskKanbanDynamicGroupList extends RelationalModel.DynamicGr
     }
 
     async _unlinkGroups(groups) {
-        if (this.isGroupedByStage) {
+        if (this.groupByField.name === "stage_id") {
             const action = await this.model.orm.call(
                 this.groupByField.relation,
                 'unlink_wizard',
@@ -34,7 +35,7 @@ export class ProjectTaskRecord extends Record {
     }
 
     async toggleSubtasksList() {
-        const { display_name, project_id, state, user_ids, sequence } = this.config.fields;
+        const { display_name, project_id, state, user_ids } = this.config.fields;
         const activeField = makeActiveField({ onChange: true });
         activeField.related = {
             activeFields: {
@@ -42,14 +43,12 @@ export class ProjectTaskRecord extends Record {
                 state: makeActiveField(),
                 user_ids: makeActiveField(),
                 project_id: makeActiveField(),
-                sequence: makeActiveField(),
             },
             fields: {
                 display_name,
                 project_id,
                 state,
                 user_ids,
-                sequence,
             },
         };
         await this._load({
@@ -59,8 +58,8 @@ export class ProjectTaskRecord extends Record {
     }
 }
 
-export class ProjectTaskKanbanModel extends ProjectTaskRelationalModel {
-    async _webReadGroup(config) {
+export class ProjectTaskKanbanModel extends RelationalModel {
+    async _webReadGroup(config, firstGroupByName, orderBy) {
         config.context = {
             ...config.context,
             project_kanban: true,

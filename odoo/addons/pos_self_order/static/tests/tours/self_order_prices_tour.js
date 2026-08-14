@@ -1,34 +1,32 @@
 /* global posmodel */
 
 import { registry } from "@web/core/registry";
-import { floatIsZero } from "@web/core/utils/numbers";
 import * as Utils from "@pos_self_order/../tests/tours/utils/common";
 import * as ProductPage from "@pos_self_order/../tests/tours/utils/product_page_util";
 import * as ConfirmationPage from "@pos_self_order/../tests/tours/utils/confirmation_page_util";
-import * as LandingPage from "@pos_self_order/../tests/tours/utils/landing_page_util";
 
 const comparePricesWithBackend = {
     trigger: "body",
     run: async () => {
         const order = posmodel.currentOrder;
-        const orderTotal = order.displayPrice;
+        const orderTotal = order.get_total_with_tax();
         const allUnitPrices = order.lines.map((l) => l.price_unit);
         const result = await posmodel.sendDraftOrderToServer();
         if (!result) {
             throw new Error("Failed to sync order with server");
         }
 
-        const orderTotalAfterSync = order.displayPrice;
+        const orderTotalAfterSync = order.get_total_with_tax();
         const allUnitPricesAfterSync = order.lines.map((l) => l.price_unit);
 
-        if (!floatIsZero(orderTotal - orderTotalAfterSync, 2)) {
+        if (orderTotal !== orderTotalAfterSync) {
             throw new Error(
                 `The total price changed after sync: before=${orderTotal}, after=${orderTotalAfterSync}`
             );
         }
 
         for (let i = 0; i < allUnitPrices.length; i++) {
-            if (!floatIsZero(allUnitPrices[i] - allUnitPricesAfterSync[i], 2)) {
+            if (allUnitPrices[i] !== allUnitPricesAfterSync[i]) {
                 throw new Error(
                     `The unit price of line ${i} changed after sync: before=${allUnitPrices[i]}, after=${allUnitPricesAfterSync[i]}`
                 );
@@ -49,9 +47,9 @@ const commonSteps = [
     ProductPage.clickProduct("Random Product 1"),
     ProductPage.clickProduct("Random Product 2"),
     ProductPage.clickProduct("Random Product 3"),
-    Utils.clickBtn("Checkout"),
-    comparePricesWithBackend,
     Utils.clickBtn("Order"),
+    comparePricesWithBackend,
+    Utils.clickBtn("Pay"),
     ConfirmationPage.orderNumberShown(),
     Utils.clickBtn("Ok"),
     Utils.checkBtn("My Order"),
@@ -62,108 +60,54 @@ registry.category("web_tour.tours").add("test_combo_prices", {
     steps: () => [
         Utils.clickBtn("Order Now"),
         ProductPage.clickProduct("Big Combo"),
-        ...ProductPage.setupCombo([
-            { product: "Green 1", attributes: [] },
-            { product: "Green 2", attributes: [] },
-        ]),
-        ...ProductPage.setupCombo([
-            { product: "Red 1", attributes: [] },
-            { product: "Red 2", attributes: [] },
-        ]),
-        ...ProductPage.setupCombo([
-            { product: "Purple 1", attributes: [] },
-            { product: "Purple 2", attributes: [] },
-        ]),
+        ...ProductPage.setupCombo([{ product: "Green 1", attributes: [] }], false),
+        ...ProductPage.setupCombo([{ product: "Red 1", attributes: [] }], false),
+        ...ProductPage.setupCombo([{ product: "Purple 1", attributes: [] }], false),
         ...commonSteps,
         Utils.clickBtn("Order Now"),
         ProductPage.clickProduct("Big Combo"),
-        ...ProductPage.setupCombo([
-            { product: "Green 1", attributes: [] },
-            { product: "Green 2", attributes: [] },
-        ]),
-        ...ProductPage.setupCombo([
-            { product: "Red 1", attributes: [] },
-            { product: "Red 1", attributes: [] },
-            { product: "Red 2", attributes: [] },
-            { product: "Red 2", attributes: [] },
-            { product: "Red 2", attributes: [] },
-        ]),
-        ...ProductPage.setupCombo([
-            { product: "Purple 1", attributes: [] },
-            { product: "Purple 1", attributes: [] },
-            { product: "Purple 2", attributes: [] },
-            { product: "Purple 2", attributes: [] },
-            { product: "Purple 2", attributes: [] },
-            { product: "Purple 2", attributes: [] },
-            { product: "Purple 2", attributes: [] },
-            { product: "Purple 2", attributes: [] },
-            { product: "Purple 2", attributes: [] },
-            { product: "Purple 2", attributes: [] },
-        ]),
+        ...ProductPage.setupCombo([{ product: "Green 2", attributes: [] }], false),
+        ...ProductPage.setupCombo([{ product: "Red 2", attributes: [] }], false),
+        ...ProductPage.setupCombo([{ product: "Purple 2", attributes: [] }], false),
         ...commonSteps,
         Utils.clickBtn("Order Now"),
         ProductPage.clickProduct("Big Combo"),
-        ...ProductPage.setupCombo([
-            { product: "Green 1", attributes: [] },
-            {
-                product: "Green 3",
-                attributes: [
-                    { name: "Size", value: "Big" },
-                    { name: "Color", value: "Blue" },
-                ],
-            },
-        ]),
-        ...ProductPage.setupCombo([
-            { product: "Red 1", attributes: [] },
-            { product: "Red 1", attributes: [] },
-            {
-                product: "Red 3",
-                attributes: [
-                    { name: "Size", value: "Big" },
-                    { name: "Color", value: "Blue" },
-                ],
-            },
-            { product: "Red 3", attributes: [] },
-            { product: "Red 3", attributes: [] },
-        ]),
-        ...ProductPage.setupCombo([
-            { product: "Purple 1", attributes: [] },
-            { product: "Purple 1", attributes: [] },
-            { product: "Purple 2", attributes: [] },
-            { product: "Purple 2", attributes: [] },
-            { product: "Purple 2", attributes: [] },
-            { product: "Purple 2", attributes: [] },
-            { product: "Purple 2", attributes: [] },
-            { product: "Purple 2", attributes: [] },
-            {
-                product: "Purple 3",
-                attributes: [
-                    { name: "Size", value: "Small" },
-                    { name: "Color", value: "Red" },
-                ],
-            },
-            { product: "Purple 3", attributes: [] },
-        ]),
-        ...commonSteps,
-        Utils.clickBtn("Order Now"),
-        ProductPage.clickProduct("Small Combo"),
-        ...ProductPage.setupCombo([{ product: "No Price 1", attributes: [] }], false), //Only one free and max so no need to click on add to cart
-        ...ProductPage.setupCombo([
-            { product: "Purple 1", attributes: [] },
-            { product: "Purple 2", attributes: [] },
-        ]),
-        ...commonSteps,
-        Utils.clickBtn("Order Now"),
-        ProductPage.clickProduct("No Free Combo"),
-        ...ProductPage.setupCombo([
-            { product: "First no Free 1", attributes: [] },
-            { product: "First no Free 2", attributes: [] },
-        ]),
-        ...ProductPage.setupCombo([
-            { product: "Second no Free 1", attributes: [] },
-            { product: "Second no Free 1", attributes: [] },
-        ]),
-        ...ProductPage.setupCombo([{ product: "Third no Free 2", attributes: [] }]),
+        ...ProductPage.setupCombo(
+            [
+                {
+                    product: "Green 3",
+                    attributes: [
+                        { name: "Size", value: "Big" },
+                        { name: "Color", value: "Blue" },
+                    ],
+                },
+            ],
+            false
+        ),
+        ...ProductPage.setupCombo(
+            [
+                {
+                    product: "Red 3",
+                    attributes: [
+                        { name: "Size", value: "Big" },
+                        { name: "Color", value: "Blue" },
+                    ],
+                },
+            ],
+            false
+        ),
+        ...ProductPage.setupCombo(
+            [
+                {
+                    product: "Purple 3",
+                    attributes: [
+                        { name: "Size", value: "Small" },
+                        { name: "Color", value: "Red" },
+                    ],
+                },
+            ],
+            false
+        ),
         ...commonSteps,
     ],
 });
@@ -200,11 +144,6 @@ registry.category("web_tour.tours").add("test_price_between_frontend_and_backend
     ],
 });
 
-/**
- * This will create one lines with extra price and attributes
- * 257.58 Order total
- * 106.44 Line price unit
- */
 const commonStepWithSpecificPrice = [
     ProductPage.clickProduct("Product with attributes"),
     ...ProductPage.setupAttribute([
@@ -229,8 +168,8 @@ registry.category("web_tour.tours").add("test_prices_are_immutable_from_frontend
                 const line = order.lines[0];
                 line.price_unit = 0;
                 line.tax_ids = [];
-                const orderTotal = order.displayPrice;
-                const allUnitPrices = order.lines.map((l) => l.price_unit);
+                const orderTotal = order.get_total_with_tax();
+                const allUnitPrices = order.lines.map((l) => l.get_all_prices().priceWithTax);
 
                 if (orderTotal !== 0) {
                     throw new Error(
@@ -252,10 +191,8 @@ registry.category("web_tour.tours").add("test_prices_are_immutable_from_frontend
                 if (!result) {
                     throw new Error("Failed to sync order with server");
                 }
-
-                const orderTotalAfterSync = order.displayPrice;
+                const orderTotalAfterSync = order.get_total_with_tax();
                 const allUnitPricesAfterSync = order.lines.map((l) => l.price_unit);
-
                 if (orderTotalAfterSync !== 257.58) {
                     throw new Error(
                         `The total price should be 257.58 after sync, but it is ${orderTotalAfterSync}`
@@ -277,13 +214,12 @@ registry.category("web_tour.tours").add("test_prices_are_immutable_from_frontend
 registry.category("web_tour.tours").add("test_pricelist_should_not_be_changed_from_frontend", {
     steps: () => [
         Utils.clickBtn("Order Now"),
-        LandingPage.selectLocation("Test-Takeout"),
         ...commonStepWithSpecificPrice,
         {
             trigger: "body",
             run: async () => {
                 const order = posmodel.currentOrder;
-                const amountTotal = order.displayPrice;
+                const amountTotal = order.get_total_with_tax();
                 const freePricelist = posmodel.models["product.pricelist"].find(
                     (p) => p.name === "Free Pricelist"
                 );
@@ -294,7 +230,7 @@ registry.category("web_tour.tours").add("test_pricelist_should_not_be_changed_fr
                     );
                 }
 
-                if (amountTotal !== 231.82) {
+                if (amountTotal !== 209.84) {
                     throw new Error(
                         `The total price should be 231.82 with 10% discount, but it is ${amountTotal}`
                     );
@@ -309,7 +245,7 @@ registry.category("web_tour.tours").add("test_pricelist_should_not_be_changed_fr
             trigger: "body",
             run: async () => {
                 const order = posmodel.currentOrder;
-                const amountTotal = order.displayPrice;
+                const amountTotal = order.get_total_with_tax();
 
                 if (amountTotal !== 0) {
                     throw new Error(
@@ -321,8 +257,7 @@ registry.category("web_tour.tours").add("test_pricelist_should_not_be_changed_fr
                 if (!result) {
                     throw new Error("Failed to sync order with server");
                 }
-
-                const amountTotalAfterSync = order.displayPrice;
+                const amountTotalAfterSync = order.get_total_with_tax();
                 if (amountTotalAfterSync === 0) {
                     throw new Error(
                         `The total price should be 231.82 after sync, but it is ${amountTotalAfterSync}`
@@ -333,19 +268,9 @@ registry.category("web_tour.tours").add("test_pricelist_should_not_be_changed_fr
     ],
 });
 
-registry.category("web_tour.tours").add("test_pricelist_price_between_frontend_and_backend", {
-    steps: () => [
-        Utils.clickBtn("Order Now"),
-        LandingPage.selectLocation("Test-Takeout"),
-        ...commonStepWithSpecificPrice,
-        comparePricesWithBackend,
-    ],
-});
-
 registry.category("web_tour.tours").add("test_fiscal_position_between_frontend_and_backend", {
     steps: () => [
         Utils.clickBtn("Order Now"),
-        LandingPage.selectLocation("Take out"),
         ...commonStepWithSpecificPrice,
         {
             content: "Check that the fiscal position is applied",

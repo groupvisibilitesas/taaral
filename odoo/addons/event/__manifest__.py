@@ -25,7 +25,6 @@ Key Features
         'views/event_ticket_views.xml',
         'views/event_mail_views.xml',
         'views/event_registration_views.xml',
-        'views/event_slot_views.xml',
         'views/event_type_views.xml',
         'views/event_event_views.xml',
         'views/event_stage_views.xml',
@@ -42,7 +41,6 @@ Key Features
         'views/event_tag_views.xml',
         'views/event_question_views.xml',
         'views/event_registration_answer_views.xml',
-        'data/event_question_data.xml',
     ],
     'demo': [
         'data/res_users_demo.xml',
@@ -56,12 +54,11 @@ Key Features
         'web.assets_backend': [
             'event/static/src/client_action/**/*',
             'event/static/src/scss/event.scss',
-            'event/static/src/event_state_selection_field/*',
             'event/static/src/icon_selection_field/icon_selection_field.js',
             'event/static/src/icon_selection_field/icon_selection_field.xml',
             'event/static/src/template_reference_field/*',
             'event/static/src/js/tours/**/*',
-            'event/static/src/views/**/*',
+            'event/static/src/views/*',
         ],
         'web.assets_frontend': [
             'event/static/src/js/tours/**/*',
@@ -75,6 +72,5 @@ Key Features
             '/event/static/src/scss/event_full_page_ticket_report_pdf.scss',
         ],
     },
-    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 }

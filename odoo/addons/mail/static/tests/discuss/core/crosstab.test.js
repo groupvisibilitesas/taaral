@@ -19,11 +19,10 @@ test("Add member to channel", async () => {
     pyEnv["res.partner"].create({ name: "Harry", user_ids: [userId] });
     await start();
     await openDiscuss(channelId);
-    await contains(".o-discuss-ChannelMemberList"); // wait for auto-open of this panel
     await contains(".o-discuss-ChannelMember", { text: "Mitchell Admin" });
     await click("[title='Invite People']");
     await click(".o-discuss-ChannelInvitation-selectable", { text: "Harry" });
-    await click(".o-discuss-ChannelInvitation [title='Invite']:enabled");
+    await click("[title='Invite to Channel']:enabled");
     await contains(".o-discuss-ChannelInvitation", { count: 0 });
     await click("[title='Members']");
     await contains(".o-discuss-ChannelMember", { text: "Harry" });

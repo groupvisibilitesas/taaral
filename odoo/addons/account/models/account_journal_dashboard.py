@@ -6,9 +6,9 @@ import base64
 import json
 import random
 
-from odoo import models, api, _, fields, tools
+from odoo import models, api, _, fields, Command, tools
 from odoo.exceptions import UserError
-from odoo.fields import Command, Domain
+from odoo.osv import expression
 from odoo.release import version
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DF, SQL
 from odoo.tools.misc import formatLang, format_date as odoo_format_date, get_lang
@@ -21,7 +21,7 @@ def group_by_journal(vals_list):
     return res
 
 
-class AccountJournal(models.Model):
+class account_journal(models.Model):
     _inherit = "account.journal"
 
     kanban_dashboard = fields.Text(compute='_kanban_dashboard')
@@ -51,7 +51,6 @@ class AccountJournal(models.Model):
                       SELECT id, company_id
                         FROM account_bank_statement
                        WHERE journal_id = journal.id
-                         AND first_line_index IS NOT NULL
                     ORDER BY first_line_index DESC
                        LIMIT 1
                    ) statement ON TRUE
@@ -168,7 +167,7 @@ class AccountJournal(models.Model):
                       FROM account_move move
                      WHERE move.journal_id = ANY(%(journal_ids)s)
                        AND move.company_id = ANY(%(company_ids)s)
-                       AND move.made_sequence_gap IS TRUE
+                       AND move.made_sequence_gap = TRUE
                        AND move.date > %(lock_date)s
                   GROUP BY move.journal_id, move.sequence_prefix
                 """,
@@ -206,10 +205,6 @@ class AccountJournal(models.Model):
                 journal.has_unhashed_entries = False
 
     def _compute_has_entries(self):
-        if not self.ids:
-            self.has_posted_entries = False
-            self.has_entries = False
-            return
         sql_query = SQL(
             """
                        SELECT j.id,
@@ -410,7 +405,6 @@ class AccountJournal(models.Model):
             dashboard_data[journal.id] = {
                 'currency_id': journal.currency_id.id or journal.company_id.sudo().currency_id.id,
                 'show_company': len(self.env.companies) > 1 or journal.company_id.id != self.env.company.id,
-                'company_name': journal.company_id.sudo().name,
             }
         self._fill_bank_cash_dashboard_data(dashboard_data)
         self._fill_sale_purchase_dashboard_data(dashboard_data)
@@ -429,15 +423,15 @@ class AccountJournal(models.Model):
         :param name: the name of the variable to inject in the dashboard's data
         :type name: str
         :param domain: the domain of records to count
+        :type domain: list[tuple]
         """
         res = {
             journal.id: count
             for journal, count in self.env[model]._read_group(
-                domain=Domain.AND((
-                    self.env[model]._check_company_domain(self.env.companies),
-                    Domain('journal_id', 'in', self.ids),
-                    domain,
-                )),
+                domain=[
+                   *self.env[model]._check_company_domain(self.env.companies),
+                   ('journal_id', 'in', self.ids),
+               ] + domain,
                 groupby=['journal_id'],
                 aggregates=['__count'],
             )
@@ -452,14 +446,14 @@ class AccountJournal(models.Model):
             return
 
         # Number to reconcile
-        self.env.cr.execute("""
+        self._cr.execute("""
             SELECT st_line.journal_id,
                    COUNT(st_line.id)
               FROM account_bank_statement_line st_line
               JOIN account_move st_line_move ON st_line_move.id = st_line.move_id
              WHERE st_line.journal_id IN %s
                AND st_line.company_id IN %s
-               AND st_line.is_reconciled IS NOT TRUE
+               AND NOT st_line.is_reconciled
                AND st_line_move.checked IS TRUE
                AND st_line_move.state = 'posted'
           GROUP BY st_line.journal_id
@@ -491,7 +485,7 @@ class AccountJournal(models.Model):
             ('statement_line_id', '=', False),
             ('parent_state', '=', 'posted'),
             ('payment_id', '=', False),
-      ] + Domain.OR(misc_domain)
+      ] + expression.OR(misc_domain)
 
         misc_totals = {
             account: (balance, count_lines, currencies)
@@ -529,11 +523,6 @@ class AccountJournal(models.Model):
                 'image': '/account/static/src/img/bank.svg' if journal.type in ('bank', 'credit') else '/web/static/img/rfq.svg',
                 'text': _('Drop to import transactions'),
             }
-            last_statement_visible = (
-                not journal.company_id.fiscalyear_lock_date
-                or journal.last_statement_id.date
-                and journal.company_id.fiscalyear_lock_date < journal.last_statement_id.date
-            )
 
             dashboard_data[journal.id].update({
                 'number_to_check': number_to_check,
@@ -546,8 +535,6 @@ class AccountJournal(models.Model):
                 'nb_lines_outstanding_pay_account_balance': has_outstanding,
                 'last_balance': currency.format(journal.last_statement_id.balance_end_real),
                 'last_statement_id': journal.last_statement_id.id,
-                'last_statement_visible': last_statement_visible,
-                'has_invalid_statements': journal.has_invalid_statements,
                 'bank_statements_source': journal.bank_statements_source,
                 'is_sample_data': journal.has_statement_lines,
                 'nb_misc_operations': number_misc,
@@ -565,16 +552,17 @@ class AccountJournal(models.Model):
             return
         bills_field_list = [
             "account_move.journal_id",
-            "(CASE WHEN account_move.move_type IN ('out_refund', 'in_refund') THEN -1 ELSE 1 END) * account_move.amount_total AS amount_total",
-            "(CASE WHEN account_move.move_type IN ('in_invoice', 'in_refund', 'in_receipt') THEN -1 ELSE 1 END) * account_move.amount_total_signed AS amount_total_company",
+            "(CASE WHEN account_move.move_type IN ('out_refund', 'in_refund') THEN -1 ELSE 1 END) * account_move.amount_residual AS amount_total",
+            "(CASE WHEN account_move.move_type IN ('in_invoice', 'in_refund', 'in_receipt') THEN -1 ELSE 1 END) * account_move.amount_residual_signed AS amount_total_company",
             "account_move.currency_id AS currency",
             "account_move.move_type",
             "account_move.invoice_date",
             "account_move.company_id",
         ]
         # DRAFTS
-        sql = sale_purchase_journals._get_draft_sales_purchases_query().select(*bills_field_list)
-        query_results_drafts = group_by_journal(self.env.execute_query_dict(sql))
+        query, params = sale_purchase_journals._get_draft_sales_purchases_query().select(*bills_field_list)
+        self.env.cr.execute(query, params)
+        query_results_drafts = group_by_journal(self.env.cr.dictfetchall())
 
         # WAITING AND LATE BILLS AND PAYMENTS
         query_results_to_pay = {}
@@ -594,12 +582,8 @@ class AccountJournal(models.Model):
                 query_results_to_pay[journal.id] = [r for r in query_result[journal.id] if r['to_pay']]
                 late_query_results[journal.id] = [r for r in query_result[journal.id] if r['late']]
 
-        query, selects = sale_purchase_journals._get_to_check_payment_query()
-        sql = SQL("""%s
-                GROUP BY account_move.company_id, account_move.journal_id, account_move.currency_id, late, to_pay""",
-                  query.select(*selects),
-                  )
-        self.env.cr.execute(sql)
+        query, params = sale_purchase_journals._get_to_check_payment_query().select(*bills_field_list)
+        self.env.cr.execute(query, params)
         to_check_vals = group_by_journal(self.env.cr.dictfetchall())
 
         self.env.cr.execute(SQL("""
@@ -630,7 +614,7 @@ class AccountJournal(models.Model):
             if journal.type == 'purchase':
                 title_has_sequence_holes = _("Irregularities due to draft, cancelled or deleted bills with a sequence number since last lock date.")
                 drag_drop_settings = {
-                    'image': '/account/static/src/img/bill.svg',
+                    'image': '/account/static/src/img/Bill.svg',
                     'text': _('Drop and let the AI process your bills automatically.'),
                 }
             else:
@@ -663,20 +647,22 @@ class AccountJournal(models.Model):
         general_journals = self.filtered(lambda journal: journal.type == 'general')
         if not general_journals:
             return
-        draft_vals = {
-            journal.id: count
-            for journal, count in self.env['account.move']._read_group(
+        to_check_vals = {
+            journal.id: (amount_total_signed_sum, count)
+            for journal, amount_total_signed_sum, count in self.env['account.move']._read_group(
                 domain=[
                     *self.env['account.move']._check_company_domain(self.env.companies),
                     ('journal_id', 'in', general_journals.ids),
-                    ('state', '=', 'draft'),
-                    ('auto_post', '=', 'no'),
+                    ('checked', '=', False),
+                    ('state', '=', 'posted'),
                 ],
                 groupby=['journal_id'],
-                aggregates=['__count'],
+                aggregates=['amount_total_signed:sum', '__count'],
             )
         }
         for journal in general_journals:
+            currency = journal.currency_id or self.env['res.currency'].browse(journal.company_id.sudo().currency_id.id)
+            amount_total_signed_sum, count = to_check_vals.get(journal.id, (0, 0))
             drag_drop_settings = {
                 'image': '/web/static/img/folder.svg',
                 'text': _('Drop to create journal entries with attachments.'),
@@ -684,7 +670,8 @@ class AccountJournal(models.Model):
             }
 
             dashboard_data[journal.id].update({
-                'number_draft': draft_vals.get(journal.id, 0),
+                'number_to_check': count,
+                'to_check_balance': currency.format(amount_total_signed_sum),
                 'drag_drop_settings': drag_drop_settings,
             })
 
@@ -718,45 +705,22 @@ class AccountJournal(models.Model):
             dashboard_data[journal.id]['onboarding'] = onboarding_data[journal.company_id].get(journal_onboarding_map.get(journal.type))
 
     def _get_draft_sales_purchases_query(self):
-        return self.env['account.move']._search([
+        return self.env['account.move']._where_calc([
             *self.env['account.move']._check_company_domain(self.env.companies),
             ('journal_id', 'in', self.ids),
             ('state', '=', 'draft'),
             ('move_type', 'in', self.env['account.move'].get_invoice_types(include_receipts=True)),
-        ], bypass_access=True)
-
-    def _get_to_pay_select(self):
-        return SQL("TRUE AS to_pay")
+        ])
 
     def _get_open_sale_purchase_query(self, journal_type):
         assert journal_type in ('sale', 'purchase')
-        query = self.env['account.move']._search([
+        query = self.env['account.move']._where_calc([
             *self.env['account.move']._check_company_domain(self.env.companies),
             ('journal_id', 'in', self.ids),
             ('payment_state', 'in', ('not_paid', 'partial')),
             ('move_type', 'in', ('out_invoice', 'out_refund', 'out_receipt') if journal_type == 'sale' else ('in_invoice', 'in_refund', 'in_receipt')),
             ('state', '=', 'posted'),
-        ], bypass_access=True)
-        selects = [
-            SQL("journal_id"),
-            SQL("company_id"),
-            SQL("currency_id AS currency"),
-            SQL("invoice_date_due < %s AS late", fields.Date.context_today(self)),
-            SQL("SUM(amount_residual_signed) AS amount_total_company"),
-            SQL("SUM((CASE WHEN move_type = 'in_invoice' THEN -1 ELSE 1 END) * amount_residual) AS amount_total"),
-            SQL("COUNT(*)"),
-            self._get_to_pay_select(),
-        ]
-
-        return query, selects
-
-    def _get_to_check_payment_query(self):
-        query = self.env['account.move']._search([
-            *self.env['account.move']._check_company_domain(self.env.companies),
-            ('journal_id', 'in', self.ids),
-            ('checked', '=', False),
-            ('state', '=', 'posted'),
-        ], bypass_access=True)
+        ])
         selects = [
             SQL("journal_id"),
             SQL("company_id"),
@@ -767,7 +731,17 @@ class AccountJournal(models.Model):
             SQL("COUNT(*)"),
             SQL("TRUE AS to_pay")
         ]
+
         return query, selects
+
+    def _get_to_check_payment_query(self):
+        # todo in master: use this hook function in _fill_general_dashboard_data as it's the same domain
+        return self.env['account.move']._where_calc([
+            *self.env['account.move']._check_company_domain(self.env.companies),
+            ('journal_id', 'in', self.ids),
+            ('checked', '=', False),
+            ('state', '=', 'posted'),
+        ])
 
     def _count_results_and_sum_amounts(self, results_dict, target_currency):
         """ Loops on a query result to count the total number of invoices and sum
@@ -798,7 +772,7 @@ class AccountJournal(models.Model):
     def _get_journal_dashboard_bank_running_balance(self):
         # In order to not recompute everything from the start, we take the last
         # bank statement and only sum starting from there.
-        self.env.cr.execute("""
+        self._cr.execute("""
             SELECT journal.id AS journal_id,
                    statement.id AS statement_id,
                    COALESCE(statement.balance_end_real, 0) AS balance_end_real,
@@ -812,7 +786,6 @@ class AccountJournal(models.Model):
                              FROM account_bank_statement
                             WHERE journal_id = journal.id
                               AND company_id = ANY(%s)
-                              AND first_line_index IS NOT NULL
                          ORDER BY date DESC, id DESC
                             LIMIT 1
                    ) statement ON TRUE
@@ -880,7 +853,7 @@ class AccountJournal(models.Model):
                    SUM(amount_company_currency_signed) AS amount_total_company
               FROM account_payment payment
               JOIN account_move move ON move.origin_payment_id = payment.id
-             WHERE payment.is_matched IS NOT TRUE
+             WHERE (NOT payment.is_matched OR payment.is_matched IS NULL)
                AND move.state = 'posted'
                AND payment.journal_id = ANY(%s)
                AND payment.company_id = ANY(%s)
@@ -895,7 +868,7 @@ class AccountJournal(models.Model):
         return result
 
     def _get_move_action_context(self):
-        ctx = self.env.context.copy()
+        ctx = self._context.copy()
         journal = self
         if not ctx.get('default_journal_id'):
             ctx['default_journal_id'] = journal.id
@@ -936,7 +909,7 @@ class AccountJournal(models.Model):
         """ This function is called by the "try our sample" button of Vendor Bills,
         visible on dashboard if no bill has been created yet.
         """
-        context = dict(self.env.context)
+        context = dict(self._context)
         purchase_journal = self.browse(context.get('default_journal_id')) or self.search([('type', '=', 'purchase')], limit=1)
         partner = self.env.ref('base.res_partner_2', raise_if_not_found=False)
         if not purchase_journal:
@@ -945,9 +918,9 @@ class AccountJournal(models.Model):
             raise UserError(_('You may only use samples in demo mode, try uploading one of your invoices instead.'))
         context['default_move_type'] = 'in_invoice'
         invoice_date = fields.Date.today() - timedelta(days=12)
-        partner = self.env.ref('base.res_partner_2', raise_if_not_found=False)
         company = purchase_journal.company_id
-        default_expense_account = company.expense_account_id
+        ProductCategory = self.env['product.category'].with_company(company)
+        default_expense_account = ProductCategory._fields['property_account_expense_categ_id'].get_company_dependent_fallback(ProductCategory)
         ref = 'DE%s' % invoice_date.strftime('%Y%m')
         bill = self.env['account.move'].with_context(default_extract_state='done').create({
             'move_type': 'in_invoice',
@@ -972,8 +945,8 @@ class AccountJournal(models.Model):
             ],
         })
         # In case of test environment, don't create the pdf
-        if tools.config['test_enable']:
-            bill.message_post()
+        if tools.config['test_enable'] or tools.config['test_file']:
+            bill.with_context(no_new_invoice=True).message_post()
         else:
             addr = [x for x in [
                 company.street,
@@ -998,7 +971,7 @@ class AccountJournal(models.Model):
                 'res_model': 'mail.compose.message',
                 'datas': base64.encodebytes(content),
             })
-            bill.message_post(attachment_ids=attachment.ids)
+            bill.with_context(no_new_invoice=True).message_post(attachment_ids=[attachment.id])
         return {
             'name': _('Bills'),
             'res_id': bill.id,
@@ -1020,8 +993,8 @@ class AccountJournal(models.Model):
 
     def _select_action_to_open(self):
         self.ensure_one()
-        if self.env.context.get('action_name'):
-            return self.env.context.get('action_name')
+        if self._context.get('action_name'):
+            return self._context.get('action_name')
         elif self.type == 'bank':
             return 'action_bank_statement_tree'
         elif self.type == 'credit':
@@ -1046,22 +1019,22 @@ class AccountJournal(models.Model):
 
         action = self.env["ir.actions.act_window"]._for_xml_id(action_name)
 
+        context = self._context.copy()
         if 'context' in action and isinstance(action['context'], str):
-            action_context = ast.literal_eval(action['context'])
+            context.update(ast.literal_eval(action['context']))
         else:
-            action_context = action.get('context', {})
-        action['context'] = {
-            **action_context,
-            **self.env.context,
+            context.update(action.get('context', {}))
+        action['context'] = context
+        action['context'].update({
             'default_journal_id': self.id,
-        }
+        })
         domain_type_field = action['res_model'] == 'account.move.line' and 'move_id.move_type' or 'move_type' # The model can be either account.move or account.move.line
 
         # Override the domain only if the action was not explicitly specified in order to keep the
         # original action domain.
         if action.get('domain') and isinstance(action['domain'], str):
             action['domain'] = ast.literal_eval(action['domain'] or '[]')
-        if not self.env.context.get('action_name'):
+        if not self._context.get('action_name'):
             if self.type == 'sale':
                 action['domain'] = [(domain_type_field, 'in', ('out_invoice', 'out_refund', 'out_receipt', 'entry'))]
             elif self.type == 'purchase':
@@ -1089,11 +1062,6 @@ class AccountJournal(models.Model):
         if mode == 'form':
             action['views'] = [[False, 'form']]
         return action
-
-    def action_post_all_entries(self):
-        ctx = dict(self.env.context, active_model='account.journal', active_id=self.id)
-        moves_to_validate = self.env['account.move'].search([('journal_id', '=', self.id)])
-        return moves_to_validate.with_context(ctx).action_validate_moves_with_confirmation()
 
     def open_action_with_context(self):
         action_name = self.env.context.get('action_name', False)
@@ -1133,10 +1101,6 @@ class AccountJournal(models.Model):
             }
         return action
 
-    def open_invalid_statements_action(self):
-        self.ensure_one()
-        return self.env["ir.actions.act_window"]._for_xml_id('account.action_bank_statement_tree')
-
     def _show_sequence_holes(self, domain):
         return {
             'type': 'ir.actions.act_window',
@@ -1154,10 +1118,12 @@ class AccountJournal(models.Model):
 
     def show_sequence_holes(self):
         has_sequence_holes = self._query_has_sequence_holes()
-        domain = Domain(self.env['account.move']._check_company_domain(self.env.companies))
-        domain &= Domain.OR(
-            Domain('journal_id', '=', journal_id)
-            & Domain('sequence_prefix', '=', prefix)
+        domain = expression.OR(
+            [
+                *self.env['account.move']._check_company_domain(self.env.companies),
+                ('journal_id', '=', journal_id),
+                ('sequence_prefix', '=', prefix),
+            ]
             for journal_id, prefix in has_sequence_holes
         )
         action = self._show_sequence_holes(domain)

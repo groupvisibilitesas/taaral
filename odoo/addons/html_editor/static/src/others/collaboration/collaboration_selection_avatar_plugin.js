@@ -1,6 +1,5 @@
 import { Plugin } from "@html_editor/plugin";
-import { closestBlock, isBlock } from "@html_editor/utils/blocks";
-import { isProtecting } from "@html_editor/utils/dom_info";
+import { closestBlock } from "@html_editor/utils/blocks";
 import { closestElement } from "@html_editor/utils/dom_traversal";
 import { browser } from "@web/core/browser/browser";
 import { _t } from "@web/core/l10n/translation";
@@ -22,7 +21,6 @@ export const AVATAR_SIZE = 25;
 export class CollaborationSelectionAvatarPlugin extends Plugin {
     static id = "collaborationSelectionAvatar";
     static dependencies = ["history", "position", "localOverlay", "collaborationOdoo"];
-    /** @type {import("plugins").EditorResources} */
     resources = {
         /** Handlers */
         collaboration_notification_handlers: this.handleCollaborationNotification.bind(this),
@@ -81,18 +79,9 @@ export class CollaborationSelectionAvatarPlugin extends Plugin {
         if (!anchorNode || !focusNode || !anchorNode.isConnected || !focusNode.isConnected) {
             return;
         }
-        let anchorBlock = closestBlock(anchorNode);
+        const anchorBlock = closestBlock(anchorNode);
         if (!anchorBlock) {
             return;
-        }
-        if (isProtecting(anchorBlock)) {
-            const rootAnchorBlock = closestElement(
-                anchorNode,
-                (el) => isBlock(el) && el.parentElement === this.editable
-            );
-            if (rootAnchorBlock) {
-                anchorBlock = rootAnchorBlock;
-            }
         }
 
         const containerRect = this.avatarOverlay.getBoundingClientRect();
@@ -107,7 +96,7 @@ export class CollaborationSelectionAvatarPlugin extends Plugin {
             avatarElement.append(image);
             image.onload = () => avatarElement.style.removeProperty("display");
             image.setAttribute("src", avatarUrl);
-            image.classList.add("object-fit-cover");
+            image.classList.add("o_object_fit_cover");
         }
         // Avoid re-appending the element in the dom.
         if (!avatarElement.parentElement) {

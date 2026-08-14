@@ -1,5 +1,7 @@
+/** @odoo-module **/
+
 import { registry } from "@web/core/registry";
-import { stepUtils } from "@web_tour/tour_utils";
+import { stepUtils } from "@web_tour/tour_service/tour_utils";
 
 registry.category("web_tour.tours").add('snippets_mailing_menu_toolbar_mobile', {
     url: '/odoo',
@@ -18,7 +20,7 @@ registry.category("web_tour.tours").add('snippets_mailing_menu_toolbar_mobile', 
     {
         isActive: ["mobile"],
         content: "Check templates available in theme selector",
-        trigger: '.o_mailing_template_preview_wrapper',
+        trigger: ':iframe .o_mail_theme_selector_new',
         run: function () {
             if (this.anchor.querySelector("#empty")) {
                 console.error('The empty template should not be visible on mobile.');
@@ -39,7 +41,7 @@ registry.category("web_tour.tours").add('snippets_mailing_menu_toolbar_mobile', 
     {
         isActive: ["mobile"],
         content: "Click on the 'Start From Scratch' template.",
-        trigger: '.o_mailing_template_preview_wrapper [data-name="default"]',
+        trigger: ':iframe #default',
         run: "click",
     },
     {
@@ -54,7 +56,7 @@ registry.category("web_tour.tours").add('snippets_mailing_menu_toolbar_mobile', 
         trigger: ':iframe',
         run: function () {
             const iframeDocument = this.anchor.contentDocument;
-            if (iframeDocument.querySelector(".o-snippets-menu")) {
+            if (!iframeDocument.querySelector('#oe_snippets.d-none')) {
                 console.error('The snippet menu should be hidden');
             }
         },

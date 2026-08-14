@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { registerWebsitePreviewTour } from "@website/js/tours/tour_utils";
 
 /**

@@ -44,7 +44,7 @@ class TestBlogPerformance(UtilPerf):
         # - only the last call (considered hot) is executed after the publication date: ~40-50 queries
         # using freezetime after the publication date ensures a consistent result
         with freeze_time(datetime.datetime.now() + datetime.timedelta(seconds=2)):
-            self.assertLessEqual(self._get_url_hot_query('/blog'), 20)
+            self.assertLessEqual(self._get_url_hot_query('/blog'), 10)
 
     def test_20_perf_sql_blog_bigger_data_scaling(self):
         BlogPost = self.env['blog.post']
@@ -56,8 +56,10 @@ class TestBlogPerformance(UtilPerf):
         for blog_post in blog_posts:
             blog_post.tag_ids += blog_tags
             blog_tags = blog_tags[:-1]
-        self.assertLessEqual(self._get_url_hot_query('/blog'), 33)
-        self.assertLessEqual(self._get_url_hot_query(blog_post[0].website_url), 24)
+        self.assertEqual(self._get_url_hot_query('/blog'), 10)
+        self.assertLessEqual(self._get_url_hot_query('/blog', cache=False), 33)
+        self.assertLessEqual(self._get_url_hot_query(blog_post[0].website_url), 16)
+        self.assertLessEqual(self._get_url_hot_query(blog_post[0].website_url, cache=False), 20)
 
     def test_30_perf_sql_blog_bigger_data_scaling(self):
         BlogPost = self.env['blog.post']
@@ -69,5 +71,7 @@ class TestBlogPerformance(UtilPerf):
         for blog_post in blog_posts:
             blog_post.write({'tag_ids': [[6, 0, random.choices(blog_tags.ids, k=random.randint(0, len(blog_tags)))]]})
 
-        self.assertLessEqual(self._get_url_hot_query('/blog'), 71)
-        self.assertLessEqual(self._get_url_hot_query(blog_post[0].website_url), 33)
+        self.assertLessEqual(self._get_url_hot_query('/blog'), 29)
+        self.assertLessEqual(self._get_url_hot_query('/blog', cache=False), 71)
+        self.assertLessEqual(self._get_url_hot_query(blog_post[0].website_url), 34)
+        self.assertLessEqual(self._get_url_hot_query(blog_post[0].website_url, cache=False), 33)

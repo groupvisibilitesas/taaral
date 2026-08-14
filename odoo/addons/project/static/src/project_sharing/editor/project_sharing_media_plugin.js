@@ -1,5 +1,4 @@
 import { ImageCropPlugin } from "@html_editor/main/media/image_crop_plugin";
-import { ImageSavePlugin } from "@html_editor/main/media/image_save_plugin";
 import { MediaPlugin } from "@html_editor/main/media/media_plugin";
 import { MAIN_PLUGINS } from "@html_editor/plugin_sets";
 
@@ -10,9 +9,6 @@ export class ProjectSharingMediaPlugin extends MediaPlugin {
             item => item.id !== "replace_image"
         ),
     }
-}
-
-export class ProjectSharingImageSavePlugin extends ImageSavePlugin {
     async createAttachment({ el, imageData, resId }) {
         const response = JSON.parse(
             await this.services.http.post(
@@ -39,7 +35,5 @@ export class ProjectSharingImageSavePlugin extends ImageSavePlugin {
 
 MAIN_PLUGINS.splice(MAIN_PLUGINS.indexOf(MediaPlugin), 1);
 MAIN_PLUGINS.push(ProjectSharingMediaPlugin);
-MAIN_PLUGINS.splice(MAIN_PLUGINS.indexOf(ImageSavePlugin), 1);
-MAIN_PLUGINS.push(ProjectSharingImageSavePlugin);
 
 MAIN_PLUGINS.splice(MAIN_PLUGINS.indexOf(ImageCropPlugin), 1);

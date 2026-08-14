@@ -25,13 +25,12 @@ export class Chatter extends Component {
     static defaultProps = { composer: true, threadId: false, twoColumns: false };
 
     setup() {
-        this.store = useService("mail.store");
+        this.store = useState(useService("mail.store"));
         this.state = useState({
             jumpThreadPresent: 0,
             /** @type {import("models").Thread} */
             thread: undefined,
             aside: false,
-            disabled: !this.props.threadId,
         });
         this.rootRef = useRef("root");
         this.onScrollDebounced = useThrottleForAnimation(this.onScroll);
@@ -39,16 +38,15 @@ export class Chatter extends Component {
 
         onMounted(this._onMounted);
         onWillUpdateProps((nextProps) => {
-            this.state.disabled = !nextProps.threadId;
             if (
                 this.props.threadId !== nextProps.threadId ||
                 this.props.threadModel !== nextProps.threadModel
             ) {
                 this.changeThread(nextProps.threadModel, nextProps.threadId);
             }
-            if (!this.env.chatter || this.env.chatter?.fetchThreadData) {
+            if (!this.env.chatter || this.env.chatter?.fetchData) {
                 if (this.env.chatter) {
-                    this.env.chatter.fetchThreadData = false;
+                    this.env.chatter.fetchData = false;
                 }
                 this.load(this.state.thread, this.requestList);
             }
@@ -75,12 +73,9 @@ export class Chatter extends Component {
         this.state.thread = this.store.Thread.insert({ model: threadModel, id: threadId });
         if (threadId === false) {
             if (this.state.thread.messages.length === 0) {
-                const { effectiveSelf } = this.state.thread;
-                const authorModelName = effectiveSelf.Model.getName();
                 this.state.thread.messages.push({
                     id: this.store.getNextTemporaryId(),
-                    author_id: authorModelName === "res.partner" ? effectiveSelf : undefined,
-                    author_guest_id: authorModelName === "mail.guest" ? effectiveSelf : undefined,
+                    author: this.state.thread.effectiveSelf,
                     body: _t("Creating a new record..."),
                     message_type: "notification",
                     thread: this.state.thread,
@@ -97,11 +92,11 @@ export class Chatter extends Component {
      * @param {import("models").Thread} thread
      * @param {string[]} requestList
      */
-    async load(thread, requestList) {
+    load(thread, requestList) {
         if (!thread.id || !this.state.thread?.eq(thread)) {
             return;
         }
-        await thread.fetchThreadData(requestList);
+        thread.fetchData(requestList);
     }
 
     onCloseFullComposerCallback() {
@@ -110,9 +105,9 @@ export class Chatter extends Component {
 
     _onMounted() {
         this.changeThread(this.props.threadModel, this.props.threadId);
-        if (!this.env.chatter || this.env.chatter?.fetchThreadData) {
+        if (!this.env.chatter || this.env.chatter?.fetchData) {
             if (this.env.chatter) {
-                this.env.chatter.fetchThreadData = false;
+                this.env.chatter.fetchData = false;
             }
             this.load(this.state.thread, this.requestList);
         }

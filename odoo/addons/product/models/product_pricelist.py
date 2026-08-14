@@ -1,13 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from collections import defaultdict
-
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
-class ProductPricelist(models.Model):
-    _name = 'product.pricelist'
+class Pricelist(models.Model):
+    _name = "product.pricelist"
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Pricelist"
     _rec_names_search = ['name', 'currency_id']  # TODO check if should be removed
@@ -15,15 +13,6 @@ class ProductPricelist(models.Model):
 
     def _default_currency_id(self):
         return self.env.company.currency_id.id
-
-    def _base_domain_item_ids(self):
-        return [
-            '|', ('product_tmpl_id', '=', None), ('product_tmpl_id.active', '=', True),
-            '|', ('product_id', '=', None), ('product_id.active', '=', True),
-        ]
-
-    def _domain_item_ids(self):
-        return self._base_domain_item_ids()
 
     name = fields.Char(string="Pricelist Name", required=True, translate=True)
 
@@ -59,8 +48,11 @@ class ProductPricelist(models.Model):
         comodel_name='product.pricelist.item',
         inverse_name='pricelist_id',
         string="Pricelist Rules",
-        # must be given as lambda for overrides to work
-        domain=lambda self: self._domain_item_ids(),
+        domain=[
+            '&',
+            '|', ('product_tmpl_id', '=', None), ('product_tmpl_id.active', '=', True),
+            '|', ('product_id', '=', None), ('product_id.active', '=', True),
+        ],
         copy=True)
 
     @api.depends('currency_id')
@@ -69,12 +61,12 @@ class ProductPricelist(models.Model):
             pricelist_name = pricelist.name and pricelist.name or _('New')
             pricelist.display_name = f'{pricelist_name} ({pricelist.currency_id.name})'
 
-    def write(self, vals):
-        res = super().write(vals)
+    def write(self, values):
+        res = super().write(values)
 
         # Make sure that there is no multi-company issue in the existing rules after the company
         # change.
-        if 'company_id' in vals and len(self) == 1:
+        if 'company_id' in values and len(self) == 1:
             self.item_ids._check_company()
 
         return res
@@ -167,8 +159,8 @@ class ProductPricelist(models.Model):
         return self._compute_price_rule(product, *args, compute_price=False, **kwargs)[product.id][1]
 
     def _compute_price_rule(
-        self, products, quantity, *, currency=None, uom=None, date=False, compute_price=True,
-        **kwargs
+            self, products, quantity, currency=None, uom=None, date=False, compute_price=True,
+            **kwargs
     ):
         """ Low-level method - Mono pricelist, multi products
         Returns: dict{product_id: (price, suitable_rule) for the given pricelist}
@@ -226,11 +218,10 @@ class ProductPricelist(models.Model):
 
             if compute_price:
                 price = suitable_rule._compute_price(
-                    product, quantity, target_uom, date=date, currency=currency, **kwargs)
+                    product, quantity, target_uom, date=date, currency=currency)
             else:
                 # Skip price computation when only the rule is requested.
                 price = 0.0
-
             results[product.id] = (price, suitable_rule.id)
 
         return results
@@ -241,9 +232,12 @@ class ProductPricelist(models.Model):
         if not self:
             return self.env['product.pricelist.item']
 
-        return self.env['product.pricelist.item'].search(
+        # Do not filter out archived pricelist items, since it means current pricelist is also archived
+        # We do not want the computation of prices for archived pricelist to always fallback on the Sales price
+        # because no rule was found (thanks to the automatic orm filtering on active field)
+        return self.env['product.pricelist.item'].with_context(active_test=False).search(
             self._get_applicable_rules_domain(products=products, date=date, **kwargs)
-        )
+        ).with_context(self.env.context)
 
     def _get_applicable_rules_domain(self, products, date, **kwargs):
         self and self.ensure_one()  # self is at most one record
@@ -343,12 +337,6 @@ class ProductPricelist(models.Model):
 
         :return: a dict {partner_id: pricelist}
         """
-        ProductPricelist = self.env['product.pricelist']
-
-        if not self.env['res.groups']._is_feature_enabled('product.group_product_pricelist'):
-            # Skip pricelist computation if pricelists are disabled.
-            return defaultdict(lambda: ProductPricelist)
-
         # `partner_ids` might be ID from inactive users. We should use active_test
         # as we will do a search() later (real case for website public user).
         Partner = self.env['res.partner'].with_context(active_test=False)
@@ -363,7 +351,6 @@ class ProductPricelist(models.Model):
                 remaining_partner_ids.append(partner.id)
 
         if remaining_partner_ids:
-            # group partners by country, and find a pricelist for each country
             remaining_partners = self.env['res.partner'].browse(remaining_partner_ids)
             partners_by_country = remaining_partners.grouped('country_id')
             country_ids = remaining_partners.country_id.ids
@@ -392,7 +379,7 @@ class ProductPricelist(models.Model):
 
     @api.ondelete(at_uninstall=False)
     def _unlink_except_used_as_rule_base(self):
-        linked_items = self.env['product.pricelist.item'].sudo().search([
+        linked_items = self.env['product.pricelist.item'].sudo().with_context(active_test=False).search([
             ('base', '=', 'pricelist'),
             ('base_pricelist_id', 'in', self.ids),
             ('pricelist_id', 'not in', self.ids),
@@ -404,7 +391,6 @@ class ProductPricelist(models.Model):
                 other_pricelists='\n'.join(linked_items.pricelist_id.mapped('display_name')),
             ))
 
-    @api.readonly
     def action_open_pricelist_report(self):
         self.ensure_one()
         return {

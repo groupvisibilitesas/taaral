@@ -13,7 +13,6 @@
     hence the need for this test module.
     """,
     'depends': ['spreadsheet'],
-    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
-    'data': ['security/spreadsheet_test_security.xml', 'security/ir.model.access.csv'],
+    'data': ['security/ir.model.access.csv'],
 }

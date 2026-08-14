@@ -1,33 +1,9 @@
 import { session } from "@web/session";
 import { _t } from "@web/core/l10n/translation";
-import {
-    Component,
-    useState,
-    onMounted,
-    useRef,
-    useEffect,
-    useExternalListener,
-    onWillUnmount,
-} from "@odoo/owl";
+import { Component, useState, onMounted, onWillUnmount, useRef, useEffect } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { browser } from "@web/core/browser/browser";
 import { cleanZWChars, deduceURLfromText } from "./utils";
-import { useColorPicker } from "@web/core/color_picker/color_picker";
-import { CheckBox } from "@web/core/checkbox/checkbox";
-
-const DEFAULT_CUSTOM_TEXT_COLOR = "#714B67";
-const DEFAULT_CUSTOM_FILL_COLOR = "#ffffff";
-
-const isCSSVariable = (color) => color.match(/^o-color-\d$|^\d{3}$/);
-const formatColor = (color) => {
-    if (color.match(/^o-color-\d$/gm)) {
-        return `var(--hb-cp-${color})`;
-    }
-    if (color.match(/^\d{3}$/gm)) {
-        return `var(--${color})`;
-    }
-    return color;
-};
 
 function useContentChange(el, callback) {
     onMounted(() => {
@@ -41,38 +17,25 @@ function useContentChange(el, callback) {
 export class LinkPopover extends Component {
     static template = "html_editor.linkPopover";
     static props = {
-        document: { validate: (p) => p.nodeType === Node.DOCUMENT_NODE },
-        linkElement: { validate: (el) => el.nodeType === Node.ELEMENT_NODE },
+        linkEl: { validate: (el) => el.nodeType === Node.ELEMENT_NODE },
         onApply: Function,
-        onChange: Function,
-        onDiscard: Function,
         onRemove: Function,
         onCopy: Function,
-        onEdit: Function,
+        onClose: Function,
         getInternalMetaData: Function,
         getExternalMetaData: Function,
         getAttachmentMetadata: Function,
         isImage: Boolean,
-        showReplaceTitleBanner: Boolean,
-        type: String,
         LinkPopoverState: Object,
+        type: String,
         recordInfo: Object,
         canEdit: { type: Boolean, optional: true },
-        canRemove: { type: Boolean, optional: true },
         canUpload: { type: Boolean, optional: true },
         onUpload: { type: Function, optional: true },
-        allowCustomStyle: { type: Boolean, optional: true },
-        allowTargetBlank: { type: Boolean, optional: true },
-        allowStripDomain: { type: Boolean, optional: true },
-        publicAttachments: { type: Boolean, optional: true },
-        formatColor: { type: Function, optional: true },
     };
     static defaultProps = {
         canEdit: true,
-        canRemove: true,
-        formatColor: formatColor,
     };
-    static components = { CheckBox };
     colorsData = [
         { type: "", label: _t("Link"), btnPreview: "link" },
         { type: "primary", label: _t("Button Primary"), btnPreview: "primary" },
@@ -88,39 +51,21 @@ export class LinkPopover extends Component {
         { size: "", label: _t("Medium") },
         { size: "lg", label: _t("Large") },
     ];
-    borderData = [
-        { style: "solid", label: "━━━" },
-        { style: "dashed", label: "╌╌╌" },
-        { style: "dotted", label: "┄┄┄" },
-        { style: "double", label: "═══" },
-    ];
-    buttonShapeData = [
-        { shape: "", label: "Default" },
-        { shape: "rounded-circle", label: "Default + Rounded" },
-        { shape: "outline", label: "Outline" },
-        { shape: "outline rounded-circle", label: "Outline + Rounded" },
-        { shape: "fill", label: "Fill" },
-        { shape: "fill rounded-circle", label: "Fill + Rounded" },
-        { shape: "flat", label: "Flat" },
+    buttonStylesData = [
+        { style: "fill", label: _t("Fill") },
+        { style: "fill,rounded-circle", label: _t("Fill + Rounded") },
+        { style: "outline", label: _t("Outline") },
+        { style: "outline,rounded-circle", label: _t("Outline + Rounded") },
     ];
     setup() {
         this.ui = useService("ui");
         this.notificationService = useService("notification");
         this.uploadService = useService("uploadLocalFiles");
 
-        const linkElement = this.props.linkElement;
-        const textContent = cleanZWChars(linkElement.textContent);
-        const labelEqualsUrl =
-            textContent === linkElement.getAttribute("href") ||
-            textContent + "/" === linkElement.getAttribute("href");
-
-        const computedStyle = this.props.document.defaultView.getComputedStyle(linkElement);
-        const currentRelValues = linkElement.rel.split(" ");
         this.state = useState({
             editing: this.props.LinkPopoverState.editing,
-            // `.getAttribute("href")` instead of `.href` to keep relative url
-            url: linkElement.getAttribute("href") || this.deduceUrl(textContent),
-            label: labelEqualsUrl ? "" : textContent,
+            url: this.props.linkEl.href || "",
+            label: cleanZWChars(this.props.linkEl.textContent),
             previewIcon: {
                 /** @type {'fa'|'imgSrc'|'mimetype'} */
                 type: "fa",
@@ -130,131 +75,23 @@ export class LinkPopover extends Component {
             urlDescription: "",
             linkPreviewName: "",
             imgSrc: "",
+            iconSrc: "",
+            classes:
+                this.props.type === "primary"
+                    ? "btn btn-primary"
+                    : this.props.linkEl.className || "",
             type:
                 this.props.type ||
-                linkElement.className.match(/btn(-[a-z0-9_-]*)(primary|secondary|custom)/)?.pop() ||
+                this.props.linkEl.className.match(/btn(-[a-z0-9_-]*)(primary|secondary)/)?.pop() ||
                 "",
-            linkTarget: linkElement.target === "_blank" ? "_blank" : "",
-            directDownload: true,
-            isDocument: false,
-            buttonSize: linkElement.className.match(/btn-(sm|lg)/)?.[1] || "",
-            buttonShape: this.getButtonShape(),
-            customBorderSize: computedStyle.borderWidth.replace("px", "") || "0",
-            customBorderStyle: computedStyle.borderStyle || "solid",
+            buttonSize: this.props.linkEl.className.match(/btn-(sm|lg)/)?.[1] || "",
+            buttonStyle: this.initButtonStyle(this.props.linkEl.className),
             isImage: this.props.isImage,
-            showReplaceTitleBanner: this.props.showReplaceTitleBanner,
-            showLabel: !linkElement.childElementCount,
-            stripDomain: true,
-            showAdvancedOptions: false,
-            relAttributeOptions: {
-                nofollow: {
-                    label: "nofollow",
-                    description: _t("Tells search engines not to follow this link"),
-                    isChecked: currentRelValues.includes("nofollow"),
-                },
-                noreferrer: {
-                    label: "noreferrer",
-                    description: _t("Removes referrer information sent to the target site"),
-                    isChecked: currentRelValues.includes("noreferrer"),
-                },
-                sponsored: {
-                    label: "sponsored",
-                    description: _t("Indicates the link is sponsored or paid content"),
-                    isChecked: currentRelValues.includes("sponsored"),
-                },
-                noopener: {
-                    label: "noopener",
-                    description: _t(
-                        "Prevents the new page from accessing the original window (security)"
-                    ),
-                    isChecked: currentRelValues.includes("noopener"),
-                },
-            },
+            showLabel: !this.props.linkEl.childElementCount,
         });
 
-        const getTargetedElements = () => [this.props.linkElement];
-        this.customTextColorState = useState({
-            selectedColor: computedStyle.color || DEFAULT_CUSTOM_TEXT_COLOR,
-            defaultTab: "solid",
-            getTargetedElements,
-            mode: "color",
-        });
-        this.customTextResetPreviewColor = this.customTextColorState.selectedColor;
-        this.customFillColorState = useState({
-            selectedColor:
-                (computedStyle.backgroundImage === "none"
-                    ? undefined
-                    : computedStyle.backgroundImage) ||
-                computedStyle.backgroundColor ||
-                DEFAULT_CUSTOM_FILL_COLOR,
-            defaultTab: "solid",
-            getTargetedElements,
-            mode: "background-color",
-        });
-        this.customFillResetPreviewColor = this.customFillColorState.selectedColor;
-        this.customBorderColorState = useState({
-            selectedColor: computedStyle.borderColor || DEFAULT_CUSTOM_TEXT_COLOR,
-            defaultTab: "solid",
-            getTargetedElements,
-            mode: "border-color",
-        });
-        this.customBorderResetPreviewColor = this.customBorderColorState.selectedColor;
-
-        if (this.props.allowCustomStyle) {
-            const createCustomColorPicker = (refName, colorStateRef, resetValueRef) =>
-                useColorPicker(
-                    refName,
-                    {
-                        state: this[colorStateRef],
-                        enabledTabs:
-                            colorStateRef === "customFillColorState"
-                                ? ["solid", "custom", "gradient"]
-                                : ["solid", "custom"],
-                        getUsedCustomColors: () => [],
-                        colorPrefix: "",
-                        cssVarColorPrefix: "hb-cp-",
-                        applyColor: (colorValue) => {
-                            this[colorStateRef].selectedColor = colorValue;
-                            this[resetValueRef] = colorValue;
-                        },
-                        applyColorPreview: (colorValue) => {
-                            this[colorStateRef].selectedColor = colorValue;
-                            this.onChange();
-                        },
-                        applyColorResetPreview: () => {
-                            this[colorStateRef].selectedColor = this[resetValueRef];
-                            this.onChange();
-                        },
-                    },
-                    {
-                        env: this.__owl__.childEnv,
-                        // `useOverlayServiceOffset` adds 1000 to each sequence value to solve
-                        // overlay visibility in `iframe`, here we increment default sequence (50)
-                        // by 1 and we add 1000 to have color picker always on top of all overlays.
-                        sequence: 1051,
-                    }
-                );
-            this.customTextColorPicker = createCustomColorPicker(
-                "customTextColorButton",
-                "customTextColorState",
-                "customTextResetPreviewColor"
-            );
-            this.customFillColorPicker = createCustomColorPicker(
-                "customFillColorButton",
-                "customFillColorState",
-                "customFillResetPreviewColor"
-            );
-            this.customBorderColorPicker = createCustomColorPicker(
-                "customBorderColorButton",
-                "customBorderColorState",
-                "customBorderResetPreviewColor"
-            );
-        }
-        this.updateDocumentState();
         this.editingWrapper = useRef("editing-wrapper");
-        this.inputRef = useRef(
-            this.state.isImage || (this.state.label && !this.state.url) ? "url" : "label"
-        );
+        this.inputRef = useRef(this.state.isImage || this.state.label !== "" ? "url" : "label");
         useEffect(
             (el) => {
                 if (el) {
@@ -263,72 +100,26 @@ export class LinkPopover extends Component {
             },
             () => [this.inputRef.el]
         );
-        if (!this.state.editing) {
-            this.loadAsyncLinkPreview();
-        }
-        const onPointerDown = (ev) => {
-            if (this.state.isImage) {
-                return;
+        onMounted(() => {
+            if (!this.state.editing) {
+                this.loadAsyncLinkPreview();
             }
-            this.state.url ||= "#";
-            if (this.editingWrapper?.el && !this.editingWrapper.el.contains(ev.target)) {
-                this.onClickApply();
-            }
-        };
-        useExternalListener(this.props.document, "pointerdown", onPointerDown);
-        if (this.props.document !== document) {
-            // Listen to pointerdown outside the iframe
-            useExternalListener(document, "pointerdown", onPointerDown);
-        }
-        useContentChange(this.props.linkElement, () => {
-            this.state.urlTitle = this.props.linkElement.textContent;
+        });
+        useContentChange(this.props.linkEl, () => {
+            this.state.urlTitle = this.props.linkEl.textContent;
         });
     }
-
-    toggleAdvancedOptions() {
-        this.state.showAdvancedOptions = !this.state.showAdvancedOptions;
-    }
-
-    toggleRelAttr(attr) {
-        const option = this.state.relAttributeOptions[attr];
-        option.isChecked = !option.isChecked;
-    }
-
-    discard() {
-        this.props.onDiscard();
-        this.cancelUpload?.();
-    }
-
-    onChange() {
-        // Apply changes to update the link preview.
-        this.props.onChange(
-            this.state.url,
-            this.state.label,
-            this.classes,
-            this.customStyles,
-            this.state.linkTarget,
-            this.state.attachmentId
-        );
-        this.updateDocumentState();
+    initButtonStyle(className) {
+        const styleArray = [
+            className.match(/btn-([a-z0-9_]+)-(primary|secondary)/)?.[1],
+            className.match(/rounded-circle/)?.pop(),
+        ];
+        return styleArray.every(Boolean)
+            ? styleArray.join(",")
+            : styleArray.join("") || className.match(/flat/)?.pop() || "";
     }
     onClickApply() {
-        const relOptions = this.state.relAttributeOptions;
-        const relValue = Object.keys(relOptions)
-            .filter((key) => relOptions[key].isChecked)
-            .join(" ");
         this.state.editing = false;
-        this.applyDeducedUrl();
-        this.props.onApply(
-            this.state.url,
-            this.state.label,
-            this.classes,
-            this.customStyles,
-            this.state.linkTarget,
-            this.state.attachmentId,
-            relValue
-        );
-    }
-    applyDeducedUrl() {
         if (this.state.label === "") {
             this.state.label = this.state.url;
         }
@@ -336,35 +127,21 @@ export class LinkPopover extends Component {
         this.state.url = deducedUrl
             ? this.correctLink(deducedUrl)
             : this.correctLink(this.state.url);
-        if (
-            this.props.allowStripDomain &&
-            this.state.stripDomain &&
-            this.isAbsoluteURLInCurrentDomain()
-        ) {
-            const urlObj = new URL(this.state.url, window.location.origin);
-            // Not necessarily equal to window.location.origin
-            // (see isAbsoluteURLInCurrentDomain)
-            this.state.url = this.state.url.replace(urlObj.origin, "");
-        }
+        this.props.onApply(
+            this.state.url,
+            this.state.label,
+            this.state.classes,
+            this.state.attachmentId
+        );
     }
     onClickEdit() {
         this.state.editing = true;
-        this.props.onEdit();
-        this.updateUrlAndLabel();
+        this.state.url = this.props.linkEl.href;
+        this.state.label = cleanZWChars(this.props.linkEl.textContent);
     }
-    updateUrlAndLabel() {
-        this.state.url = this.props.linkElement.getAttribute("href");
-
-        const textContent = cleanZWChars(this.props.linkElement.textContent);
-        const labelEqualsUrl =
-            textContent === this.props.linkElement.getAttribute("href") ||
-            textContent + "/" === this.props.linkElement.getAttribute("href");
-        this.state.label = labelEqualsUrl ? "" : textContent;
-    }
-    // TODO: remove in master
     async onClickCopy(ev) {
         ev.preventDefault();
-        await browser.navigator.clipboard.writeText(this.props.linkElement.href || "");
+        await browser.navigator.clipboard.writeText(this.props.linkEl.href || "");
         this.notificationService.add(_t("Link copied to clipboard."), {
             type: "success",
         });
@@ -376,35 +153,17 @@ export class LinkPopover extends Component {
 
     onKeydownEnter(ev) {
         const isAutoCompleteDropdownOpen = document.querySelector(".o-autocomplete--dropdown-menu");
-        if (ev.key === "Enter" && !isAutoCompleteDropdownOpen && this.state.url) {
+        if (ev.key === "Enter" && !isAutoCompleteDropdownOpen) {
             ev.preventDefault();
             this.onClickApply();
         }
     }
 
     onKeydown(ev) {
-        if (!this.editingWrapper?.el) {
-            return;
-        }
         if (ev.key === "Escape") {
             ev.preventDefault();
-            ev.stopImmediatePropagation();
-            this.onClickApply();
-        } else if (ev.key == "Tab") {
-            ev.preventDefault();
-            const focusableElements = [
-                ...this.editingWrapper.el.querySelectorAll("input, select, button:not([disabled])"),
-            ];
-            const currentIndex = focusableElements.indexOf(document.activeElement);
-            const nextIndex =
-                (currentIndex + (ev.shiftKey ? -1 : 1) + focusableElements.length) %
-                focusableElements.length;
-            focusableElements[nextIndex].focus();
+            this.props.onClose();
         }
-    }
-
-    onInput() {
-        this.onChange();
     }
 
     onClickReplaceTitle() {
@@ -412,46 +171,9 @@ export class LinkPopover extends Component {
         this.onClickApply();
     }
 
-    onClickDirectDownload(checked) {
-        this.state.directDownload = checked;
-        this.state.url = this.state.url.replace("&download=true", "");
-        if (this.state.directDownload) {
-            this.state.url += "&download=true";
-        }
-    }
-
-    onClickNewWindow(checked) {
-        this.state.linkTarget = checked ? "_blank" : "";
-        if (!checked) {
-            this.state.relAttributeOptions.noopener.isChecked = false;
-        }
-    }
-
-    onClickStripDomain(checked) {
-        this.state.stripDomain = checked;
-    }
-
     /**
      * @private
      */
-    async updateDocumentState() {
-        const url = this.state.url;
-        const urlObject = URL.parse(url, document.URL);
-        if (
-            url &&
-            (url.startsWith("/web/content/") ||
-                (urlObject &&
-                    urlObject.pathname.startsWith("/web/content") &&
-                    urlObject.host === document.location.host))
-        ) {
-            const { type } = await this.props.getAttachmentMetadata(url);
-            this.state.isDocument = type !== "url";
-            this.state.directDownload = url.includes("&download=true");
-        } else {
-            this.state.isDocument = false;
-            this.state.directDownload = true;
-        }
-    }
     correctLink(url) {
         if (
             url &&
@@ -462,10 +184,7 @@ export class LinkPopover extends Component {
             !url.startsWith("#") &&
             !url.startsWith("${")
         ) {
-            url = "https://" + url;
-        }
-        if (url && (url.startsWith("http:") || url.startsWith("https:"))) {
-            url = URL.parse(url) ? url : "";
+            url = "http://" + url;
         }
         return url;
     }
@@ -475,36 +194,8 @@ export class LinkPopover extends Component {
             // Text begins with a known protocol, accept it as valid URL.
             return text;
         } else {
-            return deduceURLfromText(text, this.props.linkElement) || "";
+            return deduceURLfromText(text, this.props.linkEl) || "";
         }
-    }
-    getButtonShape() {
-        const shapeToRegex = (shape) => {
-            const parts = shape.trim().split(/\s+/);
-            const regexParts = parts.map((cls) => {
-                if (["outline", "fill"].includes(cls)) {
-                    cls = `btn-${cls}`;
-                }
-                return `(?=.*\\b${cls}\\b)`;
-            });
-            return { regex: new RegExp(regexParts.join("")), nbParts: parts.length };
-        };
-        // If multiple shapes match, prefer the one with more specificity.
-        let shapeMatched = "";
-        let matchScore = 0;
-        for (const { shape } of this.buttonShapeData) {
-            if (!shape) {
-                continue;
-            }
-            const { regex, nbParts } = shapeToRegex(shape);
-            if (regex.test(this.props.linkElement.className)) {
-                if (matchScore < nbParts) {
-                    matchScore = nbParts;
-                    shapeMatched = shape;
-                }
-            }
-        }
-        return shapeMatched;
     }
     /**
      * link preview in the popover
@@ -522,22 +213,16 @@ export class LinkPopover extends Component {
             this.state.previewIcon.value = "fa-question-circle-o";
             return;
         }
-        if (this.isLogoutUrl()) {
-            // The session ends if we fetch this url, so the preview is hardcoded
-            this.resetPreview();
-            this.state.urlTitle = _t("Logout");
-            this.state.previewIcon.value = "fa-sign-out";
-            return;
-        }
         if (this.isAttachmentUrl()) {
             const { mimetype } = await this.props.getAttachmentMetadata(this.state.url);
             this.resetPreview();
-            this.state.urlTitle = this.props.linkElement.textContent;
+            this.state.urlTitle = this.props.linkEl.textContent;
             this.state.previewIcon = { type: "mimetype", value: mimetype };
             return;
         }
+
         try {
-            url = new URL(this.state.url, document.URL); // relative to absolute
+            url = new URL(this.state.url); // relative to absolute
         } catch {
             // Invalid URL, might happen with editor unsuported protocol. eg type
             // `geo:37.786971,-122.399677`, become `http://geo:37.786971,-122.399677`
@@ -589,11 +274,9 @@ export class LinkPopover extends Component {
             // for record missing errors, we push a warning that the url is likely invalid
             // for other errors, we log them to not block the ui
             const internalMetadata = await this.props
-                .getInternalMetaData(url.href)
+                .getInternalMetaData(this.state.url)
                 .catch((error) => {
-                    if (!session.test_mode) {
-                        console.warn(`Error fetching internal metadata for ${url.href}:`, error);
-                    }
+                    console.warn(`Error fetching internal metadata for ${url.href}:`, error);
                     return {};
                 });
             if (internalMetadata.favicon) {
@@ -633,80 +316,23 @@ export class LinkPopover extends Component {
         }
     }
 
-    get classes() {
-        const classes = [...this.props.linkElement.classList].filter(
-            (value) => !value.match(/^(btn.*|rounded-circle|flat|(text|bg)-(o-color-\d$|\d{3}$))$/)
-        );
-
-        let stylePrefix = "";
-        if (this.state.type) {
-            if (this.state.buttonSize) {
-                classes.push(`btn-${this.state.buttonSize}`);
-            }
-
-            if (this.state.buttonShape) {
-                const buttonShape = this.state.buttonShape.split(" ");
-                if (["outline", "fill"].includes(buttonShape[0])) {
-                    stylePrefix = `${buttonShape[0]}-`;
-                }
-                classes.push(buttonShape.slice(stylePrefix ? 1 : 0).join(" "));
-            }
-
-            classes.push(`btn`, `btn-${stylePrefix}${this.state.type}`);
-        }
-
-        const textColor = this.customTextColorState.selectedColor;
-        if (isCSSVariable(textColor)) {
-            classes.push(`text-${textColor}`);
-        }
-
-        const fillColor = this.customFillColorState.selectedColor;
-        if (isCSSVariable(fillColor)) {
-            classes.push(`bg-${fillColor}`);
-        }
-
-        // Ensure single space between classes
-        return classes.filter(Boolean).join(" ");
-    }
-
-    get customStyles() {
-        if (!this.props.allowCustomStyle || this.state.type !== "custom") {
-            return false;
-        }
-        let customStyles = "";
-
-        const textColor = this.customTextColorState.selectedColor;
-        if (!isCSSVariable(textColor)) {
-            customStyles += `color: ${textColor}; `;
-        }
-
-        const fillColor = this.customFillColorState.selectedColor;
-        if (!isCSSVariable(fillColor)) {
-            const backgroundProperty = fillColor.includes("gradient")
-                ? "background-image"
-                : "background-color";
-            customStyles += `${backgroundProperty}: ${fillColor}; `;
-        }
-
-        const borderColor = this.customBorderColorState.selectedColor;
-        customStyles += `border-width: ${this.state.customBorderSize}px; `;
-        customStyles += `border-color: ${formatColor(borderColor)}; `;
-        customStyles += `border-style: ${this.state.customBorderStyle}; `;
-
-        return customStyles;
+    /**
+     * link style preview in editing mode
+     */
+    onChangeClasses() {
+        const shapes = this.state.buttonStyle ? this.state.buttonStyle.split(",") : [];
+        const style = ["outline", "fill"].includes(shapes[0]) ? `${shapes[0]}-` : "fill-";
+        const shapeClasses = shapes.slice(style ? 1 : 0).join(" ");
+        this.state.classes =
+            (this.state.type ? `btn btn-${style}${this.state.type}` : "") +
+            (this.state.type && shapeClasses ? ` ${shapeClasses}` : "") +
+            (this.state.type && this.state.buttonSize ? " btn-" + this.state.buttonSize : "");
     }
 
     async uploadFile() {
         const { upload, getURL } = this.uploadService;
         const { resModel, resId } = this.props.recordInfo;
-        const setAbortCallback = (abortFn) => {
-            this.cancelUpload = abortFn;
-        };
-        const [attachment] = await upload(
-            { resModel, resId },
-            { accessToken: true, setAbortCallback }
-        );
-        delete this.cancelUpload;
+        const [attachment] = await upload({ resModel, resId, accessToken: true });
         if (!attachment) {
             // No file selected or upload failed
             return;
@@ -715,46 +341,9 @@ export class LinkPopover extends Component {
         this.state.url = getURL(attachment, { download: true, unique: true, accessToken: true });
         this.state.label ||= attachment.name;
         this.state.attachmentId = attachment.id;
-        this.onChange();
     }
 
-    isLogoutUrl() {
-        return !!this.state.url.match(/\/web\/session\/logout\b/);
-    }
     isAttachmentUrl() {
         return !!this.state.url.match(/\/web\/content\/\d+/);
-    }
-    /**
-     * Checks if the given URL is using the domain where the content being
-     * edited is reachable, i.e. if this URL should be stripped of its domain
-     * part and converted to a relative URL if put as a link in the content.
-     *
-     * @private
-     * @returns {boolean}
-     */
-    isAbsoluteURLInCurrentDomain() {
-        // First check if it is a relative URL: if it is, we don't want to check
-        // further as we will always leave those untouched.
-        let hasProtocol;
-        try {
-            hasProtocol = !!new URL(this.state.url).protocol;
-        } catch {
-            hasProtocol = false;
-        }
-        if (!hasProtocol) {
-            return false;
-        }
-
-        const urlObj = new URL(this.state.url, window.location.origin);
-        // Chosen heuristic to detect someone trying to enter a link using
-        // its Odoo instance domain. We just suppose it should be a relative
-        // URL (if unexpected behavior, the user can just not enter its Odoo
-        // instance domain but its real domain, or opt-out from the domain
-        // stripping). Mentioning an .odoo.com domain, especially its own
-        // one, is always a bad practice anyway.
-        return (
-            urlObj.origin === window.location.origin ||
-            new RegExp(`^https?://${session.db}\\.odoo\\.com(/.*)?$`).test(urlObj.origin)
-        );
     }
 }

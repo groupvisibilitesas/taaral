@@ -13,7 +13,7 @@ const ensureSearchView = async () => {
         queryAll`.o_control_panel_navigation`.length &&
         !queryAll`.o_searchview`.length
     ) {
-        await contains(`.o_control_panel_navigation .fa-search`).click();
+        await contains(`.o_control_panel_navigation button`).click();
     }
 };
 
@@ -155,9 +155,7 @@ export function isItemSelected(label) {
  */
 export function isOptionSelected(itemLabel, optionLabel) {
     const { parentElement: root } = queryOne`.o_menu_item:text(${itemLabel})`;
-    return queryOne(`.o_item_option:text(${optionLabel})`, { root }).classList.contains(
-        "selected"
-    );
+    return queryOne(`.o_item_option:text(${optionLabel})`, { root }).classList.contains("selected");
 }
 
 export function getMenuItemTexts() {
@@ -215,11 +213,9 @@ export async function toggleFavoriteMenu() {
 /**
  * @param {string} text
  */
-export async function editFavorite(text) {
+export async function deleteFavorite(text) {
     await ensureSearchBarMenu();
-    await contains(`.o_favorite_menu .o_menu_item:text(${text}) i.fa-pencil`, {
-        visible: false,
-    }).click();
+    await contains(`.o_favorite_menu .o_menu_item:text(${text}) i.fa-trash-o`).click();
 }
 
 export async function toggleSaveFavorite() {
@@ -239,12 +235,16 @@ export async function editFavoriteName(name) {
 
 export async function saveFavorite() {
     await ensureSearchBarMenu();
-    await contains(`.o_favorite_menu .o_save_favorite`).click();
+    await contains(`.o_favorite_menu .o_add_favorite + .o_accordion_values button`).click();
 }
 
-export async function saveAndEditFavorite() {
+//-----------------------------------------------------------------------------
+// Comparison menu
+//-----------------------------------------------------------------------------
+
+export async function toggleComparisonMenu() {
     await ensureSearchBarMenu();
-    await contains(`.o_favorite_menu .o_edit_favorite`).click();
+    await contains(`.o_comparison_menu button.dropdown-toggle`).click();
 }
 
 //-----------------------------------------------------------------------------
@@ -284,12 +284,7 @@ export async function validateSearch() {
  * @param {import("./mock_server/mock_server").ViewType} viewType
  */
 export async function switchView(viewType) {
-    if (getMockEnv().isSmall) {
-        await contains(".o_cp_switch_buttons .dropdown-toggle").click();
-        await contains(`.dropdown-item:contains(${viewType.toUpperCase()})`).click();
-    } else {
-        await contains(`button.o_switch_view.o_${viewType}`).click();
-    }
+    await contains(`button.o_switch_view.o_${viewType}`).click();
 }
 
 //-----------------------------------------------------------------------------

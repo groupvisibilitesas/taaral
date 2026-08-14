@@ -1,3 +1,6 @@
+/** @odoo-module **/
+
+import { sprintf } from '@web/core/utils/strings';
 import { renderToElement } from "@web/core/utils/render";
 import publicWidget from '@web/legacy/js/public/public_widget';
 import { _t } from "@web/core/l10n/translation";
@@ -93,7 +96,7 @@ var CourseJoinWidget = publicWidget.Widget.extend({
         } else {
             url = `/slides/${encodeURIComponent(this.channel.channelId)}`;
         }
-        document.location = `/web/login?redirect=${encodeURIComponent(url)}`;
+        document.location = sprintf('/web/login?redirect=%s', encodeURIComponent(url));
     },
 
     /**

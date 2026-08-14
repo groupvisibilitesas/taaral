@@ -1,6 +1,5 @@
 /** @odoo-module */
 
-import { animationFrame } from "@odoo/hoot-dom";
 import { App } from "@odoo/owl";
 import { getActiveElement, getCurrentDimensions } from "@web/../lib/hoot-dom/helpers/dom";
 import { setupEventActions } from "@web/../lib/hoot-dom/helpers/events";
@@ -99,7 +98,7 @@ export function makeFixtureManager(runner) {
         return currentFixture;
     }
 
-    async function setup() {
+    function setup() {
         allowFixture = true;
 
         if (shouldPrepareNextFixture) {
@@ -108,8 +107,6 @@ export function makeFixtureManager(runner) {
             // Reset focus & selection
             getActiveElement().blur();
             getSelection().removeAllRanges();
-            // Wait for selectionchange events to expire before any actual testing.
-            await animationFrame();
         }
     }
 

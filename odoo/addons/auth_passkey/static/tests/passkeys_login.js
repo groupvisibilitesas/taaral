@@ -31,9 +31,8 @@ registry.category("web_tour.tours").add('passkeys_tour_login', {
             },
         }, {
             content: 'Login with Passkey',
-            trigger: 'a:contains("Use a Passkey")',
+            trigger: 'button:contains("Log in with Passkey")',
             run: 'click',
-            expectUnloadPage: true,
         }, {
             content: 'Check if we are logged in',
             trigger: '.o_user_menu .dropdown-toggle',

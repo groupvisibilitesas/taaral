@@ -88,27 +88,6 @@ export function useSetupAction(params = {}) {
             return state;
         });
     }
-
-    function setScrollFromState() {
-        const { state } = component.props;
-        const scrolling = state && state[scrollSymbol];
-        if (scrolling) {
-            if (component.env.isSmall) {
-                rootRef.el.scrollTop = (scrolling.root && scrolling.root.top) || 0;
-                rootRef.el.scrollLeft = (scrolling.root && scrolling.root.left) || 0;
-            } else if (scrolling.content) {
-                const contentEl =
-                    rootRef.el.querySelector(
-                        ".o_component_with_search_panel > .o_renderer_with_searchpanel," +
-                            ".o_component_with_search_panel > .o_renderer"
-                    ) || rootRef.el.querySelector(".o_content");
-                if (contentEl) {
-                    contentEl.scrollTop = scrolling.content.top || 0;
-                    contentEl.scrollLeft = scrolling.content.left || 0;
-                }
-            }
-        }
-    }
     if (__getLocalState__ && (getLocalState || rootRef)) {
         useCallbackRecorder(__getLocalState__, () => {
             const state = {};
@@ -137,7 +116,26 @@ export function useSetupAction(params = {}) {
         });
 
         if (rootRef) {
-            onMounted(() => setScrollFromState());
+            onMounted(() => {
+                const { state } = component.props;
+                const scrolling = state && state[scrollSymbol];
+                if (scrolling) {
+                    if (component.env.isSmall) {
+                        rootRef.el.scrollTop = (scrolling.root && scrolling.root.top) || 0;
+                        rootRef.el.scrollLeft = (scrolling.root && scrolling.root.left) || 0;
+                    } else if (scrolling.content) {
+                        const contentEl =
+                            rootRef.el.querySelector(
+                                ".o_component_with_search_panel > .o_renderer_with_searchpanel," +
+                                    ".o_component_with_search_panel > .o_renderer"
+                            ) || rootRef.el.querySelector(".o_content");
+                        if (contentEl) {
+                            contentEl.scrollTop = scrolling.content.top || 0;
+                            contentEl.scrollLeft = scrolling.content.left || 0;
+                        }
+                    }
+                }
+            });
         }
     }
     if (__getContext__ && params.getContext) {
@@ -146,8 +144,4 @@ export function useSetupAction(params = {}) {
     if (__getOrderBy__ && params.getOrderBy) {
         useCallbackRecorder(__getOrderBy__, params.getOrderBy);
     }
-
-    return {
-        setScrollFromState,
-    };
 }

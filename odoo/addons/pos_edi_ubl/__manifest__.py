@@ -1,6 +1,5 @@
 {
     'name': 'Point of Sale UBL',
-    'author': 'Odoo S.A.',
     'version': '1.0',
     'category': 'Sales/Point of Sale',
     'sequence': 6,

@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
 
 
 class FetchmailServer(models.Model):
@@ -19,12 +18,6 @@ class FetchmailServer(models.Model):
             'need to accept the permission.')
         super(FetchmailServer, self - gmail_servers)._compute_server_type_info()
 
-    @api.constrains('server_type', 'is_ssl')
-    def _check_use_google_gmail_service(self):
-        for server in self:
-            if server.server_type == 'gmail' and not server.is_ssl:
-                raise UserError(_('SSL is required for server “%s”.', server.name))
-
     @api.onchange('server_type', 'is_ssl', 'object_id')
     def onchange_server_type(self):
         """Set the default configuration for a IMAP Gmail server."""
@@ -33,12 +26,13 @@ class FetchmailServer(models.Model):
             self.is_ssl = True
             self.port = 993
         else:
+            self.google_gmail_authorization_code = False
             self.google_gmail_refresh_token = False
             self.google_gmail_access_token = False
             self.google_gmail_access_token_expiration = False
-            super().onchange_server_type()
+            super(FetchmailServer, self).onchange_server_type()
 
-    def _imap_login__(self, connection):  # noqa: PLW3201
+    def _imap_login(self, connection):
         """Authenticate the IMAP connection.
 
         If the mail server is Gmail, we use the OAuth2 authentication protocol.
@@ -49,7 +43,7 @@ class FetchmailServer(models.Model):
             connection.authenticate('XOAUTH2', lambda x: auth_string)
             connection.select('INBOX')
         else:
-            super()._imap_login__(connection)
+            super(FetchmailServer, self)._imap_login(connection)
 
     def _get_connection_type(self):
         """Return which connection must be used for this mail server (IMAP or POP).

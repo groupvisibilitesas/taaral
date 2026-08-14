@@ -1,8 +1,9 @@
-import { WORKER_STATE } from "@bus/workers/websocket_worker";
+/** @odoo-module **/
+
+import { waitFor } from "@odoo/hoot-dom";
 import { rpc } from "@web/core/network/rpc";
 import { registry } from "@web/core/registry";
-import { stepUtils } from "@web_tour/tour_utils";
-import { whenReady } from "@odoo/owl";
+import { stepUtils } from "@web_tour/tour_service/tour_utils";
 
 function openRoot() {
     return [{
@@ -18,55 +19,50 @@ function openRoot() {
         trigger: 'body:not(.wait)',
     }];
 }
-function openUserPreferencesAtSecurityTab() {
+function openUserProfileAtSecurityTab() {
     return [{
         content: 'Open user account menu',
         trigger: '.o_user_menu .dropdown-toggle',
         run: 'click',
     }, {
-        content: "Open My Preferences",
-        trigger: '[data-menu=preferences]',
+        content: "Open preferences / profile screen",
+        trigger: '[data-menu=settings]',
         run: 'click',
     }, {
-        content: "wait for security tab",
-        trigger: 'a[role=tab]:contains("Security")',
-    }, {
         content: "Switch to security tab",
-        trigger: 'a[role=tab]:contains("Security")',
+        trigger: 'a[role=tab]:contains("Account Security")',
         run: 'click',
     }];
 }
 
 /**
  * Checks that the TOTP button is in the specified state (true = enabled =
- * can disable, false = disabled = can enable), then closes the preferences dialog
+ * can disable, false = disabled = can enable), then closes the profile dialog
  * if it's one (= hr not installed).
  *
  * If no totp state is provided, just checks that the toggle exists.
  */
-function closePreferencesDialog({content, totp_state}) {
+function closeProfileDialog({content, totp_state}) {
     let trigger;
     switch (totp_state) {
     case true: trigger = 'button[name=action_totp_disable]'; break;
     case false: trigger = 'button[name=action_totp_enable_wizard]'; break;
-    case undefined: trigger = 'div:contains("Two-factor Authentication") + button'; break;
+    case undefined: trigger = 'button.o_auth_2fa_btn'; break;
     default: throw new Error(`Invalid totp state ${totp_state}`)
     }
 
     return [{
         content,
-        trigger: 'a[role=tab]:contains("Security").active',
-    }, 
-    {
-        trigger,
+        //TODO: remove when PIPU macro PR is merged: https://github.com/odoo/odoo/pull/194508
+        trigger: 'a[role=tab]:contains("Account Security").active',
         async run(helpers) {
+            await waitFor(trigger, { timeout: 5000 });
             const modal = document.querySelector(".o_dialog");
             if (modal) {
                 modal.querySelector("button[name=preference_cancel]").click();
             }
         }
-    },
-    {
+    }, {
         trigger: 'body:not(:has(.o_dialog))',
     }];
 }
@@ -74,17 +70,14 @@ function closePreferencesDialog({content, totp_state}) {
 registry.category("web_tour.tours").add('totp_tour_setup', {
     url: '/odoo',
     steps: () => [
-...openUserPreferencesAtSecurityTab(),
+...openUserProfileAtSecurityTab(),
 {
     content: "Open totp wizard",
-    trigger: 'a[role=tab]:contains("Security").active',
-},
-{
-    trigger: "button[name=action_totp_enable_wizard]",
+    trigger: 'button[name=action_totp_enable_wizard]',
     run: "click",
 },
 {
-    trigger: ".modal div:contains(Enter your current password)",
+    trigger: ".modal div:contains(entering your password)",
 },
 {
     content: "Check that we have to enter enhanced security mode and input password",
@@ -96,7 +89,7 @@ registry.category("web_tour.tours").add('totp_tour_setup', {
     run: "click",
 }, {
     content: "Check the wizard has opened",
-    trigger: '.modal:contains("Two-Factor Authentication Activation")',
+    trigger: '.modal li:contains("When requested to do so")',
 }, {
     content: "Get secret from collapsed div",
     trigger: `.modal a:contains("Cannot scan it?")`,
@@ -109,22 +102,21 @@ registry.category("web_tour.tours").add('totp_tour_setup', {
             copyBtn.remove();
         }
         const token = await rpc('/totphook', {
-            secret: secret.textContent,
-            offset: 0,
+            secret: secret.textContent
         });
         await helpers.edit(token, '[name=code] input');
     }
 },
 {
-    trigger: ".modal button.btn-primary:contains(Enable Two-Factor Authentication)",
+    trigger: ".modal button.btn-primary:contains(Activate)",
     run: "click",
 },
 {
     trigger: ".o_notification_content:contains(2-Factor authentication is now enabled)",
 },
 ...openRoot(),
-...openUserPreferencesAtSecurityTab(),
-...closePreferencesDialog({
+...openUserProfileAtSecurityTab(),
+...closeProfileDialog({
     content: "Check that the button has changed",
     totp_state: true,
 }),
@@ -156,40 +148,10 @@ registry.category("web_tour.tours").add('totp_login_enabled', {
     trigger: 'label:contains(Authentication Code)',
     run: "click",
 }, {
-    content: "input incorrect code",
-    trigger: 'input[name=totp_token]',
-    async run(helpers) {
-        // set the offset in the past, so the token will be always wrong
-        await rpc("/totphook", { offset: -2 });
-        helpers.edit("123456");
-    }
-}, {
-    trigger: `button:contains("Log in")`,
-    run: "click",
-    expectUnloadPage: true,
-}, {
-    content: "using an incorrect token should fail",
-    trigger: "p.alert.alert-danger:contains(Verification failed, please double-check the 6-digit code)",
-}, {
-    content: "reuse same code",
-    trigger: 'input[name=totp_token]',
-    async run(helpers) {
-        // send the same token as the one last one from the setup tour
-        const token = await rpc("/totphook", { offset: 0 });
-        helpers.edit(token);
-    }
-}, {
-    trigger: `button:contains("Log in")`,
-    run: "click",
-    expectUnloadPage: true,
-}, {
-    content: "reusing the same token should fail",
-    trigger: "p.alert.alert-danger:contains(Verification failed, please use the latest 6-digit code)",
-}, {
     content: "input code",
     trigger: 'input[name=totp_token]',
     async run(helpers) {
-        const token = await rpc('/totphook', { offset: 1 });
+        const token = await rpc('/totphook');
         helpers.edit(token);
     }
 },
@@ -235,7 +197,7 @@ registry.category("web_tour.tours").add('totp_login_device', {
     content: "input code",
     trigger: 'input[name=totp_token]',
     async run(helpers) {
-        const token = await rpc('/totphook', { offset: 2 });
+        const token = await rpc('/totphook')
         helpers.edit(token);
     }
 },
@@ -243,24 +205,6 @@ registry.category("web_tour.tours").add('totp_login_device', {
     trigger: "button:contains(Log in)",
     run: "click",
     expectUnloadPage: true,
-},
-{
-    trigger: ".o_web_client .o_navbar",
-    async run() {
-        await whenReady();
-    }
-},
-{
-    trigger: ".o_web_client .o_navbar",
-    async run() {
-        await new Promise((resolve) => {
-            const bus = odoo.__WOWL_DEBUG__.root.env.services.bus_service;
-            bus.addEventListener("BUS:CONNECT", resolve, { once: true });
-            if (bus.workerState === WORKER_STATE.CONNECTED) {
-                resolve();
-            }
-        });
-    },
 },
 {
     content: "check we're logged in",
@@ -295,17 +239,17 @@ registry.category("web_tour.tours").add('totp_login_device', {
 // now go and disable two-factor authentication would be annoying to do in a separate tour
 // because we'd need to login & totp again as HttpCase.authenticate can't
 // succeed w/ totp enabled
-...openUserPreferencesAtSecurityTab(),
+...openUserProfileAtSecurityTab(),
 {
     content: "Open totp wizard",
-    trigger: 'a[role=tab]:contains("Security").active',
+    trigger: 'a[role=tab]:contains("Account Security").active',
 },
 {
     trigger: "button[name=action_totp_disable]",
     run: "click",
 },
 {
-    trigger: ".modal div:contains(Enter your current password)",
+    trigger: ".modal div:contains(entering your password)",
 },
 {
     content: "Check that we have to enter enhanced security mode and input password",
@@ -320,8 +264,8 @@ registry.category("web_tour.tours").add('totp_login_device', {
     trigger:".o_notification_content:contains(Two-factor authentication disabled)",
 },
 ...openRoot(),
-...openUserPreferencesAtSecurityTab(),
-...closePreferencesDialog({
+...openUserProfileAtSecurityTab(),
+...closeProfileDialog({
     content: "Check that the button has changed",
     totp_state: false
 }),
@@ -351,11 +295,11 @@ registry.category("web_tour.tours").add('totp_login_disabled', {
 },
 // normally we'd end the tour here as it's all we care about but there are a
 // bunch of ongoing queries from the loading of the web client which cause
-// issues, so go and open the preferences screen to make sure
+// issues, so go and open the preferences / profile screen to make sure
 // everything settles down
-...openUserPreferencesAtSecurityTab(),
+...openUserProfileAtSecurityTab(),
 // close the dialog if that makes sense
-...closePreferencesDialog({})
+...closeProfileDialog({})
 ]});
 
 registry.category("web_tour.tours").add('totp_admin_disables', {
@@ -390,7 +334,7 @@ registry.category("web_tour.tours").add('totp_admin_disables', {
     run: "click",
 },
 {
-    trigger: ".modal div:contains(Enter your current password)",
+    trigger: ".modal div:contains(entering your password)",
 },
 { // enhanced security yo
     content: "Check that we have to enter enhanced security mode & input password",
@@ -411,14 +355,11 @@ registry.category("web_tour.tours").add('totp_admin_disables', {
     trigger: "td.o_data_cell:contains(test_user)",
     run: "click",
 }, {
-    content: "wait for Security Tab to appear",
-    trigger: "a.nav-link:contains(Security)",
-},{
-    content: "go to Security Tab",
-    trigger: "a.nav-link:contains(Security)",
+    content: "go to Account security Tab",
+    trigger: "a.nav-link:contains(Account Security)",
     run: "click",
 }, {
     content: "check 2FA button: should be disabled",
-    trigger: 'body:not(:has(button[name=action_totp_enable_wizard]))',
+    trigger: 'button[name=action_totp_enable_wizard]:disabled',
 }
 ]})

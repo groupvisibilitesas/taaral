@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { useService } from "@web/core/utils/hooks";
 import { SearchModel } from "@web/search/search_model";
 import { debounce } from "@web/core/utils/timing";
@@ -9,24 +11,21 @@ export class StockOrderpointSearchModel extends SearchModel {
     setup(services) {
         super.setup(services);
         this.ui = useService("ui");
-        this.applyGlobalHorizonDays = debounce(
-            this.applyGlobalHorizonDays.bind(this),
+        this.applyGlobalVisibilityDays = debounce(
+            this.applyGlobalVisibilityDays.bind(this),
             StockOrderpointSearchModel.DEBOUNCE_DELAY
         );
     }
 
-    async applyGlobalHorizonDays(globalHorizonDays) {
+    async applyGlobalVisibilityDays(globalVisibilityDays) {
         this.ui.block();
         this.globalContext = {
             ...this.globalContext,
-            global_horizon_days: globalHorizonDays,
+            global_visibility_days: globalVisibilityDays,
         };
         this._context = false; // Force rebuild of this.context to take into account the updated this.globalContext
         await this.orm.call("stock.warehouse.orderpoint", "action_open_orderpoints", [], {
-            context: {
-                ...this.context,
-                force_orderpoint_recompute: true,
-            }
+            context: this.context,
         });
         await this._fetchSections(this.categories, this.filters);
         this._notify();

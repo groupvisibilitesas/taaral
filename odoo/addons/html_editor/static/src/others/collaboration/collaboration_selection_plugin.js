@@ -13,7 +13,6 @@ import { _t } from "@web/core/l10n/translation";
 export class CollaborationSelectionPlugin extends Plugin {
     static id = "collaborationSelection";
     static dependencies = ["history", "collaborationOdoo", "position", "localOverlay"];
-    /** @type {import("plugins").EditorResources} */
     resources = {
         /** Handlers */
         collaboration_notification_handlers: this.handleCollaborationNotification.bind(this),

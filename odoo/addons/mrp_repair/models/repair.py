@@ -3,7 +3,7 @@
 from odoo import api, fields, models, _
 
 
-class RepairOrder(models.Model):
+class Repair(models.Model):
     _inherit = 'repair.order'
 
     production_count = fields.Integer(
@@ -12,10 +12,10 @@ class RepairOrder(models.Model):
         groups='mrp.group_mrp_user',
     )
 
-    @api.depends('reference_ids.production_ids')
+    @api.depends('procurement_group_id.stock_move_ids.created_production_id')
     def _compute_production_count(self):
         for repair in self:
-            repair.production_count = len(repair.reference_ids.production_ids)
+            repair.production_count = len(repair.procurement_group_id.stock_move_ids.created_production_id)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -48,7 +48,7 @@ class RepairOrder(models.Model):
 
     def action_view_mrp_productions(self):
         self.ensure_one()
-        production_order_ids = self.reference_ids.production_ids
+        production_order_ids = self.procurement_group_id.stock_move_ids.created_production_id
         action = {
             'type': 'ir.actions.act_window',
             'res_model': 'mrp.production',
@@ -81,6 +81,7 @@ class StockMove(models.Model):
         self.ensure_one()
         product = bom_line.product_id
         return {
+            'name': self.name,
             'repair_id': self.repair_id.id,
             'repair_line_type': self.repair_line_type,
             'product_id': product.id,

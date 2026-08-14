@@ -3,22 +3,20 @@
 # * survey
 #
 # Translators:
-# Yoshi Tashiro (Quartile) <tashiro@roomsfor.hk>, 2022
-# Martin Trigaux, 2022
-# Noma Yuki, 2022
-# Ryoko Tsuda <ryoko@quartile.co>, 2023, 2025, 2026.
-# Andy Yiu, 2023
-# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# Yoshi Tashiro (Quartile) <tashiro@roomsfor.hk>, 2024
+# Wil Odoo, 2025
+# Junko Augias, 2025
 # "Junko Augias (juau)" <juau@odoo.com>, 2025, 2026.
-# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Ryoko Tsuda <ryoko@quartile.co>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-10 18:37+0000\n"
-"PO-Revision-Date: 2026-08-06 19:52+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Japanese <https://translate.odoo.com/projects/odoo-19/survey/"
+"PO-Revision-Date: 2026-06-08 12:42+0000\n"
+"Last-Translator: Ryoko Tsuda <ryoko@quartile.co>\n"
+"Language-Team: Japanese <https://translate.odoo.com/projects/odoo-18/survey/"
 "ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -216,8 +214,8 @@ msgstr ""
 "    <table style=\"width:600px;margin:5px auto;\">\n"
 "        <tbody>\n"
 "            <tr><td>\n"
-"                <!-- アンケート調査を作成した会社のロゴを使用します"
-"(マルチカンパニーのケースに対応するため)  -->\n"
+"                <!-- アンケート調査を作成した会社のロゴを使用します(マルチカ"
+"ンパニーのケースに対応するため)  -->\n"
 "                <a href=\"/\"><img t-if=\"not "
 "object.survey_id.create_uid.company_id.uses_default_logo\" t-attf-src=\"/"
 "logo.png?company={{ object.survey_id.create_uid.company_id.id }}\" "
@@ -240,8 +238,8 @@ msgstr ""
 "''\">家具製作</strong>\n"
 "                    認定書をお送りいたします。\n"
 "                </p>\n"
-"                <p>テストに合格されました。おめでとうございます。 "
-"スコア:<strong t-out=\"object.scoring_percentage\"/>%!</p>\n"
+"                <p>テストに合格されました。おめでとうございます。 スコア:"
+"<strong t-out=\"object.scoring_percentage\"/>%!</p>\n"
 "            </td></tr>\n"
 "        </tbody>\n"
 "    </table>\n"
@@ -263,11 +261,9 @@ msgid ""
 "appreciated.\n"
 "        </t>\n"
 "        </p><div style=\"margin: 16px 0px 16px 0px;\">\n"
-"            <a t-att-href=\"(object.get_start_url())\" t-attf-"
-"style=\"background-color: {{user.company_id.email_secondary_color or "
-"'#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: "
-"{{user.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
-"font-size:13px;\">\n"
+"            <a t-att-href=\"(object.get_start_url())\" style=\"background-"
+"color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: "
+"#fff; border-radius: 5px; font-size:13px;\">\n"
 "                <t t-if=\"object.survey_id.certification\">\n"
 "                    Start Certification\n"
 "                </t>\n"
@@ -292,8 +288,8 @@ msgid ""
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"        <t t-out=\"object.partner_id.name or 'participant'\">ご参加者</t>"
-"様<br/><br/>\n"
+"        <t t-out=\"object.partner_id.name or 'participant'\">ご参加者</t>様"
+"<br/><br/>\n"
 "        <t t-if=\"object.survey_id.certification\">\n"
 "            新しい認定のご案内です。\n"
 "        </t>\n"
@@ -301,11 +297,9 @@ msgstr ""
 "            アンケート調査にご協力をお願い致します。\n"
 "        </t>\n"
 "        </p><div style=\"margin: 16px 0px 16px 0px;\">\n"
-"            <a t-att-href=\"(object.get_start_url())\" t-attf-"
-"style=\"background-color: {{user.company_id.email_secondary_color or "
-"'#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: {"
-"{user.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
-"font-size:13px;\">\n"
+"            <a t-att-href=\"(object.get_start_url())\" style=\"background-"
+"color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: "
+"#fff; border-radius: 5px; font-size:13px;\">\n"
 "                <t t-if=\"object.survey_id.certification\">\n"
 "                    認定を受ける\n"
 "                </t>\n"
@@ -378,7 +372,7 @@ msgid ""
 "pass this assessment because no question is configured to give any points."
 msgstr ""
 "<i class=\"fa fa-exclamation-triangle\"/>現在、どの問題も得点を与えるように設"
-"定されていないため、この評価に合格することはできません。"
+"定されていないため、この評価に合格することはできません。 "
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_fill_form_done
@@ -464,8 +458,8 @@ msgid ""
 "                </span>"
 msgstr ""
 "<span class=\"fw-bold text-muted ms-2 d-none d-md-inline\">\n"
-"                    <span id=\"enter-tooltip\">またはCTRL+Enterを入力</span>"
-"\n"
+"                    <span id=\"enter-tooltip\">またはCTRL+Enterを入力</"
+"span>\n"
 "                </span>"
 
 #. module: survey
@@ -528,8 +522,8 @@ msgid ""
 "                            </span>"
 msgstr ""
 "<span class=\"o_survey_results_topbar_clear_filters text-primary\">\n"
-"                                <i class=\"fa fa-trash me-1\"/>すべての"
-"フィルタを削除\n"
+"                                <i class=\"fa fa-trash me-1\"/>全てのフィルタ"
+"を削除\n"
 "                            </span>"
 
 #. module: survey
@@ -549,6 +543,21 @@ msgid ""
 msgstr ""
 "<span class=\"o_survey_session_navigation_next_label\">開始</span>\n"
 "                        <i class=\"oi oi-chevron-right\"/>"
+
+#. module: survey
+#: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_kanban
+msgid "<span class=\"text-break text-muted\">Completed</span>"
+msgstr "<span class=\"text-break text-muted\">完了済</span>"
+
+#. module: survey
+#: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_kanban
+msgid "<span class=\"text-break text-muted\">Registered</span>"
+msgstr "<span class=\"text-break text-muted\">登録済</span>"
+
+#. module: survey
+#: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_kanban
+msgid "<span class=\"text-break text-muted\">Success</span>"
+msgstr "<span class=\"text-break text-muted\">成功</span>"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_kanban
@@ -573,12 +582,19 @@ msgstr "<span class=\"text-success\">正解</span>"
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_page_statistics_question
 msgid "<span class=\"text-warning\">Partial</span>"
-msgstr "<span class=\"text-warning\">一部</span>"
+msgstr "<span class=\"d-block text-warning\">部分的</span>"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_question_form
 msgid "<span invisible=\"not is_scored_question\">Points</span>"
 msgstr "<span invisible=\"not is_scored_question\">ポイント</span>"
+
+#. module: survey
+#: model_terms:survey.question,description:survey.survey_demo_quiz_p3_q1
+msgid ""
+"<span>\"Red\" is not a category, I know what you are trying to do ;)</span>"
+msgstr ""
+"<span>\"赤\"は分類ではありません。何をしたいかは分かっています;）</span>"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_user_input_view_form
@@ -588,7 +604,14 @@ msgstr "<span>%</span>"
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_results_filters
 msgid "<span>All surveys</span>"
-msgstr "<span>すべてのアンケート</span>"
+msgstr "<span>全てのアンケート</span>"
+
+#. module: survey
+#: model_terms:survey.question,description:survey.survey_demo_quiz_p3_q6
+msgid "<span>Best time to do it, is the right time to do it.</span>"
+msgstr ""
+"<span>何かを行うための最善なタイミングは、それを行うのに最適なタイミングであ"
+"る。</span>"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_results_filters
@@ -626,13 +649,20 @@ msgstr ""
 "role=\"img\" aria-label=\"Numeric\"/>"
 
 #. module: survey
+#: model_terms:survey.question,description:survey.survey_demo_quiz_p5_q1
+msgid ""
+"<span>If you don't like us, please try to be as objective as possible.</span>"
+msgstr ""
+"<span>気に入らない場合、可能な限り客観的になってみてください。</span>の"
+
+#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_question_form
 msgid ""
 "<span>Name all the animals</span><br/>\n"
 "                                    <i class=\"fa fa-align-justify fa-4x\" "
 "role=\"img\" aria-label=\"Multiple lines\" title=\"Multiple Lines\"/>"
 msgstr ""
-"<span>すべての動物の名前を挙げる</span><br/>\n"
+"<span>全ての動物の名前を挙げる</span><br/>\n"
 "                                    <i class=\"fa fa-align-justify fa-4x\" "
 "role=\"img\" aria-label=\"Multiple lines\" title=\"Multiple Lines\"/>"
 
@@ -653,6 +683,16 @@ msgid "<span>Number of attempts left</span>:"
 msgstr "<span>残試行回数</span>:"
 
 #. module: survey
+#: model_terms:survey.question,description:survey.survey_demo_quiz_p2_q1
+msgid "<span>Our famous Leader!</span>"
+msgstr "<span>有名なリーダー!</span>"
+
+#. module: survey
+#: model_terms:survey.question,description:survey.survey_demo_quiz_p3_q3
+msgid "<span>Our sales people have an advantage, but you can do it!</span>"
+msgstr "<span>当社の営業担当者が優位ですが、あなたにもできます！</span>"
+
+#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_results_filters
 msgid "<span>Passed and Failed</span>"
 msgstr "<span>合格と不合格</span>"
@@ -670,6 +710,11 @@ msgid ""
 msgstr ""
 "<span>以下にこの証明書を贈呈します:</span>\n"
 "                                <br/>"
+
+#. module: survey
+#: model_terms:ir.actions.act_window,help:survey.action_survey_form
+msgid "<span>Try It</span>"
+msgstr "<span>やってみましょう</span>"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.user_input_session_manage_content
@@ -706,6 +751,11 @@ msgstr ""
 "                                <br/>"
 
 #. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p3_q4
+msgid "A \"Citrus\" could give you ..."
+msgstr "\"シトラス\"があなたに提供するのは..."
+
+#. module: survey
 #. odoo-python
 #: code:addons/survey/models/survey_question.py:0
 msgid "A label must be attached to only one question."
@@ -732,7 +782,8 @@ msgstr "かなり割高"
 msgid ""
 "A positive default time limit is required when the session rewards quick "
 "answers."
-msgstr "セッションで迅速な回答が報われる場合、正のデフォルトの制限時間が必要です。"
+msgstr ""
+"セッションで迅速な回答が報われる場合、正のデフォルトの制限時間が必要です。"
 
 #. module: survey
 #: model:ir.model.fields,help:survey.field_survey_question_answer__answer_score
@@ -744,8 +795,7 @@ msgstr ""
 "ます"
 
 #. module: survey
-#. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_form.js:0
+#: model_terms:ir.ui.view,arch_db:survey.survey_fill_form
 msgid "A problem has occurred"
 msgstr "問題が発生しました"
 
@@ -818,7 +868,7 @@ msgstr "例外の活動を示す装飾"
 #: model:ir.model.fields,field_description:survey.field_survey_survey__activity_state
 #: model:ir.model.fields,field_description:survey.field_survey_user_input__activity_state
 msgid "Activity State"
-msgstr "活動ステータス"
+msgstr "活動状態"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_survey__activity_type_icon
@@ -842,6 +892,11 @@ msgid "Add existing contacts..."
 msgstr "既存の連絡先を追加..."
 
 #. module: survey
+#: model_terms:ir.actions.act_window,help:survey.action_survey_form
+msgid "Add some fun to your presentations by sharing questions live"
+msgstr "ライブで質問を共有することで、プレゼンテーションを楽しくしましょう。"
+
+#. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_invite__emails
 msgid "Additional emails"
 msgstr "追加のメールアドレス"
@@ -850,6 +905,20 @@ msgstr "追加のメールアドレス"
 #: model:res.groups,name:survey.group_survey_manager
 msgid "Administrator"
 msgstr "管理者"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q4_sug1
+msgid "Africa"
+msgstr "アフリカ"
+
+#. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p4_q6
+msgid ""
+"After watching this video, will you swear that you are not going to "
+"procrastinate to trim your hedge this year?"
+msgstr ""
+"このビデオを見たからには、今年は生け垣の刈り込みを先延ばしにしないと誓えます"
+"か？"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_feedback_p2_q2_col3
@@ -875,11 +944,6 @@ msgstr ""
 "します"
 
 #. module: survey
-#: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
-msgid "All installed languages"
-msgstr "すべてのインストール済み言語"
-
-#. module: survey
 #: model:ir.model.fields.selection,name:survey.selection__survey_survey__questions_selection__all
 msgid "All questions"
 msgstr "すべての質問"
@@ -892,7 +956,7 @@ msgstr "すべてのアンケート"
 #. module: survey
 #: model:ir.model.constraint,message:survey.constraint_survey_question_is_time_limited_have_time_limit
 msgid "All time-limited questions need a positive time limit"
-msgstr "時間制限のある質問にはすべて正の制限時間が必要です。"
+msgstr "時間制限のある質問には全て正の制限時間が必要です。"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
@@ -923,6 +987,11 @@ msgstr "アクセストークンは一意である必要があります!"
 #: model:ir.model.constraint,message:survey.constraint_survey_question_positive_answer_score
 msgid "An answer score for a non-multiple choice question cannot be negative!"
 msgstr "非複数の選択肢の質問の回答スコアが負にすることはできません!"
+
+#. module: survey
+#: model_terms:survey.question,description:survey.survey_demo_quiz_p3
+msgid "An apple a day keeps the doctor away."
+msgstr "リンゴ1日1個で医者いらず"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.user_input_session_leaderboard
@@ -979,17 +1048,21 @@ msgid "Appears in"
 msgstr "表示されます"
 
 #. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q3_sug1
+msgid "Apple Trees"
+msgstr "リンゴの樹"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q6_row1
+msgid "Apples"
+msgstr "Apples"
+
+#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_kanban
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_search
 msgid "Archived"
 msgstr "アーカイブ済"
-
-#. module: survey
-#. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_form.js:0
-msgid "Are you sure you want to submit the survey?"
-msgstr "本当にアンケートを提出しますか?"
 
 #. module: survey
 #: model:survey.question,title:survey.survey_demo_food_preferences_q1
@@ -1008,9 +1081,13 @@ msgid "Arthur B. McDonald"
 msgstr "アーサー・B・マクドナルド"
 
 #. module: survey
-#. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q4_sug2
+msgid "Asia"
+msgstr "アジア"
+
+#. module: survey
 #: model:ir.model.fields.selection,name:survey.selection__survey_survey__survey_type__assessment
+#: model_terms:ir.actions.act_window,help:survey.action_survey_form
 msgid "Assessment"
 msgstr "評価"
 
@@ -1048,8 +1125,8 @@ msgid ""
 "Attendee nickname, mainly used to identify them in the survey session "
 "leaderboard."
 msgstr ""
-"主にアンケートセッションのリーダーボードで参加者を識別するために使用されます"
-"。"
+"主にアンケートセッションのリーダーボードで参加者を識別するために使用されま"
+"す。"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.user_input_session_manage_content
@@ -1073,6 +1150,11 @@ msgid ""
 "Automated email sent to the user when they succeed the certification, "
 "containing their certification document."
 msgstr "検定に合格すると、検定書を含む自動メールがユーザーに送信されます。"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q6_sug3
+msgid "Autumn"
+msgstr "秋"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_page_statistics_question
@@ -1123,13 +1205,23 @@ msgid "Badge"
 msgstr "バッジ"
 
 #. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q3_sug3
+msgid "Baobab Trees"
+msgstr "バオバブの木"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q2_sug1
+msgid "Bees"
+msgstr "ミツバチ"
+
+#. module: survey
 #: model:survey.question,question_placeholder:survey.vendor_certification_page_3_question_3
 msgid "Beware of leap years!"
 msgstr "うるう年に注意して下さい！"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Blue Pen"
 msgstr "青ペン"
 
@@ -1139,9 +1231,19 @@ msgid "Body content is the same as the template"
 msgstr "本文はテンプレートと同じです。"
 
 #. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q4_sug4
+msgid "Bricks"
+msgstr "レンガ"
+
+#. module: survey
 #: model:survey.question,question_placeholder:survey.survey_feedback_p1_q1
 msgid "Brussels"
 msgstr "ブリュッセル"
+
+#. module: survey
+#: model:survey.question,question_placeholder:survey.survey_demo_quiz_p1_q3
+msgid "Brussels, Belgium"
+msgstr "ブリュッセル、ベルギー"
 
 #. module: survey
 #: model:survey.survey,title:survey.survey_demo_burger_quiz
@@ -1150,7 +1252,7 @@ msgstr "バーガークイズ"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "But first, keep listening to the host."
 msgstr "その前に、ホストの話を聞き続けましょう。"
 
@@ -1158,6 +1260,11 @@ msgstr "その前に、ホストの話を聞き続けましょう。"
 #: model:survey.question.answer,value:survey.vendor_certification_page_2_question_2_choice_3
 msgid "Cabinet with Doors"
 msgstr "扉付きキャビネット"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q5_row1
+msgid "Cactus"
+msgstr "サボテン"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_invite__can_edit_body
@@ -1171,27 +1278,7 @@ msgstr "人間は光子を直接見ることができますか？"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/res_lang.py:0
-msgid ""
-"Cannot deactivate a language currently used by survey(s) only supporting "
-"that language."
-msgstr ""
-"現在、その言語のみをサポートするアンケートで使用されている言語は、無効にでき"
-"ません。"
-
-#. module: survey
-#. odoo-python
-#: code:addons/survey/models/res_lang.py:0
-msgid ""
-"Cannot deactivate languages currently used by survey(s) only supporting "
-"those languages."
-msgstr ""
-"現在、それらの言語のみをサポートしているアンケートで使用されている言語を無効"
-"にすることはできません。"
-
-#. module: survey
-#. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_tree
 msgid "Certification"
 msgstr "検定"
@@ -1204,7 +1291,7 @@ msgstr "検定バッジ"
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_survey__certification_badge_id_dummy
 msgid "Certification Badge "
-msgstr "検定バッジ "
+msgstr "検定バッジ"
 
 #. module: survey
 #. odoo-python
@@ -1263,11 +1350,11 @@ msgstr "認証済メールテンプレート"
 #. module: survey
 #: model:survey.question.answer,value:survey.vendor_certification_page_1_question_2_choice_1
 msgid "Chair floor protection"
-msgstr "椅子の床プロテクション"
+msgstr "チェアマット"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Cheating on your neighbors will not help!"
 msgstr "隣の人のカンニングをしても役に立ちませんよ！"
 
@@ -1284,6 +1371,11 @@ msgstr ""
 #: code:addons/survey/static/src/views/widgets/boolean_update_flag_field/boolean_update_flag_fields.js:0
 msgid "Checkbox updating comparison flag"
 msgstr "チェックボックス更新比較フラグ"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q2_sug2
+msgid "China"
+msgstr "中国"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_question_form
@@ -1321,10 +1413,9 @@ msgid "Classic Purple"
 msgstr "クラシックパープル"
 
 #. module: survey
-#. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_session_manage.js:0
-msgid "Click to copy link"
-msgstr "リンクをコピーするにはクリックしてください"
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q6_row3
+msgid "Clementine"
+msgstr "クレメンタイン"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p5_q1_sug4
@@ -1332,6 +1423,7 @@ msgid "Cliff Burton"
 msgstr "クリフ・バートン"
 
 #. module: survey
+#: model_terms:ir.ui.view,arch_db:survey.survey_fill_form
 #: model_terms:ir.ui.view,arch_db:survey.survey_invite_view_form
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
 msgid "Close"
@@ -1408,6 +1500,12 @@ msgid "Compose Email"
 msgstr "Eメール作成"
 
 #. module: survey
+#. odoo-python
+#: code:addons/survey/models/survey_user_input.py:0
+msgid "Computing score requires a question in arguments."
+msgstr "スコアを計算するには、引数に質問が必要です。"
+
+#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_question_form
 msgid "Conditional display"
 msgstr "条件付き表示"
@@ -1464,23 +1562,30 @@ msgid "Contents"
 msgstr "本文"
 
 #. module: survey
-#. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_form.js:0
 #: model_terms:ir.ui.view,arch_db:survey.survey_fill_form_in_progress
 msgid "Continue"
-msgstr "続ける"
+msgstr "続行"
 
 #. module: survey
-#. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_form.js:0
+#: model_terms:ir.ui.view,arch_db:survey.survey_fill_form
 msgid "Continue here"
 msgstr "ここで続行"
 
 #. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q3_sug4
+msgid "Cookies"
+msgstr "クッキー"
+
+#. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_session_manage.js:0
+#: code:addons/survey/static/src/js/survey_session_manage.js:0
 msgid "Copied!"
 msgstr "コピーされました。"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q1_sug3
+msgid "Cornaceae"
+msgstr "ミズキ科"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.vendor_certification_page_2_question_2_choice_1
@@ -1491,7 +1596,7 @@ msgstr "コーナーデスク右座"
 #. odoo-javascript
 #. odoo-python
 #: code:addons/survey/models/survey_user_input.py:0
-#: code:addons/survey/static/src/interactions/survey_result_chart.js:0
+#: code:addons/survey/static/src/js/survey_result.js:0
 #: model:ir.model.fields,field_description:survey.field_survey_question_answer__is_correct
 #: model:ir.model.fields,field_description:survey.field_survey_user_input_line__answer_is_correct
 msgid "Correct"
@@ -1538,14 +1643,19 @@ msgid "Correctly priced"
 msgstr "適正な価格"
 
 #. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q4_sug3
+msgid "Cosmic rays"
+msgstr "宇宙線"
+
+#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
 msgid "Create Live Session"
 msgstr "ライブセッションを作成"
 
 #. module: survey
-#: model:ir.model,website_form_label:survey.model_res_partner
-msgid "Create a Customer"
-msgstr "顧客を作成する"
+#: model_terms:ir.actions.act_window,help:survey.action_survey_form
+msgid "Create a custom survey from scratch"
+msgstr "顧客アンケートをゼロから作成"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_invite__create_uid
@@ -1579,13 +1689,15 @@ msgstr "テストトークンの作成は許可されていません。"
 msgid ""
 "Creating token for anybody else than employees is not allowed for internal "
 "surveys."
-msgstr "社内調査では、従業員以外のためにトークンを作成することは許可されていません。"
+msgstr ""
+"社内調査では、従業員以外のためにトークンを作成することは許可されていません。"
 
 #. module: survey
 #. odoo-python
 #: code:addons/survey/models/survey_survey.py:0
 msgid "Creating token for closed/archived surveys is not allowed."
-msgstr "クローズ/アーカイブされたアンケート用のトークン作成は許可されていません。"
+msgstr ""
+"クローズ/アーカイブされたアンケート用のトークン作成は許可されていません。"
 
 #. module: survey
 #. odoo-python
@@ -1619,6 +1731,7 @@ msgstr "現在はライブ・セッションのためにサポートされてい
 
 #. module: survey
 #: model:ir.model.fields.selection,name:survey.selection__survey_survey__survey_type__custom
+#: model_terms:ir.actions.act_window,help:survey.action_survey_form
 msgid "Custom"
 msgstr "カスタム"
 
@@ -1710,7 +1823,7 @@ msgstr "説明"
 #. module: survey
 #: model:survey.question.answer,value:survey.vendor_certification_page_2_question_2_choice_2
 msgid "Desk Combination"
-msgstr "デスクの組み合わせ"
+msgstr "デスクコンビネーション"
 
 #. module: survey
 #: model:ir.actions.act_window,name:survey.survey_user_input_line_action
@@ -1724,11 +1837,6 @@ msgid "Disagree"
 msgstr "同意"
 
 #. module: survey
-#: model:ir.model.fields,field_description:survey.field_gamification_badge__display_name
-#: model:ir.model.fields,field_description:survey.field_gamification_challenge__display_name
-#: model:ir.model.fields,field_description:survey.field_ir_http__display_name
-#: model:ir.model.fields,field_description:survey.field_res_lang__display_name
-#: model:ir.model.fields,field_description:survey.field_res_partner__display_name
 #: model:ir.model.fields,field_description:survey.field_survey_invite__display_name
 #: model:ir.model.fields,field_description:survey.field_survey_question__display_name
 #: model:ir.model.fields,field_description:survey.field_survey_question_answer__display_name
@@ -1768,6 +1876,26 @@ msgstr "コメント、質問、または何か気になることはあります
 #: model:survey.question,title:survey.vendor_certification_page_1_question_5
 msgid "Do you think we have missing products in our catalog? (not rated)"
 msgstr "カタログに何かの製品が不足していますか？ (未評価)"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q2_sug2
+msgid "Dogs"
+msgstr "犬"
+
+#. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p4_q1
+msgid "Dogwood is from which family of trees?"
+msgstr "ハナミズキは何科の樹木ですか？"
+
+#. module: survey
+#: model:survey.question,question_placeholder:survey.survey_demo_quiz_p1_q2
+msgid "Don't be shy, be wild!"
+msgstr "恥ずかしがらず、大胆に！"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q5_sug1
+msgid "Douglas Fir"
+msgstr "Douglas Fir"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.vendor_certification_page_1_question_2_choice_4
@@ -1813,7 +1941,7 @@ msgstr "終了日時"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_session_manage.js:0
+#: code:addons/survey/static/src/js/survey_session_manage.js:0
 msgid "End of Survey"
 msgstr "アンケート終了"
 
@@ -1826,6 +1954,16 @@ msgstr "セッションコードを入力"
 #: model:ir.model.fields,field_description:survey.field_survey_question__constr_error_msg
 msgid "Error message"
 msgstr "エラーメッセージ"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q4_sug3
+msgid "Europe"
+msgstr "ヨーロッパ"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q5_sug3
+msgid "European Yew"
+msgstr "ヨーロッパイチイ"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_user_input_view_search
@@ -1869,20 +2007,27 @@ msgstr "Fanta"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 #: model:survey.survey,title:survey.survey_feedback
 msgid "Feedback Form"
 msgstr "フィードバックフォーム"
 
 #. module: survey
-#. odoo-javascript
-#: code:addons/survey/static/src/xml/survey_paginated_results_rows_template.xml:0
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q5_row2
+msgid "Ficus"
+msgstr "イチジク"
+
+#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.question_result_choice
 #: model_terms:ir.ui.view,arch_db:survey.question_result_matrix
+#: model_terms:ir.ui.view,arch_db:survey.question_result_number_or_date_or_datetime
+#: model_terms:ir.ui.view,arch_db:survey.question_result_text
 msgid "Filter surveys"
 msgstr "アンケートをフィルタ"
 
 #. module: survey
+#. odoo-javascript
+#: code:addons/survey/static/src/js/survey_session_manage.js:0
 #: model_terms:ir.ui.view,arch_db:survey.user_input_session_manage_content
 msgid "Final Leaderboard"
 msgstr "最終的なリーダーボード"
@@ -1932,6 +2077,21 @@ msgid "Free Text answer"
 msgstr "自由記入回答"
 
 #. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p4_q4
+msgid "From which continent is native the Scots pine (pinus sylvestris)?"
+msgstr "セイヨウアカマツ (pinus sylvestris)の原産大陸はどこでしょうか？"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q1_sug1
+msgid "Fruits"
+msgstr "果物"
+
+#. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p3
+msgid "Fruits and vegetables"
+msgstr "果物と野菜"
+
+#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.certification_report_view_general
 msgid "Functional Training"
 msgstr "機能トレーニング"
@@ -1947,8 +2107,7 @@ msgid "Gamification Challenge"
 msgstr "ゲーミフィケーションの挑戦"
 
 #. module: survey
-#. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: model_terms:ir.actions.act_window,help:survey.action_survey_form
 msgid "Gather feedbacks from your employees and customers"
 msgstr "従業員と顧客からのフィードバックを集める"
 
@@ -1969,8 +2128,18 @@ msgid "Give Badge"
 msgstr "バッジを付けます"
 
 #. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p2_q3
+msgid "Give the list of all types of wood we sell."
+msgstr "私達が販売する木材のすべてのタイプのリストを提供してください。"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p5_q1_sug1
+msgid "Good"
+msgstr "良"
+
+#. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Good luck!"
 msgstr "幸運を！"
 
@@ -1985,6 +2154,20 @@ msgid "Got it!"
 msgstr "了解です！"
 
 #. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q4_sug2
+msgid "Grapefruits"
+msgstr "グレープフルーツ"
+
+#. module: survey
+#: model_terms:ir.ui.view,arch_db:survey.survey_question_answer_view_search
+#: model_terms:ir.ui.view,arch_db:survey.survey_question_search
+#: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_search
+#: model_terms:ir.ui.view,arch_db:survey.survey_user_input_line_view_search
+#: model_terms:ir.ui.view,arch_db:survey.survey_user_input_view_search
+msgid "Group By"
+msgstr "グループ化"
+
+#. module: survey
 #: model:ir.model,name:survey.model_ir_http
 msgid "HTTP Routing"
 msgstr "HTTPルーティング"
@@ -1996,10 +2179,14 @@ msgid "Handle existing"
 msgstr "既存のハンドル"
 
 #. module: survey
-#. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
-msgid "Handle quiz & certifications"
-msgstr "クイズと認定資格の取り扱い"
+#: model_terms:ir.actions.act_window,help:survey.action_survey_form
+msgid "Handle quiz &amp; certifications"
+msgstr "クイズ &amp; 検定を処理する"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q3_sug1
+msgid "Hard"
+msgstr "ハード"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_survey__has_message
@@ -2030,8 +2217,8 @@ msgstr "ヘミウヌ"
 #. module: survey
 #. odoo-javascript
 #: code:addons/survey/static/src/js/tours/survey_tour.js:0
-msgid "Here, you can view the participants."
-msgstr "こちらで参加者を確認できます。"
+msgid "Here, you can overview all the participations."
+msgstr "ここで全ての参加者の概要を見ることができます。"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_feedback_p2_q1_sug1
@@ -2051,19 +2238,19 @@ msgstr "どのくらいの頻度でオンラインでプロダクトを購入し
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "How frequently do you use our products?"
 msgstr "当社のプロダクトをどのくらいの頻度で使用しますか？"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "How good of a presenter are you? Let's find out!"
 msgstr "あなたのプレゼン能力は？見てみましょう！"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "How likely are you to recommend the following products to a friend?"
 msgstr "以下のプロダクトを友人に薦める可能性は？"
 
@@ -2085,7 +2272,7 @@ msgstr "当社の返金保証は何日ですか？"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "How many orders did you pass during the last 6 months?"
 msgstr "過去6か月間に何件のオーダを受けましたか？"
 
@@ -2108,6 +2295,16 @@ msgstr "100年戦争は何年続きましたか？"
 #: model:survey.question,title:survey.vendor_certification_page_2_question_1
 msgid "How much do we sell our Cable Management Box?"
 msgstr "どのくらい私たちはケーブルマネジメントボックスを販売していますか？"
+
+#. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p3_q5
+msgid "How often should you water those plants"
+msgstr "どのくらいの頻度で、これらの植物に水やりをすべきですか"
+
+#. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p1_q4
+msgid "How old are you?"
+msgstr "年齢を教えて下さい。"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p5_q3_sug4
@@ -2134,16 +2331,16 @@ msgid "I have added products to my wishlist"
 msgstr "ウィッシュリストに製品を追加しました"
 
 #. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p5_q1_sug4
+msgid "I have no idea, I'm a dog!"
+msgstr "全く思いつきません、私は犬です!"
+
+#. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p5_q3_sug3
 msgid "I've been noticing gravity since I was very young!"
 msgstr "私は幼い頃から重力に気づいていました！"
 
 #. module: survey
-#: model:ir.model.fields,field_description:survey.field_gamification_badge__id
-#: model:ir.model.fields,field_description:survey.field_gamification_challenge__id
-#: model:ir.model.fields,field_description:survey.field_ir_http__id
-#: model:ir.model.fields,field_description:survey.field_res_lang__id
-#: model:ir.model.fields,field_description:survey.field_res_partner__id
 #: model:ir.model.fields,field_description:survey.field_survey_invite__id
 #: model:ir.model.fields,field_description:survey.field_survey_question__id
 #: model:ir.model.fields,field_description:survey.field_survey_question_answer__id
@@ -2207,7 +2404,7 @@ msgstr "チェックした場合は、新しいメッセージに注意が必要
 #: model:ir.model.fields,help:survey.field_survey_user_input__message_has_error
 #: model:ir.model.fields,help:survey.field_survey_user_input__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr "有効にすると、一部のメッセージに配信エラーが発生します。"
+msgstr "チェックした場合は、一部のメッセージに配信エラーが発生されました。"
 
 #. module: survey
 #: model:ir.model.fields,help:survey.field_survey_question__save_as_email
@@ -2280,7 +2477,7 @@ msgstr "画像ファイル名"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_image_zoomer_templates.xml:0
+#: code:addons/survey/static/src/xml/survey_image_zoomer_templates.xml:0
 msgid "Image Zoom Dialog"
 msgstr "画像の拡大ダイアログ"
 
@@ -2302,6 +2499,16 @@ msgid "In Progress"
 msgstr "進行中"
 
 #. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p4_q5
+msgid "In the list below, select all the coniferous."
+msgstr "下記のリストで、針葉樹をすべて選択してください。"
+
+#. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p4_q2
+msgid "In which country did the bonsai technique develop?"
+msgstr "盆栽の技術はどの国で発展しましたか？"
+
+#. module: survey
 #: model:ir.model.fields,help:survey.field_survey_question__is_scored_question
 msgid ""
 "Include this question as part of quiz scoring. Requires an answer and answer "
@@ -2314,7 +2521,7 @@ msgstr ""
 #. odoo-javascript
 #. odoo-python
 #: code:addons/survey/models/survey_user_input.py:0
-#: code:addons/survey/static/src/interactions/survey_result_chart.js:0
+#: code:addons/survey/static/src/js/survey_result.js:0
 msgid "Incorrect"
 msgstr "不正解"
 
@@ -2353,13 +2560,13 @@ msgstr "編集者である"
 #: model:ir.model.fields,field_description:survey.field_survey_survey__message_is_follower
 #: model:ir.model.fields,field_description:survey.field_survey_user_input__message_is_follower
 msgid "Is Follower"
-msgstr "フォロー中"
+msgstr "フォロー中　"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_survey__certification
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_search
 msgid "Is a Certification"
-msgstr "認定"
+msgstr "検定"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_question__is_page
@@ -2387,6 +2594,11 @@ msgid "Is that user input part of a survey session or not."
 msgstr "そのユーザ入力はアンケートセッションの一部ですか?"
 
 #. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p4_q3
+msgid "Is the wood of a coniferous hard or soft?"
+msgstr "針葉樹の木は硬いですか、それとも柔らかいですか?"
+
+#. module: survey
 #: model:ir.model.fields,help:survey.field_survey_question__is_placed_before_trigger
 msgid "Is this question placed before any of its trigger questions?"
 msgstr "この質問は、トリガー質問より前に表示されていますか？"
@@ -2403,31 +2615,31 @@ msgstr "以下によります:"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "It does not mean anything specific"
 msgstr "具体的な意味はありません"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "It helps attendees focus on what you are saying"
 msgstr "参加者があなたが話すことに集中する助けになります。"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "It helps attendees remember the content of your presentation"
 msgstr "参加者があなたのプレゼンテーションの内容を記憶する助けになります。"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "It is a small bit of text, displayed to help participants answer"
 msgstr "参加者の回答を助けるために表示される、短いテキストです。"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "It is an option that can be different for each Survey"
 msgstr "アンケートごとに異なるオプションです。"
 
@@ -2438,15 +2650,20 @@ msgstr "私が欲しい製品を見つけることは容易です"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "It is more engaging for your audience"
 msgstr "視聴者をより惹きつけます。"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "It's a Belgian word for \"Management\""
 msgstr "ベルギー語で \"経営 \"を意味する単語です。"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p5_q1_sug3
+msgid "Iznogoud"
+msgstr "Iznogoud"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p5_q3_sug1
@@ -2458,9 +2675,19 @@ msgstr ""
 "ていないため。そして、私はそれがアフリカでは人気であることを知っています。"
 
 #. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q2_sug1
+msgid "Japan"
+msgstr "日本"
+
+#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_session_code
 msgid "Join Session"
 msgstr "セッションに参加"
+
+#. module: survey
+#: model_terms:survey.question,description:survey.survey_demo_quiz_p1_q4
+msgid "Just to categorize your answers, don't worry."
+msgstr "回答を分類するためです、ご心配なく"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p5_q1_sug2
@@ -2496,17 +2723,7 @@ msgstr "提案された選択肢に使用されるラベル: 単純選択、複�
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_invite__lang
-#: model:ir.model.fields,field_description:survey.field_survey_user_input__lang_id
-#: model:ir.model.fields,field_description:survey.field_survey_user_input_line__lang_id
-#: model_terms:ir.ui.view,arch_db:survey.survey_user_input_line_view_search
-#: model_terms:ir.ui.view,arch_db:survey.survey_user_input_view_search
 msgid "Language"
-msgstr "言語"
-
-#. module: survey
-#: model:ir.model,name:survey.model_res_lang
-#: model:ir.model.fields,field_description:survey.field_survey_survey__lang_ids
-msgid "Languages"
 msgstr "言語"
 
 #. module: survey
@@ -2561,16 +2778,14 @@ msgid "Leave"
 msgstr "戻る"
 
 #. module: survey
-#: model:ir.model.fields,help:survey.field_survey_survey__lang_ids
-msgid "Leave the field empty to support all installed languages."
-msgstr ""
-"インストール済みのすべての言語に対応するには、このフィールドを空欄のままにし"
-"てください。"
-
-#. module: survey
 #: model:survey.question.answer,value:survey.vendor_certification_page_1_question_3_choice_4
 msgid "Legs"
 msgstr "脚"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q3_sug2
+msgid "Lemon Trees"
+msgstr "レモンの木"
 
 #. module: survey
 #. odoo-javascript
@@ -2598,7 +2813,7 @@ msgstr "今提出したアンケートを開きましょう。"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Likely"
 msgstr "おそらく"
 
@@ -2615,7 +2830,8 @@ msgstr "試みの限られた数"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
+#: model_terms:ir.actions.act_window,help:survey.action_survey_form
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
 msgid "Live Session"
 msgstr "ライブセッション"
@@ -2644,7 +2860,7 @@ msgstr "ライブセッション利用可能"
 #. odoo-javascript
 #: code:addons/survey/static/src/js/tours/survey_tour.js:0
 msgid "Load a <b>sample Survey</b> to get started quickly."
-msgstr "<b>アンケートサンプル</b>をロードしてすぐに始める"
+msgstr " <b>アンケートサンプル</b>をロードしてすぐに始める "
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_auth_required
@@ -2655,12 +2871,6 @@ msgstr "ログインが必要"
 #: model:ir.model.fields,field_description:survey.field_survey_invite__template_id
 msgid "Mail Template"
 msgstr "メールテンプレート"
-
-#. module: survey
-#. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
-msgid "Make your presentations more fun by sharing questions live"
-msgstr "ライブで質問を共有して、プレゼンテーションを盛り上げましょう"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_question__constr_mandatory
@@ -2798,6 +3008,11 @@ msgid "Modern Purple"
 msgstr "モダンパープル"
 
 #. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q2_sug3
+msgid "Mooses"
+msgstr "モーセ"
+
+#. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p2_q3_sug4
 msgid "Mount Elbrus (Russia)"
 msgstr "エルブルス山(ロシア)"
@@ -2811,6 +3026,11 @@ msgstr "エトナ山(イタリア - シチリア島)"
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p2_q3_sug1
 msgid "Mount Teide (Spain - Tenerife)"
 msgstr "テイデ山(スペイン - テネリフェ島)"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q5_sug4
+msgid "Mountain Pine"
+msgstr "マウンテンパイン"
 
 #. module: survey
 #: model:ir.model.fields.selection,name:survey.selection__survey_question__question_type__text_box
@@ -2843,11 +3063,6 @@ msgid "Multiple choices per row"
 msgstr "行ごとに複数の選択肢"
 
 #. module: survey
-#: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_search
-msgid "My Activities"
-msgstr "自分の活動"
-
-#. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_survey__my_activity_date_deadline
 #: model:ir.model.fields,field_description:survey.field_survey_user_input__my_activity_date_deadline
 msgid "My Activity Deadline"
@@ -2865,14 +3080,14 @@ msgstr "MyCompanyのベンダー認定"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 #: model_terms:ir.ui.view,arch_db:survey.survey_question_form
 msgid "Neutral"
 msgstr "普通"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Never (less than once a month)"
 msgstr "決してない (月に1回未満)"
 
@@ -2899,7 +3114,7 @@ msgstr "新規参加が完了しました。"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_session_manage.js:0
+#: code:addons/survey/static/src/js/survey_session_manage.js:0
 #: model_terms:ir.ui.view,arch_db:survey.survey_fill_form_in_progress
 msgid "Next"
 msgstr "次へ"
@@ -2941,6 +3156,7 @@ msgstr "ニックネーム"
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_food_preferences_q1_sug2
 #: model:survey.question.answer,value:survey.survey_demo_food_preferences_q2_sug2
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q6_sug2
 #: model:survey.question.answer,value:survey.vendor_certification_page_1_question_1_choice_1
 msgid "No"
 msgstr "いいえ"
@@ -2951,8 +3167,7 @@ msgid "No Questions yet!"
 msgstr "まだ質問がありません"
 
 #. module: survey
-#. odoo-javascript
-#: code:addons/survey/static/src/views/components/survey_survey_action_helper/survey_survey_action_helper.xml:0
+#: model_terms:ir.actions.act_window,help:survey.action_survey_form
 msgid "No Survey Found"
 msgstr "アンケートが見つかりません"
 
@@ -2992,6 +3207,16 @@ msgstr "ユーザ入力行が見つかりません"
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p4_q3_sug2
 msgid "No, it's too small for the human eye."
 msgstr "いいえ、それは人間の目には小さすぎます。"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q5_sug2
+msgid "Norway Spruce"
+msgstr "ノルウェースプルース"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p5_q1_sug2
+msgid "Not Good, Not Bad"
+msgstr "よくはありませんが、悪くもありません"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_question_form
@@ -3044,7 +3269,7 @@ msgstr "エラー数"
 #: model:ir.model.fields,help:survey.field_survey_survey__message_needaction_counter
 #: model:ir.model.fields,help:survey.field_survey_user_input__message_needaction_counter
 msgid "Number of messages requiring action"
-msgstr "対応が必要なメッセージ数"
+msgstr "アクションを必要とするメッセージの数"
 
 #. module: survey
 #: model:ir.model.fields,help:survey.field_survey_survey__message_has_error_counter
@@ -3064,7 +3289,7 @@ msgstr "数値の回答"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Object-Directed Open Organization"
 msgstr "目標指向のオープンな組織"
 
@@ -3080,7 +3305,7 @@ msgstr "Odoo"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Odoo Certification"
 msgstr "Odoo検定"
 
@@ -3091,13 +3316,13 @@ msgstr "オフィスチェアブラック"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Often (1-3 times per week)"
 msgstr "頻繁 (週に1-3回)"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid ""
 "On Survey questions, one can define \"placeholders\". But what are they for?"
 msgstr ""
@@ -3110,11 +3335,13 @@ msgid "Once a day"
 msgstr "一日一回"
 
 #. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q5_sug1
 #: model:survey.question.answer,value:survey.survey_feedback_p1_q3_sug3
 msgid "Once a month"
 msgstr "毎月1回"
 
 #. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q5_sug2
 #: model:survey.question.answer,value:survey.survey_feedback_p1_q3_sug2
 msgid "Once a week"
 msgstr "週に一度"
@@ -3131,13 +3358,13 @@ msgstr "行ごとに一つの選択肢"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "One needs to answer at least half the questions correctly"
 msgstr "少なくとも半分の問題に正解する必要があります"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "One needs to get 50% of the total score"
 msgstr "合計得点の50％を獲得する必要があります"
 
@@ -3163,10 +3390,10 @@ msgid "Only a single question left!"
 msgstr "残りあと1つの質問だけです！"
 
 #. module: survey
-#. odoo-javascript
-#: code:addons/survey/static/src/xml/survey_paginated_results_rows_template.xml:0
 #: model_terms:ir.ui.view,arch_db:survey.question_result_choice
 #: model_terms:ir.ui.view,arch_db:survey.question_result_matrix
+#: model_terms:ir.ui.view,arch_db:survey.question_result_number_or_date_or_datetime
+#: model_terms:ir.ui.view,arch_db:survey.question_result_text
 msgid "Only show survey results having selected this answer"
 msgstr "この回答を選択したアンケート結果のみを表示します"
 
@@ -3212,13 +3439,13 @@ msgstr "任意で過去の回答が必要です"
 #: model:ir.model.fields,help:survey.field_survey_invite__lang
 msgid ""
 "Optional translation language (ISO code) to select when sending out an "
-"email. If not set, the main partner's language will be used. This should "
-"usually be a placeholder expression that provides the appropriate language, "
-"e.g. {{ object.partner_id.lang }}."
+"email. If not set, the english version will be used. This should usually be "
+"a placeholder expression that provides the appropriate language, e.g. "
+"{{ object.partner_id.lang }}."
 msgstr ""
-"メール送信時に選択できる任意の翻訳言語(ISOコード)。未設定の場合は、関連する取"
-"引先の言語が使用されます。通常は、たとえば {{ object.partner_id.lang }} のよ"
-"うな、適切な言語を指定するプレースホルダー式を使用します。"
+"メールを送信時に、オプションで選択可能な翻訳言語 (ISOコード)。セットしてない"
+"場合は、英語版が使われます。これは通常、適切な言語を提供するプレースホルダ式"
+"であります、例: {{ object.partner_id.lang }}"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_question_form
@@ -3228,7 +3455,7 @@ msgstr "オプション"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Organizational Development for Operation Officers"
 msgstr "経営役員のための組織開発"
 
@@ -3239,13 +3466,18 @@ msgid "Other (see comments)"
 msgstr "その他(コメント参照)"
 
 #. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p2
+msgid "Our Company in a few questions ..."
+msgstr "私たちの会社についてのいくつかの質問..."
+
+#. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_invite__mail_server_id
 msgid "Outgoing mail server"
 msgstr "送信メールサーバ"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_result_chart.js:0
+#: code:addons/survey/static/src/js/survey_result.js:0
 msgid "Overall Performance"
 msgstr "総合成績"
 
@@ -3278,9 +3510,9 @@ msgstr "パピルス"
 #. odoo-javascript
 #. odoo-python
 #: code:addons/survey/models/survey_user_input.py:0
-#: code:addons/survey/static/src/interactions/survey_result_chart.js:0
+#: code:addons/survey/static/src/js/survey_result.js:0
 msgid "Partially"
-msgstr "一部回答"
+msgstr "部分的に"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_user_input_view_search
@@ -3288,8 +3520,6 @@ msgid "Participant"
 msgstr "参加者"
 
 #. module: survey
-#: model:ir.actions.act_window,name:survey.action_survey_user_input
-#: model:ir.ui.menu,name:survey.menu_survey_type_form1
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
 msgid "Participants"
 msgstr "対象者"
@@ -3315,6 +3545,13 @@ msgstr "新規参加が完了しました"
 #: model:mail.message.subtype,description:survey.mt_survey_user_input_completed
 msgid "Participation completed."
 msgstr "参加が完了しました"
+
+#. module: survey
+#: model:ir.actions.act_window,name:survey.action_survey_user_input
+#: model:ir.ui.menu,name:survey.menu_survey_type_form1
+#: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
+msgid "Participations"
+msgstr "参加状況"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_user_input_view_search
@@ -3349,9 +3586,14 @@ msgstr "残っている％"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_result_chart.js:0
+#: code:addons/survey/static/src/js/survey_result.js:0
 msgid "Performance by Section"
 msgstr "セクションごとの成績"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q6_sug3
+msgid "Perhaps"
+msgstr "多分"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p4_q1_sug2
@@ -3374,12 +3616,6 @@ msgid "Pick a Template..."
 msgstr "テンプレートを選択..."
 
 #. module: survey
-#. odoo-javascript
-#: code:addons/survey/static/src/views/components/survey_survey_action_helper/survey_survey_action_helper.xml:0
-msgid "Pick a sample or"
-msgstr "サンプルを選択または"
-
-#. module: survey
 #: model:survey.question,title:survey.survey_demo_burger_quiz_p1_q1
 msgid "Pick a subject"
 msgstr "対象を選んでください"
@@ -3394,17 +3630,23 @@ msgstr ""
 "質問が常に表示されるようにする場合は、フィールドを空のままにします。"
 
 #. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q1_sug1
+msgid "Pinaceae"
+msgstr "マツ科"
+
+#. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_question__question_placeholder
 msgid "Placeholder"
 msgstr "プレースホルダ"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid ""
 "Please complete this very short survey to let us know how satisfied your are "
 "with our products."
-msgstr "当社プロダクトの満足度をお知らせ頂くために、簡単なアンケートにご協力下さい。"
+msgstr ""
+"当社プロダクトの満足度をお知らせ頂くために、簡単なアンケートにご協力下さい。"
 
 #. module: survey
 #. odoo-python
@@ -3423,14 +3665,19 @@ msgid ""
 "Please make sure you have at least one question in your survey. You also "
 "need at least one section if you chose the \"Page per section\" layout.<br/>"
 msgstr ""
-"アンケートにおいて少なくとも一つの設問があることを確認してください。"
-"、'セクションごとに1ページ'のレイアウトを選択した場合は、少なくとも1つの"
-"セクションを必要とします。<br/>"
+"アンケートにおいて少なくとも一つの設問があることを確認してください。、'セク"
+"ションごとに1ページ'のレイアウトを選択した場合は、少なくとも1つのセクションを"
+"必要とします。<br/>"
 
 #. module: survey
 #: model:survey.question,title:survey.vendor_certification_page_3
 msgid "Policies"
 msgstr "ポリシー"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q4_sug1
+msgid "Pomelos"
+msgstr "Pomelos"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_feedback_p2_q1_sug8
@@ -3439,7 +3686,7 @@ msgstr "質の悪い"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Practice in front of a mirror"
 msgstr "鏡の前で練習しましょう"
 
@@ -3558,14 +3805,19 @@ msgid ""
 msgstr "現在の質問を表示するためのトリガとなる答えを含む質問"
 
 #. module: survey
+#: model:survey.survey,title:survey.survey_demo_quiz
+msgid "Quiz about our Company"
+msgstr "当社に関するクイズ"
+
+#. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_user_input__scoring_success
-msgid "Quiz Passed"
-msgstr "クイズに合格しました"
+msgid "Quizz Passed"
+msgstr "クイズに合格"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_user_input_view_search
-msgid "Quiz passed"
-msgstr "クイズに合格しました"
+msgid "Quizz passed"
+msgstr "クイズに合格"
 
 #. module: survey
 #. odoo-javascript
@@ -3580,7 +3832,7 @@ msgstr "セクションごとにランダム"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Rarely (1-3 times per month)"
 msgstr "稀である (月に1-3回)"
 
@@ -3602,13 +3854,18 @@ msgid "Ready to change the way you <b>gather data</b>?"
 msgstr "<b>データ収集</b>の方法を変える準備はできていますか？"
 
 #. module: survey
+#: model_terms:ir.actions.act_window,help:survey.action_survey_form
+msgid "Ready to test? Pick a sample or create one from scratch..."
+msgstr "テストの用意はできましたか？サンプルを選ぶか、ゼロから作成しましょう。"
+
+#. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_invite__partner_ids
 msgid "Recipients"
 msgstr "宛先"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Red Pen"
 msgstr "赤ペン"
 
@@ -3691,7 +3948,7 @@ msgstr "迅速な回答に報酬"
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.gamification_badge_form_view_simplified
 msgid "Rewards for challenges"
-msgstr "課題・目標に対する褒章"
+msgstr "チャレンジに対するリワード"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_user_input_line__matrix_row_id
@@ -3723,6 +3980,11 @@ msgstr "行"
 #: model:ir.model.fields,field_description:survey.field_survey_user_input__message_has_sms_error
 msgid "SMS Delivery error"
 msgstr "SMS配信エラー"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q1_sug4
+msgid "Salicaceae"
+msgstr "ヤナギ科"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_question__save_as_email
@@ -3881,11 +4143,6 @@ msgid "See you soon!"
 msgstr "お会いできるのを楽しみにしております。"
 
 #. module: survey
-#: model_terms:ir.ui.view,arch_db:survey.survey_fill_header
-msgid "Select a language"
-msgstr "言語を選択"
-
-#. module: survey
 #: model:survey.question,title:survey.vendor_certification_page_1_question_3
 msgid "Select all the available customizations for our Customizable Desk"
 msgstr "カスタマイザブルデスクで利用可能なすべてのカスタマイズを選択します"
@@ -3899,6 +4156,11 @@ msgstr "すべての既存の製品を選択します"
 #: model:survey.question,title:survey.vendor_certification_page_2_question_2
 msgid "Select all the products that sell for $100 or more"
 msgstr "$ 100以上販売しているすべての製品を選択する"
+
+#. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p3_q3
+msgid "Select trees that made more than 20K sales this year"
+msgstr "今年以上の20Kの販売をした木を選択"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_invite_view_form
@@ -3944,7 +4206,7 @@ msgstr "セッションリンク"
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_survey__session_state
 msgid "Session State"
-msgstr "セッションステータス"
+msgstr "セッション状態"
 
 #. module: survey
 #: model:ir.model.constraint,message:survey.constraint_survey_survey_session_code_unique
@@ -3980,25 +4242,25 @@ msgstr "コメントフィールドを表示"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_session_manage.js:0
+#: code:addons/survey/static/src/js/survey_session_manage.js:0
 msgid "Show Correct Answer(s)"
 msgstr "正解を表示"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_session_manage.js:0
+#: code:addons/survey/static/src/js/survey_session_manage.js:0
 msgid "Show Final Leaderboard"
 msgstr "最終リーダーボードを表示"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_session_manage.js:0
+#: code:addons/survey/static/src/js/survey_session_manage.js:0
 msgid "Show Leaderboard"
 msgstr "リーダーボードを表示"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_session_manage.js:0
+#: code:addons/survey/static/src/js/survey_session_manage.js:0
 msgid "Show Results"
 msgstr "結果を表示"
 
@@ -4009,12 +4271,12 @@ msgstr "セッションリーダーボードを表示"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_search
-msgid "Show all records whose next activity date is past"
-msgstr "次回活動日が過去のすべてのレコードを表示"
+msgid "Show all records which has next action date is before today"
+msgstr "次のアクションの日付が今日より前のすべてのレコードを表示"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Show them slides with a ton of text they need to read fast"
 msgstr "速く読む必要のある大量のテキストをスライドで表示します。"
 
@@ -4032,10 +4294,27 @@ msgid "Skipped"
 msgstr "無効回答"
 
 #. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q3_sug2
+msgid "Soft"
+msgstr "柔らかい"
+
+#. module: survey
 #. odoo-python
 #: code:addons/survey/wizard/survey_invite.py:0
 msgid "Some emails you just entered are incorrect: %s"
 msgstr "あなたの入力したいくつかの電子メールが正しくありません:%s"
+
+#. module: survey
+#: model_terms:survey.question,description:survey.survey_demo_quiz_p1
+msgid ""
+"Some general information about you. It will be used internally for "
+"statistics only."
+msgstr "お客様に関する一般的な情報。統計のためにのみ内部で使用されます。"
+
+#. module: survey
+#: model_terms:survey.question,description:survey.survey_demo_quiz_p2
+msgid "Some questions about our company. Do you really know us?"
+msgstr "当社についての質問。当社を本当にご存知ですか？"
 
 #. module: survey
 #. odoo-python
@@ -4054,20 +4333,40 @@ msgid "Sorry, you have not been fast enough."
 msgstr "申し訳ありませんが、十分に速くなかったです。"
 
 #. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q4_sug4
+msgid "South America"
+msgstr "南アメリカ"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q2_sug4
+msgid "South Korea"
+msgstr "韓国"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q1_sug3
+msgid "Space stations"
+msgstr "宇宙ステーション"
+
+#. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Speak softly so that they need to focus to hear you"
 msgstr "相手が集中しないと聞こえないように、小さな声で話しましょう。"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Speak too fast"
 msgstr "話すのが速すぎます"
 
 #. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q6_sug1
+msgid "Spring"
+msgstr "春"
+
+#. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_session_manage.js:0
+#: code:addons/survey/static/src/js/survey_session_manage.js:0
 #: model:survey.question,title:survey.survey_demo_burger_quiz_p1
 msgid "Start"
 msgstr "開始"
@@ -4093,15 +4392,9 @@ msgid "Start date and time"
 msgstr "開始日時"
 
 #. module: survey
-#. odoo-javascript
-#: code:addons/survey/static/src/views/components/survey_survey_action_helper/survey_survey_action_helper.xml:0
-msgid "Start from scratch"
-msgstr "0から始める"
-
-#. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_user_input__state
 msgid "Status"
-msgstr "ステータス"
+msgstr "状態"
 
 #. module: survey
 #: model:ir.model.fields,help:survey.field_survey_survey__activity_state
@@ -4123,6 +4416,11 @@ msgid "Steak with french fries"
 msgstr "ステーキとポテトフライ"
 
 #. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q6_row2
+msgid "Strawberries"
+msgstr "いちご"
+
+#. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_invite__subject
 msgid "Subject"
 msgstr "件名"
@@ -4133,18 +4431,9 @@ msgid "Subject..."
 msgstr "件名..."
 
 #. module: survey
-#. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_form.js:0
 #: model_terms:ir.ui.view,arch_db:survey.survey_fill_form_in_progress
-#: model_terms:ir.ui.view,arch_db:survey.survey_navigation
 msgid "Submit"
 msgstr "提出"
-
-#. module: survey
-#. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_form.js:0
-msgid "Submit confirmation"
-msgstr "送信確認"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_survey__success_count
@@ -4177,7 +4466,8 @@ msgstr "推奨された答え"
 msgid ""
 "Suggested answer value must not be empty (a text and/or an image must be "
 "provided)."
-msgstr "回答候補の値が空であってはなりません (テキストおよび/または画像が必要です)。"
+msgstr ""
+"回答候補の値が空であってはなりません (テキストおよび/または画像が必要です)。"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_question_answer__value
@@ -4190,8 +4480,11 @@ msgid "Suggestion"
 msgstr "提案"
 
 #. module: survey
-#. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q6_sug2
+msgid "Summer"
+msgstr "夏"
+
+#. module: survey
 #: model:ir.model,name:survey.model_survey_survey
 #: model:ir.model.fields,field_description:survey.field_gamification_badge__survey_id
 #: model:ir.model.fields,field_description:survey.field_survey_invite__survey_id
@@ -4199,6 +4492,7 @@ msgstr "提案"
 #: model:ir.model.fields,field_description:survey.field_survey_user_input__survey_id
 #: model:ir.model.fields,field_description:survey.field_survey_user_input_line__survey_id
 #: model:ir.model.fields.selection,name:survey.selection__survey_survey__survey_type__survey
+#: model_terms:ir.actions.act_window,help:survey.action_survey_form
 #: model_terms:ir.ui.view,arch_db:survey.survey_question_search
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_activity
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
@@ -4246,11 +4540,17 @@ msgid "Survey Link"
 msgstr "アンケートリンク"
 
 #. module: survey
+#. odoo-python
+#: code:addons/survey/models/survey_user_input.py:0
+msgid "Survey Participant"
+msgstr "アンケート参加者"
+
+#. module: survey
 #: model:ir.model,name:survey.model_survey_question
 #: model_terms:ir.ui.view,arch_db:survey.survey_question_form
 #: model_terms:ir.ui.view,arch_db:survey.survey_question_tree
 msgid "Survey Question"
-msgstr "アンケート質問"
+msgstr "調査の質問"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
@@ -4265,7 +4565,7 @@ msgstr "アンケート時間制限に達しました"
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_survey__title
 msgid "Survey Title"
-msgstr "調査タイトル"
+msgstr "調査件名"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_survey__survey_type
@@ -4294,12 +4594,6 @@ msgid "Survey User inputs"
 msgstr "アンケートユーザ入力"
 
 #. module: survey
-#. odoo-python
-#: code:addons/survey/models/res_lang.py:0
-msgid "Survey(s): %(surveys_list)s"
-msgstr "アンケート: %(surveys_list)s"
-
-#. module: survey
 #: model:mail.template,name:survey.mail_template_certification
 msgid "Survey: Certification Success"
 msgstr "アンケート: 検定合格"
@@ -4313,7 +4607,6 @@ msgstr "アンケート：招待"
 #: model:ir.actions.act_window,name:survey.action_survey_form
 #: model:ir.ui.menu,name:survey.menu_survey_form
 #: model:ir.ui.menu,name:survey.menu_surveys
-#: model:res.groups.privilege,name:survey.res_groups_privilege_surveys
 msgid "Surveys"
 msgstr "アンケート調査"
 
@@ -4331,7 +4624,7 @@ msgstr "もう一度行う"
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_kanban
 msgid "Test"
-msgstr "テスト"
+msgstr "インポートテスト"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_user_input__test_entry
@@ -4376,13 +4669,13 @@ msgstr "テキスト解答"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Thank you for your participation, hope you had a blast!"
 msgstr "ご参加ありがとうございました。楽しんで頂けましたか。"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Thank you very much for your feedback. We highly value your opinion!"
 msgstr "ご意見ありがとうございました。お客様のご意見は大変貴重なものです。"
 
@@ -4390,11 +4683,11 @@ msgstr "ご意見ありがとうございました。お客様のご意見は大
 #: model_terms:ir.ui.view,arch_db:survey.survey_fill_form_done
 #: model_terms:ir.ui.view,arch_db:survey.user_input_session_manage_content
 msgid "Thank you!"
-msgstr "回答にご協力頂き、誠にありがとうございます!"
+msgstr "回答にご協力頂き、誠に有難う御座います！"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Thank you. We will contact you soon."
 msgstr "ありがとうございました。またご連絡致します。"
 
@@ -4429,8 +4722,8 @@ msgid ""
 "The attempts limit needs to be a positive number if the survey has a limited "
 "number of attempts."
 msgstr ""
-"試行限界がアンケートが試みの数が限られている場合、正の数である必要があります"
-"。"
+"試行限界がアンケートが試みの数が限られている場合、正の数である必要がありま"
+"す。"
 
 #. module: survey
 #: model:ir.model.constraint,message:survey.constraint_survey_survey_badge_uniq
@@ -4440,7 +4733,7 @@ msgstr "各アンケートのためのバッジが一意である必要があり
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_feedback_p2_q2_row4
 msgid "The checkout process is clear and secure"
-msgstr "購入手続きは明確で安心して利用できる"
+msgstr "チェックアウトプロセスは、明確かつ安全です"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_page_print
@@ -4558,21 +4851,19 @@ msgid "The user has not succeeded the certification"
 msgstr "ユーザーが認証を成功していません"
 
 #. module: survey
-#. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_form.js:0
 #: model_terms:ir.ui.view,arch_db:survey.survey_fill_form
 msgid "There was an error during the validation of the survey."
 msgstr "アンケートの検証中にエラーが発生しました。"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "They are a default answer, used if the participant skips the question"
 msgstr "参加者が質問をスキップした場合に使用される、デフォルトの回答です。"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid ""
 "They are technical parameters that guarantees the responsiveness of the page"
 msgstr "これらは、ページの応答性を保証する技術的なパラメーターです。"
@@ -4592,7 +4883,7 @@ msgstr "この回答は、電子メールアドレスでなければなりませ
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_form.js:0
+#: code:addons/survey/static/src/js/survey_form.js:0
 msgid "This answer must be an email address."
 msgstr "この回答は、電子メールアドレスでなければなりません。"
 
@@ -4614,7 +4905,7 @@ msgstr "これはテスト調査エントリです。"
 #. odoo-javascript
 #. odoo-python
 #: code:addons/survey/models/survey_question.py:0
-#: code:addons/survey/static/src/interactions/survey_form.js:0
+#: code:addons/survey/static/src/js/survey_form.js:0
 #: code:addons/survey/tests/test_survey.py:0
 msgid "This is not a date"
 msgstr "これは日付ではありません"
@@ -4659,6 +4950,13 @@ msgid "This section is about our eCommerce experience itself."
 msgstr "このセクションでは、eコマース体験そのものについてご紹介します。"
 
 #. module: survey
+#: model_terms:survey.survey,description:survey.survey_demo_quiz
+msgid ""
+"This small quiz will test your knowledge about our Company. Be prepared!"
+msgstr ""
+"この小さなクイズで当社に関するあなたの知識をテストします。ご準備下さい。"
+
+#. module: survey
 #: model_terms:survey.survey,description:survey.survey_feedback
 msgid ""
 "This survey allows you to give a feedback about your experience with our "
@@ -4675,13 +4973,14 @@ msgid ""
 "This survey does not allow external people to participate. You should create "
 "user accounts or update survey access mode accordingly."
 msgstr ""
-"このアンケートでは、外部の人々が参加することはできません。それに応じて、"
-"ユーザーアカウントまたは更新サーベイアクセスモードを作成する必要があります。"
+"このアンケートでは、外部の人々が参加することはできません。それに応じて、ユー"
+"ザーアカウントまたは更新サーベイアクセスモードを作成する必要があります。"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_closed_expired
 msgid "This survey is now closed. Thank you for your interest!"
-msgstr "このアンケートは終了しました。ご関心をお寄せいただきありがとうございます！"
+msgstr ""
+"このアンケートは終了しました。ご関心をお寄せいただきありがとうございます！"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_auth_required
@@ -4732,7 +5031,7 @@ msgstr "時間制限はライブセッションでのみ有効です。"
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_question__title
 msgid "Title"
-msgstr "タイトル"
+msgstr "件名"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.user_input_session_manage_content
@@ -4740,17 +5039,18 @@ msgid "To join:"
 msgstr "参加する:"
 
 #. module: survey
-#. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_form.js:0
-msgid "To take this survey, please close all other tabs on %(hostname)s"
+#: model_terms:ir.ui.view,arch_db:survey.survey_fill_form
+msgid ""
+"To take this survey, please close all other tabs on <strong class=\"text-"
+"danger\"/>."
 msgstr ""
-"このアンケートにご回答いただくには、他のタブをすべて閉じてください。%"
-"(hostname)s"
+"このアンケートを取るために、他のすべてのタブを閉じてください <strong "
+"class=\"text-danger\"/>.。"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_search
 msgid "Today Activities"
-msgstr "本日の活動"
+msgstr "今日の活動"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p2_q2_sug2
@@ -4778,6 +5078,11 @@ msgid "Totally disagree"
 msgstr "完全同意"
 
 #. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p4
+msgid "Trees"
+msgstr "木"
+
+#. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_question__triggering_answer_ids
 msgid "Triggering Answers"
 msgstr "トリガ回答"
@@ -4795,8 +5100,8 @@ msgid ""
 "positioned after this question:\n"
 "\"%s\"."
 msgstr ""
-"以下の質問に基づくトリガは、この質問の後に配置されているため、機能しません"
-"。\n"
+"以下の質問に基づくトリガは、この質問の後に配置されているため、機能しませ"
+"ん。\n"
 "\"%s\""
 
 #. module: survey
@@ -4816,6 +5121,11 @@ msgid "Types of answers"
 msgstr "回答形式"
 
 #. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q1_sug2
+msgid "Ulmaceae"
+msgstr "ニレ科"
+
+#. module: survey
 #. odoo-python
 #: code:addons/survey/wizard/survey_invite.py:0
 msgid "Unable to post message, please configure the sender's email address."
@@ -4827,7 +5137,7 @@ msgstr ""
 #. odoo-javascript
 #. odoo-python
 #: code:addons/survey/models/survey_user_input.py:0
-#: code:addons/survey/static/src/interactions/survey_result_chart.js:0
+#: code:addons/survey/static/src/js/survey_result.js:0
 msgid "Unanswered"
 msgstr "未回答"
 
@@ -4854,7 +5164,7 @@ msgstr "ユニーク"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Unlikely"
 msgstr "可能性は低い"
 
@@ -4865,13 +5175,13 @@ msgstr "今後の取り組み"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Use a fun visual support, like a live presentation"
 msgstr "ライブプレゼンテーションのような楽しい画像サポートを使う"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Use humor and make jokes"
 msgstr "ユーモアや冗談を使う"
 
@@ -4970,6 +5280,11 @@ msgid "Value Label"
 msgstr "値ラベル"
 
 #. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q1_sug2
+msgid "Vegetables"
+msgstr "野菜"
+
+#. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_food_preferences_q3_sug2
 msgid "Vegetarian burger"
 msgstr "ベジタリアンバーガー"
@@ -4985,6 +5300,11 @@ msgid "Very underpriced"
 msgstr "かなり割安"
 
 #. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q2_sug3
+msgid "Vietnam"
+msgstr "ベトナム"
+
+#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.user_input_session_open
 msgid "Waiting for attendees..."
 msgstr "出席者を待っています..."
@@ -4995,6 +5315,18 @@ msgid ""
 "We have registered your answer! Please wait for the host to go to the next "
 "question."
 msgstr "回答を登録しました！ホストが次の質問に進むまでお待ちください。"
+
+#. module: survey
+#: model_terms:survey.question,description:survey.survey_demo_quiz_p4
+msgid ""
+"We like to say that the apple doesn't fall far from the tree, so here are "
+"trees."
+msgstr "りんごは木から遠くに落ちない、ということで、これらが木です。"
+
+#. module: survey
+#: model_terms:survey.question,description:survey.survey_demo_quiz_p5
+msgid "We may be interested by your input."
+msgstr "あなたのご意見に興味があるかもしれません。"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_survey__website_message_ids
@@ -5010,7 +5342,7 @@ msgstr "ウェブサイト通信履歴"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid ""
 "Welcome to this Odoo certification. You will receive 2 random questions out "
 "of a pool of 3."
@@ -5043,26 +5375,31 @@ msgid "What do you think about our prices (not rated)?"
 msgstr "私達の価格についてどう思いますか(未評価)？"
 
 #. module: survey
-#. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
-msgid "What does \"ODOO\" stand for?"
-msgstr "\"ODOO\" の意味は何ですか？"
+#: model:survey.question,title:survey.survey_demo_quiz_p5_q1
+msgid "What do you think about this survey?"
+msgstr "このアンケートについてどう思いますか？"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
+msgid "What does \"ODOO\" stand for?"
+msgstr " \"ODOO\" の意味は何ですか？"
+
+#. module: survey
+#. odoo-python
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "What does one need to get to pass an Odoo Survey?"
 msgstr "Odooアンケートに合格するには何が必要ですか？"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "What is a frequent mistake public speakers do?"
 msgstr "人前で話す人がよく犯す間違いとは？"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "What is the best way to catch the attention of an audience?"
 msgstr "観客の注意を引く最善の方法とは？"
 
@@ -5070,6 +5407,16 @@ msgstr "観客の注意を引く最善の方法とは？"
 #: model:survey.question,title:survey.survey_demo_burger_quiz_p2_q2
 msgid "What is the biggest city in the world?"
 msgstr "世界最大の都市は？"
+
+#. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p1_q1
+msgid "What is your email?"
+msgstr "あなたのEメールアドレスは？"
+
+#. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p1_q2
+msgid "What is your nickname?"
+msgstr "あなたのニックネームは？"
 
 #. module: survey
 #: model:survey.question,title:survey.survey_demo_burger_quiz_p4_q2
@@ -5080,6 +5427,21 @@ msgstr "プルトニウム-239の臨界質量はおよそどれくらいです�
 #: model:survey.question,title:survey.survey_demo_burger_quiz_p3_q1
 msgid "When did Genghis Khan die?"
 msgstr "チンギス・ハーンはいつ亡くなりましたか？"
+
+#. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p2_q2
+msgid "When did precisely Marc Demo crop its first apple tree?"
+msgstr "Marc Demoが初めてリンゴの木を植えたのは厳密にいつですか？"
+
+#. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p3_q6
+msgid "When do you harvest those fruits"
+msgstr "いつそれらの果物を収穫しますか"
+
+#. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p2_q1
+msgid "When is Mitchell Admin born?"
+msgstr "Mitchell Adminはいつ生まれましたか？"
 
 #. module: survey
 #: model:survey.question,title:survey.survey_feedback_p1_q2
@@ -5093,6 +5455,11 @@ msgid "Whenever you pick an answer, Odoo saves it for you."
 msgstr "答えを選ぶと、Odooがそれを保存してくれます。"
 
 #. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p1_q3
+msgid "Where are you from?"
+msgstr "どこ出身ですか？"
+
+#. module: survey
 #: model:survey.question,title:survey.survey_feedback_p1_q1
 msgid "Where do you live?"
 msgstr "どこに住んでいますか？"
@@ -5101,12 +5468,18 @@ msgstr "どこに住んでいますか？"
 #: model:ir.model.fields,help:survey.field_survey_survey__session_show_leaderboard
 msgid ""
 "Whether or not we want to show the attendees leaderboard for this survey."
-msgstr "今回のアンケートのためのリーダーボードの出席者を表示したくてもしたくなくても"
+msgstr ""
+"今回のアンケートのためのリーダーボードの出席者を表示したくてもしたくなくても"
 
 #. module: survey
 #: model:survey.question,title:survey.survey_demo_burger_quiz_p5_q1
 msgid "Which Musician is not in the 27th Club?"
 msgstr "27thクラブに所属していないミュージシャンは？"
+
+#. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p3_q1
+msgid "Which category does a tomato belong to"
+msgstr "トマトはどのカテゴリに属しますか？"
 
 #. module: survey
 #: model:survey.question,title:survey.survey_demo_burger_quiz_p2_q3
@@ -5119,6 +5492,11 @@ msgid "Which of the following words would you use to describe our products?"
 msgstr "当社のプロダクトを説明するのに、次のどの言葉を使いますか？"
 
 #. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p3_q2
+msgid "Which of the following would you use to pollinate"
+msgstr "受粉に使用するのは次のうちどれですか？"
+
+#. module: survey
 #: model:survey.question,title:survey.survey_demo_burger_quiz_p5_q2
 msgid "Which painting/drawing was not made by Pablo Picasso?"
 msgstr "パブロ・ピカソが描いたのではない絵画/ドローイングは？"
@@ -5127,6 +5505,11 @@ msgstr "パブロ・ピカソが描いたのではない絵画/ドローイン�
 #: model:survey.question,title:survey.survey_demo_burger_quiz_p5_q3
 msgid "Which quote is from Jean-Claude Van Damme"
 msgstr "ジャン=クロード・ヴァン・ダムからの引用です"
+
+#. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p1
+msgid "Who are you?"
+msgstr "あなたは誰ですか？"
 
 #. module: survey
 #: model:survey.question,title:survey.survey_demo_burger_quiz_p3_q2
@@ -5144,12 +5527,12 @@ msgstr ""
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid ""
 "Why should you consider making your presentation more fun with a small quiz?"
 msgstr ""
-"なぜ、ちょっとしたクイズでプレゼンテーションをより楽しくする必要があるのでし"
-"ょう？"
+"なぜ、ちょっとしたクイズでプレゼンテーションをより楽しくする必要があるので"
+"しょう？"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.vendor_certification_page_1_question_3_choice_3
@@ -5160,6 +5543,11 @@ msgstr "幅"
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p4_q1_sug4
 msgid "Willard S. Boyle"
 msgstr "ウィラードS.ボイル"
+
+#. module: survey
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q6_sug4
+msgid "Winter"
+msgstr "冬"
 
 #. module: survey
 #: model:survey.question,title:survey.survey_demo_food_preferences_q2
@@ -5190,13 +5578,14 @@ msgstr ""
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid "Yellow Pen"
 msgstr "黄色ペン"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_food_preferences_q1_sug1
 #: model:survey.question.answer,value:survey.survey_demo_food_preferences_q2_sug1
+#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q6_sug1
 #: model:survey.question.answer,value:survey.vendor_certification_page_1_question_1_choice_2
 msgid "Yes"
 msgstr "はい"
@@ -5210,7 +5599,8 @@ msgstr "はい、それのみが、人間の目が見ることができるもの
 #: model:ir.model.constraint,message:survey.constraint_survey_survey_certification_check
 msgid ""
 "You can only create certifications for surveys that have a scoring mechanism."
-msgstr "スコアリングメカニズムを持っているアンケートのためのみ証明書を作成できます。"
+msgstr ""
+"スコアリングメカニズムを持っているアンケートのためのみ証明書を作成できます。"
 
 #. module: survey
 #: model_terms:ir.actions.act_window,help:survey.action_survey_user_input
@@ -5248,8 +5638,8 @@ msgid ""
 "You cannot send an invitation for a \"One page per section\" survey if the "
 "survey only contains empty sections."
 msgstr ""
-"アンケートに空のセクションしかない場合、 \"セクションごとに1"
-"ページ\"アンケート用の招待状を送ることはできません。"
+"アンケートに空のセクションしかない場合、 \"セクションごとに1ページ\"アンケー"
+"ト用の招待状を送ることはできません。"
 
 #. module: survey
 #. odoo-python
@@ -5274,8 +5664,13 @@ msgid "You scored"
 msgstr "あなたのスコア"
 
 #. module: survey
+#: model:survey.question,title:survey.survey_demo_quiz_p5
+msgid "Your feeling"
+msgstr "気持ち"
+
+#. module: survey
 #. odoo-python
-#: code:addons/survey/models/templates/survey_survey.py:0
+#: code:addons/survey/models/survey_survey_template.py:0
 msgid ""
 "Your responses will help us improve our product range to serve you even "
 "better."
@@ -5285,19 +5680,19 @@ msgstr ""
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_image_zoomer_templates.xml:0
+#: code:addons/survey/static/src/xml/survey_image_zoomer_templates.xml:0
 msgid "Zoom in"
 msgstr "拡大"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_image_zoomer_templates.xml:0
+#: code:addons/survey/static/src/xml/survey_image_zoomer_templates.xml:0
 msgid "Zoom out"
 msgstr "縮小"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_image_zoomer_templates.xml:0
+#: code:addons/survey/static/src/xml/survey_image_zoomer_templates.xml:0
 msgid "Zoomed Image"
 msgstr "拡大画像"
 
@@ -5305,7 +5700,7 @@ msgstr "拡大画像"
 #. odoo-python
 #: code:addons/survey/models/survey_question.py:0
 msgid "[Question Title]"
-msgstr "[質問タイトル]"
+msgstr "[質問件名]"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_question_form
@@ -5324,7 +5719,7 @@ msgstr "回試行"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_image_zoomer_templates.xml:0
+#: code:addons/survey/static/src/xml/survey_image_zoomer_templates.xml:0
 msgid "close"
 msgstr "閉じる"
 
@@ -5332,7 +5727,8 @@ msgstr "閉じる"
 #: model_terms:ir.ui.view,arch_db:survey.survey_invite_view_form
 msgid ""
 "e.g.  'Rick Sanchez' <rick_sanchez@example.com>, hictor_vugo@example.com"
-msgstr "例:  'Rick Sanchez' <rick_sanchez@example.com>, hictor_vugo@example.com"
+msgstr ""
+"例:  'Rick Sanchez' <rick_sanchez@example.com>, hictor_vugo@example.com"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
@@ -5375,6 +5771,11 @@ msgid "e.g. Satisfaction Survey"
 msgstr "例 満足度アンケート"
 
 #. module: survey
+#: model:survey.question,question_placeholder:survey.survey_demo_quiz_p1_q1
+msgid "ex@mple.com"
+msgstr "ex@mple.com"
+
+#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_auth_required
 msgid "log in"
 msgstr "ログインする"
@@ -5396,19 +5797,19 @@ msgstr "成果の"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_enter_tooltip.js:0
+#: code:addons/survey/static/src/js/survey_form.js:0
 msgid "or press CTRL+Enter"
 msgstr "または、Ctrlキーとエンターキーを押してください"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_enter_tooltip.js:0
+#: code:addons/survey/static/src/js/survey_form.js:0
 msgid "or press Enter"
 msgstr "または、エンターキーを押してください"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/interactions/survey_enter_tooltip.js:0
+#: code:addons/survey/static/src/js/survey_form.js:0
 msgid "or press ⌘+Enter"
 msgstr "または ⌘+Enterを押して下さい。"
 
@@ -5435,7 +5836,7 @@ msgstr "このページ"
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
 msgid "to"
-msgstr "to"
+msgstr "~"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_question_form
@@ -5443,8 +5844,8 @@ msgid ""
 "⚠️ This question is positioned before some or all of its triggers and could "
 "be skipped."
 msgstr ""
-"⚠️この質問は、いくつかの、あるいはすべてのトリガの前に置かれ、スキップするこ"
-"ともできます。"
+"⚠️この質問は、いくつかの、あるいはすべてのトリガの前に置かれ、スキップすること"
+"もできます。"
 
 #~ msgid "$100"
 #~ msgstr "$100"
@@ -5478,322 +5879,3 @@ msgstr ""
 
 #~ msgid "2023-08-18"
 #~ msgstr "2023-08-18"
-
-#~ msgid ""
-#~ "<span attrs=\"{'invisible': [('is_time_limited', '=', False)]}\"> "
-#~ "seconds</span>"
-#~ msgstr ""
-#~ "<span attrs=\"{'invisible': [('is_time_limited', '=', False)]}\"> 秒</"
-#~ "span>"
-
-#~ msgid ""
-#~ "<span class=\"o_stat_text\" attrs=\"{'invisible': "
-#~ "[('certifications_company_count', '&lt;', 2)]}\">Certifications</span>\n"
-#~ "                        <span class=\"o_stat_text\" attrs=\"{'invisible': "
-#~ "[('certifications_company_count', '&gt;', 1)]}\">Certification</span>"
-#~ msgstr ""
-#~ "<span class=\"o_stat_text\" attrs=\"{'invisible': "
-#~ "[('certifications_company_count', '&lt;', 2)]}\">資格</span>\n"
-#~ "                        <span class=\"o_stat_text\" attrs=\"{'invisible': "
-#~ "[('certifications_company_count', '&gt;', 1)]}\">資格</span>"
-
-#~ msgid ""
-#~ "<span class=\"o_stat_text\" attrs=\"{'invisible': "
-#~ "[('certifications_count', '&lt;', 2)]}\">Certifications</span>\n"
-#~ "                        <span class=\"o_stat_text\" attrs=\"{'invisible': "
-#~ "[('certifications_count', '&gt;', 1)]}\">Certification</span>"
-#~ msgstr ""
-#~ "<span class=\"o_stat_text\" attrs=\"{'invisible': "
-#~ "[('certifications_count', '&lt;', 2)]}\">資格</span>\n"
-#~ "                        <span class=\"o_stat_text\" attrs=\"{'invisible': "
-#~ "[('certifications_count', '&gt;', 1)]}\">資格</span>"
-
-#~ msgid "<span class=\"text-muted\">Success</span>"
-#~ msgstr "<span class=\"text-muted\">成功</span>"
-
-#~ msgid ""
-#~ "<span>\"Red\" is not a category, I know what you are trying to do ;)</"
-#~ "span>"
-#~ msgstr ""
-#~ "<span>\"赤\"は分類ではありません。何をしたいかは分かっています;）</span>"
-
-#~ msgid "<span>Best time to do it, is the right time to do it.</span>"
-#~ msgstr ""
-#~ "<span>何かを行うための最善なタイミングは、それを行うのに最適なタイミングで"
-#~ "ある。</span>"
-
-#~ msgid ""
-#~ "<span>If you don't like us, please try to be as objective as possible.</"
-#~ "span>"
-#~ msgstr ""
-#~ "<span>気に入らない場合、可能な限り客観的になってみてください。</span>の"
-
-#~ msgid "A \"Citrus\" could give you ..."
-#~ msgstr "\"シトラス\"があなたに提供するのは..."
-
-#~ msgid "Africa"
-#~ msgstr "アフリカ"
-
-#~ msgid "Apple Trees"
-#~ msgstr "リンゴの樹"
-
-#~ msgid "Apples"
-#~ msgstr "Apples"
-
-#~ msgid "Asia"
-#~ msgstr "アジア"
-
-#~ msgid "Autumn"
-#~ msgstr "秋"
-
-#~ msgid "Back Button"
-#~ msgstr "戻るボタン"
-
-#~ msgid "Baobab Trees"
-#~ msgstr "バオバブの木"
-
-#~ msgid "Bees"
-#~ msgstr "ミツバチ"
-
-#~ msgid "Bricks"
-#~ msgstr "レンガ"
-
-#~ msgid "Cactus"
-#~ msgstr "サボテン"
-
-#~ msgid "Chart"
-#~ msgstr "チャート"
-
-#~ msgid "China"
-#~ msgstr "中国"
-
-#~ msgid "Clementine"
-#~ msgstr "クレメンタイン"
-
-#~ msgid "Computing score requires a question in arguments."
-#~ msgstr "スコアを計算するには、引数に質問が必要です。"
-
-#~ msgid "Conditional Display"
-#~ msgstr "条件付き表示"
-
-#~ msgid "Cookies"
-#~ msgstr "クッキー"
-
-#~ msgid "Cornaceae"
-#~ msgstr "ミズキ科"
-
-#~ msgid "Cosmic rays"
-#~ msgstr "宇宙線"
-
-#~ msgid "Dogs"
-#~ msgstr "犬"
-
-#~ msgid "Douglas Fir"
-#~ msgstr "Douglas Fir"
-
-#~ msgid "Europe"
-#~ msgstr "ヨーロッパ"
-
-#~ msgid "European Yew"
-#~ msgstr "ヨーロッパイチイ"
-
-#~ msgid "Ficus"
-#~ msgstr "イチジク"
-
-#~ msgid "Fruits"
-#~ msgstr "果物"
-
-#~ msgid "Fruits and vegetables"
-#~ msgstr "果物と野菜"
-
-#~ msgid "Give the list of all types of wood we sell."
-#~ msgstr "私達が販売する木材のすべてのタイプのリストを提供してください。"
-
-#~ msgid "Good"
-#~ msgstr "良"
-
-#~ msgid "Grapefruits"
-#~ msgstr "グレープフルーツ"
-
-#~ msgid "Graph"
-#~ msgstr "グラフ"
-
-#~ msgid "Group By"
-#~ msgstr "グループ化"
-
-#~ msgid "Hard"
-#~ msgstr "ハード"
-
-#~ msgid "How often should you water those plants"
-#~ msgstr "どのくらいの頻度で、これらの植物に水やりをすべきですか"
-
-#~ msgid "I have no idea, I'm a dog!"
-#~ msgstr "全く思いつきません、私は犬です!"
-
-#~ msgid "If you wish, you can"
-#~ msgstr "ご希望の場合、次のことができます"
-
-#~ msgid "Iznogoud"
-#~ msgstr "Iznogoud"
-
-#~ msgid "Japan"
-#~ msgstr "日本"
-
-#~ msgid "Layout"
-#~ msgstr "レイアウト"
-
-#~ msgid "Lemon Trees"
-#~ msgstr "レモンの木"
-
-#~ msgid "Mooses"
-#~ msgstr "モーセ"
-
-#~ msgid "Mountain Pine"
-#~ msgstr "マウンテンパイン"
-
-#~ msgid "No, it's to small for the human eye."
-#~ msgstr "いいえ、それは人間の目には小さすぎます。"
-
-#~ msgid "Norway Spruce"
-#~ msgstr "ノルウェースプルース"
-
-#~ msgid "Not Good, Not Bad"
-#~ msgstr "よくはありませんが、悪くもありません"
-
-#~ msgid "Not started yet"
-#~ msgstr "未着手"
-
-#~ msgid "Number of messages which requires an action"
-#~ msgstr "アクションを必要とするメッセージの数"
-
-#~ msgid ""
-#~ "Optional translation language (ISO code) to select when sending out an "
-#~ "email. If not set, the english version will be used. This should usually "
-#~ "be a placeholder expression that provides the appropriate language, e.g. "
-#~ "{{ object.partner_id.lang }}."
-#~ msgstr "メールを送信時に、オプションで選択可能な翻訳言語 (ISOコード)"
-
-#~ msgid "Our Company in a few questions ..."
-#~ msgstr "私たちの会社についてのいくつかの質問..."
-
-#~ msgid "Partial"
-#~ msgstr "部分消込"
-
-#~ msgid "Participations"
-#~ msgstr "参加状況"
-
-#~ msgid "Perhaps"
-#~ msgstr "多分"
-
-#~ msgid "Pie Graph"
-#~ msgstr "円グラフ"
-
-#~ msgid "Pinaceae"
-#~ msgstr "マツ科"
-
-#~ msgid "Pomelos"
-#~ msgstr "Pomelos"
-
-#~ msgid "Question Time Limit"
-#~ msgstr "質問時間制限"
-
-#~ msgid ""
-#~ "Question containing the triggering answer to display the current question."
-#~ msgstr "現在の質問を表示するためのトリガの回答を含む質問。"
-
-#~ msgid "Quiz about our Company"
-#~ msgstr "当社に関するクイズ"
-
-#~ msgid "Quizz Passed"
-#~ msgstr "クイズに合格"
-
-#~ msgid "Quizz passed"
-#~ msgstr "クイズに合格"
-
-#~ msgid "Results Overview"
-#~ msgstr "結果の概要"
-
-#~ msgid "Salicaceae"
-#~ msgstr "ヤナギ科"
-
-#~ msgid "Scoring without answers at the end"
-#~ msgstr "最後に回答なしスコアのみ"
-
-#~ msgid "Select trees that made more than 20K sales this year"
-#~ msgstr "今年以上の20Kの販売をした木を選択"
-
-#~ msgid "Show all records which has next action date is before today"
-#~ msgstr "次のアクションの日付が今日より前のすべてのレコードを表示する"
-
-#~ msgid "Soft"
-#~ msgstr "柔らかい"
-
-#~ msgid "South America"
-#~ msgstr "南アメリカ"
-
-#~ msgid "South Korea"
-#~ msgstr "韓国"
-
-#~ msgid "Space stations"
-#~ msgstr "宇宙ステーション"
-
-#~ msgid "Spring"
-#~ msgstr "春"
-
-#~ msgid "Strawberries"
-#~ msgstr "いちご"
-
-#~ msgid "Success rate:"
-#~ msgstr "成功率:"
-
-#~ msgid "Summer"
-#~ msgstr "夏"
-
-#~ msgid "The date you selected is greater than the maximum date: "
-#~ msgstr "選択した日付が最大の日付よりも大きいです。"
-
-#~ msgid "The date you selected is lower than the minimum date: "
-#~ msgstr "選択した日付は、日付の最小値よりも低くなっています。"
-
-#~ msgid ""
-#~ "To take this survey, please close all other tabs on <strong class=\"text-"
-#~ "danger\"/>."
-#~ msgstr ""
-#~ "このアンケートを取るために、他のすべてのタブを閉じてください <strong "
-#~ "class=\"text-danger\"/>.。"
-
-#~ msgid "Trees"
-#~ msgstr "木"
-
-#~ msgid "Triggering Answer"
-#~ msgstr "トリガ回答"
-
-#~ msgid "Triggering Question"
-#~ msgstr "質問のトリガ"
-
-#~ msgid "Ulmaceae"
-#~ msgstr "ニレ科"
-
-#~ msgid "Vegetables"
-#~ msgstr "野菜"
-
-#~ msgid "Vietnam"
-#~ msgstr "ベトナム"
-
-#~ msgid "When do you harvest those fruits"
-#~ msgstr "いつそれらの果物を収穫しますか"
-
-#~ msgid "Which category does a tomato belong to"
-#~ msgstr "トマトはどのカテゴリに属しますか？"
-
-#~ msgid "Which of the following would you use to pollinate"
-#~ msgstr "受粉に使用するのは次のうちどれですか？"
-
-#~ msgid "Winter"
-#~ msgstr "冬"
-
-#~ msgid "Your feeling"
-#~ msgstr "気持ち"
-
-#~ msgid "review your answers"
-#~ msgstr "答えを確認"

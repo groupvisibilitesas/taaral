@@ -3,12 +3,12 @@
 
 from datetime import datetime, timedelta
 
-from odoo.addons.mail.tests.common import MailCase
+from odoo.addons.mail.tests.common import  MailCommon
 from odoo.tests import tagged
 from odoo.tools import formataddr
 
 @tagged('post_install', '-at_install')
-class TestMail(MailCase):
+class TestMail(MailCommon):
 
     def test_website_publish_notification(self):
         """ Test that the published/unpublished notifications are sent when publishing/unpublishing an event"""
@@ -21,7 +21,7 @@ class TestMail(MailCase):
         })
         self.flush_tracking()
 
-        follower = self.env.ref('base.user_admin').partner_id
+        follower = self.user_employee.partner_id
         event.message_subscribe(partner_ids=follower.ids, subtype_ids=[published_subtype.id, unpublished_subtype.id])
 
         event.website_published = True
@@ -39,12 +39,8 @@ class TestMail(MailCase):
     def test_registration_mail_url_multi_company_multi_website(self):
         """Check registration confirmation email URL matches the website of the event."""
         company_1 = self.env.company
-        company_2 = self.env['res.company'].create({
-            'country_id': self.env.ref('base.ca').id,
-            'currency_id': self.env.ref('base.CAD').id,
-            'email': 'company_2@test.example.com',
-            'name': 'Company 2',
-        })
+        company_2 = self.company_2
+        self.assertNotEqual(company_1, company_2)
 
         website_1 = self.env['website'].create({
             'name': 'Website Company 1',

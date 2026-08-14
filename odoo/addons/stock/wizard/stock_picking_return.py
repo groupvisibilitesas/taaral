@@ -2,32 +2,28 @@
 
 from odoo import _, api, Command, fields, models
 from odoo.exceptions import UserError
+from odoo.tools.float_utils import float_round, float_is_zero
 
 
-class StockReturnPickingLine(models.TransientModel):
-    _name = 'stock.return.picking.line'
+class ReturnPickingLine(models.TransientModel):
+    _name = "stock.return.picking.line"
     _rec_name = 'product_id'
     _description = 'Return Picking Line'
 
     product_id = fields.Many2one('product.product', string="Product", required=True)
     move_quantity = fields.Float(related="move_id.quantity", string="Move Quantity")
-    quantity = fields.Float("Quantity", digits='Product Unit', default=1, required=True)
-    uom_id = fields.Many2one('uom.uom', string='Unit', compute='_compute_uom_id')
+    quantity = fields.Float("Quantity", digits='Product Unit of Measure', default=1, required=True)
+    uom_id = fields.Many2one('uom.uom', string='Unit of Measure', related='product_id.uom_id')
     wizard_id = fields.Many2one('stock.return.picking', string="Wizard")
     move_id = fields.Many2one('stock.move', "Move")
-
-    @api.depends('move_id.product_uom', 'product_id.uom_id')
-    def _compute_uom_id(self):
-        """ Compute the UoM based on the move's product UoM or the product's default UoM. """
-        for line in self:
-            line.uom_id = line.move_id.product_uom or line.product_id.uom_id
 
     def _prepare_move_default_values(self, new_picking):
         picking = new_picking or self.wizard_id.picking_id
         vals = {
+            'name': picking.name,
             'product_id': self.product_id.id,
             'product_uom_qty': self.quantity,
-            'product_uom': self.uom_id.id,
+            'product_uom': self.product_id.uom_id.id,
             'picking_id': picking.id,
             'state': 'draft',
             'date': fields.Datetime.now(),
@@ -38,7 +34,7 @@ class StockReturnPickingLine(models.TransientModel):
             'warehouse_id': picking.picking_type_id.warehouse_id.id,
             'origin_returned_move_id': self.move_id.id,
             'procure_method': 'make_to_stock',
-            'reference_ids': self.wizard_id.picking_id.reference_ids.ids,
+            'group_id': self.wizard_id.picking_id.group_id.id,
         }
         if picking.picking_type_id.code == 'outgoing':
             vals['partner_id'] = picking.partner_id.id
@@ -46,7 +42,7 @@ class StockReturnPickingLine(models.TransientModel):
 
     def _process_line(self, new_picking):
         self.ensure_one()
-        if not self.uom_id.is_zero(self.quantity):
+        if not float_is_zero(self.quantity, precision_rounding=self.uom_id.rounding):
             vals = self._prepare_move_default_values(new_picking)
 
             if self.move_id:
@@ -80,10 +76,9 @@ class StockReturnPickingLine(models.TransientModel):
             else:
                 self.env['stock.move'].create(vals)
             return True
-        return False
 
 
-class StockReturnPicking(models.TransientModel):
+class ReturnPicking(models.TransientModel):
     _name = 'stock.return.picking'
     _description = 'Return Picking'
 
@@ -107,7 +102,6 @@ class StockReturnPicking(models.TransientModel):
     def _compute_moves_locations(self):
         for wizard in self:
             if not wizard.picking_id:
-                wizard.product_return_moves = [Command.clear()]
                 continue
             product_return_moves = [Command.clear()]
             if not wizard.picking_id._can_return():
@@ -119,7 +113,7 @@ class StockReturnPicking(models.TransientModel):
             for move in wizard.picking_id.move_ids:
                 if move.state == 'cancel':
                     continue
-                if move.location_dest_usage == 'inventory':
+                if move.scrapped:
                     continue
                 product_return_moves_data = dict(product_return_moves_data_tmpl)
                 product_return_moves_data.update(wizard._prepare_stock_return_picking_line_vals_from_move(move))
@@ -134,6 +128,7 @@ class StockReturnPicking(models.TransientModel):
             'product_id': stock_move.product_id.id,
             'quantity': 0,
             'move_id': stock_move.id,
+            'uom_id': stock_move.product_id.uom_id.id,
         }
 
     def _prepare_picking_default_values(self):
@@ -159,22 +154,17 @@ class StockReturnPicking(models.TransientModel):
         return vals
 
     def _create_return(self):
-        if self.picking_id:
-            for return_move in self.product_return_moves.move_id:
-                return_move.move_dest_ids.filtered(lambda m: m.state not in ('done', 'cancel'))._do_unreserve()
+        for return_move in self.product_return_moves.move_id:
+            return_move.move_dest_ids.filtered(lambda m: m.state not in ('done', 'cancel'))._do_unreserve()
 
-            # create new picking for returned products
-            new_picking = self.picking_id.copy(self._prepare_picking_default_values())
-            new_picking.user_id = False
-            new_picking.message_post_with_source(
-                'mail.message_origin_link',
-                render_values={'self': new_picking, 'origin': self.picking_id},
-                subtype_xmlid='mail.mt_note',
-            )
-        else:
-            # if no picking is selected create a new return from scratch
-            new_picking = self.env['stock.picking'].create(self._prepare_picking_default_values())
-
+        # create new picking for returned products
+        new_picking = self.picking_id.copy(self._prepare_picking_default_values())
+        new_picking.user_id = False
+        new_picking.message_post_with_source(
+            'mail.message_origin_link',
+            render_values={'self': new_picking, 'origin': self.picking_id},
+            subtype_xmlid='mail.mt_note',
+        )
         returned_lines = False
         for return_line in self.product_return_moves:
             if return_line._process_line(new_picking):
@@ -225,14 +215,14 @@ class StockReturnPicking(models.TransientModel):
         self.ensure_one()
         for return_move in self.product_return_moves:
             stock_move = return_move.move_id
-            if not stock_move or stock_move.state == 'cancel' or stock_move.location_dest_usage == 'inventory':
+            if not stock_move or stock_move.state == 'cancel' or stock_move.scrapped:
                 continue
             quantity = stock_move.quantity
             for move in stock_move.move_dest_ids:
                 if not move.origin_returned_move_id or move.origin_returned_move_id != stock_move:
                     continue
                 quantity -= move.quantity
-            quantity = stock_move.product_uom.round(quantity)
+            quantity = float_round(quantity, precision_rounding=stock_move.product_id.uom_id.rounding)
             return_move.quantity = quantity
         return self.action_create_returns()
 
@@ -253,20 +243,20 @@ class StockReturnPicking(models.TransientModel):
             if not line.move_id:
                 continue
             proc_values = self._get_proc_values(line)
-            proc_list.append(self.env["stock.rule"].Procurement(
+            proc_list.append(self.env["procurement.group"].Procurement(
                 line.product_id, line.quantity, line.uom_id,
                 line.move_id.location_dest_id or self.picking_id.location_dest_id,
                 line.product_id.display_name, self.picking_id.origin, self.picking_id.company_id,
                 proc_values,
             ))
         if proc_list:
-            self.env['stock.rule'].run(proc_list)
+            self.env['procurement.group'].run(proc_list)
         return action
 
     def _get_proc_values(self, line):
         self.ensure_one()
         return {
-            'reference_ids': self.picking_id.reference_ids,
+            'group_id': self.picking_id.group_id,
             'date_planned': line.move_id.date or fields.Datetime.now(),
             'warehouse_id': self.picking_id.picking_type_id.warehouse_id,
             'partner_id': self.picking_id.partner_id.id,

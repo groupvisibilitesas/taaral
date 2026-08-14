@@ -4,9 +4,10 @@
 from collections import defaultdict
 
 from markupsafe import Markup
+from psycopg2.errors import LockNotAvailable
 
 from odoo import _, api, fields, models
-from odoo.exceptions import LockError, UserError
+from odoo.exceptions import UserError
 
 TBAI_REFUND_REASONS = [
     ('R1', "R1: Art. 80.1, 80.2, 80.6 and rights founded error"),
@@ -131,7 +132,7 @@ class AccountMove(models.Model):
     @api.ondelete(at_uninstall=False)
     def _l10n_es_tbai_unlink_except_in_chain(self):
         # Prevent deleting moves that are part of the TicketBAI chain
-        if not self.env.context.get('force_delete') and any(m.l10n_es_tbai_chain_index for m in self):
+        if not self._context.get('force_delete') and any(m.l10n_es_tbai_chain_index for m in self):
             raise UserError(_('You cannot delete a move that has a TicketBAI chain id.'))
 
     # -------------------------------------------------------------------------
@@ -164,7 +165,7 @@ class AccountMove(models.Model):
 
     def _l10n_es_tbai_post_document_in_chatter(self, message, cancel=False):
         test_suffix = '(test mode)' if self.company_id.l10n_es_tbai_test_env else ''
-        self.message_post(
+        self.with_context(no_new_invoice=True).message_post(
             body=Markup("<pre>TicketBAI: posted {document_type} XML {test_suffix}\n{message}</pre>").format(
                 document_type='emission' if not cancel else 'cancellation',
                 test_suffix=test_suffix,
@@ -176,9 +177,11 @@ class AccountMove(models.Model):
     def _l10n_es_tbai_lock_move(self):
         """ Acquire a write lock on the invoices in self. """
         self.ensure_one()
+
         try:
-            self.lock_for_update()
-        except LockError:
+            with self.env.cr.savepoint(flush=False):
+                self.env.cr.execute('SELECT * FROM account_move WHERE id = %s FOR UPDATE NOWAIT', [self.id])
+        except LockNotAvailable:
             raise UserError(_('Cannot send this entry as it is already being processed.'))
 
     # -------------------------------------------------------------------------
@@ -197,7 +200,7 @@ class AccountMove(models.Model):
         for bill in self:
             error = bill._l10n_es_tbai_post()
             if self.env['account.move.send']._can_commit():
-                self.env.cr.commit()
+                self._cr.commit()
             if error:
                 raise UserError(error)
 
@@ -224,7 +227,7 @@ class AccountMove(models.Model):
                 invoice._l10n_es_tbai_post_document_in_chatter(edi_document.response_message, cancel=True)
 
             if self.env['account.move.send']._can_commit():
-                self.env.cr.commit()
+                self._cr.commit()
 
             if edi_document.state != 'accepted':
                 raise UserError(edi_document.response_message)

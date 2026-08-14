@@ -2,7 +2,7 @@
 {
     "name": """Vietnam - POS E-invoicing""",
     'icon': '/account/static/description/l10n.png',
-    "author": "Odoo S.A.",
+    "version": "1.0",
     'countries': ['vn'],
     "category": "Accounting/Localizations/EDI",
     'website': 'https://www.odoo.com/documentation/master/applications/finance/fiscal_localizations/vietnam.html',

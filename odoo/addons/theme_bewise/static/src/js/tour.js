@@ -23,7 +23,7 @@ const snippets = [
         groupName: "Text",
     },
     {
-        id: 's_masonry_block_default_template',
+        id: 's_masonry_block',
         name: 'Masonry',
         groupName: "Images",
     },
@@ -36,12 +36,12 @@ const snippets = [
 
 wTourUtils.registerThemeHomepageTour("bewise_tour", () => [
     wTourUtils.assertCssVariable('--color-palettes-name', '"default-19"'),
-    ...wTourUtils.insertSnippet(snippets[0], { position: "top" }),
+    ...wTourUtils.insertSnippet(snippets[0], 'top'),
     ...wTourUtils.clickOnText(snippets[0], 'h1', 'top'),
     wTourUtils.goBackToBlocks(),
-    ...wTourUtils.insertSnippet(snippets[1], { position: "top" }),
-    ...wTourUtils.insertSnippet(snippets[2], { position: "top" }),
-    ...wTourUtils.insertSnippet(snippets[3], { position: "top" }),
-    ...wTourUtils.insertSnippet(snippets[4], { position: "top" }),
-    ...wTourUtils.insertSnippet(snippets[5], { position: "top" }),
+    ...wTourUtils.insertSnippet(snippets[1], 'top'),
+    ...wTourUtils.insertSnippet(snippets[2], 'top'),
+    ...wTourUtils.insertSnippet(snippets[3], 'top'),
+    ...wTourUtils.insertSnippet(snippets[4], 'top'),
+    ...wTourUtils.insertSnippet(snippets[5], 'top'),
 ]);

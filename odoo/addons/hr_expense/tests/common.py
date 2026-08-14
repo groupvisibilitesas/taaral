@@ -3,8 +3,7 @@ from datetime import datetime
 
 from freezegun import freeze_time
 
-from odoo import Command, fields
-
+from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.mail.tests.common import mail_new_test_user
 
@@ -39,33 +38,14 @@ class TestExpenseCommon(AccountTestInvoicingCommon):
             company_ids=[Command.set(cls.env.companies.ids)],
         )
 
-        cls.expense_user_manager_2 = mail_new_test_user(
-            cls.env,
-            name='Expense manager',
-            login='expense_manager_2',
-            email='expense_manager_2@example.com',
-            notification_type='email',
-            groups='base.group_user,hr_expense.group_hr_expense_manager',
-            company_ids=[Command.set(cls.env.companies.ids)],
-        )
-
-        cls.expense_employee = cls.env['hr.employee'].sudo().create({
+        cls.expense_employee = cls.env['hr.employee'].create({
             'name': 'expense_employee',
             'user_id': cls.expense_user_employee.id,
-            'expense_manager_id': cls.expense_user_manager.id,
             'work_contact_id': cls.expense_user_employee.partner_id.id,
-            'bank_account_ids': [
-                Command.create({
-                    'acc_number': 'BE68539007547034',
-                    'allow_out_payment': True,
-                    'partner_id': cls.expense_user_employee.partner_id.id,
-            })]
-        }).sudo(False)
-
-        cls.expense_employee.user_partner_id.parent_id = cls.env.company.partner_id
+        })
 
         # Allow the current accounting user to access the expenses.
-        cls.env.user.group_ids |= group_expense_manager
+        cls.env.user.groups_id |= group_expense_manager
 
         # Create analytic account
         cls.analytic_plan = cls.env['account.analytic.plan'].create({'name': 'Expense Plan Test'})
@@ -104,48 +84,44 @@ class TestExpenseCommon(AccountTestInvoicingCommon):
             'name': 'Expense Account 1'
         })
 
-    @classmethod
-    def create_expenses(cls, values=None):
-        if values is None or isinstance(values, dict):
-            values = [values or {}]
-
+    def create_expense_report(self, values=None):
+        values = values or {}
         default_values = {
-            'employee_id': cls.expense_employee.id,
-            'date': cls.frozen_today.isoformat(),
-            'company_id': cls.company_data['company'].id,
-            'currency_id': cls.company_data['currency'].id,
+            'name': 'Test Expense Report',
+            'employee_id': self.expense_employee.id,
+            'company_id': self.company_data['company'].id,
+            'expense_line_ids': [Command.create({
+                'employee_id': self.expense_employee.id,
+                'product_id': self.product_c.id,
+                'total_amount_currency': 1000.00,
+                'tax_ids': [Command.set(self.tax_purchase_a.ids)],
+                'date': self.frozen_today,
+                'company_id': self.company_data['company'].id,
+                'currency_id': self.company_data['currency'].id,
+            })]
         }
+        return self.env['hr.expense.sheet'].create({**default_values, **values})
 
-        default_product_values = {
-            'product_id': cls.product_c.id,
+    def create_expense(self, values=None):
+        values = values or {}
+        default_values = {
+            'employee_id': self.expense_employee.id,
+            'product_id': self.product_c.id,
             'total_amount_currency': 1000.00,
+            'tax_ids': [Command.set(self.tax_purchase_a.ids)],
+            'date': self.frozen_today,
+            'company_id': self.company_data['company'].id,
+            'currency_id': self.company_data['currency'].id,
         }
-        create_values = []
-        for value_dict in values:
-            if 'product_id' not in value_dict:
-                default_values.update(default_product_values)
-            value_dict = {**default_values, **(value_dict or {})}
-            create_values.append(value_dict)
-        return cls.env['hr.expense'].create(create_values).sorted()
+        return self.env['hr.expense'].create({**default_values, **values})
 
-    @classmethod
-    def post_expenses_with_wizard(cls, expenses, journal=None, date=None):
-        action = expenses.action_post()
-        if action:
-            wizard = expenses.env['hr.expense.post.wizard'].with_context(action['context']).browse(action['res_id'])
-            if journal:
-                wizard.employee_journal_id = journal.id
-            wizard.accounting_date = date or fields.Date.context_today(expenses)
-            wizard.action_post_entry()
-
-    def get_new_payment(self, expenses, amount):
+    def get_new_payment(self, expense_sheet, amount):
         """ Helper to create payments """
-        ctx = {'active_model': 'account.move', 'active_ids': expenses.account_move_id.ids}
+        ctx = {'active_model': 'account.move', 'active_ids': expense_sheet.account_move_ids.ids}
         with freeze_time(self.frozen_today):
             payment_register = self.env['account.payment.register'].with_context(**ctx).create({
                 'amount': amount,
                 'journal_id': self.company_data['default_journal_bank'].id,
                 'payment_method_line_id': self.inbound_payment_method_line.id,
             })
-            self.assertEqual(payment_register.partner_bank_id.partner_id, expenses.employee_id.work_contact_id)
             return payment_register._create_payments()

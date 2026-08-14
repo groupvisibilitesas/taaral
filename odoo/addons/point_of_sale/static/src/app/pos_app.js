@@ -1,15 +1,14 @@
 import { Transition } from "@web/core/transition";
 import { MainComponentsContainer } from "@web/core/main_components_container";
-import { Navbar } from "@point_of_sale/app/components/navbar/navbar";
-import { usePos } from "@point_of_sale/app/hooks/pos_hook";
-import { Component, onMounted, onWillStart } from "@odoo/owl";
+import { Navbar } from "@point_of_sale/app/navbar/navbar";
+import { usePos } from "@point_of_sale/app/store/pos_hook";
+import { reactive, Component, onMounted, onWillStart } from "@odoo/owl";
 import { effect } from "@web/core/utils/reactive";
 import { batched } from "@web/core/utils/timing";
+import { deduceUrl } from "@point_of_sale/utils";
 import { useOwnDebugContext } from "@web/core/debug/debug_context";
-import { CustomerDisplayPosAdapter } from "@point_of_sale/app/customer_display/customer_display_adapter";
 import { useIdleTimer } from "./utils/use_idle_timer";
 import useTours from "./hooks/use_tours";
-import { init as initDebugFormatters } from "./utils/debug-formatter";
 
 /**
  * Chrome is the root component of the PoS App.
@@ -25,18 +24,13 @@ export class Chrome extends Component {
             if (stopEventPropagation.includes(ev.type)) {
                 ev.stopPropagation();
             }
-            this.pos.navigateToFirstPage();
+            this.pos.showScreen(this.pos.firstScreen);
             return false;
         });
-        if (this.pos.router.state.current === "SaverScreen") {
-            this.pos.navigateToFirstPage();
-        }
-
-        window.posmodel = this.pos;
+        const reactivePos = reactive(this.pos);
+        // TODO: Should we continue on exposing posmodel as global variable?
+        window.posmodel = reactivePos;
         useOwnDebugContext();
-        if (this.env.debug) {
-            initDebugFormatters();
-        }
 
         if (odoo.use_pos_fake_tours) {
             window.pos_fake_tour = useTours();
@@ -49,6 +43,10 @@ export class Chrome extends Component {
 
         onWillStart(this.pos._loadFonts);
         onMounted(this.props.disableLoader);
+        if (this.pos.config.customer_display_type === "none") {
+            return;
+        }
+        this.customerDisplayChannel = new BroadcastChannel("UPDATE_CUSTOMER_DISPLAY");
         effect(
             batched(({ selectedOrder, scale }) => {
                 if (selectedOrder) {
@@ -70,13 +68,42 @@ export class Chrome extends Component {
     }
 
     sendOrderToCustomerDisplay(selectedOrder, scaleData) {
-        const adapter = new CustomerDisplayPosAdapter();
-        adapter.formatOrderData(selectedOrder);
-        adapter.data.scaleData = scaleData;
-        adapter.dispatch(this.pos);
+        const customerDisplayData = selectedOrder.getCustomerDisplayData();
+        customerDisplayData.scaleData = scaleData;
+
+        if (this.pos.config.customer_display_type === "local") {
+            this.customerDisplayChannel.postMessage(customerDisplayData);
+        }
+        if (this.pos.config.customer_display_type === "remote") {
+            this.pos.data.call("pos.config", "update_customer_display", [
+                [this.pos.config.id],
+                customerDisplayData,
+                this.pos.config.access_token,
+            ]);
+        }
+        const proxyIP = this.pos.getDisplayDeviceIP();
+        if (proxyIP) {
+            fetch(`${deduceUrl(proxyIP)}/hw_proxy/customer_facing_display`, {
+                method: "POST",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    params: {
+                        action: "set",
+                        data: customerDisplayData,
+                    },
+                }),
+                targetAddressSpace: odoo.use_lna ? "local" : undefined,
+            }).catch(() => {
+                console.log("Failed to send data to customer display");
+            });
+        }
     }
 
     // GETTERS //
+
     get showCashMoveButton() {
         return Boolean(this.pos.config.cash_control);
     }

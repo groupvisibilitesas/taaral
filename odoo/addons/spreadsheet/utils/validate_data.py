@@ -3,9 +3,6 @@ from itertools import chain
 import json
 import re
 
-from odoo.tools.view_validation import get_domain_value_names
-
-
 markdown_link_regex = r"^\[([^\[]+)\]\((.+)\)$"
 
 xml_id_url_prefix = "odoo://ir_menu_xml_id/"
@@ -14,23 +11,15 @@ odoo_view_link_prefix = "odoo://view/"
 
 
 def odoo_charts(data):
-    """returns all odoo chart definitions in the spreadsheet"""
+    """return all odoo chart definition in the spreadsheet"""
     figures = []
     for sheet in data.get("sheets", []):
-        for figure in sheet.get("figures", []):
-            if figure["tag"] == "chart" and figure["data"]["type"].startswith("odoo_"):
-                figures.append(dict(figure["data"], id=figure["id"]))
-            elif figure["tag"] == "carousel":
-                figures.extend(get_odoo_charts_from_carousel(figure["data"]))
+        figures += [
+            dict(figure["data"], id=figure["id"])
+            for figure in sheet.get("figures", [])
+            if figure["tag"] == "chart" and figure["data"]["type"].startswith("odoo_")
+        ]
     return figures
-
-
-def get_odoo_charts_from_carousel(carousel):
-    charts = []
-    for chart_id, chart in carousel["chartDefinitions"].items():
-        if chart["type"].startswith("odoo_"):
-            charts.append(dict(chart, id=chart_id))
-    return charts
 
 
 def links_urls(data):
@@ -39,8 +28,7 @@ def links_urls(data):
     link_prefix = "odoo://view/"
     for sheet in data.get("sheets", []):
         for cell in sheet.get("cells", {}).values():
-            # 'cell' was an object in versions <saas-18.1
-            content = cell if isinstance(cell, str) else cell.get("content", "")
+            content = cell.get("content", "")
             match = re.match(markdown_link_regex, content)
             if match and match.group(2).startswith(link_prefix):
                 urls.append(match.group(2))
@@ -68,8 +56,11 @@ def remove_aggregator(field_name):
 
 def domain_fields(domain):
     """return all field names used in the domain"""
-    field_names, _value_names = get_domain_value_names(str(domain))
-    return list(field_names)
+    fields = []
+    for leaf in domain:
+        if len(leaf) == 3:
+            fields.append(leaf[0])
+    return fields
 
 
 def pivot_measure_fields(pivot):
@@ -100,7 +91,7 @@ def pivot_fields(pivot):
         + domain_fields(pivot["domain"])
     )
     measure = pivot.get("sortedColumn") and pivot["sortedColumn"]["measure"]
-    if measure and not measure.startswith("__count"):
+    if measure and measure != "__count":
         fields.add(measure)
     return model, fields
 
@@ -138,7 +129,8 @@ def filter_fields(data):
     """return all field names used in global filter definitions"""
     fields_by_model = defaultdict(set)
     charts = odoo_charts(data)
-    if "odooVersion" in data and data["odooVersion"] < 5:
+    odoo_version = data.get("odooVersion", 1)
+    if odoo_version < 5:
         for filter_definition in data.get("globalFilters", []):
             for pivot_id, matching in filter_definition.get("pivotFields", dict()).items():
                 model = data["pivots"][pivot_id]["model"]
@@ -151,13 +143,13 @@ def filter_fields(data):
                 model = chart["metaData"]["resModel"]
                 fields_by_model[model].add(matching["field"])
     else:
-        for pivot in data.get("pivots", {}).values():
+        for pivot in data["pivots"].values():
             if pivot.get("type", "ODOO") == "ODOO":
                 model = pivot["model"]
                 field = pivot.get("fieldMatching", {}).get("chain")
                 if field:
                     fields_by_model[model].add(field)
-        for _list in data.get("lists", {}).values():
+        for _list in data["lists"].values():
             model = _list["model"]
             field = _list.get("fieldMatching", {}).get("chain")
             if field:

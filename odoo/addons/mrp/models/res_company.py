@@ -4,8 +4,12 @@
 from odoo import api, fields, models
 
 
-class ResCompany(models.Model):
+class Company(models.Model):
     _inherit = 'res.company'
+
+    manufacturing_lead = fields.Float(
+        'Manufacturing Lead Time', default=0.0, required=True,
+        help="Security days for each manufacturing operation.")
 
     def _create_unbuild_sequence(self):
         unbuild_vals = []
@@ -30,5 +34,5 @@ class ResCompany(models.Model):
         company_todo_sequence._create_unbuild_sequence()
 
     def _create_per_company_sequences(self):
-        super()._create_per_company_sequences()
+        super(Company, self)._create_per_company_sequences()
         self._create_unbuild_sequence()

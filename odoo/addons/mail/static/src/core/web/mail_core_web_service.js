@@ -5,7 +5,7 @@ import { registry } from "@web/core/registry";
 export class MailCoreWeb {
     /**
      * @param {import("@web/env").OdooEnv} env
-     * @param {import("services").ServiceFactories} services
+     * @param {Partial<import("services").Services>} services
      */
     constructor(env, services) {
         this.env = env;
@@ -26,7 +26,7 @@ export class MailCoreWeb {
             } else if (payload.activity_deleted) {
                 countDiff = -1;
             }
-            this.store.activityCounter = Math.max(this.store.activityCounter + countDiff, 0);
+            this.store.activityCounter += countDiff;
         });
         this.env.bus.addEventListener("mail.message/delete", ({ detail: { message, notifId } }) => {
             if (message.needaction && notifId > this.store.inbox.counter_bus_id) {
@@ -37,10 +37,8 @@ export class MailCoreWeb {
             }
         });
         this.busService.subscribe("mail.message/inbox", (payload, { id: notifId }) => {
-            const { message_id: messageId, store_data } = payload;
-            this.store.insert(store_data);
-            /** @type {import("models").Message} */
-            const message = this.store["mail.message"].get(messageId);
+            const { Message: messages = [] } = this.store.insert(payload, { html: true });
+            const [message] = messages;
             const inbox = this.store.inbox;
             if (notifId > inbox.counter_bus_id) {
                 inbox.counter++;
@@ -48,9 +46,6 @@ export class MailCoreWeb {
             inbox.messages.add(message);
             if (message.thread && notifId > message.thread.message_needaction_counter_bus_id) {
                 message.thread.message_needaction_counter++;
-            }
-            if (this.store.self_partner?.im_status?.includes("busy")) {
-                return;
             }
             this.store.env.services["mail.out_of_focus"].notify(message);
         });
@@ -63,7 +58,7 @@ export class MailCoreWeb {
                 // Furthermore, server should not send back all messageIds marked as read
                 // but something like last read messageId or something like that.
                 // (just imagine you mark 1000 messages as read ... )
-                const message = this.store["mail.message"].get(messageId);
+                const message = this.store.Message.get(messageId);
                 if (!message) {
                     continue;
                 }
@@ -72,8 +67,7 @@ export class MailCoreWeb {
                 if (
                     thread &&
                     message.needaction &&
-                    notifId > thread.message_needaction_counter_bus_id &&
-                    thread.message_needaction_counter > 0
+                    notifId > thread.message_needaction_counter_bus_id
                 ) {
                     thread.message_needaction_counter--;
                 }
@@ -91,6 +85,7 @@ export class MailCoreWeb {
                 inbox.fetchMoreMessages();
             }
         });
+        this.busService.start();
     }
 }
 
@@ -98,7 +93,7 @@ export const mailCoreWeb = {
     dependencies: ["bus_service", "mail.store"],
     /**
      * @param {import("@web/env").OdooEnv} env
-     * @param {import("services").ServiceFactories} services
+     * @param {Partial<import("services").Services>} services
      */
     start(env, services) {
         const mailCoreWeb = reactive(new MailCoreWeb(env, services));

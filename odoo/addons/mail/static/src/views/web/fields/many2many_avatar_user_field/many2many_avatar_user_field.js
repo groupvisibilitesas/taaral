@@ -13,7 +13,6 @@ import {
     kanbanMany2ManyTagsAvatarField,
     KanbanMany2ManyTagsAvatarFieldTagsList,
 } from "@web/views/fields/many2many_tags_avatar/many2many_tags_avatar_field";
-import { Many2XAvatarUserAutocomplete } from "../avatar_autocomplete/avatar_many2x_autocomplete";
 
 export class Many2ManyAvatarUserTagsList extends TagsList {
     static template = "mail.Many2ManyAvatarUserTagsList";
@@ -30,13 +29,12 @@ const WithUserChatter = (T) =>
         }
 
         displayAvatarCard(record) {
-            return ["res.users", "res.partner"].includes(this.relation);
+            return this.relation === "res.users";
         }
 
         getAvatarCardProps(record) {
             return {
                 id: record.resId,
-                model: this.relation,
             };
         }
 
@@ -61,11 +59,9 @@ const WithUserChatter = (T) =>
     };
 
 export class Many2ManyTagsAvatarUserField extends WithUserChatter(Many2ManyTagsAvatarField) {
-    static template = "mail.Many2ManyTagsAvatarUserField";
     static components = {
         ...Many2ManyTagsAvatarField.components,
         TagsList: Many2ManyAvatarUserTagsList,
-        Many2XAutocomplete: Many2XAvatarUserAutocomplete,
     };
 }
 
@@ -107,7 +103,6 @@ export class ListMany2ManyTagsAvatarUserField extends WithUserChatter(
     static components = {
         ...ListMany2ManyTagsAvatarField.components,
         TagsList: Many2ManyAvatarUserTagsList,
-        Many2XAutocomplete: Many2XAvatarUserAutocomplete,
     };
 
     get displayText() {

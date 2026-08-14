@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from odoo import api, fields, models
+from odoo import fields, models
 
 
-class Test_Read_GroupOn_Date(models.Model):
+class GroupOnDate(models.Model):
     _name = 'test_read_group.on_date'
     _description = 'Group Test Read On Date'
 
@@ -10,7 +10,7 @@ class Test_Read_GroupOn_Date(models.Model):
     value = fields.Integer("Value")
 
 
-class Test_Read_GroupAggregateBoolean(models.Model):
+class BooleanAggregate(models.Model):
     _name = 'test_read_group.aggregate.boolean'
     _description = 'Group Test Read Boolean Aggregate'
     _order = 'key DESC'
@@ -21,44 +21,7 @@ class Test_Read_GroupAggregateBoolean(models.Model):
     bool_array = fields.Boolean(default=False, aggregator='array_agg')
 
 
-class TestReadGroupAggregateMonetaryRelated(models.Model):
-    _name = 'test_read_group.aggregate.monetary.related'
-    _description = 'To test related currency fields in Monetary aggregates'
-
-    stored_currency_id = fields.Many2one('res.currency')
-    non_stored_currency_id = fields.Many2one(
-        'res.currency',
-        compute="_compute_non_stored_currency_id",
-        store=False,
-    )
-
-    @api.depends()
-    def _compute_non_stored_currency_id(self):
-        for record in self:
-            record.non_stored_currency_id = self.env.ref('base.EUR')
-
-
-class Test_Read_GroupAggregateMonetary(models.Model):
-    _name = 'test_read_group.aggregate.monetary'
-    _description = 'Group Test Read Monetary Aggregate'
-
-    name = fields.Char()
-    related_model_id = fields.Many2one('test_read_group.aggregate.monetary.related')
-
-    currency_id = fields.Many2one('res.currency')
-    related_stored_currency_id = fields.Many2one(
-        related='related_model_id.stored_currency_id',
-    )
-    related_non_stored_currency_id = fields.Many2one(
-        related='related_model_id.non_stored_currency_id',
-    )
-
-    total_in_currency_id = fields.Monetary(currency_field='currency_id')
-    total_in_related_stored_currency_id = fields.Monetary(currency_field='related_stored_currency_id')
-    total_in_related_non_stored_currency_id = fields.Monetary(currency_field='related_non_stored_currency_id')
-
-
-class Test_Read_GroupAggregate(models.Model):
+class Aggregate(models.Model):
     _name = 'test_read_group.aggregate'
     _order = 'id'
     _description = 'Group Test Aggregate'
@@ -67,7 +30,7 @@ class Test_Read_GroupAggregate(models.Model):
     value = fields.Integer("Value")
     numeric_value = fields.Float(digits=(4, 2))
     partner_id = fields.Many2one('res.partner')
-    display_name = fields.Char(store=True)
+    display_name = fields.Char()
 
 
 # we use a selection that is in reverse lexical order, in order to check the
@@ -75,7 +38,7 @@ class Test_Read_GroupAggregate(models.Model):
 SELECTION = [('c', "C"), ('b', "B"), ('a', "A")]
 
 
-class Test_Read_GroupOn_Selection(models.Model):
+class GroupOnSelection(models.Model):
     _name = 'test_read_group.on_selection'
     _description = 'Group Test Read On Selection'
 
@@ -90,7 +53,7 @@ class Test_Read_GroupOn_Selection(models.Model):
         return [key for key, val in self._fields['state'].selection]
 
 
-class Test_Read_GroupFill_Temporal(models.Model):
+class FillTemporal(models.Model):
     _name = 'test_read_group.fill_temporal'
     _description = 'Group Test Fill Temporal'
 
@@ -99,7 +62,7 @@ class Test_Read_GroupFill_Temporal(models.Model):
     value = fields.Integer()
 
 
-class Test_Read_GroupOrder(models.Model):
+class Order(models.Model):
     _name = 'test_read_group.order'
     _description = 'Sales order'
 
@@ -107,8 +70,6 @@ class Test_Read_GroupOrder(models.Model):
     date = fields.Date()
     company_dependent_name = fields.Char(company_dependent=True)
     many2one_id = fields.Many2one('test_read_group.order')
-    name = fields.Char()
-    fold = fields.Boolean()
 
     @property
     def _order(self):
@@ -117,17 +78,16 @@ class Test_Read_GroupOrder(models.Model):
         return super()._order
 
 
-class Test_Read_GroupOrderLine(models.Model):
+class OrderLine(models.Model):
     _name = 'test_read_group.order.line'
     _description = 'Sales order line'
 
-    order_id = fields.Many2one('test_read_group.order')
-    order_expand_id = fields.Many2one('test_read_group.order', group_expand='_read_group_expand_full')
+    order_id = fields.Many2one('test_read_group.order', ondelete='cascade')
     value = fields.Integer()
     date = fields.Date(related='order_id.date')
 
 
-class Test_Read_GroupUser(models.Model):
+class User(models.Model):
     _name = 'test_read_group.user'
     _description = "User"
 
@@ -141,7 +101,7 @@ class Test_Read_GroupUser(models.Model):
     )
 
 
-class Test_Read_GroupTask(models.Model):
+class Task(models.Model):
     _name = 'test_read_group.task'
     _description = "Project task"
 
@@ -152,13 +112,6 @@ class Test_Read_GroupTask(models.Model):
         'task_id',
         'user_id',
         string="Collaborators",
-    )
-    customer_ids = fields.Many2many(
-        'test_read_group.user',
-        'test_read_group_task_user_rel_2',
-        'task_id',
-        'user_id',
-        string="Customers",
     )
     tag_ids = fields.Many2many(
         'test_read_group.tag',
@@ -184,8 +137,6 @@ class Test_Read_GroupTask(models.Model):
         context={'active_test': False},
     )
     date = fields.Date()
-    integer = fields.Integer()
-    key = fields.Char()
 
 
 class Test_Read_GroupTag(models.Model):
@@ -196,13 +147,13 @@ class Test_Read_GroupTag(models.Model):
     active = fields.Boolean(default=True)
 
 
-class ResPartner(models.Model):
+class Partner(models.Model):
     _inherit = 'res.partner'
 
     date = fields.Date()
 
 
-class Test_Read_GroupRelated_Bar(models.Model):
+class RelatedBar(models.Model):
     _name = 'test_read_group.related_bar'
     _description = "RelatedBar"
 
@@ -218,7 +169,7 @@ class Test_Read_GroupRelated_Bar(models.Model):
         self.computed_base_ids = False
 
 
-class Test_Read_GroupRelated_Foo(models.Model):
+class RelatedFoo(models.Model):
     _name = 'test_read_group.related_foo'
     _description = "RelatedFoo"
 
@@ -228,12 +179,10 @@ class Test_Read_GroupRelated_Foo(models.Model):
     bar_name_sudo = fields.Char('bar_name_sudo', related='bar_id.name')
     bar_name = fields.Char('bar_name', related='bar_id.name', related_sudo=False)
 
-    bar_base_ids = fields.Many2many(related='bar_id.base_ids')
-
-    schedule_datetime = fields.Datetime()
+    bar_base_ids = fields.Many2many('bar_name', related='bar_id.base_ids')
 
 
-class Test_Read_GroupRelated_Base(models.Model):
+class RelatedBase(models.Model):
     _name = 'test_read_group.related_base'
     _description = "RelatedBase"
 
@@ -249,7 +198,7 @@ class Test_Read_GroupRelated_Base(models.Model):
     foo_id_bar_name_sudo = fields.Char('foo_bar_name_sudo_2', related='foo_id.bar_name_sudo')
 
 
-class Test_Read_GroupRelated_Inherits(models.Model):
+class RelatedInherits(models.Model):
     _name = 'test_read_group.related_inherits'
     _description = "RelatedInherits"
     _inherits = {
@@ -257,10 +206,3 @@ class Test_Read_GroupRelated_Inherits(models.Model):
     }
 
     base_id = fields.Many2one('test_read_group.related_base', required=True, ondelete='cascade')
-
-
-class Test_Read_GroupChain_Inherits(models.Model):
-    _name = 'test_read_group.chain_inherits'
-    _description = "ChainInherits"
-
-    inherited_id = fields.Many2one('test_read_group.related_inherits', required=True)

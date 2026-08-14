@@ -42,8 +42,9 @@ class AccountTax(models.Model):
                 WHERE EXISTS(
                     SELECT 1
                     FROM account_tax_pos_order_line_rel AS pos
-                    WHERE account_tax.id = pos.account_tax_id
-                ) AND id IN %s
+                    WHERE account_tax_id IN %s
+                    AND account_tax.id = pos.account_tax_id
+                )
             """, [tuple(taxes_to_compute)])
 
             used_taxes.update([tax[0] for tax in self.env.cr.fetchall()])
@@ -51,13 +52,12 @@ class AccountTax(models.Model):
         return used_taxes
 
     @api.model
-    def _load_pos_data_domain(self, data, config):
-        return self.env['account.tax']._check_company_domain(config.company_id.id)
+    def _load_pos_data_domain(self, data):
+        return self.env['account.tax']._check_company_domain(data['pos.config']['data'][0]['company_id'])
 
     @api.model
-    def _load_pos_data_fields(self, config):
+    def _load_pos_data_fields(self, config_id):
         return [
             'id', 'name', 'price_include', 'include_base_amount', 'is_base_affected', 'has_negative_factor',
             'amount_type', 'children_tax_ids', 'amount', 'company_id', 'id', 'sequence', 'tax_group_id',
-            'fiscal_position_ids',
         ]

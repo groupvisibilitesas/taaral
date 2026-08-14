@@ -1,6 +1,6 @@
 import { Discuss } from "@mail/core/public_web/discuss";
 
-import { Component, onMounted, onWillStart, onWillUnmount, onWillUpdateProps } from "@odoo/owl";
+import { Component, onWillStart, onWillUpdateProps, useState } from "@odoo/owl";
 
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
@@ -22,7 +22,7 @@ export class DiscussClientAction extends Component {
 
     setup() {
         super.setup();
-        this.store = useService("mail.store");
+        this.store = useState(useService("mail.store"));
         onWillStart(() => {
             // bracket to avoid blocking rendering with restore promise
             this.restoreDiscussThread(this.props);
@@ -31,8 +31,6 @@ export class DiscussClientAction extends Component {
             // bracket to avoid blocking rendering with restore promise
             this.restoreDiscussThread(nextProps);
         });
-        onMounted(() => (this.store.discuss.isActive = true));
-        onWillUnmount(() => (this.store.discuss.isActive = false));
     }
 
     getActiveId(props) {
@@ -40,15 +38,14 @@ export class DiscussClientAction extends Component {
             props.action.context.active_id ??
             props.action.params?.active_id ??
             this.store.Thread.localIdToActiveId(this.store.discuss.thread?.localId) ??
-            (this.env.services.ui.isSmall ? undefined : this.store.discuss.lastActiveId)
+            "mail.box_inbox"
         );
     }
 
-    /** @param {string} [rawActiveId] */
+    /**
+     * @param {string} rawActiveId
+     */
     parseActiveId(rawActiveId) {
-        if (!rawActiveId) {
-            return undefined;
-        }
         const [model, id] = rawActiveId.split("_");
         if (model === "mail.box") {
             return ["mail.box", id];
@@ -64,18 +61,7 @@ export class DiscussClientAction extends Component {
      */
     async restoreDiscussThread(props) {
         const rawActiveId = this.getActiveId(props);
-        const parsedActiveId = this.parseActiveId(rawActiveId);
-        if (!parsedActiveId) {
-            this.store.discuss.thread = undefined;
-            this.store.discuss.hasRestoredThread = true;
-            const odoobotChat = this.store.odoobot?.searchChat();
-            const selfMember = odoobotChat?.self_member_id;
-            if (odoobotChat && selfMember?.is_pinned && !selfMember.seen_message_id) {
-                odoobotChat.setAsDiscussThread(false);
-            }
-            return;
-        }
-        const [model, id] = parsedActiveId;
+        const [model, id] = this.parseActiveId(rawActiveId);
         const activeThread = await this.store.Thread.getOrFetch({ model, id });
         if (activeThread && activeThread.notEq(this.store.discuss.thread)) {
             const highlight_message_id =

@@ -1,11 +1,15 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import fields, models
-from odoo.exceptions import UserError
-from odoo.tools.urls import urljoin as url_join
 
-from odoo.addons.account_edi_proxy_client.models.account_edi_proxy_user import (
-    AccountEdiProxyError,
-)
+import logging
+
+from werkzeug.urls import url_join
+
+from odoo import _, fields, models
+from odoo.addons.account_edi_proxy_client.models.account_edi_proxy_user import AccountEdiProxyError
+from odoo.exceptions import UserError
+from odoo.tools import index_exists
+
+_logger = logging.getLogger(__name__)
 
 
 class AccountEdiProxyClientUser(models.Model):
@@ -17,10 +21,18 @@ class AccountEdiProxyClientUser(models.Model):
 
     proxy_type = fields.Selection(selection_add=[('l10n_my_edi', 'Malaysian EDI')], ondelete={'l10n_my_edi': 'cascade'})
 
-    _unique_identification_l10n_my_edi = models.UniqueIndex(
-        "(edi_identification, proxy_type, edi_mode) WHERE (active AND proxy_type = 'l10n_my_edi')",
-        "This edi identification is already assigned to an active user",
-    )
+    _sql_constraints = [
+        ('unique_identification_l10n_my_edi', '', 'This edi identification is already assigned to an active user'),
+    ]
+
+    def _auto_init(self):
+        super()._auto_init()
+        if not index_exists(self.env.cr, 'account_edi_proxy_client_user_unique_identification_l10n_my_edi'):
+            self.env.cr.execute("""
+                CREATE UNIQUE INDEX account_edi_proxy_client_user_unique_identification_l10n_my_edi
+                                 ON account_edi_proxy_client_user(edi_identification, proxy_type, edi_mode)
+                              WHERE (active = True AND proxy_type = 'l10n_my_edi')
+            """)
 
     # -----------------------
     # CRUD, inherited methods
@@ -41,12 +53,8 @@ class AccountEdiProxyClientUser(models.Model):
         # EXTENDS 'account_edi_proxy_client'
         if proxy_type == 'l10n_my_edi':
             if not company.vat:
-                raise UserError(
-                    company.env._(
-                        'Please fill the TIN of company "%(company_name)s" before enabling the integration with MyInvois.',
-                        company_name=company.display_name,
-                    )
-                )
+                raise UserError(_('Please fill the TIN of company "%(company_name)s" before enabling the integration with MyInvois.',
+                                  company_name=company.display_name))
             return company.vat
         return super()._get_proxy_identification(company, proxy_type)
 
@@ -61,13 +69,8 @@ class AccountEdiProxyClientUser(models.Model):
                 url=url_join(self._get_server_url(), endpoint),
                 params=params,
             )
-        except AccountEdiProxyError as error:
-            if error.code == 'proxy_rate_limit_exceeded':
-                raise UserError(self.env._(
-                    "You have reached the maximum number of requests allowed in a short period of time. "
-                    "Please wait a few minutes before trying again."
-                ))
+        except AccountEdiProxyError as _error:
             # Request error while contacting the IAP server. We assume it is a temporary error.
-            raise UserError(self.env._("The MyInvois server is temporarily unreachable. Please try again later."))
+            raise UserError(_("Failed to contact the E-Invoicing service. Please try again later."))
 
         return response

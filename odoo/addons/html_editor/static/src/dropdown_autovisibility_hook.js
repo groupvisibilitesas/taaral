@@ -1,17 +1,17 @@
 import { useEffect, useState } from "@odoo/owl";
 
-export function useDropdownAutoVisibility(overlayState, popoverRef) {
+export function useDropdownAutoVisibility(overlayState, menuRef) {
     if (!overlayState) {
         return;
     }
     const state = useState(overlayState);
     useEffect(
         () => {
-            if (popoverRef.el) {
+            if (menuRef.el) {
                 if (!state.isOverlayVisible) {
-                    popoverRef.el.style.visibility = "hidden";
+                    menuRef.el.style.visibility = "hidden";
                 } else {
-                    popoverRef.el.style.visibility = "visible";
+                    menuRef.el.style.visibility = "visible";
                 }
             }
         },

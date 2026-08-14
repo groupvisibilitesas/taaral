@@ -1,8 +1,16 @@
+/** @odoo-module */
+
 import { onWillStart } from "@odoo/owl";
 import { user } from "@web/core/user";
-import { RottingColumnProgress } from "@mail/js/rotting_mixin/rotting_column_progress";
+import { ColumnProgress } from "@web/views/view_components/column_progress";
+import { session } from "@web/session";
+import { getCurrency } from "@web/core/currency";
 
-export class CrmColumnProgress extends RottingColumnProgress {
+export class CrmColumnProgress extends ColumnProgress {
+    static props = {
+        ...ColumnProgress.props,
+        progressBarState: { type: Object },
+    };
     static template = "crm.ColumnProgress";
     setup() {
         super.setup();
@@ -16,10 +24,12 @@ export class CrmColumnProgress extends RottingColumnProgress {
     }
 
     getRecurringRevenueGroupAggregate(group) {
-        if (!this.showRecurringRevenue) {
-            return {};
-        }
         const rrField = this.props.progressBarState.progressAttributes.recurring_revenue_sum_field;
-        return this.props.progressBarState.getAggregateValue(group, rrField);
+        const aggregatedValue = this.props.progressBarState.getAggregateValue(group, rrField);
+        let currency = false;
+        if (aggregatedValue.value && rrField.currency_field) {
+            currency = getCurrency(session.company_currency_id);
+        }
+        return { ...aggregatedValue, currency };
     }
 }

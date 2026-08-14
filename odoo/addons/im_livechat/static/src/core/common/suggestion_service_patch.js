@@ -6,7 +6,7 @@ patch(SuggestionService.prototype, {
     /** @override */
     getSupportedDelimiters(thread) {
         const res = super.getSupportedDelimiters(...arguments);
-        return thread?.channel_type === "livechat" && !this.store.self_partner
+        return thread?.channel_type === "livechat" && !this.store.self.isInternalUser
             ? res.filter((delimiter) => delimiter.at(0) !== "@")
             : res;
     },

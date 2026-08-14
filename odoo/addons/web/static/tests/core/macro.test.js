@@ -1,5 +1,5 @@
 import { beforeEach, expect, test } from "@odoo/hoot";
-import { advanceTime, animationFrame, click, edit, queryOne, queryText } from "@odoo/hoot-dom";
+import { advanceTime, animationFrame, click, edit, queryOne } from "@odoo/hoot-dom";
 import { Component, useState, xml } from "@odoo/owl";
 import { mountWithCleanup, patchWithCleanup } from "@web/../tests/web_test_helpers";
 
@@ -28,6 +28,22 @@ beforeEach(() => {
     });
 });
 
+function onTextChange(element, callback) {
+    const observer = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+            if (mutation.type === "characterData" || mutation.type === "childList") {
+                callback(element.textContent);
+            }
+        }
+    });
+    observer.observe(element, {
+        characterData: true,
+        childList: true,
+        subtree: true,
+    });
+    return observer;
+}
+
 class TestComponent extends Component {
     static template = xml`
         <div class="counter">
@@ -55,14 +71,11 @@ test("simple use", async () => {
                 },
             },
         ],
-        async onStep({ trigger }) {
-            await animationFrame();
-            expect.step(queryText("span.value"));
-        },
     }).start(queryOne(".counter"));
 
     const span = queryOne("span.value");
     expect(span).toHaveText("0");
+    onTextChange(span, expect.step);
     await waitForMacro();
     expect.verifySteps(["1"]);
 });
@@ -91,13 +104,8 @@ test("multiple steps", async () => {
                 },
             },
         ],
-        async onStep({ index }) {
-            await animationFrame();
-            if (index % 2 === 0) {
-                expect.step(queryText("span.value"));
-            }
-        },
     }).start(queryOne(".counter"));
+    onTextChange(span, expect.step);
     await waitForMacro();
     expect.verifySteps(["1", "2"]);
 });
@@ -153,7 +161,7 @@ test("onStep function is called at each step", async () => {
 
     new Macro({
         name: "test",
-        onStep: ({ index }) => {
+        onStep: (el, step, index) => {
             expect.step(index);
         },
         steps: [
@@ -240,7 +248,7 @@ test("macro timeout if element is not visible", async () => {
                 },
             },
         ],
-        onError: ({ error }) => {
+        onError: (error) => {
             expect.step(error.message);
         },
     });

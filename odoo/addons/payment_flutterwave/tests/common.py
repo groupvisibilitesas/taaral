@@ -17,11 +17,11 @@ class FlutterwaveCommon(PaymentCommon):
 
         cls.provider = cls.flutterwave
 
-        cls.redirect_payment_data = {
+        cls.redirect_notification_data = {
             'status': 'successful',
             'tx_ref': cls.reference,
         }
-        cls.webhook_payment_data = {
+        cls.webhook_notification_data = {
             'event': 'charge.completed',
             'data': {
                 'tx_ref': cls.reference,

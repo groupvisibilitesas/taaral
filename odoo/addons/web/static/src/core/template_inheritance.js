@@ -1,65 +1,4 @@
 const RSTRIP_REGEXP = /(?=\n[ \t]*$)/;
-
-let translationContext = null;
-
-const TCTX = "t-translation-context";
-
-/**
- * @param {Node} node
- */
-function getTranslationContext(node) {
-    if (node.hasAttribute(TCTX)) {
-        return node.getAttribute(TCTX);
-    }
-    return getTranslationContext(node.parentElement);
-}
-
-const contextByTextNode = new Map();
-
-/**
- * @param {Node} node
- */
-function setTranslationContext(node) {
-    switch (node.nodeType) {
-        case Node.TEXT_NODE:
-            if (node.nodeValue.trim() != "") {
-                contextByTextNode.set(node, translationContext);
-            }
-            break;
-        case Node.ELEMENT_NODE:
-            node.setAttribute(TCTX, translationContext);
-            break;
-    }
-}
-
-export function applyContextToTextNode() {
-    for (const [textNode, context] of contextByTextNode) {
-        const wrapper = document.createElement("t");
-        wrapper.setAttribute(TCTX, context);
-        textNode.before(wrapper);
-        wrapper.appendChild(textNode);
-    }
-    contextByTextNode.clear();
-}
-
-/**
- * @param {Node} node
- */
-export function deepClone(node) {
-    const clone = node.cloneNode();
-    if (node.nodeType === Node.TEXT_NODE) {
-        if (contextByTextNode.has(node)) {
-            contextByTextNode.set(clone, contextByTextNode.get(node));
-        }
-    }
-    if (node.childNodes?.length) {
-        for (const childNode of [...node.childNodes]) {
-            clone.append(deepClone(childNode));
-        }
-    }
-    return clone;
-}
-
 /**
  * The child nodes of operation represent new content to create before target or
  * or other elements to move before target from the target tree (tree from which target is part of).
@@ -78,11 +17,14 @@ function addBefore(target, operation) {
     if (previousSibling?.nodeType === Node.TEXT_NODE) {
         const [text1, text2] = previousSibling.data.split(RSTRIP_REGEXP);
         previousSibling.data = text1.trimEnd();
+        if (nodes[0].nodeType === Node.TEXT_NODE) {
+            mergeTextNodes(previousSibling, nodes[0]);
+        }
         if (text2 && nodes.some((n) => n.nodeType !== Node.TEXT_NODE)) {
             const textNode = document.createTextNode(text2);
             target.before(textNode);
             if (textNode.previousSibling.nodeType === Node.TEXT_NODE) {
-                textNode.previousSibling.data = textNode.previousSibling.data.trimEnd();
+                mergeTextNodes(textNode.previousSibling, textNode);
             }
         }
     }
@@ -103,32 +45,21 @@ function getRoot(element) {
 }
 
 const HASCLASS_REGEXP = /hasclass\(([^)]*)\)/g;
-const CLASS_CONTAINS_REGEX = /contains\(@class.*\)/g;
 /**
  * @param {Element} operation
  * @returns {string}
  */
 function getXpath(operation) {
     const xpath = operation.getAttribute("expr");
-    if (odoo.debug) {
-        if (CLASS_CONTAINS_REGEX.test(xpath)) {
-            const parent = operation.closest("t[t-inherit]");
-            const templateName = parent.getAttribute("t-name") || parent.getAttribute("t-inherit");
-            console.warn(
-                `Error-prone use of @class in template "${templateName}" (or one of its inheritors).` +
-                    " Use the hasclass(*classes) function to filter elements by their classes"
-            );
-        }
-    }
     // hasclass does not exist in XPath 1.0 but is a custom function defined server side (see _hasclass) usable in lxml.
     // Here we have to replace it by a complex condition (which is not nice).
     // Note: we assume that classes do not contain the 2 chars , and )
-    return xpath.replaceAll(HASCLASS_REGEXP, (_, capturedGroup) =>
-        capturedGroup
+    return xpath.replaceAll(HASCLASS_REGEXP, (_, capturedGroup) => {
+        return capturedGroup
             .split(",")
             .map((c) => `contains(concat(' ', @class, ' '), ' ${c.trim().slice(1, -1)} ')`)
-            .join(" and ")
-    );
+            .join(" and ");
+    });
 }
 
 /**
@@ -145,10 +76,9 @@ function getNode(element, operation) {
         const result = doc.evaluate(xpath, root, null, XPathResult.FIRST_ORDERED_NODE_TYPE);
         return result.singleNodeValue;
     }
-    const attributes = [...operation.attributes].filter((attr) => !attr.name.startsWith(TCTX));
     for (const elem of root.querySelectorAll(operation.tagName)) {
         if (
-            attributes.every(
+            [...operation.attributes].every(
                 ({ name, value }) => name === "position" || elem.getAttribute(name) === value
             )
         ) {
@@ -184,15 +114,23 @@ function getNodes(element, operation) {
     for (const childNode of operation.childNodes) {
         if (childNode.tagName === "xpath" && childNode.getAttribute?.("position") === "move") {
             const node = getElement(element, childNode);
-            node.setAttribute(TCTX, getTranslationContext(node));
             removeNode(node);
             nodes.push(node);
         } else {
-            setTranslationContext(childNode);
             nodes.push(childNode);
         }
     }
     return nodes;
+}
+
+/**
+ * @param {Text} first
+ * @param {Text} second
+ * @param {boolean} [trimEnd=true]
+ */
+function mergeTextNodes(first, second, trimEnd = true) {
+    first.data = (trimEnd ? first.data.trimEnd() : first.data) + second.data;
+    second.remove();
 }
 
 function splitAndTrim(str, separator) {
@@ -229,9 +167,6 @@ function modifyAttributes(target, operation) {
 
         if (value) {
             target.setAttribute(attributeName, value);
-            if (!(add || remove)) {
-                target.setAttribute(`t-translation-context-${attributeName}`, translationContext);
-            }
         } else {
             target.removeAttribute(attributeName);
         }
@@ -246,12 +181,12 @@ function modifyAttributes(target, operation) {
 function removeNode(node) {
     const { nextSibling, previousSibling } = node;
     node.remove();
-    if (
-        nextSibling?.nodeType === Node.TEXT_NODE &&
-        previousSibling?.nodeType === Node.TEXT_NODE &&
-        previousSibling.parentElement.firstChild === previousSibling
-    ) {
-        previousSibling.data = previousSibling.data.trimEnd();
+    if (nextSibling?.nodeType === Node.TEXT_NODE && previousSibling?.nodeType === Node.TEXT_NODE) {
+        mergeTextNodes(
+            previousSibling,
+            nextSibling,
+            previousSibling.parentElement.firstChild === previousSibling
+        );
     }
 }
 
@@ -270,10 +205,9 @@ function replace(root, target, operation) {
                 null,
                 XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
             );
-            target.setAttribute(TCTX, getTranslationContext(target));
             for (let i = 0; i < result.snapshotLength; i++) {
                 const loc = result.snapshotItem(i);
-                loc.firstChild.replaceWith(deepClone(target));
+                loc.firstChild.replaceWith(target.cloneNode(true));
             }
             if (target.parentElement) {
                 const nodes = getNodes(target, operation);
@@ -283,7 +217,6 @@ function replace(root, target, operation) {
                 let comment = null;
                 for (const child of operation.childNodes) {
                     if (child.nodeType === Node.ELEMENT_NODE) {
-                        setTranslationContext(child);
                         operationContent = child;
                         break;
                     }
@@ -291,7 +224,7 @@ function replace(root, target, operation) {
                         comment = child;
                     }
                 }
-                root = deepClone(operationContent);
+                root = operationContent.cloneNode(true);
                 if (target.hasAttribute("t-name")) {
                     root.setAttribute("t-name", target.getAttribute("t-name"));
                 }
@@ -305,10 +238,7 @@ function replace(root, target, operation) {
             while (target.firstChild) {
                 target.removeChild(target.lastChild);
             }
-            for (const node of [...operation.childNodes]) {
-                setTranslationContext(node);
-                target.append(node);
-            }
+            target.append(...operation.childNodes);
             break;
         default:
             throw new Error(`Invalid mode attribute: '${mode}'`);
@@ -323,7 +253,6 @@ function replace(root, target, operation) {
  * @returns {Element} root modified (in place) by the operations
  */
 export function applyInheritance(root, operations, url = "") {
-    translationContext = url.split("/")[1] ?? ""; // use addon name as context
     for (const operation of operations.children) {
         const target = getElement(root, operation);
         const position = operation.getAttribute("position") || "inside";
@@ -374,6 +303,5 @@ export function applyInheritance(root, operations, url = "") {
                 throw new Error(`Invalid position attribute: '${position}'`);
         }
     }
-    translationContext = null;
     return root;
 }

@@ -24,14 +24,14 @@ class ResConfigSettings(models.TransientModel):
         string="Gain Exchange Rate Account",
         readonly=False,
         check_company=True,
-        domain="[('internal_group', '=', 'income')]")
+        domain="[('deprecated', '=', False), ('internal_group', '=', 'income')]")
     expense_currency_exchange_account_id = fields.Many2one(
         comodel_name="account.account",
         related="company_id.expense_currency_exchange_account_id",
         string="Loss Exchange Rate Account",
         readonly=False,
         check_company=True,
-        domain="[('account_type', 'in', ('expense', 'expense_other'))]")
+        domain="[('deprecated', '=', False), ('account_type', '=', 'expense')]")
     has_chart_of_accounts = fields.Boolean(compute='_compute_has_chart_of_accounts', string='Company has a chart of accounts')
     chart_template = fields.Selection(selection=lambda self: self.env.company._chart_template_selection(), default=lambda self: self.env.company.chart_template)
     sale_tax_id = fields.Many2one(
@@ -64,7 +64,7 @@ class ResConfigSettings(models.TransientModel):
         readonly=False,
         related='company_id.account_journal_suspense_account_id',
         check_company=True,
-        domain="[('account_type', 'in', ('asset_current', 'liability_current'))]",
+        domain="[('deprecated', '=', False), ('account_type', 'in', ('asset_current', 'liability_current'))]",
         help='Bank Transactions are posted immediately after import or synchronization. '
              'Their counterparty is the bank suspense account.\n'
              'Reconciliation replaces the latter by the definitive account(s).')
@@ -74,11 +74,16 @@ class ResConfigSettings(models.TransientModel):
         domain=[
             ('reconcile', '=', True),
             ('account_type', '=', 'asset_current'),
+            ('deprecated', '=', False),
         ],
         help="Intermediary account used when moving from a liquidity account to another.")
     module_account_accountant = fields.Boolean(string='Accounting')
+    group_warning_account = fields.Boolean(string="Warnings in Invoices", implied_group='account.group_warning_account')
     group_cash_rounding = fields.Boolean(string="Cash Rounding", implied_group='account.group_cash_rounding')
-    show_sale_receipts = fields.Boolean(string='Sale Receipt', config_parameter='account.show_sale_receipts')
+    group_show_sale_receipts = fields.Boolean(string='Sale Receipt',
+        implied_group='account.group_sale_receipts')
+    group_show_purchase_receipts = fields.Boolean(string='Purchase Receipt',
+        implied_group='account.group_purchase_receipts')
     module_account_budget = fields.Boolean(string='Budget Management')
     module_account_payment = fields.Boolean(string='Invoice Online Payment')
     module_account_reports = fields.Boolean("Dynamic Reports")
@@ -89,9 +94,13 @@ class ResConfigSettings(models.TransientModel):
     module_account_iso20022 = fields.Boolean(string='SEPA Credit Transfer / ISO20022')
     module_account_sepa_direct_debit = fields.Boolean(string='Use SEPA Direct Debit')
     module_account_bank_statement_import_qif = fields.Boolean("Import .qif files")
+    module_account_bank_statement_import_ofx = fields.Boolean("Import in .ofx format")
+    module_account_bank_statement_import_csv = fields.Boolean("Import in .csv, .xls, and .xlsx format")
+    module_account_bank_statement_import_camt = fields.Boolean("Import in CAMT.053 format")
     module_currency_rate_live = fields.Boolean(string="Automatic Currency Rates")
     module_account_intrastat = fields.Boolean(string='Intrastat')
     module_product_margin = fields.Boolean(string="Allow Product Margin")
+    module_l10n_eu_oss = fields.Boolean(string="EU Intra-community Distance Selling")
     module_account_extract = fields.Boolean(string="Document Digitization")
     module_account_invoice_extract = fields.Boolean("Invoice Digitization", compute='_compute_module_account_invoice_extract', readonly=False, store=True)
     module_account_bank_statement_extract = fields.Boolean("Bank Statement Digitization", compute='_compute_module_account_bank_statement_extract', readonly=False, store=True)
@@ -111,11 +120,10 @@ class ResConfigSettings(models.TransientModel):
         readonly=False,
         check_company=True,
         related='company_id.account_cash_basis_base_account_id',
-    )
+        domain=[('deprecated', '=', False)])
     account_fiscal_country_id = fields.Many2one(string="Fiscal Country Code", related="company_id.account_fiscal_country_id", readonly=False, store=False)
 
     qr_code = fields.Boolean(string='Display SEPA QR-code', related='company_id.qr_code', readonly=False)
-    link_qr_code = fields.Boolean(string='Display Link QR-code', related='company_id.link_qr_code', readonly=False)
     incoterm_id = fields.Many2one('account.incoterms', string='Default incoterm', related='company_id.incoterm_id', help='International Commercial Terms are a series of predefined commercial terms used in international transactions.', readonly=False)
     invoice_terms = fields.Html(related='company_id.invoice_terms', string="Terms & Conditions", readonly=False)
     invoice_terms_html = fields.Html(related='company_id.invoice_terms_html', string="Terms & Conditions as a Web page",
@@ -150,7 +158,6 @@ class ResConfigSettings(models.TransientModel):
 
     # Storno Accounting
     account_storno = fields.Boolean(string="Storno accounting", readonly=False, related='company_id.account_storno')
-    display_account_storno = fields.Boolean(related='company_id.display_account_storno')
 
     # Allows for the use of a different delivery address
     group_sale_delivery_address = fields.Boolean("Customer Addresses", implied_group='account.group_delivery_invoice_address')
@@ -165,7 +172,7 @@ class ResConfigSettings(models.TransientModel):
         readonly=False,
         related='company_id.account_journal_early_pay_discount_loss_account_id',
         check_company=True,
-        domain="[('account_type', 'in', ('expense', 'expense_other', 'income', 'income_other'))]",
+        domain="[('deprecated', '=', False), ('account_type', 'in', ('expense', 'income', 'income_other'))]",
     )
     account_journal_early_pay_discount_gain_account_id = fields.Many2one(
         comodel_name='account.account',
@@ -174,7 +181,7 @@ class ResConfigSettings(models.TransientModel):
         readonly=False,
         check_company=True,
         related='company_id.account_journal_early_pay_discount_gain_account_id',
-        domain="[('account_type', 'in', ('income', 'income_other', 'expense', 'expense_other'))]",
+        domain="[('deprecated', '=', False), ('account_type', 'in', ('income', 'income_other', 'expense'))]",
     )
 
     # Accounts for allocation of discounts
@@ -183,14 +190,14 @@ class ResConfigSettings(models.TransientModel):
         string='Vendor Bills Discounts Account',
         readonly=False,
         related='company_id.account_discount_income_allocation_id',
-        domain="[('account_type', 'in', ('income', 'income_other', 'expense', 'expense_other'))]",
+        domain="[('deprecated', '=', False), ('account_type', 'in', ('income', 'income_other', 'expense'))]",
     )
     account_discount_expense_allocation_id = fields.Many2one(
         comodel_name='account.account',
         string='Customer Invoices Discounts Account',
         readonly=False,
         related='company_id.account_discount_expense_allocation_id',
-        domain="[('account_type', 'in', ('income', 'income_other', 'expense', 'expense_other'))]",
+        domain="[('deprecated', '=', False), ('account_type', 'in', ('income', 'income_other', 'expense'))]",
     )
 
     # PEPPOL
@@ -200,13 +207,10 @@ class ResConfigSettings(models.TransientModel):
     ) # technical field used for showing the Peppol settings conditionally
 
     # Audit trail
-    restrictive_audit_trail = fields.Boolean(string='Restricted Audit Trail', related='company_id.restrictive_audit_trail', readonly=False)
-    force_restrictive_audit_trail = fields.Boolean(string='Forced Audit Trail', related='company_id.force_restrictive_audit_trail', readonly=False)
+    check_account_audit_trail = fields.Boolean(string='Audit Trail', related='company_id.check_account_audit_trail', readonly=False)
 
     # Autopost of bills
     autopost_bills = fields.Boolean(related='company_id.autopost_bills', readonly=False)
-    income_account_id = fields.Many2one(related='company_id.income_account_id', readonly=False, check_company=True)
-    expense_account_id = fields.Many2one(related='company_id.expense_account_id', readonly=False, check_company=True)
 
     @api.depends('country_code')
     def _compute_is_account_peppol_eligible(self):
@@ -221,7 +225,6 @@ class ResConfigSettings(models.TransientModel):
         if self.env.company == self.company_id and self.chart_template \
         and self.chart_template != self.company_id.chart_template:
             self.env['account.chart.template'].try_loading(self.chart_template, company=self.company_id)
-            self.company_id._initiate_account_onboardings()
 
     def reload_template(self):
         self.env['account.chart.template'].try_loading(self.company_id.chart_template, company=self.company_id)
@@ -302,10 +305,3 @@ class ResConfigSettings(models.TransientModel):
             'target': 'new',
             'res_id': self.company_id.id,
         }
-
-    def action_eu_oss_tax_mapping(self):
-        l10n_eu_oss_module = self.env['ir.module.module'].search([('name', '=', 'l10n_eu_oss')], limit=1)
-        if l10n_eu_oss_module:
-            if l10n_eu_oss_module.state != 'installed':
-                l10n_eu_oss_module.button_immediate_install()
-            self.env.companies._map_eu_taxes()

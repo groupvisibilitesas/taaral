@@ -1,7 +1,9 @@
+/** @odoo-module **/
+
 import { AttendeeCalendarModel } from "@calendar/views/attendee_calendar/attendee_calendar_model";
 import { serializeDateTime } from "@web/core/l10n/dates";
 import { user } from "@web/core/user";
-import { getColor } from "@web/views/calendar/utils";
+import { getColor } from "@web/views/calendar/colors";
 import { patch } from "@web/core/utils/patch";
 
 const { Interval } = luxon;
@@ -9,11 +11,11 @@ const { Interval } = luxon;
 patch(AttendeeCalendarModel.prototype, {
     fetchEventLocation(data) {
         let attendeeIds;
-        const filters = data.filterSections.partner_ids?.filters;
-        if (filters && filters[filters.length - 1].type === "all" && filters[filters.length - 1].active) {
+        const filters = data.filterSections.partner_ids.filters;
+        if (filters[filters.length - 1].type === "all" && filters[filters.length - 1].active) {
             attendeeIds = Object.keys(this.partnerColorMap);
         } else {
-            attendeeIds = (filters || [])
+            attendeeIds = data.filterSections.partner_ids.filters
                 .filter(filter => filter.type !== "all" && filter.value && filter.active)
                 .map(filter => filter.value)
         }
@@ -31,12 +33,8 @@ patch(AttendeeCalendarModel.prototype, {
     async loadWorkLocations(data) {
         const res = await this.fetchEventLocation(data)
         this.multiCalendar = Object.values(res).some(location => location.user_id !== user.userId);
-        const filters = data.filterSections.partner_ids?.filters;
-        data.userFilterActive = filters && (
-            filters.filter(filter => filter.value === user.partnerId)[0]?.active ||
-            filters[filters.length - 1].type === "all" &&
-            filters[filters.length - 1].active
-        );
+        const filters = data.filterSections.partner_ids.filters;
+        data.userFilterActive = filters.filter(filter => filter.value === user.partnerId)[0]?.active || filters[filters.length - 1].type === "all" && filters[filters.length - 1].active;
         const events = {};
         let previousDay;
         const rangeInterval = Interval.fromDateTimes(data.range.start.startOf("day"), data.range.end.endOf("day")).splitBy({day: 1});
@@ -123,7 +121,7 @@ patch(AttendeeCalendarModel.prototype, {
     },
 
     mapPartnersToColor(data) {
-        return (data.filterSections.partner_ids?.filters || [])
+        return data.filterSections.partner_ids.filters
             .filter(filter => filter.type !== "all" && filter.value)
             .reduce((map, partner) => ({ ...map, [partner.value]: getColor(partner.colorIndex)}), {})
     },

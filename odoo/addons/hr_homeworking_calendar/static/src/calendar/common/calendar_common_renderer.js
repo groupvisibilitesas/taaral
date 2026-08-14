@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { AttendeeCalendarCommonRenderer } from "@calendar/views/attendee_calendar/common/attendee_calendar_common_renderer";
 import { AttendeeCalendarRenderer } from "@calendar/views/attendee_calendar/attendee_calendar_renderer";
 import { user } from "@web/core/user";
@@ -27,7 +29,7 @@ patch(AttendeeCalendarCommonRenderer.prototype, {
                     if(event2.extendedProps.worklocation){
                         return 1;
                     } else {
-                        return event1.start < event2.start ? -1 : 1;
+                        return event1.title.localeCompare(event2.title);
                     }
                 }
             },

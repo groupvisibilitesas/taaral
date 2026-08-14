@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from urllib.parse import urlparse, parse_qs
 from unittest.mock import patch
-from urllib.parse import parse_qs, urlparse
 
 from freezegun import freeze_time
 
-from odoo.tests import JsonRpcException, tagged
+from odoo.tests import tagged, JsonRpcException
 from odoo.tools import mute_logger
 
 from odoo.addons.payment.controllers.portal import PaymentPortal
@@ -317,7 +317,8 @@ class TestFlows(PaymentHttpCommon):
         self.authenticate(self.portal_user.login, self.portal_user.login)
 
         token = self._create_token()
-        provider_b = self.provider.copy({'is_published': True, 'state': 'test'})
+        provider_b = self.provider.copy()
+        provider_b.state = 'test'
         token_b = self._create_token(provider_id=provider_b.id)
 
         # User must see both tokens and compatible payment methods.
@@ -346,7 +347,7 @@ class TestFlows(PaymentHttpCommon):
         self.user = self.portal_user
         with patch(
             'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
-            '._charge_with_token'
+            '._send_payment_request'
         ) as patched:
             self._portal_transaction(
                 **self._prepare_transaction_values(self.payment_method_id, None, 'direct')
@@ -360,7 +361,7 @@ class TestFlows(PaymentHttpCommon):
         self.user = self.portal_user
         with patch(
             'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
-            '._charge_with_token'
+            '._send_payment_request'
         ) as patched:
             self._portal_transaction(
                 **self._prepare_transaction_values(self.payment_method_id, None, 'redirect')
@@ -374,7 +375,7 @@ class TestFlows(PaymentHttpCommon):
         self.user = self.portal_user
         with patch(
             'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
-            '._charge_with_token'
+            '._send_payment_request'
         ) as patched:
             self._portal_transaction(
                 **self._prepare_transaction_values(None, self._create_token().id, 'token')

@@ -1,7 +1,8 @@
+/** @odoo-module */
+
 import { useService } from '@web/core/utils/hooks';
 import { formatMonetary } from "@web/views/fields/formatters";
-import { Component, onWillStart, useState, onWillUpdateProps } from "@odoo/owl";
-import { Domain } from "@web/core/domain";
+import { Component, onWillStart, useState } from "@odoo/owl";
 
 export class ExpenseDashboard extends Component {
     static template = "hr_expense.ExpenseDashboard";
@@ -17,11 +18,8 @@ export class ExpenseDashboard extends Component {
         });
 
         onWillStart(async () => {
-            await this.fetchExpenseDashboardData();
-        });
-
-        onWillUpdateProps(async () => {
-            await this.fetchExpenseDashboardData();
+            const expense_states = await this.orm.call("hr.expense", 'get_expense_dashboard', []);
+            this.state.expenses = expense_states;
         });
     }
 
@@ -29,46 +27,11 @@ export class ExpenseDashboard extends Component {
         return formatMonetary(value, { currencyId: currency_id});;
     }
 
-    async fetchExpenseDashboardData() {
-        const domain = this.env.searchModel?.domain ?? [];
-        const expense_states = await this.orm.call(
-            "hr.expense",
-            'get_expense_dashboard',
-            [],
-            { context: { domain: domain }}
-        );
-
-        this.state.expenses = expense_states;
-    }
-
     async applyFilter(filterName) {
-        const searchModel = this.env.searchModel;
+        const { actionId } = this.env.config;
+        const action = actionId ? await this.actionService.loadAction(actionId) : {};
 
-        // Search for active filters implying an expense state
-        const stateActiveFilters = searchModel.query.filter(item => {
-            const filters = searchModel.searchItems[item.searchItemId];
-
-            if (!filters || !filters.domain) {
-                return false;
-            }
-            try {
-                const domain = new Domain(filters.domain).toList();
-                return domain.some(tuple => tuple[0] === "state");
-            } catch {
-                return false;
-            }
-        });
-
-        // Deactivate the filters implying an expense state
-        if (stateActiveFilters) {
-            stateActiveFilters.forEach(item => {
-                searchModel.toggleSearchItem(item.searchItemId);
-            });
-        }
-        // Toggle the filter corresponding to the current state
-        const searchItem = Object.values(searchModel.searchItems).find(
-            (searchItem) => searchItem.name === filterName
-        );
-        searchModel.toggleSearchItem(searchItem.id);
+        action['context'] = { [`search_default_${filterName}`]: 1 };
+        return this.actionService.doAction(action, {clearBreadcrumbs: true});
     }
 }

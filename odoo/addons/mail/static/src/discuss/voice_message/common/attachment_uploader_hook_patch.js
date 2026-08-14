@@ -6,7 +6,7 @@ patch(AttachmentUploadService.prototype, {
     _makeAttachmentData(upload, tmpId, thread, tmpUrl) {
         const attachmentData = super._makeAttachmentData(...arguments);
         if (upload.data.get("voice")) {
-            attachmentData.voice_ids = [this.store["discuss.voice.metadata"].insert({ id: -1 })];
+            attachmentData.voice = upload.data.get("voice");
         }
         return attachmentData;
     },

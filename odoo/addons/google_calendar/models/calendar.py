@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import pytz
@@ -7,12 +8,10 @@ from uuid import uuid4
 
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import ValidationError
-from odoo.fields import Domain
 
 from odoo.addons.google_calendar.utils.google_calendar import GoogleCalendarService
 
-
-class CalendarEvent(models.Model):
+class Meeting(models.Model):
     _name = 'calendar.event'
     _inherit = ['calendar.event', 'google.calendar.sync']
 
@@ -41,12 +40,12 @@ class CalendarEvent(models.Model):
     def _compute_videocall_source(self):
         events_with_google_url = self.filtered(lambda event: self.MEET_ROUTE in (event.videocall_location or ''))
         events_with_google_url.videocall_source = 'google_meet'
-        super(CalendarEvent, self - events_with_google_url)._compute_videocall_source()
+        super(Meeting, self - events_with_google_url)._compute_videocall_source()
 
     @api.model
     def _get_google_synced_fields(self):
         return {'name', 'description', 'allday', 'start', 'date_end', 'stop',
-                'attendee_ids', 'alarm_ids', 'location', 'privacy', 'active', 'show_as', 'videocall_location'}
+                'attendee_ids', 'alarm_ids', 'location', 'privacy', 'active', 'show_as'}
 
     @api.model
     def _restart_google_sync(self):
@@ -56,9 +55,8 @@ class CalendarEvent(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        description_context = self.env.context.get('skip_contact_description', False)
         notify_context = self.env.context.get('dont_notify', False)
-        return super(CalendarEvent, self.with_context(dont_notify=notify_context, skip_contact_description=description_context)).create([
+        return super(Meeting, self.with_context(dont_notify=notify_context)).create([
             dict(vals, need_sync=False) if vals.get('recurrence_id') or vals.get('recurrency') else vals
             for vals in vals_list
         ])
@@ -88,15 +86,15 @@ class CalendarEvent(models.Model):
         archive_values = super()._get_archive_values()
         return {**archive_values, 'need_sync': False}
 
-    def write(self, vals):
-        recurrence_update_setting = vals.get('recurrence_update')
+    def write(self, values):
+        recurrence_update_setting = values.get('recurrence_update')
         if recurrence_update_setting in ('all_events', 'future_events') and len(self) == 1:
-            vals = dict(vals, need_sync=False)
+            values = dict(values, need_sync=False)
         notify_context = self.env.context.get('dont_notify', False)
         if not notify_context and ([self.env.user.id != record.user_id.id for record in self]):
-            self._check_modify_event_permission(vals)
-        res = super(CalendarEvent, self.with_context(dont_notify=notify_context)).write(vals)
-        if recurrence_update_setting == 'all_events' and len(self) == 1 and vals.keys() & self._get_google_synced_fields():
+            self._check_modify_event_permission(values)
+        res = super(Meeting, self.with_context(dont_notify=notify_context)).write(values)
+        if recurrence_update_setting in ('all_events',) and len(self) == 1 and values.keys() & self._get_google_synced_fields():
             self.recurrence_id.need_sync = True
         return res
 
@@ -106,9 +104,7 @@ class CalendarEvent(models.Model):
         google_sync_restart = values.get('need_sync') and len(values)
         # Edge case 2: when resetting an account, we must be able to erase the event's google_id.
         skip_event_permission = self.env.context.get('skip_event_permission', False)
-        # Edge case 3: check if event is synchronizable in order to make sure the error is worth it.
-        is_synchronizable = self._check_values_to_sync(values)
-        if google_sync_restart or skip_event_permission or not is_synchronizable:
+        if google_sync_restart or skip_event_permission:
             return
         if any(event.guests_readonly and self.env.user.id != event.user_id.id for event in self):
             raise ValidationError(
@@ -129,13 +125,13 @@ class CalendarEvent(models.Model):
         day_range = int(ICP.get_param('google_calendar.sync.range_days', default=365))
         lower_bound = fields.Datetime.subtract(fields.Datetime.now(), days=day_range)
         upper_bound = fields.Datetime.add(fields.Datetime.now(), days=day_range)
-        return Domain([
+        return [
             ('partner_ids.user_ids', 'in', self.env.user.id),
             ('stop', '>', lower_bound),
             ('start', '<', upper_bound),
             # Do not sync events that follow the recurrence, they are already synced at recurrence creation
             '!', '&', '&', ('recurrency', '=', True), ('recurrence_id', '!=', False), ('follow_recurrence', '=', True)
-        ])
+        ]
 
     @api.model
     def _odoo_values(self, google_event, default_reminders=()):
@@ -183,14 +179,12 @@ class CalendarEvent(models.Model):
             stop = parse(google_event.end.get('dateTime')).astimezone(pytz.utc).replace(tzinfo=None)
             values['allday'] = False
         else:
-            # Set the inverse of start_date manually to avoid going through the inverse and setting need_sync.
-            # Regular day hours prevent weird results when the start datetime is shown in list views and the likes.
-            start = parse(google_event.start.get('date')).replace(hour=8)
-            stop = (parse(google_event.end.get('date')) - relativedelta(days=1)).replace(hour=18)
+            start = parse(google_event.start.get('date'))
+            stop = parse(google_event.end.get('date')) - relativedelta(days=1)
             # Stop date should be exclusive as defined here https://developers.google.com/calendar/v3/reference/events#resource
             # but it seems that's not always the case for old event
             if stop < start:
-                stop = parse(google_event.end.get('date')).replace(hour=18)
+                stop = parse(google_event.end.get('date'))
             values['allday'] = True
         if related_event['start'] != start:
             values['start'] = start
@@ -297,7 +291,7 @@ class CalendarEvent(models.Model):
             # Increase performance handling 'future_events' edge case as it was an 'all_events' update.
             if archive_future_events:
                 recurrence_update_setting = 'all_events'
-        super().action_mass_archive(recurrence_update_setting)
+        super(Meeting, self).action_mass_archive(recurrence_update_setting)
 
     def _google_values(self):
         # In Google API, all-day events must have their 'dateTime' information set
@@ -349,8 +343,6 @@ class CalendarEvent(models.Model):
         }
         if not self.google_id and not self.videocall_location and not self.location:
             values['conferenceData'] = {'createRequest': {'requestId': uuid4().hex}}
-        if self.google_id and not self.videocall_location:
-            values['conferenceData'] = None
         if self.privacy:
             values['visibility'] = self.privacy
         if self.show_as:
@@ -383,7 +375,7 @@ class CalendarEvent(models.Model):
         for event in self:
             # remove the tracking data to avoid calling _track_template in the pre-commit phase
             self.env.cr.precommit.data.pop(f'mail.tracking.create.{event._name}.{event.id}', None)
-        super(CalendarEvent, my_cancelled_records)._cancel()
+        super(Meeting, my_cancelled_records)._cancel()
         attendees = (self - my_cancelled_records).attendee_ids.filtered(lambda a: a.partner_id == user.partner_id)
         attendees.state = 'declined'
 

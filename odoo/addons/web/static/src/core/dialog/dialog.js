@@ -4,7 +4,6 @@ import { useForwardRefToParent } from "@web/core/utils/hooks";
 import { Component, onWillDestroy, useChildSubEnv, useExternalListener, useState } from "@odoo/owl";
 import { throttleForAnimation } from "@web/core/utils/timing";
 import { makeDraggableHook } from "../utils/draggable_hook_builder_owl";
-import { hasTouch } from "@web/core/browser/feature_detection";
 
 const useDialogDraggable = makeDraggableHook({
     name: "useDialogDraggable",
@@ -115,7 +114,6 @@ export class Dialog extends Component {
                 this.data.scrollToOrigin();
             }
         });
-        this.bodyTabIndex = hasTouch() ? "0" : undefined;
     }
 
     get isFullscreen() {
@@ -142,6 +140,6 @@ export class Dialog extends Component {
         if (this.data.dismiss) {
             await this.data.dismiss();
         }
-        return this.data.close({ dismiss: true });
+        return this.data.close();
     }
 }

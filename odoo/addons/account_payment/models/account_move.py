@@ -1,13 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import base64
-
 from odoo import api, fields, models
 from odoo.tools import format_date, str2bool
 from odoo.tools.translate import _
 
 from odoo.addons.payment import utils as payment_utils
-from odoo.tools.image import image_data_uri
 
 
 class AccountMove(models.Model):
@@ -102,10 +99,9 @@ class AccountMove(models.Model):
             errors.append(_("There are pending transactions for this invoice."))
         return '\n'.join(errors)
 
-    @api.private
     def get_portal_last_transaction(self):
         self.ensure_one()
-        return self.with_context(active_test=False).sudo().transaction_ids._get_last()
+        return self.with_context(active_test=False).transaction_ids.sudo()._get_last()
 
     def payment_action_capture(self):
         """ Capture all transactions linked to this invoice. """
@@ -113,14 +109,14 @@ class AccountMove(models.Model):
         payment_utils.check_rights_on_recordset(self)
 
         # In sudo mode to bypass the checks on the rights on the transactions.
-        return self.sudo().transaction_ids.action_capture()
+        return self.transaction_ids.sudo().action_capture()
 
     def payment_action_void(self):
         """ Void all transactions linked to this invoice. """
         payment_utils.check_rights_on_recordset(self)
 
         # In sudo mode to bypass the checks on the rights on the transactions.
-        self.sudo().authorized_transaction_ids.action_void()
+        self.authorized_transaction_ids.sudo().action_void()
 
     def action_view_payment_transactions(self):
         action = self.env['ir.actions.act_window']._for_xml_id('payment.action_payment_transaction')
@@ -167,16 +163,3 @@ class AccountMove(models.Model):
             'amount_max': amount_max,
             **additional_info
         }
-
-    def _generate_portal_payment_qr(self):
-        self.ensure_one()
-        portal_url = self._get_portal_payment_link()
-        barcode = self.env['ir.actions.report'].barcode(barcode_type="QR", value=portal_url, width=128, height=128, quiet=False)
-        return image_data_uri(base64.b64encode(barcode))
-
-    def _get_portal_payment_link(self):
-        self.ensure_one()
-        payment_link_wizard = self.env['payment.link.wizard'].with_context(
-            active_id=self.id, active_model=self._name
-        ).create({})
-        return payment_link_wizard.link

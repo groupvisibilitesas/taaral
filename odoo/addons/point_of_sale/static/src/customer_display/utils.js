@@ -1,21 +1,36 @@
-import { useService } from "@web/core/utils/hooks";
+import { deduceUrl } from "@point_of_sale/utils";
+import { _t } from "@web/core/l10n/translation";
 
-export function useSingleDialog() {
-    let close = null;
-    const dialog = useService("dialog");
-    return {
-        open(dialogClass, props) {
-            // If the dialog is already open, we don't want to open a new one
-            if (!close) {
-                close = dialog.add(dialogClass, props, {
-                    onClose: () => {
-                        close = null;
-                    },
-                });
-            }
+export function openCustomerDisplay(
+    displayDeviceIp,
+    accessToken,
+    configId,
+    notificationService = undefined
+) {
+    if (!displayDeviceIp) {
+        return;
+    }
+
+    notificationService?.add(_t("Connecting to the IoT Box"));
+    fetch(`${deduceUrl(displayDeviceIp)}/hw_proxy/customer_facing_display`, {
+        method: "POST",
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
         },
-        close() {
-            close?.();
-        },
-    };
+        body: JSON.stringify({
+            params: {
+                action: "open",
+                access_token: accessToken,
+                pos_id: configId,
+            },
+        }),
+        targetAddressSpace: odoo.use_lna ? "local" : undefined,
+    })
+        .then(() => {
+            notificationService?.add(_t("Connection successful"), { type: "success" });
+        })
+        .catch(() => {
+            notificationService?.add(_t("Connection failed"), { type: "danger" });
+        });
 }

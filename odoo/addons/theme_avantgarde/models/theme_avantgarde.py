@@ -1,7 +1,7 @@
 from odoo import models
 
 
-class ThemeUtils(models.AbstractModel):
+class ThemeAvantgarde(models.AbstractModel):
     _inherit = 'theme.utils'
 
     def _theme_avantgarde_post_copy(self, mod):

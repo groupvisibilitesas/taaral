@@ -21,7 +21,6 @@ co-author is Chick.Farm (visit for more information https://www.myacc.cloud)
     'depends': [
         'account',
         'base_vat',
-        'account_edi_ubl_cii',
     ],
     'auto_install': ['account'],
     'data': [

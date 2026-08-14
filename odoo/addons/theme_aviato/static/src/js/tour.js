@@ -29,7 +29,7 @@ const snippets = [
         groupName: "Text",
     },
     {
-        id: 's_masonry_block_default_template',
+        id: 's_masonry_block',
         name: 'Masonry',
         groupName: "Images",
     },

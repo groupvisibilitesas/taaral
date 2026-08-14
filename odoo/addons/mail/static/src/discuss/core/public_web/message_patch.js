@@ -1,4 +1,17 @@
 import { Message } from "@mail/core/common/message";
-import { SubChannelPreview } from "@mail/discuss/core/public_web/sub_channel_preview";
 
-Object.assign(Message.components, { SubChannelPreview });
+import { patch } from "@web/core/utils/patch";
+
+patch(Message.prototype, {
+    /**
+     * @override
+     * @param {MouseEvent} ev
+     */
+    async onClickNotificationMessage(ev) {
+        const { oeType } = ev.target.dataset;
+        if (oeType === "sub-channels-menu") {
+            this.env.subChannelMenu?.open();
+        }
+        await super.onClickNotificationMessage(...arguments);
+    },
+});

@@ -5,8 +5,7 @@ import {
     okRating,
     sadRating,
     feedback,
-    downloadTranscript,
-    emailTranscript,
+    transcript,
     close,
     confirmnClose,
 } from "./website_livechat_common";
@@ -14,14 +13,7 @@ import { registry } from "@web/core/registry";
 
 registry.category("web_tour.tours").add("website_livechat_complete_flow_tour", {
     url: "/",
-    steps: () =>
-        [].concat(start, closeChat, confirmnClose, okRating, feedback, downloadTranscript, close),
-});
-
-registry.category("web_tour.tours").add("website_livechat_complete_flow_tour_logged_in", {
-    url: "/",
-    steps: () =>
-        [].concat(start, closeChat, confirmnClose, okRating, feedback, emailTranscript, close),
+    steps: () => [].concat(start, closeChat, confirmnClose, okRating, feedback, transcript, close),
 });
 
 registry.category("web_tour.tours").add("website_livechat_happy_rating_tour", {
@@ -41,7 +33,7 @@ registry.category("web_tour.tours").add("website_livechat_sad_rating_tour", {
 
 registry.category("web_tour.tours").add("website_livechat_no_rating_tour", {
     url: "/",
-    steps: () => [].concat(start, closeChat, confirmnClose, downloadTranscript, close),
+    steps: () => [].concat(start, closeChat, confirmnClose, transcript, close),
 });
 
 registry.category("web_tour.tours").add("website_livechat_no_rating_no_close_tour", {

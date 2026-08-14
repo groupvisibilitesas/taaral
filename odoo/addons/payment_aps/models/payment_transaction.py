@@ -1,16 +1,19 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import logging
+
+from werkzeug import urls
+
 from odoo import _, api, models
-from odoo.tools import urls
+from odoo.exceptions import ValidationError
 
 from odoo.addons.payment import utils as payment_utils
-from odoo.addons.payment.logging import get_payment_logger
 from odoo.addons.payment_aps import utils as aps_utils
 from odoo.addons.payment_aps.const import PAYMENT_STATUS_MAPPING
 from odoo.addons.payment_aps.controllers.main import APSController
 
 
-_logger = get_payment_logger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class PaymentTransaction(models.Model):
@@ -46,8 +49,9 @@ class PaymentTransaction(models.Model):
         :return: The dict of provider-specific processing values.
         :rtype: dict
         """
+        res = super()._get_specific_rendering_values(processing_values)
         if self.provider_code != 'aps':
-            return super()._get_specific_rendering_values(processing_values)
+            return res
 
         converted_amount = payment_utils.to_minor_currency_units(self.amount, self.currency_id)
         base_url = self.provider_id.get_base_url()
@@ -61,7 +65,7 @@ class PaymentTransaction(models.Model):
             'currency': self.currency_id.name,
             'language': self.partner_lang[:2],
             'customer_email': self.partner_id.email_normalized,
-            'return_url': urls.urljoin(base_url, APSController._return_url),
+            'return_url': urls.url_join(base_url, APSController._return_url),
         }
         if payment_option:  # Not included if the payment method is 'card'.
             rendering_values['payment_option'] = payment_option
@@ -73,55 +77,71 @@ class PaymentTransaction(models.Model):
         })
         return rendering_values
 
-    @api.model
-    def _extract_reference(self, provider_code, payment_data):
-        """Override of `payment` to extract the reference from the APS data."""
-        if provider_code != 'aps':
-            return super()._extract_reference(provider_code, payment_data)
-        return payment_data.get('merchant_reference')
+    def _get_tx_from_notification_data(self, provider_code, notification_data):
+        """ Override of `payment` to find the transaction based on APS data.
 
-    def _extract_amount_data(self, payment_data):
-        """Override of `payment` to extract the amount and currency from the payment data."""
+        :param str provider_code: The code of the provider that handled the transaction.
+        :param dict notification_data: The notification data sent by the provider.
+        :return: The transaction if found.
+        :rtype: recordset of `payment.transaction`
+        :raise ValidationError: If inconsistent data are received.
+        :raise ValidationError: If the data match no transaction.
+        """
+        tx = super()._get_tx_from_notification_data(provider_code, notification_data)
+        if provider_code != 'aps' or len(tx) == 1:
+            return tx
+
+        reference = notification_data.get('merchant_reference')
+        if not reference:
+            raise ValidationError(
+                "APS: " + _("Received data with missing reference %(ref)s.", ref=reference)
+            )
+
+        tx = self.search([('reference', '=', reference), ('provider_code', '=', 'aps')])
+        if not tx:
+            raise ValidationError(
+                "APS: " + _("No transaction found matching reference %s.", reference)
+            )
+
+        return tx
+
+    def _process_notification_data(self, notification_data):
+        """ Override of `payment' to process the transaction based on APS data.
+
+        Note: self.ensure_one()
+
+        :param dict notification_data: The notification data sent by the provider.
+        :return: None
+        :raise ValidationError: If inconsistent data are received.
+        """
+        super()._process_notification_data(notification_data)
         if self.provider_code != 'aps':
-            return super()._extract_amount_data(payment_data)
-
-        amount = payment_utils.to_major_currency_units(
-            float(payment_data.get('amount', 0)), self.currency_id
-        )
-        return {
-            'amount': amount,
-            'currency_code': payment_data.get('currency'),
-        }
-
-    def _apply_updates(self, payment_data):
-        """Override of `payment' to update the transaction based on the payment data."""
-        if self.provider_code != 'aps':
-            return super()._apply_updates(payment_data)
+            return
 
         # Update the provider reference.
-        self.provider_reference = payment_data.get('fort_id')
+        self.provider_reference = notification_data.get('fort_id')
 
         # Update the payment method.
-        payment_option = payment_data.get('payment_option', '')
+        payment_option = notification_data.get('payment_option', '')
         payment_method = self.env['payment.method']._get_from_code(payment_option.lower())
         self.payment_method_id = payment_method or self.payment_method_id
 
         # Update the payment state.
-        status = payment_data.get('status')
+        status = notification_data.get('status')
         if not status:
-            self._set_error(_("Received data with missing payment state."))
-        elif status in PAYMENT_STATUS_MAPPING['pending']:
+            raise ValidationError("APS: " + _("Received data with missing payment state."))
+        if status in PAYMENT_STATUS_MAPPING['pending']:
             self._set_pending()
         elif status in PAYMENT_STATUS_MAPPING['done']:
             self._set_done()
         else:  # Classify unsupported payment state as `error` tx state.
-            status_description = payment_data.get('response_message')
+            status_description = notification_data.get('response_message')
             _logger.info(
                 "Received data with invalid payment status (%(status)s) and reason '%(reason)s' "
-                "for transaction %(ref)s.",
+                "for transaction with reference %(ref)s",
                 {'status': status, 'reason': status_description, 'ref': self.reference},
             )
-            self._set_error(_(
+            self._set_error("APS: " + _(
                 "Received invalid transaction status %(status)s and reason '%(reason)s'.",
                 status=status, reason=status_description
             ))

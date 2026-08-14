@@ -1,7 +1,6 @@
 import { Plugin } from "../plugin";
 import { isProtecting, isUnprotecting } from "../utils/dom_info";
 import { childNodes } from "../utils/dom_traversal";
-import { withSequence } from "@html_editor/utils/resource";
 
 const PROTECTED_SELECTOR = `[data-oe-protected="true"],[data-oe-protected=""]`;
 const UNPROTECTED_SELECTOR = `[data-oe-protected="false"]`;
@@ -9,18 +8,15 @@ const UNPROTECTED_SELECTOR = `[data-oe-protected="false"]`;
 /**
  * @typedef { Object } ProtectedNodeShared
  * @property { ProtectedNodePlugin['setProtectingNode'] } setProtectingNode
- *
- * @typedef { import("./history_plugin").HistoryMutationRecord } HistoryMutationRecord
  */
 
 export class ProtectedNodePlugin extends Plugin {
     static id = "protectedNode";
     static shared = ["setProtectingNode"];
-    /** @type {import("plugins").EditorResources} */
     resources = {
         /** Handlers */
         clean_for_save_handlers: ({ root }) => this.cleanForSave(root),
-        normalize_handlers: withSequence(0, this.normalize.bind(this)),
+        normalize_handlers: this.normalize.bind(this),
         before_filter_mutation_record_handlers: this.beforeFilteringMutationRecords.bind(this),
 
         unsplittable_node_predicates: [
@@ -92,29 +88,25 @@ export class ProtectedNodePlugin extends Plugin {
         }
     }
 
-    /**
-     * @param {HistoryMutationRecord[]} records
-     */
     beforeFilteringMutationRecords(records) {
         for (const record of records) {
             if (record.type === "childList") {
                 if (record.target.nodeType !== Node.ELEMENT_NODE) {
                     return;
                 }
-                const addedNodes = record.addedTrees.map((tree) => tree.node);
                 if (
                     (this.protectedNodes.has(record.target) &&
                         !record.target.matches(UNPROTECTED_SELECTOR)) ||
                     record.target.matches(PROTECTED_SELECTOR)
                 ) {
-                    for (const addedNode of addedNodes) {
+                    for (const addedNode of record.addedNodes) {
                         this.protectNode(addedNode);
                     }
                 } else if (
                     !this.protectedNodes.has(record.target) ||
                     record.target.matches(UNPROTECTED_SELECTOR)
                 ) {
-                    for (const addedNode of addedNodes) {
+                    for (const addedNode of record.addedNodes) {
                         this.unProtectNode(addedNode);
                     }
                 }
@@ -123,11 +115,18 @@ export class ProtectedNodePlugin extends Plugin {
     }
 
     /**
-     * @param {HistoryMutationRecord} record
+     * @param {MutationRecord} record
      * @return {boolean}
      */
     isMutationRecordSavable(record) {
-        if (record.type === "childList") {
+        if (record.type === "attributes") {
+            if (record.attributeName === "contenteditable") {
+                return (
+                    !this.protectedNodes.has(record.target) ||
+                    record.target.matches(UNPROTECTED_SELECTOR)
+                );
+            }
+        } else if (record.target.nodeType === Node.ELEMENT_NODE) {
             return !(
                 (this.protectedNodes.has(record.target) &&
                     !record.target.matches(UNPROTECTED_SELECTOR)) ||

@@ -129,7 +129,7 @@ export const fileUploadService = {
                 // Disable this option if you need more explicit error handling.
                 if (displayError) {
                     notificationService.add(error?.message || defaultErrorMessage, {
-                        type: "danger",
+                        title: _t("Error"),
                         sticky: true,
                     });
                 }

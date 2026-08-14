@@ -4,6 +4,7 @@ import { isAndroid } from "@web/core/browser/feature_detection";
 import { browser } from "@web/core/browser/browser";
 import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
+import { url } from "@web/core/utils/urls";
 
 const PREVIEW_MSG_MAX_SIZE = 350; // optimal for native English speakers
 
@@ -13,7 +14,7 @@ const PREVIEW_MSG_MAX_SIZE = 350; // optimal for native English speakers
 export class OutOfFocusService {
     /**
      * @param {import("@web/env").OdooEnv} env
-     * @param {import("services").ServiceFactories} services
+     * @param {Partial<import("services").Services>} services
      */
     constructor(env, services) {
         this.setup(env, services);
@@ -24,9 +25,6 @@ export class OutOfFocusService {
         this.audio = undefined;
         this.multiTab = services.multi_tab;
         this.notificationService = services.notification;
-        this.soundEffectService = services["mail.sound_effects"];
-        /** @type {import("models").Store} */
-        this.store = services["mail.store"];
         this.closeFuncs = [];
     }
 
@@ -47,18 +45,18 @@ export class OutOfFocusService {
             icon = author.avatarUrl;
             if (message.thread?.channel_type === "channel") {
                 notificationTitle = _t("%(author name)s from %(channel name)s", {
-                    "author name": message.authorName,
+                    "author name": author.name,
                     "channel name": message.thread.displayName,
                 });
             } else {
-                notificationTitle = message.authorName;
+                notificationTitle = author.name;
             }
         }
-        const notificationContent = htmlToTextContentInline(message.previewText).substring(
+        const notificationContent = htmlToTextContentInline(message.body).substring(
             0,
             PREVIEW_MSG_MAX_SIZE
         );
-        await this.sendNotification({
+        this.sendNotification({
             message: notificationContent,
             sound: message.thread?.model === "discuss.channel",
             title: notificationTitle,
@@ -90,14 +88,13 @@ export class OutOfFocusService {
      * @param {string} [param0.title] The title of the notification.
      * @param {string} [param0.type] The type to be passed to the no
      * service when native notifications can't be sent.
-     * @param {string} [param0.icon] The icon to be displayed in the
-     * notification.
      */
-    async sendNotification({ message, sound = true, title, type, icon }) {
-        if (!this.canSendNativeNotification || !(await this.multiTab.isOnMainTab())) {
-            if (sound) {
-                this._playSound();
-            }
+    sendNotification({ message, sound = true, title, type, icon }) {
+        if (!this.canSendNativeNotification) {
+            this.sendOdooNotification(message, { sound, title, type });
+            return;
+        }
+        if (!this.multiTab.isOnMainTab()) {
             return;
         }
         try {
@@ -154,12 +151,19 @@ export class OutOfFocusService {
         if (isAndroid() && browser.Notification?.permission === "granted") {
             return;
         }
-        if (
-            this.canPlayAudio &&
-            this.store.settings.messageSound &&
-            (await this.multiTab.isOnMainTab())
-        ) {
-            this.soundEffectService.play("new-message");
+        if (this.canPlayAudio && this.multiTab.isOnMainTab()) {
+            if (!this.audio) {
+                this.audio = new Audio();
+                this.audio.src = this.audio.canPlayType("audio/ogg; codecs=vorbis")
+                    ? url("/mail/static/src/audio/ting.ogg")
+                    : url("/mail/static/src/audio/ting.mp3");
+            }
+            try {
+                await this.audio.play();
+            } catch {
+                // Ignore errors due to the user not having interracted
+                // with the page before playing the sound.
+            }
         }
     }
 
@@ -168,15 +172,15 @@ export class OutOfFocusService {
     }
 
     get canSendNativeNotification() {
-        return Boolean(window.Notification && window.Notification.permission === "granted");
+        return Boolean(browser.Notification && browser.Notification.permission === "granted");
     }
 }
 
 export const outOfFocusService = {
-    dependencies: ["multi_tab", "notification", "mail.sound_effects", "mail.store"],
+    dependencies: ["multi_tab", "notification"],
     /**
      * @param {import("@web/env").OdooEnv} env
-     * @param {import("services").ServiceFactories} services
+     * @param {Partial<import("services").Services>} services
      */
     start(env, services) {
         const service = new OutOfFocusService(env, services);

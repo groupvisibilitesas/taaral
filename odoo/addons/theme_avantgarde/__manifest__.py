@@ -13,44 +13,19 @@
         'views/new_page_template.xml',
     ],
     'images': [
-        'static/description/poster.webp',
-        'static/description/avantgarde_screenshot.webp',
+        'static/description/poster.jpg',
+        'static/description/avantgarde_screenshot.jpg',
     ],
     'images_preview_theme': {
-        'website.s_cover_default_image': '/theme_avantgarde/static/src/img/pictures/bg_image_08.webp',
-        'website.library_image_13': '/theme_avantgarde/static/src/img/pictures/library_image_13.webp',
-        'website.library_image_03': '/theme_avantgarde/static/src/img/pictures/library_image_03.webp',
-        'website.library_image_16': '/theme_avantgarde/static/src/img/pictures/library_image_16.webp',
+        'website.s_cover_default_image': '/theme_avantgarde/static/src/img/pictures/bg_image_08.jpg',
+        'website.library_image_13': '/theme_avantgarde/static/src/img/pictures/library_image_13.jpg',
+        'website.library_image_03': '/theme_avantgarde/static/src/img/pictures/library_image_03.jpg',
+        'website.library_image_16': '/theme_avantgarde/static/src/img/pictures/library_image_16.jpg',
     },
     'configurator_snippets': {
-        'homepage': ['s_sidegrid', 's_features_wall', 's_carousel', 's_timeline', 's_quadrant'],
-    },
-    'configurator_snippets_addons': {
-        'website_sale': {
-            'homepage': [
-                ('website_sale.s_dynamic_snippet_category_list', 'after', 's_carousel'),
-            ],
-        },
-    },
-    'theme_customizations': {
-        'website_sale.s_dynamic_snippet_category_list': {
-            'data_attributes': {
-                'columns': '2',
-                'alignment': 'right',
-            },
-            'add_classes': [
-                'pt88', 'pb88',
-                {
-                    's_dynamic_snippet_title': 's_dynamic_snippet_title_aside col-lg-3 flex-lg-column justify-content-lg-start'
-                },
-            ],
-            'remove_classes': [
-                'pt64', 'pb64',
-            ],
-        },
+        'homepage': ['s_sidegrid', 's_features_wall', 's_masonry_block', 's_carousel', 's_timeline', 's_quadrant'],
     },
     'depends': ['theme_common'],
-    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
     'assets': {
         'website.assets_editor': [

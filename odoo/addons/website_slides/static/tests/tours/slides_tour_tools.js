@@ -1,5 +1,6 @@
+/** @odoo-module **/
+
 import { getDataURLFromFile } from "@web/core/utils/urls";
-import { stepUtils } from "@web_tour/tour_utils";
 
 /*
  * Constant
@@ -58,24 +59,21 @@ const clickOnAddTagDropdown = (prefix) => [
 
 var addVideoToSection = function (sectionName, saveAsDraft, backend = false) {
     const prefix = backend ? ':iframe ' : '';
-    var base_steps = [
+	var base_steps = [
         addContentToSection(prefix, sectionName),
-        {
-            content: "eLearning: click on video",
-            trigger: prefix + "a[data-slide-category=video]",
-            run: "click",
-        },
-        {
-            content: "eLearning: fill video link",
-            trigger: prefix + "input[name=video_url]",
-            run: "edit https://www.youtube.com/watch?v=pzmI3vAIhbE",
-        },
-        {
-            content: "eLearning: click outside to trigger onchange",
-            trigger: prefix + "div.o_w_slide_upload_modal_container",
-            run: "click",
-        },
-    ];
+, {
+	content: 'eLearning: click on video',
+	trigger: prefix + 'a[data-slide-category=video]',
+    run: "click",
+}, {
+	content: 'eLearning: fill video link',
+	trigger: prefix + 'input[name=video_url]',
+	run: "edit https://www.youtube.com/watch?v=pzmI3vAIhbE",
+}, {
+    content: 'eLearning: click outside to trigger onchange',
+    trigger: prefix + 'div.o_w_slide_upload_modal_container',
+    run: "click",
+}];
     if (saveAsDraft) {
         base_steps = [].concat(base_steps, [
             {
@@ -120,11 +118,11 @@ var addArticleToSection = function (sectionName, pageName, backend) {
 	run: `edit ${pageName}`,
 }, {
     content: 'eLearning: click on tags',
-    trigger: prefix + ".o_select_menu_toggler:last",
+    trigger: prefix + 'button.o_select_menu_toggler:last',
     run: "click",
 }, {
     content: 'eLearning: select Practice tag',
-    trigger: prefix + 'span.o_select_menu_item:contains("Practice")',
+    trigger: prefix + 'div.o_select_menu_item_label:contains("Practice")',
     run: "click",
 }, {
 	content: 'eLearning: fill article completion time',
@@ -134,7 +132,6 @@ var addArticleToSection = function (sectionName, pageName, backend) {
     content: 'eLearning: create and publish slide',
     trigger: prefix + 'footer.modal-footer button:contains("Publish")',
     run: "click",
-    expectUnloadPage: true,
 }];
 };
 
@@ -253,10 +250,9 @@ const addPdfToSection = function (sectionName, pageName, backend) {
     trigger: `${prefix} a.o_wslides_js_slides_list_slide_link:contains(Exercise)[href$="?fullscreen=1"]`,
     run: "click",
 },
-stepUtils.waitIframeIsReady(),
 {
     content: 'eLearning: check uploaded pdf presence and perform comparison',
-    trigger: (backend ? ':iframe ' : '') + '.o_wslides_fs_content :iframe #PDFSlideViewer',
+    trigger: (backend ? '.o_iframe:iframe ' : '') + '.o_wslides_fs_content :iframe #PDFSlideViewer',
     run: async (helpers) => {
         if (await compareBase64Content(helpers.anchor.getAttribute('data-slideurl'), 'Exercise.pdf', 'application/pdf', testPdf)) {
             helpers.anchor.classList.add('o_wslides_tour_pdf_upload_success');
@@ -282,7 +278,7 @@ var addExistingCourseTag = function (backend = false) {
         ...clickOnAddTagDropdown(prefix),
 {
     content: 'eLearning: select advanced tag',
-    trigger: prefix + '.o_select_menu_item:contains("Advanced")',
+    trigger: prefix + 'div.o_select_menu_item_label:contains("Advanced")',
     run: "click",
 }, {
     content: 'eLearning: add existing course tag',
@@ -312,7 +308,7 @@ var addNewCourseTag = function (courseTagName, backend) {
     run: "click",
 }, {
 	content: 'eLearning: select Tags tag group',
-    trigger: prefix + '.o_select_menu_item:contains("Tags")',
+    trigger: prefix + 'div.o_select_menu_item_label:contains("Tags")',
     run: "click",
 }, {
     content: 'eLearning: add new course tag',

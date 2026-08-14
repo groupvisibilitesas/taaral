@@ -106,7 +106,7 @@ def locate_node(arch, spec):
     return None
 
 
-def apply_inheritance_specs(source, specs_tree, inherit_branding=False, pre_locate=None):
+def apply_inheritance_specs(source, specs_tree, inherit_branding=False, pre_locate=lambda s: True):
     """ Apply an inheriting view (a descendant of the base view)
 
     Apply to a source architecture all the spec nodes (i.e. nodes
@@ -125,7 +125,6 @@ def apply_inheritance_specs(source, specs_tree, inherit_branding=False, pre_loca
     # Queue of specification nodes (i.e. nodes describing where and
     # changes to apply to some parent architecture).
     specs = specs_tree if isinstance(specs_tree, list) else [specs_tree]
-    pre_locate = pre_locate or (lambda _: True)
 
     def extract(spec):
         """
@@ -212,24 +211,15 @@ def apply_inheritance_specs(source, specs_tree, inherit_branding=False, pre_loca
                             node.addprevious(child)
                         node.getparent().remove(node)
                 elif mode == "inner":
-                    # use a sentinel to keep the existing children nodes, so
-                    # that one can move existing children nodes inside the new
-                    # content of the node (with position="move")
-                    sentinel = E.sentinel()
-                    if len(node) > 0:
-                        node[0].addprevious(sentinel)
-                    else:
-                        node.append(sentinel)
-                    # fill the node with the spec *before* the sentinel
-                    # remove node.text before that operation, otherwise it will
-                    # be merged with the new content's text
-                    node.text = None
-                    add_stripped_items_before(sentinel, copy.deepcopy(spec), extract)
-                    # now remove the old content and the sentinel
-                    for child in reversed(node):
+                    # Replace the entire content of an element
+                    for child in node:
                         node.remove(child)
-                        if child == sentinel:
-                            break
+                    node.text = None
+
+                    for child in spec:
+                        node.append(copy.deepcopy(child))
+                    node.text = spec.text
+
                 else:
                     raise ValueError(_lt("Invalid mode attribute: “%s”", mode))
             elif pos == 'attributes':

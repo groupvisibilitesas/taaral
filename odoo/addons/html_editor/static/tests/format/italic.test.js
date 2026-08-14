@@ -53,10 +53,9 @@ test("should make qweb tag italic", async () => {
     });
 });
 
-test.tags("desktop");
 test("should make a whole heading italic after a triple click", async () => {
     await testEditor({
-        contentBefore: `<h1>ab</h1><p>cd</p>`,
+        contentBefore: `<h1>[ab</h1><p>]cd</p>`,
         stepFunction: async (editor) => {
             await tripleClick(editor.editable.querySelector("h1"));
             italic(editor);
@@ -65,10 +64,9 @@ test("should make a whole heading italic after a triple click", async () => {
     });
 });
 
-test.tags("desktop");
 test("should make a whole heading not italic after a triple click", async () => {
     await testEditor({
-        contentBefore: `<h1><em>ab</em></h1><p>cd</p>`,
+        contentBefore: `<h1><em>[ab</em></h1><p>]cd</p>`,
         stepFunction: async (editor) => {
             await tripleClick(editor.editable.querySelector("h1"));
             italic(editor);
@@ -98,55 +96,6 @@ test("should make a selection ending with italic text fully italic", async () =>
         contentBefore: `<p>[ab</p><p><em>c]d</em></p>`,
         stepFunction: italic,
         contentAfter: `<p><em>[ab</em></p><p><em>c]d</em></p>`,
-    });
-});
-
-test("should make two paragraphs (separated with whitespace) italic", async () => {
-    await testEditor({
-        contentBefore: `
-            <p>[abc</p>
-            <p>def]</p>
-        `,
-        stepFunction: italic,
-        contentAfter: `
-            <p><em>[abc</em></p>
-            <p><em>def]</em></p>
-        `,
-    });
-});
-
-test("should make two paragraphs (separated with whitespace) not italic", async () => {
-    await testEditor({
-        contentBefore: `
-            <p><em>[abc</em></p>
-            <p><em>def]</em></p>
-        `,
-        stepFunction: italic,
-        contentAfter: `
-            <p>[abc</p>
-            <p>def]</p>
-        `,
-    });
-});
-
-test("should make two paragraphs (separated with whitespace) italic, then not italic", async () => {
-    await testEditor({
-        contentBefore: `
-            <p>[abc</p>
-            <p>def]</p>
-        `,
-        stepFunction: async (editor) => {
-            italic(editor);
-            expect(getContent(editor.editable)).toBe(`
-            <p><em>[abc</em></p>
-            <p><em>def]</em></p>
-        `);
-            italic(editor);
-        },
-        contentAfter: `
-            <p>[abc</p>
-            <p>def]</p>
-        `,
     });
 });
 
@@ -212,7 +161,6 @@ test("should make a few characters italic inside table (italic)", async () => {
             </table>`),
         stepFunction: italic,
         contentAfterEdit: unformat(`
-            <p data-selection-placeholder=""><br></p>
             <table class="table table-bordered o_table o_selected_table">
                 <tbody>
                     <tr>
@@ -231,8 +179,7 @@ test("should make a few characters italic inside table (italic)", async () => {
                         <td><p><br></p></td>
                     </tr>
                 </tbody>
-            </table>
-            <p data-selection-placeholder="" style="margin: -9px 0px 8px;"><br></p>`),
+            </table>`),
     });
 });
 

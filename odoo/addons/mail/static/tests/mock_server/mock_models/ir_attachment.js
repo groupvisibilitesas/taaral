@@ -32,16 +32,40 @@ export class IrAttachment extends webModels.IrAttachment {
     }
 
     /** @param {number} ids */
-    _to_store(store, fields) {
-        const kwargs = getKwArgs(arguments, "store", "fields");
+    _to_store(ids, store, fields) {
+        const kwargs = getKwArgs(arguments, "ids", "store", "fields");
         fields = kwargs.fields;
 
-        for (const attachment of this) {
+        /** @type {import("mock_models").DiscussVoiceMetadata} */
+        const DiscussVoiceMetadata = this.env["discuss.voice.metadata"];
+
+        if (!fields) {
+            fields = [
+                "checksum",
+                "create_date",
+                "filename",
+                "mimetype",
+                "name",
+                "res_name",
+                "size",
+                "thread",
+                "type",
+                "url",
+            ];
+        }
+
+        for (const attachment of this.browse(ids)) {
             const [data] = this._read_format(
                 attachment.id,
-                fields.filter((field) => field !== "thread"),
+                fields.filter((field) => !["filename", "size", "thread"].includes(field)),
                 false
             );
+            if (fields.includes("filename")) {
+                data.filename = attachment.name;
+            }
+            if (fields.includes("size")) {
+                data.size = attachment.file_size;
+            }
             if (fields.includes("thread")) {
                 data.thread =
                     attachment.model !== "mail.compose.message" && attachment.res_id
@@ -54,21 +78,11 @@ export class IrAttachment extends webModels.IrAttachment {
                           )
                         : false;
             }
-            store._add_record_fields(this.browse(attachment.id), data);
+            const voice = DiscussVoiceMetadata.browse(attachment.id)[0];
+            if (voice) {
+                data.voice = true;
+            }
+            store.add(this.browse(attachment.id), data);
         }
-    }
-
-    get _to_store_defaults() {
-        return [
-            "checksum",
-            "create_date",
-            "mimetype",
-            "name",
-            "res_name",
-            "thread",
-            "type",
-            "url",
-            "voice_ids",
-        ];
     }
 }

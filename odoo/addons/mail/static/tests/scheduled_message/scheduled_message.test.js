@@ -41,13 +41,11 @@ test("Scheduled messages basic layout", async () => {
     await contains(
         `.o-mail-Message-avatarContainer img.cursor-pointer[data-src='${getOrigin()}/web/image/res.partner/${partnerId}/avatar_128?unique=${
             deserializeDateTime(partner.write_date).ts
-        }']`
+        }']`,
     );
     await contains(
-        `.o-mail-Message-date[title='${deserializeDateTime(scheduled_date).toLocaleString(
-            luxon.DateTime.DATETIME_SHORT
-        )}']`,
-        { text: "in 3 hours" } // 3 hours because luxon toRelative rounds down
+        `.o-mail-Message-date[title='${deserializeDateTime(scheduled_date).toLocaleString(luxon.DateTime.DATETIME_SHORT)}']`,
+        { text: "in 3 hours" }, // 3 hours because luxon toRelative rounds down
     );
     await contains(".o-mail-Message-body em", { text: "Subject: Greetings" });
     await contains(".o-mail-Message-body p", { text: "Hello There" });
@@ -281,7 +279,7 @@ test("Scheduling a message", async () => {
     await openFormView("res.partner", partnerId);
     await contains(".o-mail-Chatter");
     await click(".o-mail-Chatter-sendMessage");
-    await click(".o-mail-Composer button[title='Open Full Composer']");
+    await click(".o-mail-Composer-fullComposer");
     await contains(".o-mail-Scheduled-Message");
     await contains(".o-mail-Message-body", { text: "New scheduled message" });
 });
@@ -351,7 +349,7 @@ test("Scheduled date is updated when time passes", async () => {
     await contains(".o-mail-Message-date", { text: "now" });
 });
 
-test("Open avatar card when clicking on partner mention", async () => {
+test("Open chat when clicking on partner mention", async () => {
     const pyEnv = await startServer();
     const partnerId = pyEnv.user.partner_id;
     pyEnv["mail.scheduled.message"].create({
@@ -363,7 +361,8 @@ test("Open avatar card when clicking on partner mention", async () => {
     await start();
     await openFormView("res.partner", partnerId);
     await click(".o_mail_redirect");
-    await contains(".o_avatar_card:contains('Mitchell Admin')");
+    await contains(".o-mail-ChatWindow .o-mail-Thread");
+    await contains(".o-mail-ChatWindow", { text: "Mitchell Admin" });
 });
 
 test("Open chat when clicking on channel mention", async () => {
@@ -411,8 +410,8 @@ test("Scheduled message with attachments", async () => {
     await contains(".o-mail-Scheduled-Message");
     await contains(".o-mail-AttachmentList");
     await contains(".o-mail-Chatter-attachFiles sup", { text: "2" });
-    await contains(".o-mail-AttachmentCard");
-    await contains(".o-mail-AttachmentImage");
+    await contains(".o-mail-AttachmentCard[title='Blah.txt']");
+    await contains(".o-mail-AttachmentImage[title='Blu.png']");
 });
 
 test("widget mail_composer_attachment_selector: edit attachment of scheduled message", async () => {

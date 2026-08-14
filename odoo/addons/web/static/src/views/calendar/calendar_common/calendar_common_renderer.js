@@ -1,18 +1,13 @@
-import { browser } from "@web/core/browser/browser";
-import { getLocalYearAndWeek } from "@web/core/l10n/dates";
+import { getLocalWeekNumber, is24HourFormat } from "@web/core/l10n/dates";
 import { localization } from "@web/core/l10n/localization";
-import { is24HourFormat } from "@web/core/l10n/time";
-import { useBus } from "@web/core/utils/hooks";
-import { renderToFragment, renderToString } from "@web/core/utils/render";
-import { useDebounced } from "@web/core/utils/timing";
-import { makeWeekColumn } from "@web/views/calendar/calendar_common/calendar_common_week_column";
-import { CalendarCommonPopover } from "@web/views/calendar/calendar_common/calendar_common_popover";
-import { convertRecordToEvent, getColor } from "@web/views/calendar/utils";
-import { useCalendarPopover } from "@web/views/calendar/hooks/calendar_popover_hook";
-import { useFullCalendar } from "@web/views/calendar/hooks/full_calendar_hook";
-import { useSquareSelection } from "@web/views/calendar/hooks/square_selection_hook";
+import { renderToString } from "@web/core/utils/render";
+import { getColor } from "../colors";
+import { useCalendarPopover, useClickHandler, useFullCalendar } from "../hooks";
+import { CalendarCommonPopover } from "./calendar_common_popover";
+import { makeWeekColumn } from "./calendar_common_week_column";
 
-import { Component, useEffect } from "@odoo/owl";
+import { Component } from "@odoo/owl";
+import { useBus } from "@web/core/utils/hooks";
 
 const SCALE_TO_FC_VIEW = {
     day: "timeGridDay",
@@ -54,40 +49,22 @@ export class CalendarCommonRenderer extends Component {
     static headerTemplate = "web.CalendarCommonRendererHeader";
     static props = {
         model: Object,
+        displayName: { type: String, optional: true },
         isWeekendVisible: { type: Boolean, optional: true },
         createRecord: Function,
         editRecord: Function,
         deleteRecord: Function,
         setDate: { type: Function, optional: true },
-        callbackRecorder: Object,
-        onSquareSelection: Function,
-        cleanSquareSelection: Function,
     };
 
     setup() {
         this.fc = useFullCalendar("fullCalendar", this.options);
-        this.clickTimeoutId = null;
+        this.click = useClickHandler(this.onClick, this.onDblClick);
         this.popover = useCalendarPopover(this.constructor.components.Popover);
         this.timeFormat = is24HourFormat() ? "HH:mm" : "hh:mm a";
         useBus(this.props.model.bus, "SCROLL_TO_CURRENT_HOUR", () =>
             this.fc.api.scrollToTime(`${luxon.DateTime.local().hour - 2}:00:00`)
         );
-
-        const fullCalendarRenderDebounced = useDebounced(() => this.fc.api.updateSize(), 100, {
-            immediate: true,
-            trailing: true,
-        });
-        const fullCalendarResizeObserver = new ResizeObserver(fullCalendarRenderDebounced);
-        useEffect(
-            (el) => {
-                fullCalendarResizeObserver.observe(el);
-                return () => fullCalendarResizeObserver.unobserve(el);
-            },
-            () => [this.fc.el]
-        );
-        useSquareSelection({
-            cellIsSelectable: this.constructor.cellIsSelectable,
-        });
     }
 
     get options() {
@@ -97,9 +74,7 @@ export class CalendarCommonRenderer extends Component {
             dayHeaderFormat: this.env.isSmall
                 ? SHORT_SCALE_TO_HEADER_FORMAT[this.props.model.scale]
                 : SCALE_TO_HEADER_FORMAT[this.props.model.scale],
-            // we must handle clicks differently in multicreate mode:
-            // fc is blocked by safePrevent in onPointerDown (draggable_hook_builder.js)
-            dateClick: this.props.model.hasMultiCreate ? () => {} : this.onDateClick,
+            dateClick: this.onDateClick,
             dayCellClassNames: this.getDayCellClassNames,
             initialDate: this.props.model.date.toISO(),
             initialView: SCALE_TO_FC_VIEW[this.props.model.scale],
@@ -127,17 +102,11 @@ export class CalendarCommonRenderer extends Component {
             longPressDelay: 500,
             navLinks: false,
             nowIndicator: true,
-            nowIndicatorContent: {
-                html: `
-                    <div class="o_calendar_time_indicator_now"></div>
-                `,
-            },
             select: this.onSelect,
             selectAllow: this.isSelectionAllowed,
             selectMinDistance: 5, // needed to not trigger select when click
             selectMirror: true,
-            selectable: !this.props.model.hasMultiCreate && this.props.model.canCreate,
-            showNonCurrentDates: this.props.model.monthOverflow,
+            selectable: this.props.model.canCreate,
             slotLabelFormat: is24HourFormat() ? HOUR_FORMATS[24] : HOUR_FORMATS[12],
             snapDuration: { minutes: 15 },
             timeZone: luxon.Settings.defaultZone.name,
@@ -146,14 +115,12 @@ export class CalendarCommonRenderer extends Component {
                 week: this.props.model.scale === "month" || this.env.isSmall ? "numeric" : "long",
             },
             weekends: this.props.isWeekendVisible,
-            weekNumberCalculation: (date) => getLocalYearAndWeek(date).week,
+            weekNumberCalculation: (date) => getLocalWeekNumber(date),
             weekNumbers: true,
             dayHeaderContent: this.getHeaderHtml,
             eventDisplay: "block", // Restore old render in daygrid view for single-day timed events
-            eventTimeFormat: is24HourFormat() ? HOUR_FORMATS[24] : HOUR_FORMATS[12],
             viewDidMount: this.viewDidMount,
             moreLinkDidMount: this.wrapMoreLink,
-            fixedWeekCount: false,
         };
     }
 
@@ -197,7 +164,20 @@ export class CalendarCommonRenderer extends Component {
         return Object.values(this.props.model.records).map((r) => this.convertRecordToEvent(r));
     }
     convertRecordToEvent(record) {
-        return convertRecordToEvent(record);
+        const allDay = record.isAllDay || record.end.diff(record.start, "hours").hours >= 24;
+        return {
+            id: record.id,
+            title: record.title,
+            start: record.start.toISO(),
+            end:
+                ["week", "month"].includes(this.props.model.scale) && allDay ||
+                (record.isAllDay ||
+                    (allDay && record.end.toMillis() !== record.end.startOf("day").toMillis())
+                )
+                    ? record.end.plus({ days: 1 }).toISO()
+                    : record.end.toISO(),
+            allDay: allDay,
+        };
     }
     getPopoverProps(record) {
         return {
@@ -238,16 +218,7 @@ export class CalendarCommonRenderer extends Component {
         this.props.editRecord(this.props.model.records[info.event.id]);
     }
     onEventClick(info) {
-        if (this.clickTimeoutId) {
-            this.onDblClick(info);
-            browser.clearTimeout(this.clickTimeoutId);
-            this.clickTimeoutId = null;
-        } else {
-            this.clickTimeoutId = browser.setTimeout(() => {
-                this.onClick(info);
-                this.clickTimeoutId = null;
-            }, 250);
-        }
+        this.click(info);
     }
     onEventContent(arg) {
         const { event } = arg;
@@ -259,12 +230,14 @@ export class CalendarCommonRenderer extends Component {
         const record = this.props.model.records[event.id];
         if (record) {
             // This is needed in order to give the possibility to change the event template.
-            const fragment = renderToFragment(this.constructor.eventTemplate, {
+            const injectedContentStr = renderToString(this.constructor.eventTemplate, {
                 ...record,
                 startTime: this.getStartTime(record),
                 endTime: this.getEndTime(record),
             });
-            return { domNodes: fragment.children };
+            const domParser = new DOMParser();
+            const { children } = domParser.parseFromString(injectedContentStr, "text/html").body;
+            return { domNodes: children };
         }
         return true;
     }
@@ -383,14 +356,11 @@ export class CalendarCommonRenderer extends Component {
         this.unhighlightEvent(info.event, "o_cw_custom_highlight");
     }
     onEventDragStart(info) {
-        this.popover.close();
-        this.props.cleanSquareSelection();
         info.el.classList.add(info.view.type);
         this.fc.api.unselect();
         this.highlightEvent(info.event, "o_cw_custom_highlight");
     }
     onEventResizeStart(info) {
-        this.props.cleanSquareSelection();
         this.fc.api.unselect();
         this.highlightEvent(info.event, "o_cw_custom_highlight");
     }
@@ -413,7 +383,7 @@ export class CalendarCommonRenderer extends Component {
         // when rendering months, FullCalendar uses a date w/out tz
         // so use UTC instead of local tz when converting to DateTime
         const options = scale === "month" ? { zone: "UTC" } : {};
-        const { weekdayShort, weekdayLong, day } = DateTime.fromJSDate(date, options);
+        const { weekdayShort, weekdayLong, day } = DateTime.fromJSDate(date, options).plus({ hour: 1 });
         return {
             weekdayShort,
             weekdayLong,

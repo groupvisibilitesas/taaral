@@ -36,14 +36,14 @@ function stepConnectionStateChanges() {
 test("connection considered as lost after failed reconnect attempt", async () => {
     stepConnectionStateChanges();
     addBusServiceListeners(
-        ["BUS:CONNECT", () => asyncStep("BUS:CONNECT")],
-        ["BUS:DISCONNECT", () => asyncStep("BUS:DISCONNECT")]
+        ["connect", () => asyncStep("connect")],
+        ["disconnect", () => asyncStep("disconnect")]
     );
     await makeMockEnv();
-    await waitForSteps(["isConnectionLost - false", "BUS:CONNECT"]);
+    await waitForSteps(["isConnectionLost - false", "connect"]);
     const unlockWebsocket = lockWebsocketConnect();
     MockServer.env["bus.bus"]._simulateDisconnection(WEBSOCKET_CLOSE_CODES.ABNORMAL_CLOSURE);
-    await waitForSteps(["BUS:DISCONNECT"]);
+    await waitForSteps(["disconnect"]);
     await runAllTimers();
     await waitForSteps(["isConnectionLost - true"]);
     unlockWebsocket();
@@ -54,35 +54,35 @@ test("connection considered as lost after failed reconnect attempt", async () =>
 test("brief disconect not considered lost", async () => {
     stepConnectionStateChanges();
     addBusServiceListeners(
-        ["BUS:CONNECT", () => asyncStep("BUS:CONNECT")],
-        ["BUS:DISCONNECT", () => asyncStep("BUS:DISCONNECT")],
-        ["BUS:RECONNECT", () => asyncStep("BUS:RECONNECT")]
+        ["connect", () => asyncStep("connect")],
+        ["disconnect", () => asyncStep("disconnect")],
+        ["reconnect", () => asyncStep("reconnect")]
     );
     await makeMockEnv();
-    await waitForSteps(["isConnectionLost - false", "BUS:CONNECT"]);
+    await waitForSteps(["isConnectionLost - false", "connect"]);
     MockServer.env["bus.bus"]._simulateDisconnection(WEBSOCKET_CLOSE_CODES.SESSION_EXPIRED);
-    await waitForSteps(["BUS:DISCONNECT"]);
+    await waitForSteps(["disconnect"]);
     await runAllTimers();
-    await waitForSteps(["BUS:RECONNECT"]); // Only reconnect step, which means the monitoring state didn't change.
+    await waitForSteps(["reconnect"]); // Only reconnect step, which means the monitoring state didn't change.
 });
 
 test("computer sleep doesn't mark connection as lost", async () => {
     stepConnectionStateChanges();
     addBusServiceListeners(
-        ["BUS:CONNECT", () => asyncStep("BUS:CONNECT")],
-        ["BUS:DISCONNECT", () => asyncStep("BUS:DISCONNECT")],
-        ["BUS:RECONNECT", () => asyncStep("BUS:RECONNECT")]
+        ["connect", () => asyncStep("connect")],
+        ["disconnect", () => asyncStep("disconnect")],
+        ["reconnect", () => asyncStep("reconnect")]
     );
     await makeMockEnv();
-    await waitForSteps(["isConnectionLost - false", "BUS:CONNECT"]);
+    await waitForSteps(["isConnectionLost - false", "connect"]);
     const unlockWebsocket = lockWebsocketConnect();
     patchWithCleanup(navigator, { onLine: false });
     await manuallyDispatchProgrammaticEvent(window, "offline"); // Offline event is triggered when the computer goes to sleep.
-    await waitForSteps(["BUS:DISCONNECT"]);
+    await waitForSteps(["disconnect"]);
     patchWithCleanup(navigator, { onLine: true });
     await manuallyDispatchProgrammaticEvent(window, "online"); // Online event is triggered when the computer wakes up.
     unlockWebsocket();
     await runAllTimers();
-    await waitForSteps(["BUS:CONNECT"]);
+    await waitForSteps(["connect"]);
     expect(getService("bus.monitoring_service").isConnectionLost).toBe(false);
 });

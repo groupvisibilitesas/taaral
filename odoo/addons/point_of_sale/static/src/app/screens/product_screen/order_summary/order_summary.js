@@ -1,19 +1,20 @@
-import { usePos } from "@point_of_sale/app/hooks/pos_hook";
+import { usePos } from "@point_of_sale/app/store/pos_hook";
 import { Component } from "@odoo/owl";
-import { Orderline } from "@point_of_sale/app/components/orderline/orderline";
+import { Orderline } from "@point_of_sale/app/generic_components/orderline/orderline";
+import { OrderWidget } from "@point_of_sale/app/generic_components/order_widget/order_widget";
 import { useService } from "@web/core/utils/hooks";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { _t } from "@web/core/l10n/translation";
-import { makeAwaitable } from "@point_of_sale/app/utils/make_awaitable_dialog";
-import { NumberPopup } from "@point_of_sale/app/components/popups/number_popup/number_popup";
+import { makeAwaitable } from "@point_of_sale/app/store/make_awaitable_dialog";
+import { NumberPopup } from "@point_of_sale/app/utils/input_popups/number_popup";
 import { parseFloat } from "@web/views/fields/parsers";
-import { OrderDisplay } from "@point_of_sale/app/components/order_display/order_display";
+import { enhancedButtons } from "@point_of_sale/app/generic_components/numpad/numpad";
 
 export class OrderSummary extends Component {
     static template = "point_of_sale.OrderSummary";
     static components = {
         Orderline,
-        OrderDisplay,
+        OrderWidget,
     };
     static props = {};
 
@@ -30,142 +31,60 @@ export class OrderSummary extends Component {
     }
 
     get currentOrder() {
-        return this.pos.selectedOrder;
+        return this.pos.get_order();
     }
 
     async editPackLotLines(line) {
         const isAllowOnlyOneLot = line.product_id.isAllowOnlyOneLot();
-        let editedPackLotLines = [];
-        if (line.refunded_orderline_id) {
-            editedPackLotLines = await this.pos.editLotsRefund(line);
-        } else {
-            editedPackLotLines = await this.pos.editLots(
-                line.product_id,
-                line.getPackLotLinesToEdit(isAllowOnlyOneLot)
-            );
-        }
+        const editedPackLotLines = await this.pos.editLots(
+            line.product_id,
+            line.getPackLotLinesToEdit(isAllowOnlyOneLot)
+        );
+
         line.editPackLotLines(editedPackLotLines);
     }
 
     clickLine(ev, orderline) {
         ev.stopPropagation();
+        if (ev.detail === 2) {
+            clearTimeout(this.singleClick);
+            return;
+        }
         this.numberBuffer.reset();
-
         if (!orderline.isSelected()) {
             this.pos.selectOrderLine(this.currentOrder, orderline);
         } else {
-            this.pos.getOrder().uiState.selected_orderline_uuid = null;
+            this.singleClick = setTimeout(() => {
+                this.pos.get_order().uiState.selected_orderline_uuid = null;
+            }, 300);
         }
     }
-
-    async onOrderlineLongPress(ev, orderline) {
-        const order = this.currentOrder;
-        order.assertEditable();
-
-        // If combo line, edit its parent instead
-        if (orderline.combo_parent_id) {
-            orderline = orderline.combo_parent_id;
+    handleOrderLineQuantityChange(selectedLine, buffer, currentQuantity, lastId) {
+        const parsedInput = (buffer && parseFloat(buffer)) || 0;
+        if (lastId != selectedLine.uuid || parsedInput < currentQuantity) {
+            this._showDecreaseQuantityPopup();
+        } else if (currentQuantity < parsedInput) {
+            this._setValue(buffer);
         }
-
-        // Prevent if already sent to kitchen
-        if (typeof order.id === "number") {
-            const preparation_data = await this.pos.data.call(
-                "pos.order",
-                "get_preparation_change",
-                [order.id]
-            );
-            const prep = JSON.parse(preparation_data.last_order_preparation_change || "{}");
-            if (prep.lines && Object.keys(prep.lines).some((l) => l === orderline.uuid)) {
-                this.dialog.add(AlertDialog, {
-                    title: _t("Cannot edit orderline"),
-                    body: _t(
-                        "This orderline has already been sent to the kitchen and cannot be edited."
-                    ),
-                });
-                return false;
-            }
-        }
-
-        // Init orderline
-        const productTemplate = orderline.product_id.product_tmpl_id;
-        const values = {
-            product_tmpl_id: productTemplate,
-            product_id: orderline.product_id,
-            qty: orderline.qty,
-            price_extra: 0,
-        };
-
-        // Configurable product
-        let keepGoing = await this.pos.handleConfigurableProduct(
-            values,
-            productTemplate,
-            {
-                line: orderline,
-            },
-            true
-        );
-        if (keepGoing === false) {
-            return false;
-        }
-
-        // Combo product
-        keepGoing = await this.pos.handleComboProduct(values, order, true, {
-            line: orderline,
-        });
-        if (keepGoing === false) {
-            return false;
-        }
-
-        // Price unit
-        this.pos.handlePriceUnit(values, order, undefined);
-
-        // Update orderline
-        if (values.attribute_value_ids !== undefined) {
-            orderline.attribute_value_ids = values.attribute_value_ids.map((a) => a[1]);
-        }
-        if (values.custom_attribute_value_ids !== undefined) {
-            const createManyCustomAttributeValues = values.custom_attribute_value_ids.map(
-                (a) => a[1]
-            );
-            orderline.custom_attribute_value_ids = this.pos.models[
-                "product.attribute.custom.value"
-            ].createMany(createManyCustomAttributeValues);
-        }
-        orderline.price_extra = values.price_extra;
-        orderline.qty = values.qty;
-        if (values.product_id) {
-            orderline.product_id = values.product_id;
-        }
-        if (values.combo_line_ids !== undefined) {
-            while (orderline.combo_line_ids.length > 0) {
-                this.pos.models["pos.order.line"].delete(orderline.combo_line_ids[0]);
-            }
-            orderline.combo_line_ids = values.combo_line_ids || [];
-        }
-        if (values.price_unit !== undefined) {
-            orderline.price_unit = values.price_unit;
-        }
-        orderline.setFullProductName();
-
-        // Try to merge the orderline
-        this.pos.tryMergeOrderline(order, orderline, orderline.price_type !== "manual");
-        return true;
     }
-
-    async updateSelectedOrderline({ buffer, key }) {
-        const order = this.pos.getOrder();
-        const selectedLine = order.getSelectedOrderline();
-        // Handling negation of value on first input
+    // Handle negation of value on first input
+    _handleNegationOnFirstInput(buffer, key, selectedLine) {
         if (buffer === "-0" && key == "-") {
             if (this.pos.numpadMode === "quantity" && !selectedLine.refunded_orderline_id) {
-                buffer = selectedLine.getQuantity() * -1;
+                buffer = selectedLine.get_quantity() * -1;
             } else if (this.pos.numpadMode === "discount") {
-                buffer = selectedLine.getDiscount() * -1;
+                buffer = selectedLine.get_discount() * -1;
             } else if (this.pos.numpadMode === "price") {
-                buffer = selectedLine.prices.total_excluded_currency * -1;
+                buffer = selectedLine.get_unit_price() * -1;
             }
             this.numberBuffer.state.buffer = buffer.toString();
         }
+        return buffer;
+    }
+    async updateSelectedOrderline({ buffer, key }) {
+        const order = this.pos.get_order();
+        const selectedLine = order.get_selected_orderline();
+        buffer = this._handleNegationOnFirstInput(buffer, key, selectedLine);
         // This validation must not be affected by `disallowLineQuantityChange`
         if (selectedLine && selectedLine.isTipLine() && this.pos.numpadMode !== "price") {
             /**
@@ -189,10 +108,24 @@ export class OrderSummary extends Component {
             this.pos.numpadMode === "quantity" &&
             this.pos.disallowLineQuantityChange()
         ) {
-            await this._showDecreaseQuantityPopup();
-            if (selectedLine.getQuantity() === 0) {
-                this._setValue("remove");
+            const orderlines = order.lines;
+            const lastId = orderlines.length !== 0 && orderlines.at(orderlines.length - 1).uuid;
+            const currentQuantity = this.pos.get_order().get_selected_orderline().get_quantity();
+
+            if (selectedLine.noDecrease) {
+                this.dialog.add(AlertDialog, {
+                    title: _t("Invalid action"),
+                    body: _t("You are not allowed to change this quantity"),
+                });
+                return;
             }
+
+            this.handleOrderLineQuantityChange(
+                selectedLine,
+                this.numberBuffer.state.buffer,
+                currentQuantity,
+                lastId
+            );
             return;
         } else if (
             selectedLine &&
@@ -201,7 +134,7 @@ export class OrderSummary extends Component {
         ) {
             this.numberBuffer.reset();
             const inputNumber = await makeAwaitable(this.dialog, NumberPopup, {
-                startingValue: selectedLine.getDiscount() || 10,
+                startingValue: selectedLine.get_discount() || 10,
                 title: _t("Set the new discount"),
             });
             if (inputNumber) {
@@ -215,7 +148,7 @@ export class OrderSummary extends Component {
         ) {
             this.numberBuffer.reset();
             const inputNumber = await makeAwaitable(this.dialog, NumberPopup, {
-                startingValue: selectedLine.prices.total_excluded_currency,
+                startingValue: selectedLine.get_unit_price(),
                 title: _t("Set the new price"),
             });
             if (inputNumber) {
@@ -233,7 +166,7 @@ export class OrderSummary extends Component {
 
     _setValue(val) {
         const { numpadMode } = this.pos;
-        let selectedLine = this.currentOrder.getSelectedOrderline();
+        let selectedLine = this.currentOrder.get_selected_orderline();
         if (selectedLine) {
             if (numpadMode === "quantity") {
                 if (selectedLine.combo_parent_id) {
@@ -242,19 +175,19 @@ export class OrderSummary extends Component {
                 if (val === "remove") {
                     this.currentOrder.removeOrderline(selectedLine);
                 } else {
-                    const result = selectedLine.setQuantity(
+                    const result = selectedLine.set_quantity(
                         val,
                         Boolean(selectedLine.combo_line_ids?.length)
                     );
+                    for (const line of selectedLine.combo_line_ids) {
+                        line.set_quantity(val, true);
+                    }
                     if (result !== true) {
                         this.dialog.add(AlertDialog, result);
                         this.numberBuffer.reset();
                     }
                 }
             } else if (numpadMode === "discount" && val !== "remove") {
-                if (selectedLine.combo_parent_id) {
-                    selectedLine = selectedLine.combo_parent_id;
-                }
                 this.pos.setDiscountFromUI(selectedLine, val);
             } else if (numpadMode === "price" && val !== "remove") {
                 this.setLinePrice(selectedLine, val);
@@ -264,38 +197,32 @@ export class OrderSummary extends Component {
 
     async setLinePrice(line, price) {
         line.price_type = "manual";
-        line.setUnitPrice(price);
+        line.set_unit_price(price);
     }
-
-    /**
-     * @param {Object} [options={}]
-     * @param {(value: string) => string} [options.formatDisplayedValue]
-     * @param {(value: string) => string} [options.parseQuantityValue]
-     */
-    async _showDecreaseQuantityPopup(options = {}) {
+    async _getShowDecreaseQuantityPopupButtons() {
+        return enhancedButtons();
+    }
+    async _showDecreaseQuantityPopup() {
         this.numberBuffer.reset();
-        let inputNumber = await makeAwaitable(this.dialog, NumberPopup, {
+        const inputNumber = await makeAwaitable(this.dialog, NumberPopup, {
             title: _t("Set the new quantity"),
-            formatDisplayedValue: options.formatDisplayedValue,
+            buttons: await this._getShowDecreaseQuantityPopupButtons(),
         });
         if (inputNumber) {
-            inputNumber = options.parseQuantityValue
-                ? options.parseQuantityValue(inputNumber)
-                : inputNumber;
             const newQuantity = inputNumber && inputNumber !== "" ? parseFloat(inputNumber) : null;
             return await this.updateQuantityNumber(newQuantity);
         }
     }
     async updateQuantityNumber(newQuantity) {
         if (newQuantity !== null) {
-            let selectedLine = this.currentOrder.getSelectedOrderline();
-            if (selectedLine.combo_parent_id) {
-                selectedLine = selectedLine.combo_parent_id;
-            }
-            const currentQuantity = selectedLine.getQuantity();
-            if (newQuantity >= currentQuantity) {
-                selectedLine.setQuantity(newQuantity, Boolean(selectedLine.combo_line_ids?.length));
-            } else if (newQuantity >= selectedLine.uiState.savedQuantity) {
+            const selectedLine = this.currentOrder.get_selected_orderline();
+            const currentQuantity = selectedLine.get_quantity();
+            if (Math.abs(newQuantity) >= currentQuantity) {
+                selectedLine.set_quantity(newQuantity, selectedLine.isPartOfCombo());
+                for (const line of selectedLine.combo_line_ids ?? []) {
+                    line.set_quantity(newQuantity, true);
+                }
+            } else if (Math.abs(newQuantity) >= selectedLine.saved_quantity) {
                 await this.handleDecreaseUnsavedLine(newQuantity);
             } else {
                 await this.handleDecreaseLine(newQuantity);
@@ -305,71 +232,72 @@ export class OrderSummary extends Component {
         return false;
     }
     async handleDecreaseUnsavedLine(newQuantity) {
-        let selectedLine = this.currentOrder.getSelectedOrderline();
-        if (selectedLine.combo_parent_id) {
-            selectedLine = selectedLine.combo_parent_id;
+        const selectedLine = this.currentOrder.get_selected_orderline();
+        const decreaseQuantity = selectedLine.get_quantity() - newQuantity;
+        selectedLine.set_quantity(newQuantity, selectedLine.isPartOfCombo());
+        for (const line of selectedLine.combo_line_ids ?? []) {
+            line.set_quantity(newQuantity, true);
         }
-        const decreaseQuantity = selectedLine.getQuantity() - newQuantity;
-        selectedLine.setQuantity(newQuantity, Boolean(selectedLine.combo_line_ids?.length));
+        if (newQuantity == 0) {
+            const line_uuids_to_remove =
+                selectedLine.combo_line_ids?.map((line) => line.uuid) || [];
+            selectedLine.delete();
+            for (const uuid of line_uuids_to_remove) {
+                const line = this.pos.models["pos.order.line"].getBy("uuid", uuid);
+                line.delete();
+            }
+        }
         return decreaseQuantity;
     }
     async handleDecreaseLine(newQuantity) {
-        let selectedLine = this.currentOrder.getSelectedOrderline();
-        if (selectedLine.combo_parent_id) {
-            selectedLine = selectedLine.combo_parent_id;
-        }
-        let current_saved_quantity = selectedLine.uiState.savedQuantity;
-        const decreaseLineUuid = selectedLine.uiState.decreaseLineUuid;
-        if (decreaseLineUuid) {
-            const decreaseLine = this.currentOrder.lines.find(
-                (line) => line.uuid === decreaseLineUuid
-            );
-            if (decreaseLine) {
-                current_saved_quantity += decreaseLine.qty;
+        const selectedLine = this.currentOrder.get_selected_orderline();
+        let current_saved_quantity = 0;
+        for (const line of this.currentOrder.lines) {
+            if (line === selectedLine) {
+                current_saved_quantity += line.saved_quantity;
+            } else if (
+                line.product_id.id === selectedLine.product_id.id &&
+                line.get_unit_price() === selectedLine.get_unit_price()
+            ) {
+                current_saved_quantity += line.qty;
             }
         }
         const newLine = this.getNewLine();
         const decreasedQuantity = current_saved_quantity - newQuantity;
         if (decreasedQuantity != 0) {
-            newLine.setQuantity(-decreasedQuantity + newLine.getQuantity(), true);
+            newLine.set_quantity(-decreasedQuantity + newLine.get_quantity(), true);
         }
-        if (newLine !== selectedLine && selectedLine.uiState.savedQuantity != 0) {
-            selectedLine.setQuantity(
-                selectedLine.uiState.savedQuantity,
-                Boolean(selectedLine.combo_line_ids?.length)
-            );
+        if (newLine !== selectedLine && selectedLine.saved_quantity != 0) {
+            selectedLine.set_quantity(selectedLine.saved_quantity);
         }
         return decreasedQuantity;
     }
     getNewLine() {
-        let selectedLine = this.currentOrder.getSelectedOrderline();
-        if (selectedLine.combo_parent_id) {
-            selectedLine = selectedLine.combo_parent_id;
-        }
+        const selectedLine = this.currentOrder.get_selected_orderline();
+        const sign = selectedLine.get_quantity() > 0 ? 1 : -1;
         let newLine = selectedLine;
-        if (selectedLine.uiState.savedQuantity != 0) {
-            const existingUuid = selectedLine.uiState.decreaseLineUuid;
-            if (existingUuid) {
-                const existing = selectedLine.order_id.lines.find(
-                    (line) => line.uuid === existingUuid
-                );
-                if (existing) {
-                    return existing;
+        if (selectedLine.saved_quantity != 0) {
+            for (const line of selectedLine.order_id.lines) {
+                if (
+                    line.product_id.id === selectedLine.product_id.id &&
+                    line.get_unit_price() === selectedLine.get_unit_price() &&
+                    line.get_quantity() * sign < 0 &&
+                    line !== selectedLine
+                ) {
+                    return line;
                 }
             }
-            const data = selectedLine.serializeForORM({ keepCommands: true });
+            const data = selectedLine.serialize();
             delete data.uuid;
             newLine = this.pos.models["pos.order.line"].create(
                 {
                     ...data,
-                    order_id: selectedLine.order_id,
                     refunded_orderline_id: selectedLine.refunded_orderline_id,
                 },
                 false,
                 true
             );
-            newLine.setQuantity(0);
-            selectedLine.uiState.decreaseLineUuid = newLine.uuid;
+            newLine.set_quantity(0);
         }
         return newLine;
     }

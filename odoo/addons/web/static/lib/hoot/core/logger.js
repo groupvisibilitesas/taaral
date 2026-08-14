@@ -276,27 +276,22 @@ let nextNetworkLogId = 1;
  */
 export function makeNetworkLogger(prefix, title) {
     const id = nextNetworkLogId++;
-    const slicedTitle =
-        title.length > 128 ? title.slice(0, 128) + " (click to show full input)" : title;
     return {
         /**
-         * Request logger: blue lotus.
+         * Request logger: blue-ish.
          * @param {() => any[]} getData
          */
         logRequest(getData) {
             if (!logger.canLog("debug")) {
                 return;
             }
-            const color = `color: #6960ec`;
+            const color = `color: #66e`;
             const args = [`${color}; font-weight: bold;`, color];
             const [dataHeader, ...otherData] = getData();
             if (!isNil(dataHeader)) {
                 args.push(dataHeader);
             }
-            $groupCollapsed(`-> %c${prefix}#${id}%c ${slicedTitle}`, ...args);
-            if (slicedTitle !== title) {
-                $log(title);
-            }
+            $groupCollapsed(`-> %c${prefix}#${id}%c<${title}>`, ...args);
             for (const data of otherData) {
                 $log(data);
             }
@@ -304,23 +299,20 @@ export function makeNetworkLogger(prefix, title) {
             $groupEnd();
         },
         /**
-         * Response logger: dark orange.
+         * Response logger: orange.
          * @param {() => any[]} getData
          */
         logResponse(getData) {
             if (!logger.canLog("debug")) {
                 return;
             }
-            const color = `color: #ff8c00`;
+            const color = `color: #f80`;
             const args = [`${color}; font-weight: bold;`, color];
             const [dataHeader, ...otherData] = getData();
             if (!isNil(dataHeader)) {
                 args.push(dataHeader);
             }
-            $groupCollapsed(`<- %c${prefix}#${id}%c ${slicedTitle}`, ...args);
-            if (slicedTitle !== title) {
-                $log(title);
-            }
+            $groupCollapsed(`<- %c${prefix}#${id}%c<${title}>`, ...args);
             for (const data of otherData) {
                 $log(data);
             }

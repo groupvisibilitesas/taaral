@@ -139,7 +139,9 @@ test("useCommand hook with isAvailable", async () => {
     class MyComponent extends TestComponent {
         setup() {
             useCommand("Take the throne", () => {}, {
-                isAvailable: () => available,
+                isAvailable: () => {
+                    return available;
+                },
             });
         }
     }
@@ -334,9 +336,11 @@ test("open command palette with command config", async () => {
     const providers = [{ provide }];
     getService("command").add(
         "test",
-        () => ({
-            providers,
-        }),
+        () => {
+            return {
+                providers,
+            };
+        },
         {
             hotkey,
         }
@@ -1059,7 +1063,7 @@ test("uses openPalette to modify the config used by the command palette", async 
     getService("command").openPalette(configCustom);
     await animationFrame();
     expect(".o_command").toHaveCount(1);
-    expect(queryAllTexts(".o_command .o_command_name")).toEqual(["Command2"]);
+    expect(queryAllTexts(".o_command span:first-child")).toEqual(["Command2"]);
     expect(".o_command_palette_search input").toHaveValue("Command");
 });
 
@@ -1113,6 +1117,6 @@ test("ensure that calling openPalette multiple times successfully loads the last
     await animationFrame();
     // Second config should be loaded properly.
     expect(".o_command").toHaveCount(1);
-    expect(queryAllTexts(".o_command .o_command_name")).toEqual(["Command2"]);
+    expect(queryAllTexts(".o_command span:first-child")).toEqual(["Command2"]);
     expect(".o_command_palette_search input").toHaveValue("Command");
 });

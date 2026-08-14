@@ -4,15 +4,14 @@
 #
 # Oakarmin Iron <oakarminiron@gmail.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
-# Odoo Translation Bot <c3p@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 18:39+0000\n"
-"PO-Revision-Date: 2026-08-05 22:00+0000\n"
-"Last-Translator: Odoo Translation Bot <c3p@odoo.com>\n"
-"Language-Team: Burmese <https://translate.odoo.com/projects/odoo-19/product/"
+"POT-Creation-Date: 2026-04-10 18:38+0000\n"
+"PO-Revision-Date: 2026-07-22 08:21+0000\n"
+"Last-Translator: Oakarmin Iron <oakarminiron@gmail.com>\n"
+"Language-Team: Burmese <https://translate.odoo.com/projects/odoo-18/product/"
 "my/>\n"
 "Language: my\n"
 "MIME-Version: 1.0\n"
@@ -80,7 +79,6 @@ msgstr ""
 
 #. module: product
 #. odoo-python
-#: code:addons/product/models/product_category.py:0
 #: code:addons/product/models/product_pricelist.py:0
 #: code:addons/product/models/product_tag.py:0
 #: code:addons/product/models/product_template.py:0
@@ -98,7 +96,7 @@ msgstr ""
 
 #. module: product
 #: model:ir.actions.report,print_report_name:product.report_product_packaging
-msgid "'Products packaging - %s' % (object.uom_id.name)"
+msgid "'Products packaging - %s' % (object.name)"
 msgstr ""
 
 #. module: product
@@ -138,14 +136,14 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_duration_month_1
-msgid "1 month"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_duration_year_1
+#: model:product.attribute.value,name:product.product_attribute_value_5
 msgid "1 year"
 msgstr "၁ နှစ်"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_warranty
+msgid "1 year warranty extension"
+msgstr "၁ နှစ် အာမခံ တိုးခြင်း"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
@@ -154,7 +152,7 @@ msgstr ""
 
 #. module: product
 #: model:product.template,description_sale:product.product_product_4_product_template
-msgid "160x80cm, with large legs"
+msgid "160x80cm, with large legs."
 msgstr ""
 
 #. module: product
@@ -163,23 +161,8 @@ msgid "2 x 7 with price"
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_duration_year_2
-msgid "2 years"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_size_2xl
-msgid "2XL"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_duration_year_3
-msgid "3 years"
-msgstr "၃ နှစ်"
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_size_3xl
-msgid "3XL"
+#: model:product.attribute.value,name:product.product_attribute_value_6
+msgid "2 year"
 msgstr ""
 
 #. module: product
@@ -195,28 +178,6 @@ msgstr ""
 #. module: product
 #: model:ir.model.fields.selection,name:product.selection__product_label_layout__print_format__4x7xprice
 msgid "4 x 7 with price"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_size_4xl
-msgid "4XL"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_size_5xl
-msgid "5XL"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_duration_month_6
-msgid "6 months"
-msgstr ""
-
-#. module: product
-#: model_terms:product.template,website_description:product.product_product_4_product_template
-msgid ""
-"<a href=\"/contactus\" class=\"mb-2 btn btn-primary "
-"o_translate_inline\">Contact Us</a>"
 msgstr ""
 
 #. module: product
@@ -239,13 +200,32 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_category_form_view
-msgid "<span class=\"o_stat_text\"> Products</span>"
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
+msgid ""
+"<span class=\"o_stat_text\" invisible=\"pricelist_item_count == 1\">\n"
+"                                            Rules\n"
+"                                        </span>\n"
+"                                        <span class=\"o_stat_text\" "
+"invisible=\"pricelist_item_count != 1\">\n"
+"                                            Rule\n"
+"                                        </span>"
 msgstr ""
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.uom_uom_form_view_inherit
-msgid "<span class=\"o_stat_text\">Packaging Barcodes</span>"
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
+msgid ""
+"<span class=\"o_stat_text\" invisible=\"pricelist_item_count == 1\">\n"
+"                                        Pricelists\n"
+"                                    </span>\n"
+"                                    <span class=\"o_stat_text\" "
+"invisible=\"pricelist_item_count != 1\">\n"
+"                                        Pricelist\n"
+"                                    </span>"
+msgstr ""
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.product_category_form_view
+msgid "<span class=\"o_stat_text\"> Products</span>"
 msgstr ""
 
 #. module: product
@@ -259,18 +239,27 @@ msgid "<span>%</span>"
 msgstr ""
 
 #. module: product
+#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
+msgid ""
+"<span>%</span>\n"
+"                                <span>on</span>"
+msgstr ""
+
+#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "<span>All general settings about this product are managed on</span>"
 msgstr ""
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid "<span>on</span>"
+#: model_terms:ir.ui.view,arch_db:product.report_packagingbarcode
+msgid "<strong>Qty: </strong>"
 msgstr ""
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.report_packagingbarcode
-msgid "<strong>Qty: </strong>"
+#: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
+msgid ""
+"<strong>Save</strong> this page and come back\n"
+"                                here to set up the feature."
 msgstr ""
 
 #. module: product
@@ -282,7 +271,7 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model:ir.model.constraint,message:product.constraint_product_uom_barcode_uniq
+#: model:ir.model.constraint,message:product.constraint_product_packaging_barcode_uniq
 msgid "A barcode can only be assigned to one packaging."
 msgstr ""
 
@@ -345,7 +334,7 @@ msgstr ""
 
 #. module: product
 #. odoo-python
-#: code:addons/product/models/product_uom.py:0
+#: code:addons/product/models/product_packaging.py:0
 msgid "A product already uses the barcode"
 msgstr ""
 
@@ -381,7 +370,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_product__message_needaction
 #: model:ir.model.fields,field_description:product.field_product_template__message_needaction
 msgid "Action Needed"
-msgstr ""
+msgstr "လုပ်ဆောင်ချက် လိုအပ်သည်"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__active
@@ -450,11 +439,6 @@ msgid "Add Products to pricelist report"
 msgstr ""
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-msgid "Add a price"
-msgstr ""
-
-#. module: product
 #. odoo-javascript
 #: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
 msgid "Add a quantity"
@@ -485,17 +469,6 @@ msgid "Add to products"
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,help:product.field_product_product__uom_ids
-#: model:ir.model.fields,help:product.field_product_template__uom_ids
-msgid "Additional packagings for this product which can be used for sales"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_adidas
-msgid "Adidas"
-msgstr ""
-
-#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_document_search
 msgid "All"
 msgstr "အားလုံး"
@@ -520,8 +493,9 @@ msgstr ""
 #. odoo-python
 #: code:addons/product/models/product_pricelist_item.py:0
 #: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__applied_on__3_global
+#: model_terms:ir.ui.view,arch_db:product.product_tag_form_view
 msgid "All Products"
-msgstr ""
+msgstr "ပစ္စည်းအားလုံး"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
@@ -542,7 +516,7 @@ msgstr ""
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 msgid "All products"
-msgstr ""
+msgstr "ပစ္စည်းအားလုံး"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
@@ -557,18 +531,12 @@ msgid "Allow customers to set their own value"
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_legs_aluminium
+#: model:product.attribute.value,name:product.product_attribute_value_2
 msgid "Aluminium"
 msgstr "အလူမီနီယမ်"
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_brand_apple
-msgid "Apple"
-msgstr ""
-
-#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_tree_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Applied On"
 msgstr ""
 
@@ -599,11 +567,6 @@ msgstr "မူတည်မှူ"
 #: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "Archived"
 msgstr "သိမ်းဆည်းထားသည်"
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_ariel
-msgid "Ariel"
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo__sequence
@@ -681,6 +644,7 @@ msgstr "ဝိသေသ တန်ဖိုးများ"
 #: model:ir.actions.act_window,name:product.attribute_action
 #: model_terms:ir.ui.view,arch_db:product.product_template_attribute_value_view_tree
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
+#: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
 msgid "Attributes"
 msgstr "ဝိသေသများ"
 
@@ -702,11 +666,18 @@ msgid "Back to Quotation"
 msgstr ""
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_product_packaging__barcode
 #: model:ir.model.fields,field_description:product.field_product_product__barcode
 #: model:ir.model.fields,field_description:product.field_product_template__barcode
-#: model:ir.model.fields,field_description:product.field_product_uom__barcode
 msgid "Barcode"
 msgstr "ဘားကုဒ်"
+
+#. module: product
+#: model:ir.model.fields,help:product.field_product_packaging__barcode
+msgid ""
+"Barcode used for packaging identification. Scan this packaging barcode from "
+"a transfer in the Barcode app to move all the contained units"
+msgstr ""
 
 #. module: product
 #. odoo-python
@@ -715,11 +686,6 @@ msgid ""
 "Barcode(s) already assigned:\n"
 "\n"
 "%s"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_uom_uom__product_uom_ids
-msgid "Barcodes"
 msgstr ""
 
 #. module: product
@@ -747,39 +713,9 @@ msgid "Basic Pricelists"
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_color_beige
-msgid "Beige"
-msgstr ""
-
-#. module: product
-#: model:product.template,description_sale:product.consu_delivery_02_product_template
-msgid "Big table seats 10–12 for team discussions"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_color_black
+#: model:product.attribute.value,name:product.product_attribute_value_4
 msgid "Black"
 msgstr "အမဲ"
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_color_blue
-msgid "Blue"
-msgstr "အပြာ"
-
-#. module: product
-#: model:product.template,description_sale:product.product_product_7_product_template
-msgid "Blue plastic bin for flexible office storage"
-msgstr ""
-
-#. module: product
-#: model:product.attribute,name:product.pa_brand
-msgid "Brand"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_color_brown
-msgid "Brown"
-msgstr ""
 
 #. module: product
 #. odoo-javascript
@@ -790,7 +726,7 @@ msgstr "ဖျက်ခြင်း အသိပေးချက်!"
 #. module: product
 #: model:product.template,name:product.product_product_10_product_template
 msgid "Cabinet with Doors"
-msgstr ""
+msgstr "တံခါးပေါက်ပါ ဘီရို"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__can_image_1024_be_zoomed
@@ -806,18 +742,7 @@ msgstr ""
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.update_product_attribute_value_form
 msgid "Cancel"
-msgstr "မလုပ်"
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_canon
-msgid "Canon"
-msgstr ""
-
-#. module: product
-#: model:ir.actions.act_window,name:product.product_category_action_form
-#: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
-msgid "Categories"
-msgstr "အမျိုးအစားများ"
+msgstr "ပယ်ဖျက်"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__categ_id
@@ -834,17 +759,6 @@ msgid "Category: %s"
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_product.py:0
-#: code:addons/product/models/product_template.py:0
-msgid ""
-"Changing the unit of measure for your product will apply a conversion 1 %"
-"(old_uom_name)s = 1 %(new_uom_name)s.\n"
-"All existing records (Sales orders, Purchase orders, etc.) using this "
-"product will be updated by replacing the unit name."
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_document__checksum
 msgid "Checksum/SHA1"
 msgstr ""
@@ -855,13 +769,18 @@ msgid "Child Categories"
 msgstr ""
 
 #. module: product
+#: model:ir.actions.act_window,name:product.action_open_label_layout
+msgid "Choose Labels Layout"
+msgstr ""
+
+#. module: product
 #: model:ir.model,name:product.model_product_label_layout
 msgid "Choose the sheet layout to print the labels"
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_brand_cocacola
-msgid "Coca-Cola"
+#: model:product.attribute.value,name:product.pav_cleaning_kit
+msgid "Cleaning kit"
 msgstr ""
 
 #. module: product
@@ -870,16 +789,11 @@ msgid "Codes"
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_brand_colgate
-msgid "Colgate"
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__html_color
 #: model:ir.model.fields,field_description:product.field_product_tag__color
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__color
 #: model:ir.model.fields.selection,name:product.selection__product_attribute__display_type__color
-#: model:product.attribute,name:product.pa_color
+#: model:product.attribute,name:product.product_attribute_2
 msgid "Color"
 msgstr "အရောင်"
 
@@ -888,7 +802,7 @@ msgstr "အရောင်"
 #: model:ir.model.fields,field_description:product.field_product_product__color
 #: model:ir.model.fields,field_description:product.field_product_template__color
 msgid "Color Index"
-msgstr "အရောင်ညွှန်းကိန်း"
+msgstr "အရောင် ညွန်းကိန်း"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_label_layout__columns
@@ -945,11 +859,6 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model:product.template,description_sale:product.product_delivery_01_product_template
-msgid "Comfortable yellow chair for daily work"
-msgstr ""
-
-#. module: product
 #: model:ir.model,name:product.model_res_company
 msgid "Companies"
 msgstr "ကုမ္ပဏီများ"
@@ -958,12 +867,12 @@ msgstr "ကုမ္ပဏီများ"
 #: model:ir.model.fields,field_description:product.field_product_combo__company_id
 #: model:ir.model.fields,field_description:product.field_product_combo_item__company_id
 #: model:ir.model.fields,field_description:product.field_product_document__company_id
+#: model:ir.model.fields,field_description:product.field_product_packaging__company_id
 #: model:ir.model.fields,field_description:product.field_product_pricelist__company_id
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__company_id
 #: model:ir.model.fields,field_description:product.field_product_product__company_id
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__company_id
 #: model:ir.model.fields,field_description:product.field_product_template__company_id
-#: model:ir.model.fields,field_description:product.field_product_uom__company_id
 msgid "Company"
 msgstr "ကုမ္ပဏီ"
 
@@ -988,6 +897,11 @@ msgid "Conference Chair"
 msgstr ""
 
 #. module: product
+#: model:product.template,description_sale:product.consu_delivery_02_product_template
+msgid "Conference room table"
+msgstr ""
+
+#. module: product
 #: model:ir.model,name:product.model_res_config_settings
 msgid "Config Settings"
 msgstr ""
@@ -998,9 +912,10 @@ msgid "Configure"
 msgstr "ပြင်ဆင်"
 
 #. module: product
+#: model_terms:ir.ui.view,arch_db:product.product_label_layout_form
 #: model_terms:ir.ui.view,arch_db:product.update_product_attribute_value_form
 msgid "Confirm"
-msgstr "အတည်ပြုသည်"
+msgstr "အတည်ပြု"
 
 #. module: product
 #: model:ir.model,name:product.model_res_partner
@@ -1008,8 +923,31 @@ msgid "Contact"
 msgstr "ဆက်သွယ်ရန်"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_label_layout__custom_quantity
-msgid "Copies"
+#: model_terms:product.template,website_description:product.product_product_4_product_template
+msgid "Contact Us"
+msgstr ""
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_packaging__qty
+msgid "Contained Quantity"
+msgstr ""
+
+#. module: product
+#: model:ir.model.constraint,message:product.constraint_product_packaging_positive_qty
+msgid "Contained Quantity should be positive."
+msgstr ""
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.product_packaging_form_view
+msgid "Contained quantity"
+msgstr ""
+
+#. module: product
+#: model:ir.model.fields,help:product.field_product_product__uom_category_id
+#: model:ir.model.fields,help:product.field_product_template__uom_category_id
+msgid ""
+"Conversion between Units of Measure can only occur if they belong to the "
+"same category. The conversion will be made based on the ratios."
 msgstr ""
 
 #. module: product
@@ -1044,16 +982,6 @@ msgstr "နိုင်ငံ အုပ်စု"
 #: model:ir.model.fields,field_description:product.field_product_pricelist__country_group_ids
 msgid "Country Groups"
 msgstr "နိုင်ငံ အုပ်စုများ"
-
-#. module: product
-#: model:res.groups,name:product.group_product_manager
-msgid "Create"
-msgstr "အသစ်ဖန်တီး"
-
-#. module: product
-#: model:ir.model,website_form_label:product.model_res_partner
-msgid "Create a Customer"
-msgstr ""
 
 #. module: product
 #: model_terms:ir.actions.act_window,help:product.product_pricelist_action2
@@ -1094,6 +1022,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_combo_item__create_uid
 #: model:ir.model.fields,field_description:product.field_product_document__create_uid
 #: model:ir.model.fields,field_description:product.field_product_label_layout__create_uid
+#: model:ir.model.fields,field_description:product.field_product_packaging__create_uid
 #: model:ir.model.fields,field_description:product.field_product_pricelist__create_uid
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__create_uid
 #: model:ir.model.fields,field_description:product.field_product_product__create_uid
@@ -1103,7 +1032,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__create_uid
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__create_uid
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__create_uid
-#: model:ir.model.fields,field_description:product.field_product_uom__create_uid
 #: model:ir.model.fields,field_description:product.field_update_product_attribute_value__create_uid
 msgid "Created by"
 msgstr "ဖန်တီးသူ"
@@ -1117,6 +1045,7 @@ msgstr "ဖန်တီးသူ"
 #: model:ir.model.fields,field_description:product.field_product_combo_item__create_date
 #: model:ir.model.fields,field_description:product.field_product_document__create_date
 #: model:ir.model.fields,field_description:product.field_product_label_layout__create_date
+#: model:ir.model.fields,field_description:product.field_product_packaging__create_date
 #: model:ir.model.fields,field_description:product.field_product_pricelist__create_date
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__create_date
 #: model:ir.model.fields,field_description:product.field_product_product__create_date
@@ -1126,10 +1055,9 @@ msgstr "ဖန်တီးသူ"
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__create_date
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__create_date
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__create_date
-#: model:ir.model.fields,field_description:product.field_product_uom__create_date
 #: model:ir.model.fields,field_description:product.field_update_product_attribute_value__create_date
 msgid "Created on"
-msgstr "ဖန်တီးသည့်အချိန်"
+msgstr "ဖန်တီးချိန်"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_document_form
@@ -1138,13 +1066,13 @@ msgstr ""
 
 #. module: product
 #: model:ir.model.fields.selection,name:product.selection__res_config_settings__product_volume_volume_in_cubic_feet__1
-msgid "Cubic Feet (ft³)"
-msgstr ""
+msgid "Cubic Feet"
+msgstr "ကုဗ ပေ"
 
 #. module: product
 #: model:ir.model.fields.selection,name:product.selection__res_config_settings__product_volume_volume_in_cubic_feet__0
-msgid "Cubic Meters (m³)"
-msgstr ""
+msgid "Cubic Meters"
+msgstr "ကုဗ မီတာ"
 
 #. module: product
 #: model:ir.model,name:product.model_res_currency
@@ -1160,9 +1088,7 @@ msgid "Currency"
 msgstr "ငွေကြေး"
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_custom
-#: model:product.attribute.value,name:product.pav_legs_custom
-#: model:product.attribute.value,name:product.pav_length_custom
+#: model:product.attribute.value,name:product.fabric_attribute_custom
 msgid "Custom"
 msgstr ""
 
@@ -1182,18 +1108,13 @@ msgid "Customizable Desk"
 msgstr ""
 
 #. module: product
-#: model:product.attribute,name:product.pa_customization
-msgid "Customization"
+#: model:ir.model.fields,field_description:product.field_product_document__db_datas
+msgid "Database Data"
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_color_cyan
-msgid "Cyan"
-msgstr "အပြာနု"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__db_datas
-msgid "Database Data"
+#: model:ir.model,name:product.model_decimal_precision
+msgid "Decimal Precision"
 msgstr ""
 
 #. module: product
@@ -1213,9 +1134,19 @@ msgid "Default Extra Price Changed"
 msgstr ""
 
 #. module: product
+#: model:ir.model.fields,help:product.field_product_packaging__product_uom_id
 #: model:ir.model.fields,help:product.field_product_product__uom_id
 #: model:ir.model.fields,help:product.field_product_template__uom_id
 msgid "Default unit of measure used for all stock operations."
+msgstr ""
+
+#. module: product
+#: model:ir.model.fields,help:product.field_product_product__uom_po_id
+#: model:ir.model.fields,help:product.field_product_supplierinfo__product_uom
+#: model:ir.model.fields,help:product.field_product_template__uom_po_id
+msgid ""
+"Default unit of measure used for purchase orders. It must be in the same "
+"category as the default unit of measure."
 msgstr ""
 
 #. module: product
@@ -1241,8 +1172,8 @@ msgid "Delete"
 msgstr "ဖျက်"
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_brand_dell
-msgid "Dell"
+#: model:ir.model.fields,field_description:product.field_product_supplierinfo__delay
+msgid "Delivery Lead Time"
 msgstr ""
 
 #. module: product
@@ -1251,11 +1182,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_template__description
 msgid "Description"
 msgstr "ဖော်ပြချက်"
-
-#. module: product
-#: model:product.template,description_sale:product.product_order_01_product_template
-msgid "Design and plan smart offices with ease"
-msgstr ""
 
 #. module: product
 #: model:product.template,name:product.product_product_3_product_template
@@ -1279,7 +1205,7 @@ msgstr ""
 
 #. module: product
 #: model:product.template,description_sale:product.product_product_3_product_template
-msgid "Desk combination, black-brown: chair + desk + drawer"
+msgid "Desk combination, black-brown: chair + desk + drawer."
 msgstr ""
 
 #. module: product
@@ -1315,16 +1241,15 @@ msgid "Display Applied On"
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_ir_attachment__display_name
 #: model:ir.model.fields,field_description:product.field_product_attribute__display_name
 #: model:ir.model.fields,field_description:product.field_product_attribute_custom_value__display_name
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__display_name
-#: model:ir.model.fields,field_description:product.field_product_catalog_mixin__display_name
 #: model:ir.model.fields,field_description:product.field_product_category__display_name
 #: model:ir.model.fields,field_description:product.field_product_combo__display_name
 #: model:ir.model.fields,field_description:product.field_product_combo_item__display_name
 #: model:ir.model.fields,field_description:product.field_product_document__display_name
 #: model:ir.model.fields,field_description:product.field_product_label_layout__display_name
+#: model:ir.model.fields,field_description:product.field_product_packaging__display_name
 #: model:ir.model.fields,field_description:product.field_product_pricelist__display_name
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__display_name
 #: model:ir.model.fields,field_description:product.field_product_product__display_name
@@ -1334,19 +1259,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__display_name
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__display_name
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__display_name
-#: model:ir.model.fields,field_description:product.field_product_uom__display_name
-#: model:ir.model.fields,field_description:product.field_report_product_report_pricelist__display_name
-#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel2x7__display_name
-#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel4x12__display_name
-#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel4x12noprice__display_name
-#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel4x7__display_name
-#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel_dymo__display_name
-#: model:ir.model.fields,field_description:product.field_res_company__display_name
-#: model:ir.model.fields,field_description:product.field_res_config_settings__display_name
-#: model:ir.model.fields,field_description:product.field_res_country_group__display_name
-#: model:ir.model.fields,field_description:product.field_res_currency__display_name
-#: model:ir.model.fields,field_description:product.field_res_partner__display_name
-#: model:ir.model.fields,field_description:product.field_uom_uom__display_name
 #: model:ir.model.fields,field_description:product.field_update_product_attribute_value__display_name
 msgid "Display Name"
 msgstr "ပြသသော အမည်"
@@ -1384,11 +1296,6 @@ msgid "Documents of this variant"
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_brand_dove
-msgid "Dove"
-msgstr ""
-
-#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_document_kanban
 msgid "Download"
 msgstr "ဒေါင်းလုဒ်"
@@ -1411,22 +1318,11 @@ msgstr ""
 
 #. module: product
 #: model_terms:product.template,description:product.product_product_27_product_template
-msgid "Drawer with two routing possiblities"
+msgid "Drawer with two routing possiblities."
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_options_drawers
-msgid "Drawers"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_product.py:0
-msgid "Duplicate values in attribute values are not allowed: %s"
-msgstr ""
-
-#. module: product
-#: model:product.attribute,name:product.pa_duration
+#: model:product.attribute,name:product.product_attribute_3
 msgid "Duration"
 msgstr "ကြာချိန်"
 
@@ -1438,11 +1334,6 @@ msgstr ""
 #. module: product
 #: model:ir.model.fields.selection,name:product.selection__product_attribute__create_variant__dynamic
 msgid "Dynamically"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_dyson
-msgid "Dyson"
 msgstr ""
 
 #. module: product
@@ -1465,7 +1356,7 @@ msgstr "ပြင်"
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__date_end
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__date_end
 msgid "End Date"
-msgstr "ကုန်ဆုံးသော နေ့စွဲ"
+msgstr "ဆုံးရက်"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo__date_end
@@ -1517,6 +1408,11 @@ msgid "Extra Info"
 msgstr "အခြား အချက်အလက်"
 
 #. module: product
+#: model:product.attribute,name:product.pa_extra_options
+msgid "Extra Options"
+msgstr ""
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_product_combo_item__extra_price
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__price_extra
 msgid "Extra Price"
@@ -1530,7 +1426,7 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model:product.attribute,name:product.pa_fabric
+#: model:product.attribute,name:product.fabric_attribute
 msgid "Fabric"
 msgstr ""
 
@@ -1538,13 +1434,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_product__is_favorite
 #: model:ir.model.fields,field_description:product.field_product_template__is_favorite
 msgid "Favorite"
-msgstr ""
+msgstr "ဖေးဗရိတ်"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
 #: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
 msgid "Favorites"
-msgstr ""
+msgstr "ဖေးဗရိတ်များ"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_document__datas
@@ -1559,11 +1455,6 @@ msgstr ""
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_document__file_size
 msgid "File Size"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_options_file_cabinets
-msgid "File cabinets"
 msgstr ""
 
 #. module: product
@@ -1624,6 +1515,11 @@ msgid "Four Person Desk"
 msgstr ""
 
 #. module: product
+#: model:product.template,description_sale:product.consu_delivery_03_product_template
+msgid "Four person modern office workstation"
+msgstr ""
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__is_custom
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__is_custom
 msgid "Free text"
@@ -1645,24 +1541,20 @@ msgid "General Information"
 msgstr "အထွေထွေ အချက်အလက်"
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_brand_gillette
-msgid "Gillette"
+#: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
+msgid "Get product pictures using Barcode"
+msgstr ""
+
+#. module: product
+#: model:ir.model.fields,help:product.field_product_product__packaging_ids
+#: model:ir.model.fields,help:product.field_product_template__packaging_ids
+msgid "Gives the different ways to package the same product."
 msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product__sequence
 #: model:ir.model.fields,help:product.field_product_template__sequence
 msgid "Gives the sequence order when displaying a product list"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_fabric_glass
-msgid "Glass"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_color_gold
-msgid "Gold"
 msgstr ""
 
 #. module: product
@@ -1686,19 +1578,17 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_color_gray
-msgid "Gray"
+#: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
+msgid "Google Images"
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_color_green
-msgid "Green"
-msgstr "အစိမ်း"
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_h_m
-msgid "H&M"
-msgstr ""
+#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_view_search
+#: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_search_view
+#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
+#: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
+msgid "Group By"
+msgstr "အုပ်စုအလိုက်"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__html_color
@@ -1714,21 +1604,6 @@ msgid "Has Message"
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__has_thumbnail
-msgid "Has Thumbnail"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_head_shoulders
-msgid "Head & Shoulders"
-msgstr ""
-
-#. module: product
-#: model:product.attribute,name:product.pa_height
-msgid "Height"
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,help:product.field_product_attribute_value__html_color
 #: model:ir.model.fields,help:product.field_product_template_attribute_value__html_color
 msgid ""
@@ -1737,14 +1612,9 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model:product.template,description_sale:product.product_product_12_product_template
-msgid "High-back office chair with great support"
-msgstr ""
-
-#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_document_form
 msgid "History"
-msgstr "သမိုင်း"
+msgstr "မှတ်တမ်း"
 
 #. module: product
 #: model:product.template,name:product.expense_hotel_product_template
@@ -1752,16 +1622,15 @@ msgid "Hotel Accommodation"
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_ir_attachment__id
 #: model:ir.model.fields,field_description:product.field_product_attribute__id
 #: model:ir.model.fields,field_description:product.field_product_attribute_custom_value__id
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__id
-#: model:ir.model.fields,field_description:product.field_product_catalog_mixin__id
 #: model:ir.model.fields,field_description:product.field_product_category__id
 #: model:ir.model.fields,field_description:product.field_product_combo__id
 #: model:ir.model.fields,field_description:product.field_product_combo_item__id
 #: model:ir.model.fields,field_description:product.field_product_document__id
 #: model:ir.model.fields,field_description:product.field_product_label_layout__id
+#: model:ir.model.fields,field_description:product.field_product_packaging__id
 #: model:ir.model.fields,field_description:product.field_product_pricelist__id
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__id
 #: model:ir.model.fields,field_description:product.field_product_product__id
@@ -1771,22 +1640,9 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__id
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__id
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__id
-#: model:ir.model.fields,field_description:product.field_product_uom__id
-#: model:ir.model.fields,field_description:product.field_report_product_report_pricelist__id
-#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel2x7__id
-#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel4x12__id
-#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel4x12noprice__id
-#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel4x7__id
-#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel_dymo__id
-#: model:ir.model.fields,field_description:product.field_res_company__id
-#: model:ir.model.fields,field_description:product.field_res_config_settings__id
-#: model:ir.model.fields,field_description:product.field_res_country_group__id
-#: model:ir.model.fields,field_description:product.field_res_currency__id
-#: model:ir.model.fields,field_description:product.field_res_partner__id
-#: model:ir.model.fields,field_description:product.field_uom_uom__id
 #: model:ir.model.fields,field_description:product.field_update_product_attribute_value__id
 msgid "ID"
-msgstr "နံပါတ်"
+msgstr "အိုင်ဒီ"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist__activity_exception_icon
@@ -1846,10 +1702,8 @@ msgstr ""
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__image
 #: model:ir.model.fields,field_description:product.field_product_product__image_1920
-#: model:ir.model.fields,field_description:product.field_product_tag__image
 #: model:ir.model.fields,field_description:product.field_product_template__image_1920
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__image
-#: model:ir.model.fields.selection,name:product.selection__product_attribute__display_type__image
 msgid "Image"
 msgstr "ရုပ်ပုံ"
 
@@ -1945,7 +1799,7 @@ msgstr "အတွင်းပိုင်း မှတ်စုများ"
 #: model:ir.model.fields,field_description:product.field_product_product__default_code
 #: model:ir.model.fields,field_description:product.field_product_template__default_code
 msgid "Internal Reference"
-msgstr ""
+msgstr "လုပ်ငန်းတွင်းသုံး အညွန်း"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product__barcode
@@ -1964,27 +1818,11 @@ msgid "Inventory"
 msgstr "ပစ္စည်းစာရင်း"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__is_dynamically_created
-#: model:ir.model.fields,field_description:product.field_product_template__is_dynamically_created
-msgid "Is Dynamically Created"
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_category__message_is_follower
 #: model:ir.model.fields,field_description:product.field_product_pricelist__message_is_follower
 #: model:ir.model.fields,field_description:product.field_product_product__message_is_follower
 #: model:ir.model.fields,field_description:product.field_product_template__message_is_follower
 msgid "Is Follower"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__is_in_selected_section_of_order
-msgid "Is In Selected Section Of Order"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist_item__is_pricelist_required
-msgid "Is Pricelist Required"
 msgstr ""
 
 #. module: product
@@ -2009,43 +1847,19 @@ msgid "Is public document"
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_product.py:0
-msgid ""
-"It is not possible to import different values for the same attribute: %s"
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields.selection,name:product.selection__res_config_settings__product_weight_in_lbs__0
-msgid "Kilograms (kg)"
-msgstr "ကီလိုဂရမ်(ကေဂျီ)"
+msgid "Kilograms"
+msgstr "ကီလိုဂရမ်"
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_size_l
+#: model:product.attribute.value,name:product.size_attribute_l
 msgid "L"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_loreal
-msgid "L'Oréal"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_LG
-msgid "LG"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_product.py:0
-#: code:addons/product/models/product_template.py:0
-msgid "Labels cannot be printed for products of service type"
 msgstr ""
 
 #. module: product
 #: model:product.template,name:product.product_product_6_product_template
 msgid "Large Cabinet"
-msgstr ""
+msgstr "ဘီရိုအကြီး"
 
 #. module: product
 #: model:product.template,name:product.product_product_8_product_template
@@ -2066,6 +1880,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_combo_item__write_uid
 #: model:ir.model.fields,field_description:product.field_product_document__write_uid
 #: model:ir.model.fields,field_description:product.field_product_label_layout__write_uid
+#: model:ir.model.fields,field_description:product.field_product_packaging__write_uid
 #: model:ir.model.fields,field_description:product.field_product_pricelist__write_uid
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__write_uid
 #: model:ir.model.fields,field_description:product.field_product_product__write_uid
@@ -2075,7 +1890,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__write_uid
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__write_uid
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__write_uid
-#: model:ir.model.fields,field_description:product.field_product_uom__write_uid
 #: model:ir.model.fields,field_description:product.field_update_product_attribute_value__write_uid
 msgid "Last Updated by"
 msgstr "နောက်ဆုံးပြင်ဆင်သူ"
@@ -2089,6 +1903,7 @@ msgstr "နောက်ဆုံးပြင်ဆင်သူ"
 #: model:ir.model.fields,field_description:product.field_product_combo_item__write_date
 #: model:ir.model.fields,field_description:product.field_product_document__write_date
 #: model:ir.model.fields,field_description:product.field_product_label_layout__write_date
+#: model:ir.model.fields,field_description:product.field_product_packaging__write_date
 #: model:ir.model.fields,field_description:product.field_product_pricelist__write_date
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__write_date
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__write_date
@@ -2097,7 +1912,6 @@ msgstr "နောက်ဆုံးပြင်ဆင်သူ"
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__write_date
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__write_date
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__write_date
-#: model:ir.model.fields,field_description:product.field_product_uom__write_date
 #: model:ir.model.fields,field_description:product.field_update_product_attribute_value__write_date
 msgid "Last Updated on"
 msgstr "နောက်ဆုံးပြင်ဆင်ချိန်"
@@ -2105,11 +1919,6 @@ msgstr "နောက်ဆုံးပြင်ဆင်ချိန်"
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
 msgid "Late Activities"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_supplierinfo__delay
-msgid "Lead Time"
 msgstr ""
 
 #. module: product
@@ -2121,50 +1930,20 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_fabric_leather
+#: model:product.attribute.value,name:product.fabric_attribute_leather
 msgid "Leather"
-msgstr ""
+msgstr "သားရေ"
 
 #. module: product
-#: model:product.template,description_sale:product.product_product_13_product_template
-msgid "Left-sided workspace with storage"
-msgstr ""
-
-#. module: product
-#: model:product.attribute,name:product.pa_legs
+#: model:product.attribute,name:product.product_attribute_1
 msgid "Legs"
 msgstr "ခြေထောက်များ"
-
-#. module: product
-#: model:product.attribute,name:product.pa_length
-msgid "Length"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_lenovo
-msgid "Lenovo"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_levis
-msgid "Levi's"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_fabric_linen
-msgid "Linen"
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__attribute_line_ids
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__pav_attribute_line_ids
 msgid "Lines"
 msgstr "လိုင်းများ"
-
-#. module: product
-#: model:ir.model,name:product.model_product_uom
-msgid "Link between products and their UoMs"
-msgstr ""
 
 #. module: product
 #: model:product.template,name:product.product_product_local_delivery_product_template
@@ -2190,7 +1969,7 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_size_m
+#: model:product.attribute.value,name:product.size_attribute_m
 msgid "M"
 msgstr ""
 
@@ -2199,6 +1978,11 @@ msgstr ""
 msgid ""
 "Make this attribute value not compatible with other values of the product or "
 "some attribute values of optional and accessory products."
+msgstr ""
+
+#. module: product
+#: model:res.groups,name:product.group_stock_packaging
+msgid "Manage Product Packaging"
 msgstr ""
 
 #. module: product
@@ -2218,11 +2002,6 @@ msgid "Markup"
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_color_maroon
-msgid "Maroon"
-msgstr ""
-
-#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 msgid "Max. Margin"
 msgstr "အများဆုံး မာဂျင်"
@@ -2231,11 +2010,6 @@ msgstr "အများဆုံး မာဂျင်"
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__price_max_margin
 msgid "Max. Price Margin"
 msgstr "အများဆုံး မာဂျင်တန်ဖိုး"
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_maybelline
-msgid "Maybelline"
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_update_product_attribute_value__message
@@ -2259,11 +2033,6 @@ msgid "Messages"
 msgstr "မက်ဆေ့ဂျ်များ"
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_fabric_metal
-msgid "Metal"
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_document__mimetype
 msgid "Mime Type"
 msgstr ""
@@ -2271,7 +2040,7 @@ msgstr ""
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 msgid "Min Qty"
-msgstr ""
+msgstr "အနည်းဆုံး အရေအတွက်"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
@@ -2286,12 +2055,7 @@ msgstr "အနည်းဆုံး မာဂျင်တန်ဖိုး"
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__min_quantity
 msgid "Min. Quantity"
-msgstr ""
-
-#. module: product
-#: model:product.template,description_sale:product.product_product_8_product_template
-msgid "Minimalist wooden desk for executive use"
-msgstr ""
+msgstr "အနည်းဆုံး အရေအတွက်"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_update_product_attribute_value__mode
@@ -2304,11 +2068,6 @@ msgid "Monitor Stand"
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_brand_montblanc
-msgid "Montblanc"
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields.selection,name:product.selection__product_attribute__display_type__multi
 msgid "Multi-checkbox"
 msgstr "အမှန်ခြစ်ကွက်များ✅"
@@ -2317,11 +2076,6 @@ msgstr "အမှန်ခြစ်ကွက်များ✅"
 #: model:ir.model.constraint,message:product.constraint_product_attribute_check_multi_checkbox_no_variant
 msgid ""
 "Multi-checkbox display type is not compatible with the creation of variants"
-msgstr ""
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
-msgid "My Activities"
 msgstr ""
 
 #. module: product
@@ -2344,16 +2098,6 @@ msgid "Name"
 msgstr "အမည်"
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_color_navy
-msgid "Navy"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_nestle
-msgid "Nestlé"
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields.selection,name:product.selection__product_attribute__create_variant__no_variant
 msgid "Never"
 msgstr "ဘယ်တော့မှ"
@@ -2363,11 +2107,6 @@ msgstr "ဘယ်တော့မှ"
 #: code:addons/product/models/product_pricelist.py:0
 msgid "New"
 msgstr "အသစ်"
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_new_balance
-msgid "New Balance"
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist__activity_calendar_event_id
@@ -2395,21 +2134,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_product__activity_type_id
 #: model:ir.model.fields,field_description:product.field_product_template__activity_type_id
 msgid "Next Activity Type"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_nike
-msgid "Nike"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_nikon
-msgid "Nikon"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_nivea
-msgid "Nivea"
 msgstr ""
 
 #. module: product
@@ -2444,11 +2168,6 @@ msgid "No, keep it"
 msgstr "မဖျက်, သိမ်းထားပါ"
 
 #. module: product
-#: model:product.template,description_sale:product.product_template_acoustic_bloc_screens
-msgid "Noise-reducing panels for open spaces"
-msgstr ""
-
-#. module: product
 #. odoo-python
 #: code:addons/product/models/product_product.py:0
 #: code:addons/product/models/product_template.py:0
@@ -2458,7 +2177,7 @@ msgstr ""
 #. module: product
 #: model:ir.model.fields.selection,name:product.selection__product_template__service_tracking__no
 msgid "Nothing"
-msgstr ""
+msgstr "ဘာမှမဟုတ်"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__number_related_products
@@ -2498,19 +2217,25 @@ msgid "Number of messages with delivery error"
 msgstr ""
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_product_product__pricelist_item_count
+#: model:ir.model.fields,field_description:product.field_product_template__pricelist_item_count
+msgid "Number of price rules"
+msgstr ""
+
+#. module: product
 #: model:product.template,name:product.product_delivery_01_product_template
 msgid "Office Chair"
-msgstr ""
+msgstr "ရုံးသုံးစားပွဲ"
 
 #. module: product
 #: model:product.template,name:product.product_product_12_product_template
 msgid "Office Chair Black"
-msgstr ""
+msgstr "ရုံးသုံးစားပွဲ အမဲ"
 
 #. module: product
 #: model:product.template,name:product.office_combo_product_template
 msgid "Office Combo"
-msgstr ""
+msgstr "ရုံးသုံး ကွန်ဘို"
 
 #. module: product
 #: model:product.template,name:product.product_order_01_product_template
@@ -2520,16 +2245,6 @@ msgstr ""
 #. module: product
 #: model:product.template,name:product.product_delivery_02_product_template
 msgid "Office Lamp"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_olay
-msgid "Olay"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_color_olive
-msgid "Olive"
 msgstr ""
 
 #. module: product
@@ -2555,22 +2270,6 @@ msgid "Oops! '%(fileName)s' didn’t upload since its format isn’t allowed."
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_combo_item__product_id
-#: model:product.attribute,name:product.pa_options
-msgid "Options"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_oral_b
-msgid "Oral-B"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_color_orange
-msgid "Orange"
-msgstr "လိမ္မော်"
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_document__original_id
 msgid "Original (unoptimized, unresized) attachment"
 msgstr ""
@@ -2578,23 +2277,18 @@ msgstr ""
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_combo_item__lst_price
 msgid "Original Price"
-msgstr ""
+msgstr "မူရင်းစျေး"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__base_pricelist_id
 #: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__base__pricelist
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 msgid "Other Pricelist"
-msgstr ""
+msgstr "အခြားစျေးစာရင်း"
 
 #. module: product
 #: model:product.template,name:product.product_template_dining_table
 msgid "Outdoor dining table"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_options_overhead_shelves
-msgid "Overhead shelves"
 msgstr ""
 
 #. module: product
@@ -2603,32 +2297,12 @@ msgid "Package Type A"
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/uom_uom.py:0
-#: model_terms:ir.ui.view,arch_db:product.product_uom_list_view
-msgid "Packaging Barcodes"
-msgstr ""
-
-#. module: product
-#: model:ir.actions.report,name:product.report_product_packaging
-msgid "Packaging Barcodes (PDF)"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__uom_ids
-#: model:ir.model.fields,field_description:product.field_product_template__uom_ids
-msgid "Packagings"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_panasonic
-msgid "Panasonic"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_pantene
-msgid "Pantene"
-msgstr ""
+#: model_terms:ir.ui.view,arch_db:product.product_packaging_form_view
+#: model_terms:ir.ui.view,arch_db:product.product_packaging_tree_view
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
+#: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
+msgid "Packaging"
+msgstr "ထုပ်ပိုးပုံ"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_category__parent_id
@@ -2646,18 +2320,8 @@ msgid "Pedal Bin"
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_brand_pepsi
-msgid "Pepsi"
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__percent_price
 msgid "Percentage Price"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_philips
-msgid "Philips"
 msgstr ""
 
 #. module: product
@@ -2666,9 +2330,9 @@ msgid "Pills"
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_color_pink
-msgid "Pink"
-msgstr ""
+#: model:product.attribute.value,name:product.fabric_attribute_plastic
+msgid "Plastic"
+msgstr "ပလပ်စတစ်"
 
 #. module: product
 #. odoo-javascript
@@ -2713,8 +2377,8 @@ msgstr ""
 
 #. module: product
 #: model:ir.model.fields.selection,name:product.selection__res_config_settings__product_weight_in_lbs__1
-msgid "Pounds (lb)"
-msgstr "ပေါင်(lb)"
+msgid "Pounds"
+msgstr "ပေါင်"
 
 #. module: product
 #: model_terms:product.template,website_description:product.product_product_4_product_template
@@ -2725,24 +2389,30 @@ msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__price
+#: model:ir.model.fields,field_description:product.field_product_supplierinfo__price
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_tree_view_from_product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
+#: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_tree_view
 msgid "Price"
 msgstr "စျေးနှုန်း"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__price_discount
 msgid "Price Discount"
-msgstr ""
+msgstr "Discoung စျေးနှုန်း"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__price_round
 msgid "Price Rounding"
-msgstr ""
+msgstr "စျေးနှုန်း အနားသတ်"
 
 #. module: product
+#. odoo-python
+#: code:addons/product/models/product_product.py:0
+#: code:addons/product/models/product_template.py:0
 #: model:ir.actions.act_window,name:product.product_pricelist_item_action
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_tree_view
+#: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
 msgid "Price Rules"
 msgstr ""
 
@@ -2772,11 +2442,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__pricelist_id
 #: model:ir.model.fields,field_description:product.field_res_partner__property_product_pricelist
 #: model:ir.model.fields,field_description:product.field_res_users__property_product_pricelist
+#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_tree_view_from_product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_view_search
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_form_view
 #: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
 msgid "Pricelist"
-msgstr "စျေးနှုန်းအမျိုးအစား"
+msgstr "ပစ္စည်းစျေးနှုန်း"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item__applied_on
@@ -2787,7 +2458,7 @@ msgstr ""
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist__name
 msgid "Pricelist Name"
-msgstr ""
+msgstr "ပစ္စည်းစျေးနှုန်း အမည်"
 
 #. module: product
 #. odoo-javascript
@@ -2812,8 +2483,6 @@ msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist__item_ids
-#: model:ir.model.fields,field_description:product.field_product_product__pricelist_rule_ids
-#: model:ir.model.fields,field_description:product.field_product_template__pricelist_rule_ids
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_tree_view_from_product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
 msgid "Pricelist Rules"
@@ -2827,8 +2496,8 @@ msgid "Pricelists"
 msgstr "ပစ္စည်းစျေးနှုန်းများ"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-msgid "Prices"
+#: model_terms:ir.ui.view,arch_db:product.view_partner_property_form
+msgid "Pricelists are managed on"
 msgstr ""
 
 #. module: product
@@ -2839,35 +2508,32 @@ msgstr ""
 #. module: product
 #. odoo-javascript
 #: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
-#: model_terms:ir.ui.view,arch_db:product.product_label_layout_form
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
 msgid "Print"
 msgstr "ပရင့်"
 
 #. module: product
-#: model:ir.actions.act_window,name:product.action_open_label_layout
-#: model:ir.actions.server,name:product.action_product_print_labels
-#: model:ir.actions.server,name:product.action_product_template_print_labels
+#: model_terms:ir.ui.view,arch_db:product.product_product_tree_view
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
+#: model_terms:ir.ui.view,arch_db:product.product_template_tree_view
+#: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "Print Labels"
-msgstr ""
-
-#. module: product
-#: model:product.template,description_sale:product.product_product_24_product_template
-msgid "Private pod with desk and chair"
 msgstr ""
 
 #. module: product
 #. odoo-python
 #: code:addons/product/controllers/pricelist_report.py:0
 #: model:ir.model,name:product.model_product_template
+#: model:ir.model.fields,field_description:product.field_product_combo_item__product_id
 #: model:ir.model.fields,field_description:product.field_product_label_layout__product_ids
+#: model:ir.model.fields,field_description:product.field_product_packaging__product_id
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__product_tmpl_id
 #: model:ir.model.fields,field_description:product.field_product_product__product_variant_id
 #: model:ir.model.fields,field_description:product.field_product_template__product_variant_id
-#: model:ir.model.fields,field_description:product.field_product_uom__product_id
 #: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__applied_on__1_product
 #: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__display_applied_on__1_product
 #: model_terms:ir.ui.view,arch_db:product.product_kanban_view
+#: model_terms:ir.ui.view,arch_db:product.product_packaging_search_view
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_view_search
 #: model_terms:ir.ui.view,arch_db:product.product_search_form_view
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_form_view
@@ -2881,7 +2547,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:product.product_view_kanban_catalog
 #: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
 msgid "Product"
-msgstr "ကုန်ပစ္စည်း"
+msgstr "ပစ္စည်း"
 
 #. module: product
 #: model:ir.model,name:product.model_product_attribute
@@ -2917,6 +2583,7 @@ msgid "Product Catalog Mixin"
 msgstr ""
 
 #. module: product
+#: model:ir.actions.act_window,name:product.product_category_action_form
 #: model_terms:ir.ui.view,arch_db:product.product_category_list_view
 #: model_terms:ir.ui.view,arch_db:product.product_category_search_view
 msgid "Product Categories"
@@ -2931,7 +2598,7 @@ msgstr "ကုန်ပစ္စည်း Category များ"
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
 #: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
 msgid "Product Category"
-msgstr "ကုန်ပစ္စည်းအမျိုးအစား"
+msgstr "ကုန်ပစ္စည်း Category"
 
 #. module: product
 #: model:ir.model,name:product.model_product_combo
@@ -2947,6 +2614,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_combo__combo_item_count
 #: model:ir.model.fields,field_description:product.field_update_product_attribute_value__product_count
 msgid "Product Count"
+msgstr "ပစ္စည်း အရည်အတွက်"
+
+#. module: product
+#: model:res.groups,name:product.group_product_manager
+msgid "Product Creation"
 msgstr ""
 
 #. module: product
@@ -3012,8 +2684,33 @@ msgid "Product Name"
 msgstr "ပစ္စည်းအမည်"
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_product_product__packaging_ids
+#: model:ir.model.fields,field_description:product.field_product_template__packaging_ids
+msgid "Product Packages"
+msgstr ""
+
+#. module: product
+#: model:ir.model,name:product.model_product_packaging
+#: model:ir.model.fields,field_description:product.field_product_packaging__name
+#: model_terms:ir.ui.view,arch_db:product.product_packaging_form_view
+msgid "Product Packaging"
+msgstr ""
+
+#. module: product
+#: model:ir.actions.report,name:product.report_product_packaging
+msgid "Product Packaging (PDF)"
+msgstr ""
+
+#. module: product
+#: model:ir.actions.act_window,name:product.action_packaging_view
+#: model:ir.model.fields,field_description:product.field_res_config_settings__group_stock_packaging
+#: model_terms:ir.ui.view,arch_db:product.product_packaging_search_view
+#: model_terms:ir.ui.view,arch_db:product.product_packaging_tree_view
+msgid "Product Packagings"
+msgstr ""
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_product_category__product_properties_definition
-#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
 msgid "Product Properties"
 msgstr ""
 
@@ -3057,6 +2754,7 @@ msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_tag__product_template_ids
+#: model_terms:ir.ui.view,arch_db:product.product_tag_form_view
 #: model_terms:ir.ui.view,arch_db:product.product_template_view_tree_tag
 msgid "Product Templates"
 msgstr ""
@@ -3086,12 +2784,6 @@ msgid "Product Unit of Measure"
 msgstr "ရေတွက်ပုံ"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__import_attribute_values
-#: model:ir.model.fields,field_description:product.field_product_template__import_attribute_values
-msgid "Product Values"
-msgstr ""
-
-#. module: product
 #: model:ir.model,name:product.model_product_product
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__product_id
 #: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__applied_on__0_product_variant
@@ -3115,6 +2807,7 @@ msgstr "ကုန်ပစ္စည်း မူကွဲ တန်ဖိုး�
 #: model_terms:ir.ui.view,arch_db:product.product_product_tree_view
 #: model_terms:ir.ui.view,arch_db:product.product_product_view_activity
 #: model_terms:ir.ui.view,arch_db:product.product_product_view_tree_tag
+#: model_terms:ir.ui.view,arch_db:product.product_tag_form_view
 msgid "Product Variants"
 msgstr "ပစ္စည်း မူကွဲများ"
 
@@ -3132,7 +2825,6 @@ msgstr ""
 #: model:ir.actions.act_window,name:product.product_template_action_all
 #: model:ir.model.fields,field_description:product.field_product_product__product_variant_ids
 #: model:ir.model.fields,field_description:product.field_product_template__product_variant_ids
-#: model:res.groups.privilege,name:product.res_groups_privilege_product
 #: model_terms:ir.ui.view,arch_db:product.product_template_view_activity
 #: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
 msgid "Products"
@@ -3177,14 +2869,15 @@ msgid "Properties"
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_brand_puma
-msgid "Puma"
+#: model:product.attribute.value,name:product.pav_protection_kit
+msgid "Protection kit"
 msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__purchase_ok
 #: model:ir.model.fields,field_description:product.field_product_template__purchase_ok
 #: model_terms:ir.ui.view,arch_db:product.product_template_form_view
+#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
 msgid "Purchase"
 msgstr "အဝယ်"
 
@@ -3195,9 +2888,10 @@ msgid "Purchase Description"
 msgstr "အဝယ်ဖော်ပြချက်"
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_color_purple
-msgid "Purple"
-msgstr "ပါပယ်"
+#: model:ir.model.fields,field_description:product.field_product_product__uom_po_id
+#: model:ir.model.fields,field_description:product.field_product_template__uom_po_id
+msgid "Purchase Unit"
+msgstr "အဝယ် ယူနစ်"
 
 #. module: product
 #. odoo-javascript
@@ -3211,6 +2905,7 @@ msgid "Quantities (Price)"
 msgstr ""
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_product_label_layout__custom_quantity
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__min_qty
 msgid "Quantity"
 msgstr "အရေအတွက်"
@@ -3228,6 +2923,11 @@ msgid "Quantity already present (%s)."
 msgstr ""
 
 #. module: product
+#: model:ir.model.fields,help:product.field_product_packaging__qty
+msgid "Quantity of products contained in the packaging."
+msgstr ""
+
+#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Quotation Description"
 msgstr ""
@@ -3236,27 +2936,6 @@ msgstr ""
 #: model:ir.model.fields.selection,name:product.selection__product_attribute__display_type__radio
 msgid "Radio"
 msgstr "🔘ရေဒီယိုခလုပ်⚪"
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_rayban
-msgid "Ray-Ban"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-msgid "Recursive pricelist rules detected: %s"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_color_red
-msgid "Red"
-msgstr "အနီ"
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_reebok
-msgid "Reebok"
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__code
@@ -3331,16 +3010,6 @@ msgid "Restaurant Expenses"
 msgstr ""
 
 #. module: product
-#: model:product.template,description_sale:product.product_product_5_product_template
-msgid "Right-aligned desk with storage"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_rolex
-msgid "Rolex"
-msgstr ""
-
-#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 msgid "Round off to"
 msgstr ""
@@ -3356,7 +3025,7 @@ msgid "Rule Tip"
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_size_s
+#: model:product.attribute.value,name:product.size_attribute_s
 msgid "S"
 msgstr ""
 
@@ -3367,7 +3036,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
 #: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "Sales"
-msgstr "အရောင်းများ"
+msgstr "အရောင်း"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__description_sale
@@ -3386,24 +3055,8 @@ msgid "Sales Price"
 msgstr "ရောင်းစျေး"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
-msgid "Sales Prices"
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__lst_price
 msgid "Sales Price"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_samsung
-msgid "Samsung"
-msgstr ""
-
-#. module: product
-#. odoo-javascript
-#: code:addons/product/static/src/product_name_and_description/product_name_and_description.js:0
-msgid "Search a product"
 msgstr ""
 
 #. module: product
@@ -3416,6 +3069,7 @@ msgstr "တစ်ခုရွေး🟰🟰🔽"
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__sequence
 #: model:ir.model.fields,field_description:product.field_product_combo__sequence
 #: model:ir.model.fields,field_description:product.field_product_document__sequence
+#: model:ir.model.fields,field_description:product.field_product_packaging__sequence
 #: model:ir.model.fields,field_description:product.field_product_pricelist__sequence
 #: model:ir.model.fields,field_description:product.field_product_product__sequence
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__sequence
@@ -3445,11 +3099,6 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model:product.attribute,name:product.pa_shoe_size
-msgid "Shoes size"
-msgstr "ဖိနပ် အရွယ်အစား"
-
-#. module: product
 #. odoo-javascript
 #: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
 msgid "Show Name"
@@ -3457,28 +3106,13 @@ msgstr ""
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
-msgid "Show all records whose next activity date is past"
+msgid "Show all records which has next action date is before today"
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_color_silver
-msgid "Silver"
-msgstr ""
-
-#. module: product
-#: model:product.attribute,name:product.pa_size
+#: model:product.attribute,name:product.size_attribute
 msgid "Size"
 msgstr "အရွယ်အစား"
-
-#. module: product
-#: model:product.template,description_sale:product.product_product_9_product_template
-msgid "Soft-close pedal bin for office use"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_sony
-msgid "Sony"
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_res_partner__specific_property_product_pricelist
@@ -3528,7 +3162,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__date_start
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__date_start
 msgid "Start Date"
-msgstr "စတင်သောနေ့"
+msgstr "စရက်"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo__date_start
@@ -3554,7 +3188,7 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_legs_steel
+#: model:product.attribute.value,name:product.product_attribute_value_1
 msgid "Steel"
 msgstr "စတီး"
 
@@ -3574,11 +3208,6 @@ msgid "Supplier Pricelist"
 msgstr ""
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_tag_form_view
-msgid "Tag"
-msgstr "တက်ဂ်"
-
-#. module: product
 #: model:ir.model.constraint,message:product.constraint_product_tag_name_uniq
 msgid "Tag name already exists!"
 msgstr ""
@@ -3588,24 +3217,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_template__product_tag_ids
 #: model_terms:ir.ui.view,arch_db:product.product_search_form_view
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
-#: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
 msgid "Tags"
-msgstr "တက်(ဒ်)များ"
+msgstr "တက်ဂ်များ"
 
 #. module: product
 #: model_terms:ir.actions.act_window,help:product.product_tag_action
 msgid "Tags are used to search product for a given theme."
 msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_color_tan
-msgid "Tan"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_color_teal
-msgid "Teal"
-msgstr "တီးလ်"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__template_value_ids
@@ -3641,9 +3259,10 @@ msgstr ""
 
 #. module: product
 #. odoo-python
-#: code:addons/product/models/product_product.py:0
 #: code:addons/product/models/product_template.py:0
-msgid "The cost of a product can't be negative."
+msgid ""
+"The default Unit of Measure and the purchase Unit of Measure must be in the "
+"same category."
 msgstr ""
 
 #. module: product
@@ -3662,12 +3281,8 @@ msgid "The display type used in the Product Configurator."
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_product.py:0
-msgid ""
-"The exitings product has different attribute value. \"%(imported_values)s\" "
-"is not equivalent to \"%(existing_values)s\" for \"%(external_id)s\", \"%"
-"(id)s\""
+#: model:ir.model.fields,help:product.field_product_packaging__sequence
+msgid "The first in the sequence is the default one."
 msgstr ""
 
 #. module: product
@@ -3723,9 +3338,9 @@ msgstr ""
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo__min_qty
 msgid ""
-"The quantity to purchase from this vendor to benefit from the unit price. If "
-"a vendor unit is set, quantity should be specified in this unit, otherwise "
-"it should be specified in the default unit of the product."
+"The quantity to purchase from this vendor to benefit from the price, "
+"expressed in the vendor Product Unit of Measure if not any, in the default "
+"unit of measure of the product otherwise."
 msgstr ""
 
 #. module: product
@@ -3793,10 +3408,28 @@ msgid "This note is only for internal purposes."
 msgstr ""
 
 #. module: product
+#: model:ir.model.fields,help:product.field_res_partner__property_product_pricelist
+#: model:ir.model.fields,help:product.field_res_users__property_product_pricelist
+msgid ""
+"This pricelist will be used, instead of the default one, for sales to the "
+"current partner"
+msgstr ""
+
+#. module: product
 #. odoo-python
 #: code:addons/product/models/product_template.py:0
 msgid ""
 "This product is part of a combo, so its type can't be changed to \"combo\"."
+msgstr ""
+
+#. module: product
+#. odoo-python
+#: code:addons/product/models/uom_uom.py:0
+msgid ""
+"This rounding precision is higher than the Decimal Accuracy (%(digits)s "
+"digits).\n"
+"This may cause inconsistencies in computations.\n"
+"Please set a precision between %(min_precision)s and 1."
 msgstr ""
 
 #. module: product
@@ -3814,28 +3447,18 @@ msgid ""
 msgstr ""
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__thumbnail
-msgid "Thumbnail"
+#: model:product.template,description_sale:product.consu_delivery_01_product_template
+msgid "Three Seater Sofa with Lounger in Steel Grey Colour"
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_brand_tide
-msgid "Tide"
+#: model:product.template,name:product.consu_delivery_01_product_template
+msgid "Three-Seat Sofa"
 msgstr ""
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
 msgid "Today Activities"
-msgstr ""
-
-#. module: product
-#: model:product.template,name:product.consu_delivery_01_product_template
-msgid "Two-Seat Sofa"
-msgstr ""
-
-#. module: product
-#: model:product.template,description_sale:product.consu_delivery_01_product_template
-msgid "Two-Seater Sofa with Oak Wood Frame"
 msgstr ""
 
 #. module: product
@@ -3855,7 +3478,7 @@ msgstr ""
 #: code:addons/product/controllers/pricelist_report.py:0
 #: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
 msgid "UOM"
-msgstr ""
+msgstr "ယူနစ်"
 
 #. module: product
 #. odoo-python
@@ -3864,77 +3487,52 @@ msgid "Unable to find report template for %s format"
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_product.py:0
-msgid ""
-"Unable to import products with attribute value without attribute name "
-"(defined as: attribute:value): %s"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_product.py:0
-msgid ""
-"Unable to import products with attribute values but without name of product "
-"set"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_underarmour
-msgid "Under Armour"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_options_under_desk_pedestals
-msgid "Under-desk pedestals"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_uniqlo
-msgid "Uniqlo"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__uom_id
-#: model:ir.model.fields,field_description:product.field_product_supplierinfo__product_uom_id
-#: model:ir.model.fields,field_description:product.field_product_template__uom_id
-#: model:ir.model.fields,field_description:product.field_product_uom__uom_id
+#: model_terms:ir.ui.view,arch_db:product.product_product_tree_view
+#: model_terms:ir.ui.view,arch_db:product.product_template_tree_view
 msgid "Unit"
 msgstr "ယူနစ်"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__product_uom_ids
-msgid "Unit Barcode"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist_item__product_uom_name
-#: model:ir.model.fields,field_description:product.field_product_product__uom_name
-#: model:ir.model.fields,field_description:product.field_product_template__uom_name
-msgid "Unit Name"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_supplierinfo__price
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_form_view
 msgid "Unit Price"
-msgstr "တစ်ခုချင်းစျေးနှုန်း"
+msgstr "တစ်ယူနစ် စျေးနှုန်း"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_packaging__product_uom_id
+#: model:ir.model.fields,field_description:product.field_product_product__uom_id
+#: model:ir.model.fields,field_description:product.field_product_supplierinfo__product_uom
+#: model:ir.model.fields,field_description:product.field_product_template__uom_id
+msgid "Unit of Measure"
+msgstr "တိုင်းတာသော ယူနစ်"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_pricelist_item__product_uom
+#: model:ir.model.fields,field_description:product.field_product_product__uom_name
+#: model:ir.model.fields,field_description:product.field_product_template__uom_name
+msgid "Unit of Measure Name"
+msgstr ""
 
 #. module: product
 #. odoo-javascript
-#: code:addons/product/static/src/product_catalog/kanban_model.js:0
+#: code:addons/product/static/src/product_catalog/order_line/order_line.xml:0
+msgid "Unit price:"
+msgstr "တစ်ယူနစ် စျေးနှုန်း:"
+
+#. module: product
 #: model_terms:ir.ui.view,arch_db:product.report_packagingbarcode
 msgid "Units"
 msgstr "ယူနစ်"
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_res_config_settings__group_uom
 #: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
 msgid "Units of Measure"
 msgstr "တိုင်းတာသည့် ယူနစ်များ"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_res_config_settings__group_uom
-msgid "Units of Measure & Packagings"
+#: model:ir.model.fields,field_description:product.field_product_product__uom_category_id
+#: model:ir.model.fields,field_description:product.field_product_template__uom_category_id
+msgid "UoM Category"
 msgstr ""
 
 #. module: product
@@ -3993,12 +3591,6 @@ msgstr ""
 msgid ""
 "Use this feature to store any files you would like to share with your "
 "customers"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,help:product.field_res_partner__property_product_pricelist
-#: model:ir.model.fields,help:product.field_res_users__property_product_pricelist
-msgid "Used for sales to the current partner"
 msgstr ""
 
 #. module: product
@@ -4140,11 +3732,6 @@ msgid "Variants"
 msgstr "မူကွဲများ"
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_fabric_velvet
-msgid "Velvet"
-msgstr ""
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__partner_id
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_form_view
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_search_view
@@ -4196,16 +3783,9 @@ msgstr ""
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_combo_view_form
-#: model_terms:ir.ui.view,arch_db:product.product_document_form
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
 #: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Visible to all"
 msgstr "အားလုံးမြင်နိုင်သည်"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_tag__visible_to_customers
-msgid "Visible to customers"
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_document__voice_ids
@@ -4229,6 +3809,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_product__volume_uom_name
 #: model:ir.model.fields,field_description:product.field_product_template__volume_uom_name
 msgid "Volume unit of measure label"
+msgstr ""
+
+#. module: product
+#. odoo-python
+#: code:addons/product/models/decimal_precision.py:0
+#: code:addons/product/models/uom_uom.py:0
+msgid "Warning!"
 msgstr ""
 
 #. module: product
@@ -4262,30 +3849,12 @@ msgid "Weight unit of measure label"
 msgstr ""
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_product.py:0
-#: code:addons/product/models/product_template.py:0
-msgid "What to expect ?"
-msgstr ""
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_tag__visible_to_customers
-msgid "Whether the tag is displayed to customers."
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_brand_whirlpool
-msgid "Whirlpool"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_color_white
+#: model:product.attribute.value,name:product.product_attribute_value_3
 msgid "White"
 msgstr "အဖြူ"
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_fabric_wood
-#: model:product.attribute.value,name:product.pav_legs_wood
+#: model:product.attribute.value,name:product.product_attribute_value_color_wood
 msgid "Wood"
 msgstr "သစ်သား"
 
@@ -4293,21 +3862,6 @@ msgstr "သစ်သား"
 #: model:ir.model.fields,field_description:product.field_product_product__write_date
 msgid "Write Date"
 msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_size_xl
-msgid "XL"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_size_xs
-msgid "XS"
-msgstr ""
-
-#. module: product
-#: model:product.attribute.value,name:product.pav_color_yellow
-msgid "Yellow"
-msgstr "အဝါ"
 
 #. module: product
 #. odoo-python
@@ -4329,6 +3883,17 @@ msgstr ""
 msgid ""
 "You are deactivating the pricelist feature. Every active pricelist will be "
 "archived."
+msgstr ""
+
+#. module: product
+#. odoo-python
+#: code:addons/product/models/decimal_precision.py:0
+msgid ""
+"You are setting a Decimal Accuracy less precise than the UOMs:\n"
+"%s\n"
+"This may cause inconsistencies in computations.\n"
+"Please increase the rounding of those units of measure, or the digits of "
+"this Decimal Accuracy."
 msgstr ""
 
 #. module: product
@@ -4379,6 +3944,13 @@ msgstr ""
 
 #. module: product
 #. odoo-python
+#: code:addons/product/models/product_pricelist_item.py:0
+msgid ""
+"You cannot assign the Main Pricelist as Other Pricelist in PriceList Item"
+msgstr ""
+
+#. module: product
+#. odoo-python
 #: code:addons/product/models/product_attribute.py:0
 msgid ""
 "You cannot change the Variants Creation Mode of the attribute %(attribute)s "
@@ -4418,12 +3990,26 @@ msgstr ""
 
 #. module: product
 #. odoo-python
+#: code:addons/product/models/decimal_precision.py:0
+msgid ""
+"You cannot define the decimal precision of 'Account' as greater than the "
+"rounding factor of the company's main currency"
+msgstr ""
+
+#. module: product
+#. odoo-python
 #: code:addons/product/models/product_pricelist.py:0
 msgid ""
 "You cannot delete pricelist(s):\n"
 "(%(pricelists)s)\n"
 "They are used within pricelist(s):\n"
 "%(other_pricelists)s"
+msgstr ""
+
+#. module: product
+#. odoo-python
+#: code:addons/product/models/product_category.py:0
+msgid "You cannot delete the %s product category."
 msgstr ""
 
 #. module: product
@@ -4442,6 +4028,13 @@ msgid ""
 "You cannot delete the value %(value)s because it is used on the following "
 "products:\n"
 "%(products)s\n"
+msgstr ""
+
+#. module: product
+#. odoo-python
+#: code:addons/product/models/product_category.py:0
+msgid ""
+"You cannot delete this product category, it is the default generic category."
 msgstr ""
 
 #. module: product
@@ -4513,17 +4106,6 @@ msgid "You need to set a positive quantity."
 msgstr ""
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_brand_zara
-msgid "Zara"
-msgstr ""
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_attribute.py:0
-msgid "attribute_id"
-msgstr ""
-
-#. module: product
 #. odoo-javascript
 #: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
 msgid "csv"
@@ -4579,12 +4161,6 @@ msgstr ""
 
 #. module: product
 #. odoo-python
-#: code:addons/product/models/product_template_attribute_line.py:0
-msgid "id"
-msgstr ""
-
-#. module: product
-#. odoo-python
 #: code:addons/product/models/product_pricelist_item.py:0
 msgid "markup"
 msgstr ""
@@ -4630,6 +4206,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 msgid "sales price"
 msgstr "ရောင်းစျေး"
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.view_partner_property_form
+msgid "the parent company"
+msgstr ""
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view

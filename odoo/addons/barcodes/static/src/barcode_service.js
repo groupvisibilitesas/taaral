@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { isBrowserChrome, isMobileOS } from "@web/core/browser/feature_detection";
 import { registry } from "@web/core/registry";
 import { session } from "@web/session";
@@ -92,7 +94,6 @@ export const barcodeService = {
             if (currentTarget !== barcodeInput && isEditable(currentTarget) &&
                 !currentTarget.dataset.enableBarcode &&
                 currentTarget.getAttribute("barcode_events") !== "true") {
-                currentTarget = null;
                 return;
             }
 

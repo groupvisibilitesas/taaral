@@ -1,7 +1,7 @@
 from odoo import models
 
 
-class ThemeUtils(models.AbstractModel):
+class ThemeYes(models.AbstractModel):
     _inherit = 'theme.utils'
 
     def _theme_yes_post_copy(self, mod):

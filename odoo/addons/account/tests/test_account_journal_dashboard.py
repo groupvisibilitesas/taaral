@@ -331,6 +331,7 @@ class TestAccountJournalDashboard(TestAccountJournalDashboardCommon):
             'code': 'TEST',
             'currency_id': self.currency.id,
             'company_id': self.env.company.id,
+            'autocheck_on_post': False,
         })
         move = self.env['account.move'].create({
             'move_type': 'out_invoice',
@@ -351,7 +352,6 @@ class TestAccountJournalDashboard(TestAccountJournalDashboardCommon):
         self.assertEqual(dashboard_data['to_check_balance'], journal.currency_id.format(0))
 
         move.action_post()
-        move.checked = False
 
         dashboard_data = journal._get_journal_dashboard_data_batched()[journal.id]
         self.assertEqual(dashboard_data['to_check_balance'], journal.currency_id.format(100))
@@ -383,8 +383,9 @@ class TestAccountJournalDashboard(TestAccountJournalDashboardCommon):
             'code': 'TEST',
             'currency_id': self.env.ref('base.EUR').id,
             'company_id': self.env.company.id,
+            'autocheck_on_post': False,
         })
-        moves = self.env['account.move'].create([{
+        self.env['account.move'].create([{
             'move_type': 'out_invoice',
             'journal_id': journal.id,
             'partner_id': self.partner_a.id,
@@ -398,9 +399,7 @@ class TestAccountJournalDashboard(TestAccountJournalDashboardCommon):
                     'tax_ids': [],
                 })
             ]
-        } for currency in (self.env.ref('base.EUR'), self.env.ref('base.CHF'))])
-        moves.action_post()
-        moves.checked = False
+        } for currency in (self.env.ref('base.EUR'), self.env.ref('base.CHF'))]).action_post()
 
         dashboard_data = journal._get_journal_dashboard_data_batched()[journal.id]
         self.assertEqual(dashboard_data['to_check_balance'], journal.currency_id.format(150))

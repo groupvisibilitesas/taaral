@@ -34,23 +34,15 @@ Attachment = {
     },
 }
 
-IssuerParty = {
-    'cac:PartyIdentification': {
-        'cbc:ID': {},
-    }
-}
-
 DocumentReference = {
     'cbc:ID': {},
     'cbc:UUID': {},
     'cbc:IssueDate': {},
     'cbc:IssueTime': {},
     'cbc:DocumentTypeCode': {},
-    'cbc:DocumentStatusCode': {},
     'cbc:DocumentType': {},
     'cbc:DocumentDescription': {},
     'cac:Attachment': Attachment,
-    'cac:IssuerParty': IssuerParty,
 }
 
 BillingReference = {
@@ -89,7 +81,6 @@ Address = {
     'cbc:PostalZone': {},
     'cbc:CountrySubentity': {},
     'cbc:CountrySubentityCode': {},
-    'cbc:District': {},
     'cac:AddressLine': {
         'cbc:Line': {},
     },
@@ -317,4 +308,16 @@ Price = {
 
 ItemPriceExtension = {
     'cbc:Amount': {},
+}
+
+ContractDocumentReference = {
+    'cbc:ID': {},
+}
+
+DespatchDocumentReference = {
+    'cbc:ID': {},
+}
+
+ProjectReference = {
+    'cbc:ID': {},
 }

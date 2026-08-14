@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { useService } from "@web/core/utils/hooks";
 import { Component, onWillStart, useState } from "@odoo/owl";
 import { Dialog } from "@web/core/dialog/dialog";
@@ -25,10 +27,9 @@ export class EditHeadBodyDialog extends Component {
         });
 
         onWillStart(async () => {
-            const websites = await this.orm.read(
-                "website",
+            const websites = await this.orm.read("website",
                 [this.website.currentWebsite.id],
-                ["custom_code_head", "custom_code_footer"]
+                ["custom_code_head", "custom_code_footer"],
             );
             const website = websites[0];
             this.state.head = website.custom_code_head || "";

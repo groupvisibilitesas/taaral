@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, Optional, Sequence
 
 from babel import lists
 
 from odoo.tools.misc import babel_locale_parse, get_lang
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
     import odoo.api
 
 XPG_LOCALE_RE = re.compile(
@@ -24,9 +23,9 @@ XPG_LOCALE_RE = re.compile(
 
 def format_list(
     env: odoo.api.Environment,
-    lst: Iterable,
+    lst: Sequence[str],
     style: Literal["standard", "standard-short", "or", "or-short", "unit", "unit-short", "unit-narrow"] = "standard",
-    lang_code: str | None = None,
+    lang_code: Optional[str] = None,
 ) -> str:
     """
     Format the items in `lst` as a list in a locale-dependent manner with the chosen style.
@@ -57,7 +56,7 @@ def format_list(
     See https://www.unicode.org/reports/tr35/tr35-49/tr35-general.html#ListPatterns for more details.
 
     :param env: the current environment.
-    :param lst: the iterable of items to format into a list.
+    :param lst: the sequence of items to format into a list.
     :param style: the style to format the list with.
     :param lang_code: the locale (i.e. en_US).
     :return: the formatted list.
@@ -67,9 +66,9 @@ def format_list(
     if style not in locale.list_patterns:
         style = "standard"
     try:
-        return lists.format_list([str(el) for el in lst], style, locale)
+        return lists.format_list(lst, style, locale)
     except KeyError:
-        return lists.format_list([str(el) for el in lst], 'standard', locale)
+        return lists.format_list(lst, 'standard', locale)
 
 
 def py_to_js_locale(locale: str) -> str:

@@ -102,7 +102,7 @@ export class ChatGPTDialog extends Component {
                 prompt,
                 conversation_history: this.state.conversationHistory,
             },
-            { silent: true }
+            { shadow: true }
         );
         return this.pendingRpcPromise
             .then((content) => protectedCallback(content))

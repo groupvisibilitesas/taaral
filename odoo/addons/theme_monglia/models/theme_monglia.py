@@ -1,7 +1,7 @@
 from odoo import models
 
 
-class ThemeUtils(models.AbstractModel):
+class ThemeMonglia(models.AbstractModel):
     _inherit = 'theme.utils'
 
     def _theme_monglia_post_copy(self, mod):

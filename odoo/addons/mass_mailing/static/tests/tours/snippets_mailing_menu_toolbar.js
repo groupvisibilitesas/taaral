@@ -1,5 +1,7 @@
+/** @odoo-module **/
+
 import { registry } from "@web/core/registry";
-import { stepUtils } from "@web_tour/tour_utils";
+import { stepUtils } from "@web_tour/tour_service/tour_utils";
 
 registry.category("web_tour.tours").add('snippets_mailing_menu_toolbar', {
     url: '/odoo',
@@ -16,12 +18,12 @@ registry.category("web_tour.tours").add('snippets_mailing_menu_toolbar', {
     },
     {
         content: "Wait for the theme selector to load.",
-        trigger: '.o_mailing_template_preview_wrapper',
+        trigger: ':iframe .o_mail_theme_selector_new',
         run: "click",
     },
     {
         content: "Make sure there does not exist a floating toolbar",
-        trigger: "iframe:not(:visible)",
+        trigger: 'iframe',
         run: function () {
             const iframeDocument = this.anchor.contentDocument;
             if (iframeDocument.querySelector('#toolbar.oe-floating')) {
@@ -31,22 +33,22 @@ registry.category("web_tour.tours").add('snippets_mailing_menu_toolbar', {
     },
     {
         content: "Make sure the empty template is an option on non-mobile devices.",
-        trigger: '.o_mailing_template_preview_wrapper [data-name="empty"]',
+        trigger: ':iframe #empty',
     },
     {
         content: "Click on the default 'welcome' template.",
-        trigger: '.o_mailing_template_preview_wrapper [data-name="default"]',
+        trigger: ':iframe #default',
         run: "click",
     },
     { // necessary to wait for the cursor to be placed in the first p
       // and to avoid leaving the page before the selection is added
         content: "Wait for template selection event to be over.",
-        trigger: ":iframe .odoo-editor-editable .o_editable",
+        trigger: ':iframe .o_editable.theme_selection_done',
         run: "click",
     },
     {
         content: "Make sure the snippets menu is not hidden",
-        trigger: ".o-snippets-menu",
+        trigger: '#oe_snippets:not(.d-none)',
     },
     {
         content: "Wait for .s_text_block to be populated",
@@ -69,7 +71,7 @@ registry.category("web_tour.tours").add('snippets_mailing_menu_toolbar', {
     },
     {
         content: "Make sure the toolbar is there",
-        trigger: ".overlay .o-we-toolbar",
+        trigger: '#oe_snippets .o_we_customize_panel #toolbar',
     },
     ...stepUtils.discardForm(),
     ],

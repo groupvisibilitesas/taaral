@@ -1,5 +1,5 @@
-import { delay } from "@web/core/utils/concurrency";
 import { registry } from "@web/core/registry";
+import { delay } from "@web/core/utils/concurrency";
 
 registry.category("web_tour.tours").add("im_livechat_history_back_and_forth_tour", {
     steps: () => [
@@ -8,32 +8,39 @@ registry.category("web_tour.tours").add("im_livechat_history_back_and_forth_tour
             run: "click",
         },
         {
-            trigger: ".o_data_cell:contains(Visitor)",
+            trigger: ".o_data_cell:contains(Visitor operator)",
             run: "click",
         },
         {
-            trigger: ".o-mail-DiscussContent-threadName[title='Visitor']",
+            trigger: ".o-mail-DiscussSidebar-item:contains(Visitor).o-active",
             async run() {
-                await delay(1000);
+                await delay(0);
                 history.back();
             },
         },
         {
-            trigger: ".o_data_cell:contains(Visitor)",
+            trigger: ".o_data_cell:contains(Visitor operator)",
             async run() {
                 await delay(0);
                 history.forward();
             },
         },
         {
-            trigger: ".o-mail-DiscussContent-threadName[title='Visitor']",
+            trigger: ".o-mail-DiscussSidebar-item:contains(Visitor).o-active",
+            async run(helpers) {
+                await delay(0);
+                await helpers.click();
+            },
+        },
+        {
+            trigger: ".o-mail-DiscussSidebar-item:contains(Visitor).o-active",
             async run() {
-                await delay(1000);
+                await delay(0);
                 history.back();
             },
         },
         {
-            trigger: ".o_data_cell:contains(Visitor)",
+            trigger: ".o_data_cell:contains(Visitor operator)",
         },
     ],
 });

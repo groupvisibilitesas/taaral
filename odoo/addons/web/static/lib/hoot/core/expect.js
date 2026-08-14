@@ -761,8 +761,6 @@ export function makeExpect(params) {
      * of the test or the last call to {@link verifyErrors}. Calling this matcher
      * will reset the list of current errors.
      *
-     * `expect.errors(...)` should be called before function
-     *
      * @param {unknown[]} errors
      * @param {VerifierOptions} [options]
      * @returns {boolean}

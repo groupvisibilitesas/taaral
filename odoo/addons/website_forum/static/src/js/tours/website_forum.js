@@ -1,8 +1,9 @@
+/** @odoo-module **/
+
 import { _t } from "@web/core/l10n/translation";
 import {
     registerBackendAndFrontendTour,
 } from '@website/js/tours/tour_utils';
-import { stepUtils } from "@web_tour/tour_utils";
 
 registerBackendAndFrontendTour("question", {
     url: '/forum/1',
@@ -36,10 +37,16 @@ registerBackendAndFrontendTour("question", {
     tooltipPosition: "top",
     run: "click",
 },
-...stepUtils.editSelectMenuInput(".o_select_menu_input", "Test"),
+{
+    trigger: ".o_select_menu_sticky",
+    run: "edit Test",
+},
+{
+    trigger: `.o_popover input.o_select_menu_sticky:not(:contains(Please enter 2 or more characters))`,
+},
 {
     content: "Select found select menu item",
-    trigger: ".o_popover.o_select_menu_menu .o_select_menu_item:contains('Test')",
+    trigger: ".o_popover.o_select_menu_menu .o_select_menu_item span:contains('Test')",
     run: 'click',
 },
 {
@@ -55,7 +62,7 @@ registerBackendAndFrontendTour("question", {
     expectUnloadPage: true,
 },
 {
-    trigger: ".o_wforum_content_wrapper .h3:contains(test)",
+    trigger: ".o_wforum_content_wrapper h3:contains(test)",
 },
 {
     isActive: ["auto"],
@@ -85,7 +92,7 @@ registerBackendAndFrontendTour("question", {
     expectUnloadPage: true,
 },
 {
-    trigger: ".o_wforum_content_wrapper .h3:contains(test)",
+    trigger: ".o_wforum_content_wrapper h3:contains(test)",
 },
 {
     isActive: ["auto"],

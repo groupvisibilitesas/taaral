@@ -11,11 +11,7 @@ patch(DiscussClientAction.prototype, {
         if (typeof rawActiveId === "number") {
             return ["discuss.channel", rawActiveId];
         }
-        const parsedActiveId = super.parseActiveId(rawActiveId);
-        if (!parsedActiveId) {
-            return parsedActiveId;
-        }
-        const [model, id] = parsedActiveId;
+        const [model, id] = super.parseActiveId(rawActiveId);
         if (model === "mail.channel") {
             // legacy format (sent in old emails, shared links, ...)
             return ["discuss.channel", id];

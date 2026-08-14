@@ -6,7 +6,7 @@ import { registry } from "@web/core/registry";
 export class DiscussCoreWeb {
     /**
      * @param {import("@web/env").OdooEnv} env
-     * @param {import("services").ServiceFactories} services
+     * @param {Partial<import("services").Services>} services
      */
     constructor(env, services) {
         this.env = env;
@@ -26,12 +26,23 @@ export class DiscussCoreWeb {
                 user: username,
             });
             this.notificationService.add(notification, { type: "info" });
-            if (!(await this.multiTab.isOnMainTab())) {
+            if (!this.multiTab.isOnMainTab()) {
                 return;
             }
             const chat = await this.store.getChat({ partnerId });
             if (chat && !this.ui.isSmall) {
-                chat.openChatWindow({ focus: false });
+                this.store.chatHub.opened.add({ thread: chat });
+            }
+        });
+        this.busService.subscribe("discuss.Thread/fold_state", async (data) => {
+            const thread = await this.store.Thread.getOrFetch(data);
+            if (data.fold_state && thread && data.foldStateCount > thread.foldStateCount) {
+                thread.foldStateCount = data.foldStateCount;
+                thread.state = data.fold_state;
+                if (thread.state === "closed") {
+                    const chatWindow = this.store.ChatWindow.get({ thread });
+                    chatWindow?.close({ notifyState: false });
+                }
             }
         });
         this.env.bus.addEventListener("mail.message/delete", ({ detail: { message } }) => {
@@ -40,6 +51,7 @@ export class DiscussCoreWeb {
                 this.store.channels.fetch();
             }
         });
+        this.busService.start();
     }
 }
 
@@ -47,7 +59,7 @@ export const discussCoreWeb = {
     dependencies: ["bus_service", "mail.store", "notification", "ui", "multi_tab"],
     /**
      * @param {import("@web/env").OdooEnv} env
-     * @param {import("services").ServiceFactories} services
+     * @param {Partial<import("services").Services>} services
      */
     start(env, services) {
         const discussCoreWeb = reactive(new DiscussCoreWeb(env, services));

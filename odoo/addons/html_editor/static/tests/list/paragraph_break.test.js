@@ -1,17 +1,10 @@
-import { describe, test, before } from "@odoo/hoot";
+import { describe, test } from "@odoo/hoot";
 import { testEditor } from "../_helpers/editor";
 import { unformat } from "../_helpers/format";
 import { insertText, splitBlock } from "../_helpers/user_actions";
 
 const base64Img =
     "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUA\n        AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO\n            9TXL0Y4OHwAAAABJRU5ErkJggg==";
-
-before(async () => {
-    const font = new FontFace("Roboto", "url(/web/static/fonts/google/Roboto/Roboto-Regular.ttf)");
-    await font.load();
-    document.fonts.add(font);
-    await document.fonts.ready;
-});
 
 describe("Selection collapsed", () => {
     describe("Ordered", () => {
@@ -49,14 +42,6 @@ describe("Selection collapsed", () => {
                 });
             });
 
-            test("should not split a list item if not content editable", async () => {
-                await testEditor({
-                    contentBefore: `<ol contenteditable="false"><li><span contenteditable="true">ab[]c</span></li></ol>`,
-                    stepFunction: splitBlock,
-                    contentAfter: `<ol contenteditable="false"><li><span contenteditable="true">ab<br>[]c</span></li></ol>`,
-                });
-            });
-
             test("should add an empty list item after a list item", async () => {
                 await testEditor({
                     contentBefore: "<ol><li>abc[]</li></ol>",
@@ -69,7 +54,8 @@ describe("Selection collapsed", () => {
                 await testEditor({
                     contentBefore: unformat(`
                         <ol>
-                            <li><p>a</p>
+                            <li>a</li>
+                            <li class="oe-nested">
                                 <ol>
                                     <li>b</li>
                                 </ol>
@@ -86,7 +72,8 @@ describe("Selection collapsed", () => {
                     },
                     contentAfter: unformat(`
                         <ol>
-                            <li><p>a</p>
+                            <li>a</li>
+                            <li class="oe-nested">
                                 <ol>
                                     <li>b</li>
                                 </ol>
@@ -143,13 +130,13 @@ describe("Selection collapsed", () => {
             test("should add an empty list item at the end of an indented list, then remove it", async () => {
                 await testEditor({
                     contentBefore:
-                        "<ol><li><p>abc</p><ol><li>def[]</li></ol></li><li>ghi</li></ol>",
+                        '<ol><li>abc</li><li class="oe-nested"><ol><li>def[]</li></ol></li><li>ghi</li></ol>',
                     stepFunction: async (editor) => {
                         splitBlock(editor);
                         splitBlock(editor);
                     },
                     contentAfter:
-                        "<ol><li><p>abc</p><ol><li>def</li></ol></li><li>[]<br></li><li>ghi</li></ol>",
+                        '<ol><li>abc</li><li class="oe-nested"><ol><li>def</li></ol></li><li>[]<br></li><li>ghi</li></ol>',
                 });
             });
 
@@ -231,7 +218,8 @@ describe("Selection collapsed", () => {
                 await testEditor({
                     contentBefore: unformat(`
                             <ul>
-                                <li><p>ab</p>
+                                <li>ab</li>
+                                <li class="oe-nested">
                                     <ul>
                                         <li>
                                             <font style="color: red;">cd[]</font>
@@ -247,10 +235,11 @@ describe("Selection collapsed", () => {
                     },
                     contentAfter: unformat(`
                             <ul>
-                                <li><p>ab</p>
+                                <li>ab</li>
+                                <li class="oe-nested">
                                     <ul>
                                         <li><font style="color: red;">cd</font></li>
-                                        <li><font style="color: red;">b</font></li>
+                                        <li>b</li>
                                         <li>[]<br></li>
                                     </ul>
                                 </li>
@@ -318,13 +307,13 @@ describe("Selection collapsed", () => {
             test("should add an empty list item at the end of an indented list, then remove it", async () => {
                 await testEditor({
                     contentBefore:
-                        "<ul><li><p>abc</p><ul><li>def[]</li></ul></li><li>ghi</li></ul>",
+                        '<ul><li>abc</li><li class="oe-nested"><ul><li>def[]</li></ul></li><li>ghi</li></ul>',
                     stepFunction: async (editor) => {
                         splitBlock(editor);
                         splitBlock(editor);
                     },
                     contentAfter:
-                        "<ul><li><p>abc</p><ul><li>def</li></ul></li><li>[]<br></li><li>ghi</li></ul>",
+                        '<ul><li>abc</li><li class="oe-nested"><ul><li>def</li></ul></li><li>[]<br></li><li>ghi</li></ul>',
                 });
             });
 
@@ -402,19 +391,17 @@ describe("Selection collapsed", () => {
                 });
             });
 
-            test.tags("font-dependent");
             test("should keep the list-style when add li", async () => {
                 await testEditor({
-                    styleContent: "ul { font: 14px Roboto }",
                     contentBefore: unformat(`
                             <ul>
-                                <li style="list-style: upper-latin;">a[]</li>
+                                <li style="list-style: cambodian;">a[]</li>
                             </ul>`),
                     stepFunction: splitBlock,
                     contentAfter: unformat(`
                         <ul>
-                            <li style="list-style: upper-latin;">a</li>
-                            <li style="list-style: upper-latin;">[]<br></li>
+                            <li style="list-style: cambodian;">a</li>
+                            <li style="list-style: cambodian;">[]<br></li>
                         </ul>`),
                 });
             });
@@ -527,26 +514,26 @@ describe("Selection collapsed", () => {
             test("should add an empty list item at the end of an indented list, then outdent it (checked)", async () => {
                 await testEditor({
                     contentBefore:
-                        '<ul class="o_checklist"><li><p>abc</p><ul class="o_checklist"><li class="o_checked">def[]</li></ul></li><li class="o_checked">ghi</li></ul>',
+                        '<ul class="o_checklist"><li class="o_checked">abc</li><li class="oe-nested"><ul class="o_checklist"><li class="o_checked">def[]</li></ul></li><li class="o_checked">ghi</li></ul>',
                     stepFunction: async (editor) => {
                         splitBlock(editor);
                         splitBlock(editor);
                     },
                     contentAfter:
-                        '<ul class="o_checklist"><li><p>abc</p><ul class="o_checklist"><li class="o_checked">def</li></ul></li><li>[]<br></li><li class="o_checked">ghi</li></ul>',
+                        '<ul class="o_checklist"><li class="o_checked">abc</li><li class="oe-nested"><ul class="o_checklist"><li class="o_checked">def</li></ul></li><li>[]<br></li><li class="o_checked">ghi</li></ul>',
                 });
             });
 
             test("should add an empty list item at the end of an indented list, then outdent it (unchecked)", async () => {
                 await testEditor({
                     contentBefore:
-                        '<ul class="o_checklist"><li><p>abc</p><ul class="o_checklist"><li>def[]</li></ul></li><li class="o_checked">ghi</li></ul>',
+                        '<ul class="o_checklist"><li>abc</li><li class="oe-nested"><ul class="o_checklist"><li>def[]</li></ul></li><li class="o_checked">ghi</li></ul>',
                     stepFunction: async (editor) => {
                         splitBlock(editor);
                         splitBlock(editor);
                     },
                     contentAfter:
-                        '<ul class="o_checklist"><li><p>abc</p><ul class="o_checklist"><li>def</li></ul></li><li>[]<br></li><li class="o_checked">ghi</li></ul>',
+                        '<ul class="o_checklist"><li>abc</li><li class="oe-nested"><ul class="o_checklist"><li>def</li></ul></li><li>[]<br></li><li class="o_checked">ghi</li></ul>',
                 });
             });
 
@@ -632,7 +619,8 @@ describe("Selection collapsed", () => {
                     await testEditor({
                         contentBefore: unformat(`
                             <ul class="o_checklist">
-                                <li><p>ab</p>
+                                <li>ab</li>
+                                <li class="oe-nested">
                                     <ul class="o_checklist">
                                         <li>
                                             <font style="color: red;">cd[]</font>
@@ -648,10 +636,11 @@ describe("Selection collapsed", () => {
                         },
                         contentAfter: unformat(`
                             <ul class="o_checklist">
-                                <li><p>ab</p>
+                                <li>ab</li>
+                                <li class="oe-nested">
                                     <ul class="o_checklist">
                                         <li><font style="color: red;">cd</font></li>
-                                        <li><font style="color: red;">0</font></li>
+                                        <li>0</li>
                                         <li>[]<br></li>
                                     </ul>
                                 </li>
@@ -723,7 +712,8 @@ describe("Selection collapsed", () => {
                     await testEditor({
                         contentBefore: unformat(`
                             <ul class="o_checklist">
-                                <li><p>ab</p>
+                                <li class="o_checked">ab</li>
+                                <li class="oe-nested">
                                     <ul class="o_checklist">
                                         <li class="o_checked">
                                             <font style="color: red;">cd[]</font>
@@ -739,10 +729,11 @@ describe("Selection collapsed", () => {
                         },
                         contentAfter: unformat(`
                             <ul class="o_checklist">
-                                <li><p>ab</p>
+                                <li class="o_checked">ab</li>
+                                <li class="oe-nested">
                                     <ul class="o_checklist">
                                         <li class="o_checked"><font style="color: red;">cd</font></li>
-                                        <li><font style="color: red;">0</font></li>
+                                        <li>0</li>
                                         <li>[]<br></li>
                                     </ul>
                                 </li>

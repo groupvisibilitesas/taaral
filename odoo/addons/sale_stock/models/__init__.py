@@ -9,4 +9,5 @@ from . import res_users
 from . import sale_order
 from . import sale_order_line
 from . import stock
-from . import stock_reference
+from . import stock_warehouse
+from . import stock_valuation_layer

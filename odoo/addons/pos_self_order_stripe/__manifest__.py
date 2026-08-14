@@ -10,12 +10,8 @@
     ],
     'assets': {
         'pos_self_order.assets': [
-            'pos_self_order_stripe/static/src/**/*',
-        ],
-        'pos_self_order.assets_tests': [
-            'pos_self_order_stripe/static/tests/tours/**/*',
+            'pos_self_order_stripe/static/**/*',
         ],
     },
-    "author": "Odoo S.A.",
     "license": "LGPL-3",
 }

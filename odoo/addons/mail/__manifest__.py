@@ -2,7 +2,7 @@
 
 {
     'name': 'Discuss',
-    'version': '1.19',
+    'version': '1.18',
     'category': 'Productivity/Discuss',
     'sequence': 145,
     'summary': 'Chat, mail gateway and private channels',
@@ -65,13 +65,12 @@ For more specific needs, you may also assign custom-defined actions
         'wizard/mail_activity_schedule_views.xml',
         'wizard/mail_blacklist_remove_views.xml',
         'wizard/mail_compose_message_views.xml',
+        'wizard/mail_resend_message_views.xml',
+        'wizard/mail_resend_partner_views.xml',
         'wizard/mail_template_preview_views.xml',
-        'wizard/mail_followers_edit_views.xml',
+        'wizard/mail_wizard_invite_views.xml',
         'wizard/mail_template_reset_views.xml',
         'views/fetchmail_views.xml',
-        'views/ir_cron_views.xml',
-        'views/ir_filters_views.xml',
-        'views/ir_mail_server_views.xml',
         'views/mail_message_subtype_views.xml',
         'views/mail_tracking_value_views.xml',
         'views/mail_notification_views.xml',
@@ -86,7 +85,6 @@ For more specific needs, you may also assign custom-defined actions
         'views/discuss/discuss_gif_favorite_views.xml',
         'views/discuss_channel_views.xml',
         'views/mail_canned_response_views.xml',
-        'views/res_role_views.xml',
         'views/mail_activity_views.xml',
         'views/mail_activity_plan_views.xml',
         'views/mail_activity_plan_template_views.xml',
@@ -98,7 +96,7 @@ For more specific needs, you may also assign custom-defined actions
         'data/mail_templates_email_layouts.xml',
         'data/mail_templates_mailgateway.xml',
         'data/discuss_channel_data.xml',
-        'data/mail_activity_type_data.xml',
+        'data/mail_activity_data.xml',
         'data/security_notifications_templates.xml',
         'data/ir_cron_data.xml',
         'data/ir_actions_client.xml',
@@ -119,8 +117,6 @@ For more specific needs, you may also assign custom-defined actions
         'views/res_partner_views.xml',
         'views/mail_blacklist_views.xml',
         'views/mail_menus.xml',
-        'views/discuss/discuss_menus.xml',
-        'views/discuss/discuss_call_history_views.xml',
         'views/res_company_views.xml',
         "views/mail_scheduled_message_views.xml",
         "data/mail_canned_response_data.xml",
@@ -128,9 +124,7 @@ For more specific needs, you may also assign custom-defined actions
         'data/web_tour_tour.xml',
     ],
     'demo': [
-        'demo/mail_activity_demo.xml',
         'demo/discuss_channel_demo.xml',
-        'demo/discuss/public_channel_demo.xml',
         "demo/mail_canned_response_demo.xml",
     ],
     'installable': True,
@@ -144,7 +138,6 @@ For more specific needs, you may also assign custom-defined actions
             # depends on BS variables, can't be loaded in assets_primary or assets_secondary
             'mail/static/src/scss/variables/derived_variables.scss',
             'mail/static/src/scss/*.scss',
-            'mail/static/lib/idb-keyval/idb-keyval.js',
             'mail/static/lib/selfie_segmentation/selfie_segmentation.js',
             'mail/static/src/js/**/*',
             'mail/static/src/model/**/*',
@@ -168,7 +161,6 @@ For more specific needs, you may also assign custom-defined actions
             ('remove', 'mail/static/src/discuss/**/*.dark.scss'),
             'mail/static/src/views/fields/**/*',
             ('remove', 'mail/static/src/views/web/activity/**'),
-            'mail/static/src/convert_inline/**/*',
         ],
         'web.assets_backend_lazy': [
             'mail/static/src/views/web/activity/**',
@@ -176,43 +168,41 @@ For more specific needs, you may also assign custom-defined actions
         "web.assets_web_dark": [
             'mail/static/src/**/*.dark.scss',
         ],
-        "web.assets_frontend": [
-            "mail/static/src/utils/common/format.js",
-        ],
         'mail.assets_discuss_public_test_tours': [
+            'web_tour/static/src/tour_pointer/**/*',
             'web/static/lib/hoot-dom/**/*',
-            'web_tour/static/src/js/**/*',
-            'web_tour/static/src/tour_utils.js',
+            # scss not needed in tests and depends on scss variables that are not in this bundle
+            ('remove', 'web_tour/static/src/tour_pointer/**/*.scss'),
+            'web_tour/static/src/tour_service/**/*',
             'web/static/tests/legacy/helpers/cleanup.js',
             'web/static/tests/legacy/helpers/utils.js',
             'web/static/tests/legacy/utils.js',
             'mail/static/tests/tours/discuss_channel_public_tour.js',
             'mail/static/tests/tours/discuss_channel_as_guest_tour.js',
-            'mail/static/tests/tours/discuss_channel_call_action.js',
             'mail/static/tests/tours/discuss_channel_call_public_tour.js',
             'mail/static/tests/tours/discuss_sidebar_in_public_page_tour.js',
-            'mail/static/tests/tours/discuss_channel_meeting_view_tour.js',
         ],
         # Unit test files
         'web.assets_unit_tests': [
             'mail/static/tests/**/*',
-            ('remove', 'mail/static/tests/legacy/helpers/mock_services.js'), # to remove when all legacy tests are ported
+            ('remove', 'mail/static/tests/legacy/**/*'), # to remove when all legacy tests are ported
             ('remove', 'mail/static/tests/tours/**/*'),
         ],
         'web.assets_tests': [
             'mail/static/tests/tours/**/*',
         ],
         'web.tests_assets': [
-            'mail/static/tests/legacy/helpers/mock_services.js',
+            'mail/static/tests/legacy/helpers/**/*',
+        ],
+        'web.qunit_suite_tests': [
+            'mail/static/tests/legacy/**/*',
+            ('remove', 'mail/static/tests/legacy/helpers/**/*'),
         ],
         'mail.assets_odoo_sfu': [
             'mail/static/lib/odoo_sfu/odoo_sfu.js',
         ],
         'mail.assets_lamejs': [
             'mail/static/lib/lame/lame.js',
-        ],
-        "mail.assets_message_email": [
-            "web/static/lib/odoo_ui_icons/style.css",
         ],
         'mail.assets_public': [
             'web/static/lib/jquery/jquery.js',
@@ -226,20 +216,18 @@ For more specific needs, you may also assign custom-defined actions
             ('include', 'web._assets_bootstrap_backend'),
             'web/static/src/scss/bootstrap_overridden.scss',
             'web/static/src/libs/fontawesome/css/font-awesome.css',
-            'web/static/src/scss/animation.scss',
             'web/static/src/webclient/webclient.scss',
             'web/static/src/scss/mimetypes.scss',
             'web/static/src/scss/ui.scss',
             ('include', 'web._assets_core'),
+            'web/static/src/libs/pdfjs.js',
             'web/static/src/views/fields/formatters.js',
             'web/static/src/views/fields/file_handler.*',
 
             'bus/static/src/*.js',
             'bus/static/src/services/**/*.js',
-            'bus/static/src/workers/*.js',
-            ('remove', 'bus/static/src/workers/bus_worker_script.js'),
-
-            ("include", "html_editor.assets_editor"),
+            'bus/static/src/workers/websocket_worker.js',
+            'bus/static/src/workers/websocket_worker_utils.js',
 
             'mail/static/src/model/**/*',
             'mail/static/src/core/common/**/*',
@@ -261,6 +249,5 @@ For more specific needs, you may also assign custom-defined actions
             ('remove', 'web/static/src/**/*.dark.scss'),
         ]
     },
-    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 }

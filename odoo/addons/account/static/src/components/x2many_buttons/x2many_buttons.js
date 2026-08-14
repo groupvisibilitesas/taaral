@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { _t } from "@web/core/l10n/translation";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { registry } from "@web/core/registry";
@@ -9,7 +11,6 @@ class X2ManyButtons extends Component {
     static props = {
         ...standardFieldProps,
         treeLabel: { type: String },
-        nbRecordsShown: { type: Number, optional: true },
     };
 
     setup() {
@@ -51,8 +52,5 @@ X2ManyButtons.template = "account.X2ManyButtons";
 registry.category("fields").add("x2many_buttons", {
     component: X2ManyButtons,
     relatedFields: [{ name: "display_name", type: "char" }],
-    extractProps: ({ attrs, string }) => ({
-        treeLabel: string || _t("Records"),
-        nbRecordsShown: attrs.nb_records_shown ? parseInt(attrs.nb_records_shown) : 3,
-    }),
+    extractProps: ({ string }) => ({ treeLabel: string || _t("Records") }),
 });

@@ -10,9 +10,9 @@ class ProductComboItem(models.Model):
     _check_company_auto = True
 
     company_id = fields.Many2one(related='combo_id.company_id', precompute=True, store=True)
-    combo_id = fields.Many2one(comodel_name='product.combo', ondelete='cascade', required=True, index=True)
+    combo_id = fields.Many2one(comodel_name='product.combo', ondelete='cascade', required=True)
     product_id = fields.Many2one(
-        string="Options",
+        string="Product",
         comodel_name='product.product',
         ondelete='restrict',
         domain=[('type', '!=', 'combo')],

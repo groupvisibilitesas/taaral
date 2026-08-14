@@ -1,12 +1,11 @@
+# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from collections import defaultdict
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.fields import Domain
 from odoo.tools import SQL, Query, unique
 from odoo.tools.float_utils import float_compare, float_round
-from odoo.tools.sql import table_exists
 
 
 class AnalyticMixin(models.AbstractModel):
@@ -15,9 +14,7 @@ class AnalyticMixin(models.AbstractModel):
 
     analytic_distribution = fields.Json(
         'Analytic Distribution',
-        compute="_compute_analytic_distribution",
-        search="_search_analytic_distribution",
-        store=True, copy=True, readonly=False,
+        compute="_compute_analytic_distribution", store=True, copy=True, readonly=False,
     )
     analytic_precision = fields.Integer(
         store=False,
@@ -31,13 +28,20 @@ class AnalyticMixin(models.AbstractModel):
 
     def init(self):
         # Add a gin index for json search on the keys, on the models that actually have a table
-        if table_exists(self.env.cr, self._table) and self._fields['analytic_distribution'].store:
+        query = ''' SELECT table_name
+                    FROM information_schema.tables
+                    WHERE table_name=%s '''
+        self.env.cr.execute(query, [self._table])
+        if self.env.cr.dictfetchone() and self._fields['analytic_distribution'].store:
             query = fr"""
                 CREATE INDEX IF NOT EXISTS {self._table}_analytic_distribution_accounts_gin_index
                                         ON {self._table} USING gin(regexp_split_to_array(jsonb_path_query_array(analytic_distribution, '$.keyvalue()."key"')::text, '\D+'));
             """
             self.env.cr.execute(query)
         super().init()
+
+    def _compute_analytic_distribution(self):
+        pass
 
     def _query_analytic_accounts(self, table=False):
         return SQL(
@@ -64,65 +68,50 @@ class AnalyticMixin(models.AbstractModel):
             rec.distribution_analytic_account_ids = self.env['account.analytic.account'].browse(ids)
 
     def _search_distribution_analytic_account_ids(self, operator, value):
-        if operator in ('any', 'not any', 'any!', 'not any!'):
-            if isinstance(value, Domain):
-                value = self.env['account.analytic.account'].search(value).ids
-            elif isinstance(value, Query):
-                value = value.get_result_ids()
-            else:
-                return NotImplemented
-            operator = 'in' if operator in ('any', 'any!') else 'not in'
         return [('analytic_distribution', operator, value)]
 
-    def _compute_analytic_distribution(self):
-        pass
-
-    def _search_analytic_distribution(self, operator, value):
+    def _condition_to_sql(self, alias: str, fname: str, operator: str, value, query: Query) -> SQL:
         # Don't use this override when account_report_analytic_groupby is truly in the context
         # Indeed, when account_report_analytic_groupby is in the context it means that `analytic_distribution`
         # doesn't have the same format and the table is a temporary one, see _prepare_lines_for_analytic_groupby
-        if self.env.context.get('account_report_analytic_groupby') or (operator in ('in', 'not in') and False in value):
-            return Domain('analytic_distribution', operator, value)
+        if fname != 'analytic_distribution' or self.env.context.get('account_report_analytic_groupby'):
+            return super()._condition_to_sql(alias, fname, operator, value, query)
 
-        def search_value(value: str, exact: bool):
-            return list(self.env['account.analytic.account']._search(
-                [('display_name', ('=' if exact else 'ilike'), value)]
-            ))
-
-        # reformulate the condition as <field> in/not in <ids>
-        if operator in ('in', 'not in'):
-            ids = [
-                r
-                for v in value
-                for r in (search_value(v, exact=True) if isinstance(value, str) else [v])
-            ]
-        elif operator in ('ilike', 'not ilike'):
-            ids = search_value(value, exact=False)
-            operator = 'not in' if operator.startswith('not') else 'in'
-        else:
+        if operator not in ('=', '!=', 'ilike', 'not ilike', 'in', 'not in'):
             raise UserError(_('Operation not supported'))
 
-        if not ids:
-            # not ids found, just let it optimize to a constant
-            return Domain(operator == 'not in')
+        if operator in ('=', '!=') and isinstance(value, bool):
+            return super()._condition_to_sql(alias, fname, operator, value, query)
+
+        if isinstance(value, str) and operator in ('=', '!=', 'ilike', 'not ilike'):
+            value = list(self.env['account.analytic.account']._search(
+                [('display_name', '=' if operator in ('=', '!=') else 'ilike', value)]
+            ))
+            operator = 'in' if operator in ('=', 'ilike') else 'not in'
+
+        if isinstance(value, int) and operator in ('=', '!='):
+            value = [value]
+            operator = 'in' if operator == '=' else 'not in'
 
         # keys can be comma-separated ids, we will split those into an array and then make an array comparison with the list of ids to check
-        ids = [str(id_) for id_ in ids if id_]  # list of ids -> list of string
+        analytic_accounts_query = self._query_analytic_accounts()
+        value = [str(id_) for id_ in value if id_]  # list of ids -> list of string
         if operator == 'in':
-            return Domain.custom(to_sql=lambda model, alias, query: SQL(
+            return SQL(
                 "%s && %s",
-                self._query_analytic_accounts(alias),
-                ids,
-            ))
-        else:
-            return Domain.custom(to_sql=lambda model, alias, query: SQL(
+                analytic_accounts_query,
+                value,
+            )
+        if operator == 'not in':
+            return SQL(
                 "(NOT %s && %s OR %s IS NULL)",
-                self._query_analytic_accounts(alias),
-                ids,
-                model._field_to_sql(alias, 'analytic_distribution', query),
-            ))
+                analytic_accounts_query,
+                value,
+                self._field_to_sql(alias, 'analytic_distribution', query),
+            )
+        raise UserError(_('Operation not supported'))
 
-    def _read_group_groupby(self, alias: str, groupby_spec: str, query: Query) -> SQL:
+    def _read_group_groupby(self, groupby_spec: str, query: Query) -> SQL:
         """To group by `analytic_distribution`, we first need to separate the analytic_ids and associate them with the ids to be counted
         Do note that only '__count' can be passed in the `aggregates`"""
         if groupby_spec == 'analytic_distribution':
@@ -141,7 +130,7 @@ class AnalyticMixin(models.AbstractModel):
             query._where_clauses = []
             return SQL("account_id")
 
-        return super()._read_group_groupby(alias, groupby_spec, query)
+        return super()._read_group_groupby(groupby_spec, query)
 
     def _read_group_select(self, aggregate_spec: str, query: Query) -> SQL:
         if query.table == 'distribution' and aggregate_spec != '__count':
@@ -159,12 +148,16 @@ class AnalyticMixin(models.AbstractModel):
             raise ValueError(f"{query.table} does not support analytic_distribution grouping.")
         return SQL(ids.get(query.table))
 
+    def mapped(self, func):
+        # Get the related analytic accounts as a recordset instead of the distribution
+        if func == 'analytic_distribution' and self.env.context.get('distribution_ids'):
+            return self.distribution_analytic_account_ids
+        return super().mapped(func)
+
     def filtered_domain(self, domain):
         # Filter based on the accounts used (i.e. allowing a name_search) instead of the distribution
         # A domain on a binary field doesn't make sense anymore outside of set or not; and it is still doable.
-        # Hack to filter using another field.
-        domain = Domain(domain).map_conditions(lambda cond: Domain('distribution_analytic_account_ids', cond.operator, cond.value) if cond.field_expr == 'analytic_distribution' else cond)
-        return super().filtered_domain(domain)
+        return super(AnalyticMixin, self.with_context(distribution_ids=True)).filtered_domain(domain)
 
     def write(self, vals):
         """ Format the analytic_distribution float value, so equality on analytic_distribution can be done """

@@ -122,34 +122,34 @@ class TestPaymentTransaction(NuveiCommon):
         input_keys.sort()
         self.assertListEqual(input_keys, expected_input_keys)
 
-    def test_apply_updates_confirms_transaction(self):
-        """ Test that the transaction state is set to 'done' when the payment data indicates a
+    def test_processing_notification_data_confirms_transaction(self):
+        """ Test that the transaction state is set to 'done' when the notification data indicates a
         successful payment. """
         tx = self._create_transaction(flow='redirect')
-        tx._apply_updates(self.payment_data)
+        tx._process_notification_data(self.notification_data)
         self.assertEqual(tx.state, 'done')
 
-    def test_apply_updates_sets_transaction_in_error(self):
-        """ Test that the transaction state is set to 'error' when the payment data indicates
+    def test_processing_notification_data_sets_transaction_in_error(self):
+        """ Test that the transaction state is set to 'error' when the notification data indicates
         that something went wrong. """
         tx = self._create_transaction(flow='redirect')
-        payload = dict(self.payment_data, Status='ERROR', Reason='Invalid Card')
-        tx._apply_updates(payload)
+        payload = dict(self.notification_data, Status='ERROR', Reason='Invalid Card')
+        tx._process_notification_data(payload)
         self.assertEqual(tx.state, 'error')
 
-    def test_apply_updates_sets_unknown_transaction_in_error(self):
-        """ Test that the transaction state is set to 'error' when the payment data returns
+    def test_processing_notification_data_sets_unknown_transaction_in_error(self):
+        """ Test that the transaction state is set to 'error' when the notification data returns
         something with an unknown state. """
         tx = self._create_transaction(flow='redirect')
-        payload = dict(self.payment_data, Status='???', Reason='Invalid Card')
-        tx._apply_updates(payload)
+        payload = dict(self.notification_data, Status='???', Reason='Invalid Card')
+        tx._process_notification_data(payload)
         self.assertEqual(tx.state, 'error')
 
-    def test_processing_payment_data_sets_transaction_to_cancel(self):
-        """ Test that the transaction state is set to 'cancel' when the payment data is
+    def test_processing_notification_data_sets_transaction_to_cancel(self):
+        """ Test that the transaction state is set to 'cancel' when the notification data is
         missing. """
         tx = self._create_transaction(flow='redirect')
-        tx._apply_updates({})
+        tx._process_notification_data({})
         self.assertEqual(tx.state_message, 'The customer left the payment page.')
         self.assertEqual(tx.state, 'cancel')
 

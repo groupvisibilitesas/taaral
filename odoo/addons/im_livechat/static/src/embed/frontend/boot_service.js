@@ -1,11 +1,11 @@
 import { makeRoot, makeShadow } from "@im_livechat/embed/common/boot_helpers";
-import { canLoadLivechat } from "@im_livechat/embed/common/misc";
 import { LivechatRoot } from "@im_livechat/embed/frontend/livechat_root";
+import { _t } from "@web/core/l10n/translation";
 import { App } from "@odoo/owl";
-import { appTranslateFn } from "@web/core/l10n/translation";
 
-import { registry } from "@web/core/registry";
 import { getTemplate } from "@web/core/templates";
+import { registry } from "@web/core/registry";
+import { session } from "@web/session";
 
 export const livechatBootService = {
     dependencies: ["mail.store"],
@@ -18,20 +18,17 @@ export const livechatBootService = {
     },
 
     start(env) {
-        if (!canLoadLivechat()) {
+        if (!session.livechatData?.isAvailable) {
             return;
         }
         const target = this.getTarget();
         const root = makeRoot(target);
         makeShadow(root).then((shadow) => {
-            env.services["discuss.rtc"].rootEl = shadow;
             new App(LivechatRoot, {
-                env: Object.assign(Object.create(env), {
-                    rootId: root.getAttribute("id"),
-                }),
+                env,
                 getTemplate,
                 translatableAttributes: ["data-tooltip"],
-                translateFn: appTranslateFn,
+                translateFn: _t,
                 dev: env.debug,
             }).mount(shadow);
         });

@@ -1,11 +1,12 @@
+/** @odoo-module */
+
 import * as spreadsheet from "@odoo/o-spreadsheet";
 
 import { Component, useSubEnv } from "@odoo/owl";
-const { registries, stores } = spreadsheet;
+import { navigateToOdooMenu } from "@spreadsheet/helpers/helpers";
+import { useService } from "@web/core/utils/hooks";
+const { registries } = spreadsheet;
 const { figureRegistry } = registries;
-const { ModelStore, useStoreProvider } = stores;
-
-const EMPTY_FIGURE = { tag: "empty" };
 
 export class MobileFigureContainer extends Component {
     static template = "documents_spreadsheet.MobileFigureContainer";
@@ -14,8 +15,8 @@ export class MobileFigureContainer extends Component {
     };
 
     setup() {
-        const stores = useStoreProvider();
-        stores.inject(ModelStore, this.props.spreadsheetModel);
+        this.actionService = useService("action");
+        this.notificationService = useService("notification");
         useSubEnv({
             model: this.props.spreadsheetModel,
             isDashboard: () => this.props.spreadsheetModel.getters.isDashboard(),
@@ -23,26 +24,15 @@ export class MobileFigureContainer extends Component {
         });
     }
 
-    get figureRows() {
+    get figures() {
         const sheetId = this.props.spreadsheetModel.getters.getActiveSheetId();
-        const sortedFigures = this.props.spreadsheetModel.getters
+        return this.props.spreadsheetModel.getters
             .getFigures(sheetId)
-            .sort((f1, f2) => (this.isBefore(f1, f2) ? -1 : 1));
-
-        const figureRows = [];
-        for (let i = 0; i < sortedFigures.length; i++) {
-            const figure = sortedFigures[i];
-            const nextFigure = sortedFigures[i + 1];
-            if (this.isScorecard(figure) && nextFigure && this.isScorecard(nextFigure)) {
-                figureRows.push([figure, nextFigure]);
-                i++;
-            } else if (this.isScorecard(figure)) {
-                figureRows.push([figure, EMPTY_FIGURE]);
-            } else {
-                figureRows.push([figure]);
-            }
-        }
-        return figureRows;
+            .sort((f1, f2) => (this.isBefore(f1, f2) ? -1 : 1))
+            .map((figure) => ({
+                ...figure,
+                width: window.innerWidth,
+            }));
     }
 
     getFigureComponent(figure) {
@@ -50,18 +40,22 @@ export class MobileFigureContainer extends Component {
     }
 
     isBefore(f1, f2) {
-        const sheetId = this.props.spreadsheetModel.getters.getActiveSheetId();
-        const fig1 = this.props.spreadsheetModel.getters.getFigureUI(sheetId, f1);
-        const fig2 = this.props.spreadsheetModel.getters.getFigureUI(sheetId, f2);
-        return fig1.x < fig2.x ? fig1.y < fig2.y : fig1.y < fig2.y;
+        // TODO be smarter
+        return f1.x < f2.x ? f1.y < f2.y : f1.y < f2.y;
     }
 
-    isScorecard(figure) {
-        if (figure.tag !== "chart") {
-            return false;
+    hasOdooMenu(figureId) {
+        return this.props.spreadsheetModel.getters.getChartOdooMenu(figureId) !== undefined;
+    }
+
+    async onClick(figureId) {
+        if (this.hasOdooMenu(figureId)) {
+            await navigateToOdooMenu({
+                figureId,
+                model: this.props.spreadsheetModel,
+                notificationService: this.notificationService,
+                actionService: this.actionService,
+            });
         }
-        const chartId = this.props.spreadsheetModel.getters.getChartIdFromFigureId(figure.id);
-        const definition = this.props.spreadsheetModel.getters.getChartDefinition(chartId);
-        return definition.type === "scorecard";
     }
 }

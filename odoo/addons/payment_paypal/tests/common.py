@@ -20,7 +20,7 @@ class PaypalCommon(PaymentCommon):
         cls.currency = cls.currency_euro
         cls.order_id = '123DUMMY456'
 
-        cls.payment_data = {
+        cls.notification_data = {
             'event_type': 'CHECKOUT.ORDER.APPROVED',
             'resource': {
                 'id': cls.order_id,

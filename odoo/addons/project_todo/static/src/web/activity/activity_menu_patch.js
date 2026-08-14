@@ -1,9 +1,15 @@
+/** @odoo-module **/
+
 import { _t } from "@web/core/l10n/translation";
 import { ActivityMenu } from "@mail/core/web/activity_menu";
 import { FormViewDialog } from "@web/views/view_dialogs/form_view_dialog";
 import { useCommand } from "@web/core/commands/command_hook";
 import { useService } from "@web/core/utils/hooks";
 import { patch } from "@web/core/utils/patch";
+import { registry } from "@web/core/registry";
+
+// Add a to-do category for the command palette
+registry.category("command_categories").add("to-do", {}, { sequence: 105 });
 
 patch(ActivityMenu.prototype, {
     setup() {
@@ -17,7 +23,7 @@ patch(ActivityMenu.prototype, {
                 this.createActivityTodo();
             },
             {
-                category: "activity",
+                category: "to-do",
                 hotkey: "alt+shift+t",
                 global: true,
             }
@@ -59,7 +65,7 @@ patch(ActivityMenu.prototype, {
         return super.onClickAction(...arguments);
     },
 
-    async openActivityGroup(group) {
+    async openActivityGroup(group, filter = "all") {
         if (group.is_todo) {
             await this.loadTodoViews();
         }

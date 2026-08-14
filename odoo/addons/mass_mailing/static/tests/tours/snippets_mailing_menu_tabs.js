@@ -1,5 +1,7 @@
+/** @odoo-module **/
+
 import { registry } from "@web/core/registry";
-import { stepUtils } from "@web_tour/tour_utils";
+import { stepUtils } from "@web_tour/tour_service/tour_utils";
 
 registry.category("web_tour.tours").add('snippets_mailing_menu_tabs', {
     url: '/odoo',
@@ -16,31 +18,41 @@ registry.category("web_tour.tours").add('snippets_mailing_menu_tabs', {
     },
     {
         content: "Click on the 'Start From Scratch' template.",
-        trigger: '.o_mailing_template_preview_wrapper [data-name="empty"]',
+        trigger: ':iframe #empty',
         run: "click",
     },
     {
         content: "Click on the 'Design' tab.",
-        trigger: 'button[data-name="theme"]',
+        trigger: '.o_we_customize_design_btn',
+        run: "click",
+    },
+    {
+        content: "Click on the empty 'DRAG BUILDING BLOCKS HERE' area.",
+        trigger: ':iframe .oe_structure.o_mail_no_options',
+        run: "click",
+    },
+    {
+        content: "Click on the 'Design' tab.",
+        trigger: '.o_we_customize_design_btn',
         run: "click",
     },
     {
         content: "Verify that the customize panel is not empty.",
-        trigger: ".o_design_tab:not(:empty)",
+        trigger: '.o_we_customize_panel .snippet-option-DesignTab',
     },
     {
         content: "Click on the style tab.",
-        trigger: 'button[data-name="customize"]',
+        trigger: '.o_we_customize_snippet_btn',
         run: "click",
     },
     {
         content: "Click on the 'Design' tab.",
-        trigger: 'button[data-name="theme"]',
+        trigger: '.o_we_customize_design_btn',
         run: "click",
     },
     {
         content: "Verify that the customize panel is not empty.",
-        trigger: ".tab-content .o_design_tab:not(:empty)",
+        trigger: '.o_we_customize_panel .snippet-option-DesignTab',
     },
     ...stepUtils.discardForm(),
 ]});

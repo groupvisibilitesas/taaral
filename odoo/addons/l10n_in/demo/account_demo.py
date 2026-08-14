@@ -19,15 +19,9 @@ class AccountChartTemplate(models.AbstractModel):
         demo_data = {}
         if company.account_fiscal_country_id.code == "IN":
             if company.state_id:
-                company.write({
-                    'l10n_in_is_gst_registered': True,
-                    'l10n_in_tcs_feature': True,
-                    'l10n_in_tds_feature': True,
-                    'l10n_in_edi_production_env': False,
-                })
                 demo_data = {
                     'res.partner.category': self._get_demo_data_res_partner_category(company),
-                    'res.partner': self._get_demo_data_partner(),
+                    'res.partner': self._get_demo_data_partner(company),
                     'account.move': self._get_demo_data_move(company),
                     'res.config.settings': self._get_demo_data_config_settings(company),
                     'ir.attachment': self._get_demo_data_attachment(company),
@@ -62,13 +56,11 @@ class AccountChartTemplate(models.AbstractModel):
         }
 
     @api.model
-    def _get_demo_data_partner(self):
-        company = self.env.company
-        if company.account_fiscal_country_id.code != "IN" or not company.state_id:
-            return super()._get_demo_data_partner()
+    def _get_demo_data_partner(self, company=False):
+        cid = company and company.id or self.env.company.id
         inter_state_ref = 'base.state_in_ts'
         intra_state_ref = 'base.state_in_gj'
-        default_partner_dict = {'country_id': 'base.in', 'is_company': True, 'company_id': company.id}
+        default_partner_dict = {'country_id': 'base.in', 'is_company': True, 'company_id': cid,}
         return{
             'res_partner_registered_customer': {
                 **default_partner_dict,
@@ -148,7 +140,7 @@ class AccountChartTemplate(models.AbstractModel):
                 'state_id': 'base.state_us_5',
                 'country_id': 'base.us',
                 'is_company': True,
-                'company_id': company.id,
+                'company_id': cid,
             },
         }
 
@@ -166,7 +158,7 @@ class AccountChartTemplate(models.AbstractModel):
                 ], limit=1)
             return {
                 # Demo of B2B (business-to-business) Taxable supplies made to other registered person.
-                self.company_xmlid('demo_invoice_b2b_1'): {
+                'demo_invoice_b2b_1': {
                     'move_type': 'out_invoice',
                     'partner_id': 'res_partner_registered_customer',
                     'invoice_user_id': 'base.user_demo',
@@ -195,7 +187,7 @@ class AccountChartTemplate(models.AbstractModel):
                         }),
                     ],
                 },
-                self.company_xmlid('demo_invoice_b2b_2'): {
+                'demo_invoice_b2b_2': {
                     'move_type': 'out_invoice',
                     'partner_id': 'res_partner_registered_customer_inter_state',
                     'invoice_user_id': 'base.user_demo',
@@ -218,7 +210,7 @@ class AccountChartTemplate(models.AbstractModel):
                         }),
                     ],
                 },
-                self.company_xmlid('demo_bill_b2b_1'): {
+                'demo_bill_b2b_1': {
                     'ref': 'INV/001',
                     'move_type': 'in_invoice',
                     'partner_id': 'res_partner_registered_supplier_2',
@@ -240,7 +232,7 @@ class AccountChartTemplate(models.AbstractModel):
                         }),
                     ]
                 },
-                self.company_xmlid('demo_bill_b2b_2'): {
+                'demo_bill_b2b_2': {
                     'ref': 'INV/002',
                     'move_type': 'in_invoice',
                     'partner_id': 'res_partner_registered_supplier_2',
@@ -262,7 +254,7 @@ class AccountChartTemplate(models.AbstractModel):
                         }),
                     ]
                 },
-                self.company_xmlid('demo_bill_b2b_3'): {
+                'demo_bill_b2b_3': {
                     'ref': 'INV/003',
                     'move_type': 'in_invoice',
                     'partner_id': 'res_partner_registered_supplier_1',
@@ -284,11 +276,11 @@ class AccountChartTemplate(models.AbstractModel):
                         }),
                     ]
                 },
-                self.company_xmlid('demo_invoice_to_extract'): {
+                'demo_invoice_to_extract': {
                     'move_type': 'in_invoice',
                     'message_main_attachment_id': 'ir_attachment_in_invoice_1',
                 },
-                self.company_xmlid('demo_invoice_service'): {
+                'demo_invoice_service': {
                     'ref': 'MYS-91021146',
                     'move_type': 'in_invoice',
                     'partner_id': 'res_partner_registered_supplier_2',
@@ -305,7 +297,7 @@ class AccountChartTemplate(models.AbstractModel):
                     'message_main_attachment_id': 'ir_attachment_in_invoice_2',
                 },
                 # Demo of IMP(Import) of supplies.
-                self.company_xmlid('demo_bill_imp'): {
+                'demo_bill_imp': {
                     'ref': 'BOE/123',
                     'move_type': 'in_invoice',
                     'partner_id': 'res_partner_overseas',
@@ -322,7 +314,7 @@ class AccountChartTemplate(models.AbstractModel):
                     ]
                 },
                 # Demo of cdnr(Credit/ Debit Note for registered business). Create credit note for demo b2b bill.
-                self.company_xmlid('demo_bill_cdnr_1'): {
+                'demo_bill_cdnr_1': {
                     'ref': 'CR/001',
                     'move_type': 'in_refund',
                     'partner_id': 'res_partner_registered_supplier_2',
@@ -345,7 +337,7 @@ class AccountChartTemplate(models.AbstractModel):
                         }),
                     ]
                 },
-                self.company_xmlid('demo_bill_cdnr_2'): {
+                'demo_bill_cdnr_2': {
                         'ref': '000072',
                         'move_type': 'in_refund',
                         'partner_id': 'res_partner_registered_supplier_1',
@@ -363,7 +355,7 @@ class AccountChartTemplate(models.AbstractModel):
                         ]
                     },
                 # Demo of B2CS (business to consumer small) Taxable supplies made to other unregistered Person and below INR 2.5 lakhs invoice value.
-                self.company_xmlid('demo_invoice_b2cs'): {
+                'demo_invoice_b2cs': {
                     'move_type': 'out_invoice',
                     'partner_id': 'res_partner_unregistered_customer_inter_state',
                     'invoice_user_id': 'base.user_demo',
@@ -399,7 +391,7 @@ class AccountChartTemplate(models.AbstractModel):
                     ]
                 },
                 #  Demo of B2CL (business to consumer - Large) Taxable supplies made to other unregistered Person and invoice value is more than INR 2.5 lakhs.
-                self.company_xmlid('demo_invoice_b2cl'): {
+                'demo_invoice_b2cl': {
                     'move_type': 'out_invoice',
                     'partner_id': 'res_partner_unregistered_customer',
                     'invoice_user_id': 'base.user_demo',
@@ -417,7 +409,7 @@ class AccountChartTemplate(models.AbstractModel):
                     ]
                 },
                 # Demo of EXP(Export) supplies including supplies to SEZ/SEZ Developer or deemed exports.
-                self.company_xmlid('demo_invoice_exp'): {
+                'demo_invoice_exp': {
                     'move_type': 'out_invoice',
                     'partner_id': 'base.res_partner_3',
                     'invoice_user_id': 'base.user_demo',
@@ -438,7 +430,7 @@ class AccountChartTemplate(models.AbstractModel):
                     ]
                 },
                 # Demo of exempt(Nil Rated, Exempted and Non GST supplies). Set Nill rated and Exempted tax in line.
-                self.company_xmlid('demo_invoice_nill'): {
+                'demo_invoice_nill': {
                     'move_type': 'out_invoice',
                     'partner_id': 'res_partner_registered_customer',
                     'invoice_user_id': 'base.user_demo',
@@ -462,7 +454,7 @@ class AccountChartTemplate(models.AbstractModel):
                     ]
                 },
                 # Demo of cdnr(Credit/ Debit Note for registered person). Create credit note for demo b2b invoice.
-                self.company_xmlid('demo_invoice_cdnr_1'): {
+                'demo_invoice_cdnr_1': {
                     'move_type': 'out_refund',
                     'partner_id': 'res_partner_registered_customer',
                     'invoice_user_id': 'base.user_demo',
@@ -492,7 +484,7 @@ class AccountChartTemplate(models.AbstractModel):
                         }),
                     ]
                 },
-                self.company_xmlid('demo_invoice_cdnr_2'): {
+                'demo_invoice_cdnr_2': {
                     'move_type': 'out_refund',
                     'partner_id': 'res_partner_registered_customer',
                     'invoice_user_id': 'base.user_demo',
@@ -516,7 +508,7 @@ class AccountChartTemplate(models.AbstractModel):
                     ]
                 },
                 # Demo of cdnr(Credit/ Debit Note for unregistered person). Create credit note for demo b2cl invoice.
-                self.company_xmlid('demo_invoice_cdnur'): {
+                'demo_invoice_cdnur': {
                     'move_type': 'out_refund',
                     'partner_id': 'res_partner_unregistered_customer',
                     'invoice_user_id': 'base.user_demo',

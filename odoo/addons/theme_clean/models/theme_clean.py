@@ -1,7 +1,7 @@
 from odoo import models
 
 
-class ThemeUtils(models.AbstractModel):
+class ThemeClean(models.AbstractModel):
     _inherit = 'theme.utils'
 
     def _theme_clean_post_copy(self, mod):

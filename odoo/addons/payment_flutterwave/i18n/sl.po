@@ -2,19 +2,20 @@
 # This file contains the translation of the following modules:
 # * payment_flutterwave
 #
-# "Tiffany Chang (tic)" <tic@odoo.com>, 2025, 2026.
-# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Translators:
+# Wil Odoo, 2024
+# Aleš Pipan, 2025
+#
 # NEDŽAD BEUS <nedzad.beus@implex.si>, 2026.
-# Žiga Trček <ziga.trcek@implex.si>, 2026.
-# Jan Zorko <jan.zorko@implex.si>, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-25 18:37+0000\n"
-"PO-Revision-Date: 2026-08-08 07:32+0000\n"
-"Last-Translator: NEDŽAD BEUS <nedzad.beus@implex.si>\n"
-"Language-Team: Slovenian <https://translate.odoo.com/projects/odoo-19/"
+"POT-Creation-Date: 2025-12-29 18:38+0000\n"
+"PO-Revision-Date: 2026-06-27 18:00+0000\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"Language-Team: Slovenian <https://translate.odoo.com/projects/odoo-18/"
 "payment_flutterwave/sl/>\n"
 "Language: sl\n"
 "MIME-Version: 1.0\n"
@@ -27,12 +28,10 @@ msgstr ""
 #. module: payment_flutterwave
 #. odoo-python
 #: code:addons/payment_flutterwave/models/payment_transaction.py:0
-#, fuzzy
 msgid ""
 "An error occurred during the processing of your payment (status %s). Please "
 "try again."
 msgstr ""
-"Prišlo je do napake med obdelavo vašega plačila (status %s). Poskusite znova."
 
 #. module: payment_flutterwave
 #: model:ir.model.fields,field_description:payment_flutterwave.field_payment_provider__code
@@ -40,11 +39,10 @@ msgid "Code"
 msgstr "Oznaka"
 
 #. module: payment_flutterwave
-#: model:ir.model.fields,field_description:payment_flutterwave.field_payment_provider__display_name
-#: model:ir.model.fields,field_description:payment_flutterwave.field_payment_token__display_name
-#: model:ir.model.fields,field_description:payment_flutterwave.field_payment_transaction__display_name
-msgid "Display Name"
-msgstr "Prikazani naziv"
+#. odoo-python
+#: code:addons/payment_flutterwave/models/payment_provider.py:0
+msgid "Could not establish the connection to the API."
+msgstr ""
 
 #. module: payment_flutterwave
 #: model:ir.model.fields.selection,name:payment_flutterwave.selection__payment_provider__code__flutterwave
@@ -53,34 +51,29 @@ msgstr "Flutterwave"
 
 #. module: payment_flutterwave
 #: model:ir.model.fields,field_description:payment_flutterwave.field_payment_token__flutterwave_customer_email
-#, fuzzy
 msgid "Flutterwave Customer Email"
-msgstr "E-poštni naslov stranke Flutterwave"
+msgstr ""
 
 #. module: payment_flutterwave
 #: model:ir.model.fields,field_description:payment_flutterwave.field_payment_provider__flutterwave_public_key
-#, fuzzy
 msgid "Flutterwave Public Key"
-msgstr "Javni ključ Flutterwave"
+msgstr ""
 
 #. module: payment_flutterwave
 #: model:ir.model.fields,field_description:payment_flutterwave.field_payment_provider__flutterwave_secret_key
-#, fuzzy
 msgid "Flutterwave Secret Key"
-msgstr "Skrivni ključ Flutterwave"
+msgstr ""
 
 #. module: payment_flutterwave
 #: model:ir.model.fields,field_description:payment_flutterwave.field_payment_provider__flutterwave_webhook_secret
-#, fuzzy
 msgid "Flutterwave Webhook Secret"
-msgstr "Skrivnost spletnega kavlja Flutterwave"
+msgstr ""
 
 #. module: payment_flutterwave
-#: model:ir.model.fields,field_description:payment_flutterwave.field_payment_provider__id
-#: model:ir.model.fields,field_description:payment_flutterwave.field_payment_token__id
-#: model:ir.model.fields,field_description:payment_flutterwave.field_payment_transaction__id
-msgid "ID"
-msgstr "ID"
+#. odoo-python
+#: code:addons/payment_flutterwave/models/payment_transaction.py:0
+msgid "No transaction found matching reference %s."
+msgstr ""
 
 #. module: payment_flutterwave
 #: model:ir.model,name:payment_flutterwave.model_payment_provider
@@ -103,37 +96,52 @@ msgid "Public Key"
 msgstr "Javni ključ"
 
 #. module: payment_flutterwave
+#. odoo-python
+#: code:addons/payment_flutterwave/models/payment_transaction.py:0
+msgid "Received data with missing reference."
+msgstr ""
+
+#. module: payment_flutterwave
 #: model_terms:ir.ui.view,arch_db:payment_flutterwave.payment_provider_form
 msgid "Secret Key"
 msgstr "Skrivni ključ"
 
 #. module: payment_flutterwave
+#. odoo-python
+#: code:addons/payment_flutterwave/models/payment_provider.py:0
+msgid ""
+"The communication with the API failed. Flutterwave gave us the following "
+"information: '%s'"
+msgstr ""
+
+#. module: payment_flutterwave
 #: model:ir.model.fields,help:payment_flutterwave.field_payment_token__flutterwave_customer_email
-#, fuzzy
 msgid "The email of the customer at the time the token was created."
-msgstr "E-poštni naslov stranke v času ustvarjanja žetona."
+msgstr ""
 
 #. module: payment_flutterwave
 #: model:ir.model.fields,help:payment_flutterwave.field_payment_provider__flutterwave_public_key
-#, fuzzy
 msgid "The key solely used to identify the account with Flutterwave."
 msgstr ""
-"Ključ, ki se uporablja izključno za identifikacijo računa pri Flutterwave."
 
 #. module: payment_flutterwave
 #: model:ir.model.fields,help:payment_flutterwave.field_payment_provider__code
-#, fuzzy
 msgid "The technical code of this payment provider."
 msgstr "Tehnična koda tega ponudnika plačil."
 
 #. module: payment_flutterwave
 #. odoo-python
 #: code:addons/payment_flutterwave/models/payment_transaction.py:0
+msgid "The transaction is not linked to a token."
+msgstr ""
+
+#. module: payment_flutterwave
+#. odoo-python
+#: code:addons/payment_flutterwave/models/payment_transaction.py:0
 msgid "Unknown payment status: %s"
-msgstr "Neznan status plačila: %s"
+msgstr ""
 
 #. module: payment_flutterwave
 #: model_terms:ir.ui.view,arch_db:payment_flutterwave.payment_provider_form
-#, fuzzy
 msgid "Webhook Secret"
-msgstr "Skrivnost spletnega kavlja"
+msgstr ""

@@ -115,15 +115,11 @@ function pathFromActionState(state) {
     return path.join("/");
 }
 
-export function startUrl() {
-    return isScopedApp() ? "scoped_app" : "odoo";
-}
-
 /**
  * @param {{ [key: string]: any }} state
  * @returns
  */
-function stateToUrl(state) {
+export function stateToUrl(state) {
     let path = "";
     const pathKeysToOmit = [..._hiddenKeysFromUrl];
     const actionStack = (state.actionStack || [state]).map((a) => ({ ...a }));
@@ -154,11 +150,11 @@ function stateToUrl(state) {
         pathKeysToOmit.splice(pathKeysToOmit.indexOf("resId"), 1);
     }
     const search = objectToUrlEncodedString(omit(state, ...pathKeysToOmit));
-    const start_url = startUrl();
+    const start_url = isScopedApp() ? "scoped_app" : "odoo";
     return `/${start_url}${path}${search ? `?${search}` : ""}`;
 }
 
-function urlToState(urlObj) {
+export function urlToState(urlObj) {
     const { pathname, hash, search } = urlObj;
     const state = parseSearchQuery(search);
 
@@ -280,6 +276,16 @@ browser.addEventListener("popstate", (ev) => {
         return;
     }
     state = ev.state?.nextState || router.urlToState(new URL(browser.location));
+    // The `popstate` event is bound on window from here as well as from
+    // wysiwyg_adapter. In Edit mode, clicking the browser's back button
+    // triggers this event first, followed by the `wysiwyg_adapter` event. This
+    // sequence causes a traceback, leading to a force exit from Edit mode. To
+    // prevent this issue, we add a trigger to invoke the `BEFORE_ROUTE_CHANGE`
+    // event which listened by `wysiwyg_adapter` so that when popstate event is
+    // trigerred here we notify the `wysiwyg_adapter` using
+    // `BEFORE_ROUTE_CHANGE`. In handler of `BEFORE_ROUTE_CHANGE` we tweak the
+    // code so that the dialog closes properly and prevents the traceback.
+    routerBus.trigger("BEFORE_ROUTE_CHANGE");
     // Some client actions want to handle loading their own state. This is a ugly hack to allow not
     // reloading the webclient's state when they manipulate history.
     if (!ev.state?.skipRouteChange && !router.skipLoad) {
@@ -310,13 +316,12 @@ browser.addEventListener("click", (ev) => {
     if (ev.defaultPrevented || ev.target.closest("[contenteditable]")) {
         return;
     }
-    const a = ev.target.closest("a");
-    const href = a?.getAttribute("href");
+    const href = ev.target.closest("a")?.getAttribute("href");
     if (href && !href.startsWith("#")) {
         let url;
         try {
             // ev.target.href is the full url including current path
-            url = new URL(a.href);
+            url = new URL(ev.target.closest("a").href);
         } catch {
             return;
         }
@@ -324,7 +329,7 @@ browser.addEventListener("click", (ev) => {
             browser.location.host === url.host &&
             browser.location.pathname.startsWith("/odoo") &&
             (["/web", "/odoo"].includes(url.pathname) || url.pathname.startsWith("/odoo/")) &&
-            a.target !== "_blank"
+            ev.target.target !== "_blank"
         ) {
             ev.preventDefault();
             state = router.urlToState(url);

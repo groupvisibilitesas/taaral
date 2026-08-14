@@ -13,7 +13,7 @@
         is resulting to 11%.
     """,
     'category': 'Accounting/Localizations/EDI',
-    'depends': ['l10n_id'],
+    'depends': ['l10n_id', 'l10n_id_efaktur'],
     'data': [
         # New Data Import (E-Faktur code related)
         "data/l10n_id_efaktur_coretax.product.code.csv",
@@ -24,7 +24,6 @@
 
         # Accesses
         "security/ir.model.access.csv",
-        "security/ir_rule.xml",
 
         # Views
         "views/product_template.xml",
@@ -37,6 +36,6 @@
     ],
     'installable': True,
     'auto_install': True,
-    'author': 'Odoo S.A.',
+    'post_init_hook': '_post_init_hook',
     'license': 'LGPL-3',
 }

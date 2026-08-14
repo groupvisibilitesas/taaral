@@ -1,7 +1,6 @@
 import { registry } from "@web/core/registry";
 import { rpc } from "@web/core/network/rpc";
 import { user } from "@web/core/user";
-import { Domain } from "@web/core/domain";
 
 /**
  * This ORM service is the standard way to interact with the ORM in python from
@@ -90,7 +89,6 @@ export const UPDATE_METHODS = [
     "create",
     "write",
     "web_save",
-    "web_save_multi",
     "action_archive",
     "action_unarchive",
 ];
@@ -100,20 +98,11 @@ export class ORM {
         this.rpc = rpc; // to be overridable by the SampleORM
         /** @protected */
         this._silent = false;
-        this._cache = false;
     }
 
     /** @returns {ORM} */
     get silent() {
         return Object.assign(Object.create(this), { _silent: true });
-    }
-
-    /**
-     * @param {object} options
-     * @returns {ORM}
-     */
-    cache(options = {}) {
-        return Object.assign(Object.create(this), { _cache: options });
     }
 
     /**
@@ -134,10 +123,7 @@ export class ORM {
             args,
             kwargs: fullKwargs,
         };
-        return this.rpc(url, params, {
-            silent: this._silent,
-            cache: this._cache,
-        });
+        return this.rpc(url, params, { silent: this._silent });
     }
 
     /**
@@ -180,48 +166,12 @@ export class ORM {
      * @param {any} [kwargs={}]
      * @returns {Promise<any[]>}
      */
-    formattedReadGroup(model, domain, groupby, aggregates, kwargs = {}) {
+    readGroup(model, domain, fields, groupby, kwargs = {}) {
         validateArray("domain", domain);
+        validatePrimitiveList("fields", "string", fields);
         validatePrimitiveList("groupby", "string", groupby);
-        validatePrimitiveList("aggregates", "string", aggregates);
-        return this.call(model, "formatted_read_group", [], {
-            domain,
-            groupby,
-            aggregates,
-            ...kwargs,
-        }).then((res) => {
-            for (const group of res) {
-                group["__domain"] = Domain.and([domain, group["__extra_domain"]]).toList();
-            }
-            return res;
-        });
-    }
-
-    /**
-     * @param {string} model
-     * @param {import("@web/core/domain").DomainListRepr} domain
-     * @param {string[]} fields
-     * @param {string[][]} grouping_sets
-     * @param {any} [kwargs={}]
-     * @returns {Promise<any[]>}
-     */
-    formattedReadGroupingSets(model, domain, grouping_sets, aggregates, kwargs = {}) {
-        validateArray("domain", domain);
-        validateArray("groupby", grouping_sets);
-        validatePrimitiveList("aggregates", "string", aggregates);
-        return this.call(model, "formatted_read_grouping_sets", [], {
-            domain,
-            grouping_sets,
-            aggregates,
-            ...kwargs,
-        }).then((res) => {
-            for (const groups of res) {
-                for (const group of groups) {
-                    group["__domain"] = Domain.and([domain, group["__extra_domain"]]).toList();
-                }
-            }
-            return res;
-        });
+        groupby = [...new Set(groupby)];
+        return this.call(model, "read_group", [], { ...kwargs, domain, fields, groupby });
     }
 
     /**
@@ -278,19 +228,20 @@ export class ORM {
     /**
      * @param {string} model
      * @param {import("@web/core/domain").DomainListRepr} domain
+     * @param {string[]} fields
      * @param {string[]} groupby
-     * @param {string[]} aggregates
      * @param {any} [kwargs={}]
      * @returns {Promise<any[]>}
      */
-    webReadGroup(model, domain, groupby, aggregates, kwargs = {}) {
+    webReadGroup(model, domain, fields, groupby, kwargs = {}) {
         validateArray("domain", domain);
-        validatePrimitiveList("aggregates", "string", aggregates);
+        validatePrimitiveList("fields", "string", fields);
+        validatePrimitiveList("groupby", "string", groupby);
         return this.call(model, "web_read_group", [], {
-            domain,
-            groupby,
-            aggregates,
             ...kwargs,
+            groupby,
+            domain,
+            fields,
         });
     }
 
@@ -305,24 +256,6 @@ export class ORM {
     webRead(model, ids, kwargs = {}) {
         validatePrimitiveList("ids", "number", ids);
         return this.call(model, "web_read", [ids], kwargs);
-    }
-
-    /**
-     * @param {string} model
-     * @param {number[]} ids
-     * @param {object} [kwargs={}]
-     * @param {object} [kwargs.context]
-     * @param {string} [kwargs.field_name]
-     * @param {number} [kwargs.offset]
-     * @param {object} [kwargs.specification]
-     * @returns {Promise<any[]>}
-     */
-    webResequence(model, ids, kwargs = {}) {
-        validatePrimitiveList("ids", "number", ids);
-        return this.call(model, "web_resequence", [ids], {
-            ...kwargs,
-            specification: kwargs.specification || {},
-        });
     }
 
     /**
@@ -363,34 +296,19 @@ export class ORM {
         validateObject("data", data);
         return this.call(model, "web_save", [ids, data], kwargs);
     }
-
-    /**
-     * @param {string} model
-     * @param {number[]} ids
-     * @param {Object[]} data
-     * @param {Object} [kwargs={}]
-     * @param {Object} [kwargs.specification]
-     * @param {Object} [kwargs.context]
-     * @returns {Promise<any[]>}
-     */
-    async webSaveMulti(model, ids, data, kwargs = {}) {
-        validatePrimitiveList("ids", "number", ids);
-        validateArray("data", data);
-        data.forEach((d) => {
-            validateObject("data item", d);
-        });
-        return this.call(model, "web_save_multi", [ids, data], kwargs);
-    }
 }
 
 /**
  * Note:
  *
- * To hide RPC errors, use the following API:
+ * when we will need a way to configure a rpc (for example, to setup a "shadow"
+ * flag, or some way of not displaying errors), we can use the following api:
  *
  * this.orm = useService('orm');
+ *
  * ...
- * const result = await this.orm.silent.read('res.partner', [id]);
+ *
+ * const result = await this.orm.withOption({shadow: true}).read('res.partner', [id]);
  */
 export const ormService = {
     async: [
@@ -398,12 +316,10 @@ export const ormService = {
         "create",
         "nameGet",
         "read",
-        "formattedReadGroup",
-        "webReadGroup",
+        "readGroup",
         "search",
         "searchRead",
         "unlink",
-        "webResequence",
         "webSearchRead",
         "write",
     ],

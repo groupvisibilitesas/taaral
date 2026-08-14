@@ -12,10 +12,7 @@
         'point_of_sale._assets_pos': [
             'pos_sms/static/src/**/*',
         ],
-        'web.assets_tests': [
-            'pos_sms/static/tests/tours/**/*',
-        ],
     },
-    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
+    'auto_install': True
 }

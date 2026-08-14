@@ -1,6 +1,5 @@
 from contextlib import contextmanager
 from requests import PreparedRequest, Response, Session
-from unittest.mock import patch
 
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests.common import tagged
@@ -53,16 +52,19 @@ class TestPdpUser(TestL10nFrPdpCommon):
 
     @contextmanager
     def _set_context(self, other_context):
-        cls = self.__class__
-        env = cls.env(context=dict(cls.env.context, **other_context))
-        with patch.object(cls, "env", env):
-            yield env
+        previous_context = self.env.context
+        self.env.context = dict(previous_context, **other_context)
+        try:
+            yield self
+        finally:
+            self.env.context = previous_context
 
     def test_pdp_create_participant_missing_siren(self):
         self.env.company.partner_id.write({
             'peppol_eas': '0002',
             'peppol_endpoint': '123456789',
             'company_registry': False,
+            'siret': False,
         })
         self.assertFalse(self.env.company.partner_id._l10n_fr_pdp_get_siren())
         wizard = self.env['pdp.registration'].create({'contact_email': "test@pdp.example.com"})
@@ -79,6 +81,7 @@ class TestPdpUser(TestL10nFrPdpCommon):
             'peppol_eas': '0002',
             'peppol_endpoint': '123456789',
             'company_registry': '000000000',
+            'siret': '000000000',
         })
         self.assertFalse(self.env.company.pdp_identifier)
         wizard = self.env['pdp.registration'].create({'contact_email': 'yourcompany@test.example.com'})

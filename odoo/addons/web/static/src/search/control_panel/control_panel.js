@@ -17,7 +17,7 @@ import { Transition } from "@web/core/transition";
 import { Breadcrumbs } from "../breadcrumbs/breadcrumbs";
 import { SearchBar } from "../search_bar/search_bar";
 
-import { Component, useState, onMounted, useRef, useEffect } from "@odoo/owl";
+import { Component, useState, onMounted, useExternalListener, useRef, useEffect } from "@odoo/owl";
 
 const STICKY_CLASS = "o_mobile_sticky";
 
@@ -38,54 +38,6 @@ const STICKY_CLASS = "o_mobile_sticky";
  * @property {string} domain
  * @property {string} context
  */
-
-class EmbeddedActionsConfigHandler {
-    constructor(parentActionId, currentActiveId, parentResModel, ormService) {
-        this.parentActionId = parentActionId;
-        this.currentActiveId = currentActiveId;
-        this.parentResModel = parentResModel;
-        this.embeddedActionsKey = `${this.parentActionId}+${this.currentActiveId || ""}`;
-        this.embeddedActionsConfig = user.settings.embedded_actions_config_ids || {};
-        this.orm = ormService;
-    }
-
-    setEmbeddedActionsConfig(config) {
-        if (this.embeddedActionsKey in this.embeddedActionsConfig) {
-            Object.assign(this.embeddedActionsConfig[this.embeddedActionsKey], config);
-        } else {
-            this.embeddedActionsConfig[this.embeddedActionsKey] = config;
-        }
-        this.orm.call("res.users.settings", "set_embedded_actions_setting", [
-            user.settings.id,
-            this.parentActionId,
-            this.currentActiveId,
-            config,
-        ]);
-    }
-
-    getEmbeddedActionsConfig(key) {
-        return this.embeddedActionsConfig[this.embeddedActionsKey]?.[key];
-    }
-
-    hasEmbeddedActionsConfig() {
-        return this.embeddedActionsKey in this.embeddedActionsConfig;
-    }
-
-    async fetchEmbeddedActionsConfig() {
-        return await this.orm.call(
-            "res.users.settings",
-            "get_embedded_actions_settings",
-            [user.settings.id],
-            { context: { res_model: this.parentResModel, res_id: this.currentActiveId } }
-        );
-    }
-
-    updateEmbeddedActionsConfig(newSettings) {
-        for (const key in newSettings) {
-            this.embeddedActionsConfig[key] = newSettings[key];
-        }
-    }
-}
 
 export class ControlPanel extends Component {
     static template = "web.ControlPanel";
@@ -116,6 +68,7 @@ export class ControlPanel extends Component {
 
         this.root = useRef("root");
         this.newActionNameRef = useRef("newActionNameRef");
+        this.isEmbeddedActionsOrderModifiable = false;
         this.defaultEmbeddedActions = this.env.config.embeddedActions;
         if (this.env.config.embeddedActions?.length > 0 && !this.env.config.parentActionId) {
             const { parent_res_model, parent_action_id } = this.env.config.embeddedActions[0];
@@ -134,32 +87,48 @@ export class ControlPanel extends Component {
             this.env.config.setEmbeddedActions(this.defaultEmbeddedActions);
         }
 
+        /**
+         * The visible embedded actions are unique to each user and to each res_id. The visible actions chosen by the
+         * user are stored in the local storage in a key corresponding to a combination of the actionId, the activeId
+         * and the currrent userId. Each key contains a dict. The keys of the latter are the id of the visible embedded
+         * actions.
+         */
         const parentActionId =
             this.env.config.parentActionId ||
             this.env.config.embeddedActions?.[0]?.parent_action_id[0] ||
             this.env.config.embeddedActions?.[0]?.parent_action_id ||
             "";
-        const currentActiveId = this.env.searchModel?.globalContext.active_id || false;
-        this.embeddedActionsConfigHandler = new EmbeddedActionsConfigHandler(
-            parentActionId,
-            currentActiveId,
-            this.currentEmbeddedAction?.parent_res_model,
-            this.orm
-        );
+        this.embeddedActionsVisibilityKey = `visibleEmbeddedActions${parentActionId}+${
+            this.env.searchModel?.globalContext.active_id || ""
+        }+${user.userId}`;
+
+        this.embeddedVisibilityKey = `visibleEmbedded${parentActionId}+${
+            this.env.searchModel?.globalContext.active_id || ""
+        }+${user.userId}`;
+
+        this.embeddedOrderKey = `orderEmbedded${parentActionId}+${
+            this.env.searchModel?.globalContext.active_id || ""
+        }+${user.userId}`;
 
         this.state = useState({
+            showSearchBar: false,
+            showMobileSearch: false,
+            showViewSwitcher: false,
             embeddedInfos: {
                 showEmbedded:
-                    !!this.embeddedActionsConfigHandler.getEmbeddedActionsConfig(
-                        "embedded_visibility"
-                    ),
+                    this.env.config.embeddedActions?.length > 0 &&
+                    ((!!this.env.config.parentActionId &&
+                        !!JSON.parse(browser.localStorage.getItem("showEmbeddedActions"))) ||
+                        !!JSON.parse(browser.localStorage.getItem(this.embeddedVisibilityKey))),
                 embeddedActions: this.defaultEmbeddedActions || [],
                 newActionIsShared: false,
                 newActionName: this.newActionNameGetter,
                 visibleEmbeddedActions:
-                    this.embeddedActionsConfigHandler.getEmbeddedActionsConfig(
-                        "embedded_actions_visibility"
-                    ) || [],
+                    (this.env.config.embeddedActions?.length > 0 &&
+                        JSON.parse(
+                            browser.localStorage.getItem(this.embeddedActionsVisibilityKey)
+                        )) ||
+                    {},
                 currentEmbeddedAction: this.currentEmbeddedAction,
             },
         });
@@ -187,6 +156,7 @@ export class ControlPanel extends Component {
             );
         }
 
+        useExternalListener(window, "click", this.onWindowClick);
         useEffect(() => {
             if (
                 !this.env.isSmall ||
@@ -205,31 +175,23 @@ export class ControlPanel extends Component {
             };
         });
 
-        // The goal is to automatically open the dropdown menu of embedded actions if there is only one visible embedded action
-        // We use a timer to delay the display of that dropdown menu to avoid flicker issues
-        useEffect(
-            (el, showEmbedded) => {
-                const timer = setTimeout(() => {
-                    if (
-                        showEmbedded &&
-                        this.state.embeddedInfos.visibleEmbeddedActions.length === 1
-                    ) {
-                        el.querySelector(".btn[name='openEmbeddedActions']")?.click();
-                    }
-                }, 100);
-                return () => clearTimeout(timer);
-            },
-            () => [this.root.el, this.state.embeddedInfos.showEmbedded]
-        );
-
-        onMounted(() => {
+        onMounted(async () => {
             if (this.state.embeddedInfos.embeddedActions?.length > 0) {
-                const embeddedOrder =
-                    this.embeddedActionsConfigHandler.getEmbeddedActionsConfig(
-                        "embedded_actions_order"
-                    );
-                if (embeddedOrder) {
-                    this._sortEmbeddedActions(embeddedOrder);
+                // If there is no visible embedded actions, the current action (if it exists) is put by default
+                const embeddedActionKey =
+                    this.state.embeddedInfos.currentEmbeddedAction?.id || false;
+                if (
+                    !Object.keys(this.state.embeddedInfos.visibleEmbeddedActions).includes(
+                        embeddedActionKey.toString()
+                    )
+                ) {
+                    this._setVisibility(embeddedActionKey);
+                }
+                const embeddedOrderLocalStorageKey = browser.localStorage.getItem(
+                    this.embeddedOrderKey
+                );
+                if (embeddedOrderLocalStorageKey) {
+                    this._sortEmbeddedActions(JSON.parse(embeddedOrderLocalStorageKey));
                 }
             }
             if (
@@ -241,6 +203,32 @@ export class ControlPanel extends Component {
             this.oldScrollTop = 0;
             this.lastScrollTop = 0;
             this.initialScrollTop = this.getScrollingElement().scrollTop;
+        });
+
+        this.mainButtons = useRef("mainButtons");
+
+        useEffect(() => {
+            // on small screen, clean-up the dropdown elements
+            const dropdownButtons = this.mainButtons.el.querySelectorAll(
+                ".o_control_panel_collapsed_create.dropdown-menu button"
+            );
+            if (!dropdownButtons.length) {
+                this.mainButtons.el
+                    .querySelectorAll(
+                        ".o_control_panel_collapsed_create.dropdown-menu, .o_control_panel_collapsed_create.dropdown-toggle"
+                    )
+                    .forEach((el) => el.classList.add("d-none"));
+                this.mainButtons.el
+                    .querySelectorAll(".o_control_panel_collapsed_create.btn-group")
+                    .forEach((el) => el.classList.remove("btn-group"));
+                return;
+            }
+            for (const button of dropdownButtons) {
+                for (const cl of Array.from(button.classList)) {
+                    button.classList.toggle(cl, !cl.startsWith("btn-"));
+                }
+                button.classList.add("dropdown-item", "btn", "btn-link");
+            }
         });
 
         useSortable({
@@ -266,7 +254,7 @@ export class ControlPanel extends Component {
     });
 
     getDropdownClass(action) {
-        return (!this.env.isSmall && this._isEmbeddedActionVisible(action)) ||
+        return (!this.env.isSmall && this._checkValueLocalStorage(action)) ||
             (this.env.isSmall && this.state.embeddedInfos.currentEmbeddedAction?.id === action.id)
             ? "selected"
             : "";
@@ -299,6 +287,17 @@ export class ControlPanel extends Component {
     }
 
     /**
+     * Reset mobile search state
+     */
+    resetSearchState() {
+        Object.assign(this.state, {
+            showSearchBar: false,
+            showMobileSearch: false,
+            showViewSwitcher: false,
+        });
+    }
+
+    /**
      * @returns {Object}
      */
     get display() {
@@ -308,60 +307,14 @@ export class ControlPanel extends Component {
         };
     }
 
-    async onClickShowEmbedded() {
-        if (
-            !this.state.embeddedInfos.showEmbedded &&
-            !this.embeddedActionsConfigHandler.hasEmbeddedActionsConfig()
-        ) {
-            // If there are embedded actions and no config has been found in the settings, we will fetch it from DB
-            // We need to fetch because it's possible that the config from DB was changed while it wasn't in the browser user settings
-            // We then need to keep the browser user settings up to date with the DB
-            const embeddedSettings =
-                await this.embeddedActionsConfigHandler.fetchEmbeddedActionsConfig();
-            if (this.embeddedActionsConfigHandler.embeddedActionsKey in embeddedSettings) {
-                this.embeddedActionsConfigHandler.updateEmbeddedActionsConfig(embeddedSettings);
-                this.state.embeddedInfos.visibleEmbeddedActions =
-                    this.embeddedActionsConfigHandler.getEmbeddedActionsConfig(
-                        "embedded_actions_visibility"
-                    ) || [];
-                const embeddedOrder =
-                    this.embeddedActionsConfigHandler.getEmbeddedActionsConfig(
-                        "embedded_actions_order"
-                    );
-                if (embeddedOrder) {
-                    this._sortEmbeddedActions(embeddedOrder);
-                }
-                this.embeddedActionsConfigHandler.setEmbeddedActionsConfig({
-                    embedded_visibility: true,
-                });
-            } else {
-                // Store a new embedded actions config if still not found in the settings
-                const config = {
-                    res_model: this.state.embeddedInfos.currentEmbeddedAction.parent_res_model,
-                    embedded_actions_visibility: [],
-                    embedded_visibility: true,
-                    embedded_actions_order: [],
-                };
-                // If there is no visible embedded actions, the current action (if it exists) is put by default
-                if (this.state.embeddedInfos.embeddedActions?.length > 0) {
-                    const embeddedActionKey =
-                        this.state.embeddedInfos.currentEmbeddedAction?.id || false;
-                    if (
-                        !this.state.embeddedInfos.visibleEmbeddedActions.includes(embeddedActionKey)
-                    ) {
-                        this.state.embeddedInfos.visibleEmbeddedActions.push(embeddedActionKey);
-                        config.embedded_actions_visibility =
-                            this.state.embeddedInfos.visibleEmbeddedActions;
-                    }
-                }
-                this.embeddedActionsConfigHandler.setEmbeddedActionsConfig(config);
-            }
+    onClickShowEmbedded() {
+        if (this.state.embeddedInfos.showEmbedded) {
+            browser.localStorage.removeItem(this.embeddedVisibilityKey);
         } else {
-            this.embeddedActionsConfigHandler.setEmbeddedActionsConfig({
-                embedded_visibility: !this.state.embeddedInfos.showEmbedded,
-            });
+            browser.localStorage.setItem(this.embeddedVisibilityKey, true);
         }
         this.state.embeddedInfos.showEmbedded = !this.state.embeddedInfos.showEmbedded;
+        browser.localStorage.setItem("showEmbeddedActions", this.state.embeddedInfos.showEmbedded);
     }
 
     /**
@@ -409,8 +362,9 @@ export class ControlPanel extends Component {
      *
      * @param {import("@web/views/view").ViewType} viewType
      */
-    switchView(viewType, newWindow) {
-        this.actionService.switchView(viewType, {}, { newWindow });
+    switchView(viewType) {
+        this.resetSearchState();
+        this.actionService.switchView(viewType);
     }
 
     cycleThroughViews() {
@@ -421,6 +375,16 @@ export class ControlPanel extends Component {
         );
         const nextIndex = (currentIndex + 1) % viewSwitcherEntries.length;
         this.switchView(viewSwitcherEntries[nextIndex].type);
+    }
+
+    /**
+     * @private
+     * @param {MouseEvent} ev
+     */
+    onWindowClick(ev) {
+        if (this.state.showViewSwitcher && !ev.target.closest(".o_cp_switch_buttons")) {
+            this.state.showViewSwitcher = false;
+        }
     }
 
     /**
@@ -438,29 +402,28 @@ export class ControlPanel extends Component {
     /**
      * @param {EmbeddedAction} action
      */
-    _isEmbeddedActionVisible(action) {
-        return this.state.embeddedInfos.visibleEmbeddedActions.includes(action.id);
+    _checkValueLocalStorage(action) {
+        const actionIdStr = action.id.toString();
+        return this.state.embeddedInfos.visibleEmbeddedActions[actionIdStr];
     }
 
     /**
-     * The selected action is put into (or removed from) the user settings and its visibility changes.
+     * The selected action is put into (or removed from) the localStorage and its visibility changes.
      * The state variable visibleEmbeddedActions keeps track of the visible actions to avoid  having to parse
-     * the user settings values every time we want to access them.
+     * the localStorage values every time we want to access them.
      * @param {EmbeddedAction} action
      */
     _setVisibility(actionId) {
-        if (this.state.embeddedInfos.visibleEmbeddedActions.includes(actionId)) {
-            const embeddedActionIndex =
-                this.state.embeddedInfos.visibleEmbeddedActions.indexOf(actionId);
-            if (embeddedActionIndex !== -1) {
-                this.state.embeddedInfos.visibleEmbeddedActions.splice(embeddedActionIndex, 1);
-            }
+        const actionIdStr = actionId.toString();
+        if (this.state.embeddedInfos.visibleEmbeddedActions[actionIdStr]) {
+            delete this.state.embeddedInfos.visibleEmbeddedActions[actionIdStr];
         } else {
-            this.state.embeddedInfos.visibleEmbeddedActions.push(actionId);
+            this.state.embeddedInfos.visibleEmbeddedActions[actionIdStr] = true;
         }
-        this.embeddedActionsConfigHandler.setEmbeddedActionsConfig({
-            embedded_actions_visibility: this.state.embeddedInfos.visibleEmbeddedActions,
-        });
+        browser.localStorage.setItem(
+            this.embeddedActionsVisibilityKey,
+            JSON.stringify(this.state.embeddedInfos.visibleEmbeddedActions)
+        );
     }
 
     _onShareCheckboxChange() {
@@ -540,13 +503,14 @@ export class ControlPanel extends Component {
             id: embeddedActionId[0],
         };
         this.state.embeddedInfos.embeddedActions.push(enrichedNewEmbeddedAction);
-        const embeddedActionResId = embeddedActionId[0];
-        visibleEmbeddedActions.push(embeddedActionResId);
+        const embeddedActionIdStr = embeddedActionId[0].toString();
+        visibleEmbeddedActions[embeddedActionIdStr] = true;
         const order = this.state.embeddedInfos.embeddedActions.map((el) => el.id);
-        this.embeddedActionsConfigHandler.setEmbeddedActionsConfig({
-            embedded_actions_visibility: visibleEmbeddedActions,
-            embedded_actions_order: order,
-        });
+        browser.localStorage.setItem(
+            this.embeddedActionsVisibilityKey,
+            JSON.stringify(visibleEmbeddedActions)
+        );
+        browser.localStorage.setItem(this.embeddedOrderKey, JSON.stringify(order));
         this.env.config.setCurrentEmbeddedAction(embeddedActionId);
         this.state.embeddedInfos.currentEmbeddedAction = enrichedNewEmbeddedAction;
         this.state.embeddedInfos.newActionName = `${newActionName} Custom`;
@@ -574,18 +538,17 @@ export class ControlPanel extends Component {
     async _deleteEmbeddedAction(action) {
         const { visibleEmbeddedActions, embeddedActions, currentEmbeddedAction } =
             this.state.embeddedInfos;
-        const embeddedActionIndex = visibleEmbeddedActions.indexOf(action.id);
-        if (embeddedActionIndex !== -1) {
-            visibleEmbeddedActions.splice(embeddedActionIndex, 1);
+        const actionIdStr = action.id.toString();
+        if (visibleEmbeddedActions[actionIdStr]) {
+            delete visibleEmbeddedActions[actionIdStr];
         }
+        browser.localStorage.setItem(
+            this.embeddedActionsVisibilityKey,
+            JSON.stringify(visibleEmbeddedActions)
+        );
         this.state.embeddedInfos.embeddedActions = embeddedActions.filter(
             ({ id }) => id !== action.id
         );
-        const order = this.state.embeddedInfos.embeddedActions.map((el) => el.id);
-        this.embeddedActionsConfigHandler.setEmbeddedActionsConfig({
-            embedded_actions_visibility: visibleEmbeddedActions,
-            embedded_actions_order: order,
-        });
         await this.orm.unlink("ir.embedded.actions", [action.id]);
         if (action.id === currentEmbeddedAction?.id) {
             const { active_id, active_model } = this.env.searchModel.globalContext;
@@ -675,34 +638,6 @@ export class ControlPanel extends Component {
             order.splice(0, 0, elementId);
         }
         this._sortEmbeddedActions(order);
-        this.embeddedActionsConfigHandler.setEmbeddedActionsConfig({
-            embedded_actions_order: order,
-        });
-    }
-
-    dropdownifyButtons() {
-        const adaptiveMenu = document.querySelector(
-            ".o-control-panel-adaptive-dropdown.dropdown-menu"
-        );
-        const meaningfulElements = this.getBoxedElements(adaptiveMenu.children);
-        for (const el of meaningfulElements) {
-            el.classList.add("dropdown-item");
-            el.classList.remove("btn");
-        }
-    }
-
-    getBoxedElements(elements) {
-        const boxed = [];
-        for (const el of [...elements]) {
-            const elStyles = el.ownerDocument.defaultView.getComputedStyle(el);
-            if (elStyles.getPropertyValue("display") === "contents") {
-                boxed.push(...this.getBoxedElements(el.children));
-            } else if (elStyles.getPropertyValue("display") === "none") {
-                continue;
-            } else {
-                boxed.push(el);
-            }
-        }
-        return boxed;
+        browser.localStorage.setItem(this.embeddedOrderKey, JSON.stringify(order));
     }
 }

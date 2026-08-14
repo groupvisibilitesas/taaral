@@ -7,7 +7,7 @@ import { scrollTo } from "@web/core/utils/scrolling";
 import { fuzzyLookup } from "@web/core/utils/search";
 import { debounce } from "@web/core/utils/timing";
 import { isMacOS, isMobileOS } from "@web/core/browser/feature_detection";
-import { highlightText } from "@web/core/utils/html";
+import { escapeRegExp } from "@web/core/utils/strings";
 
 import {
     Component,
@@ -74,6 +74,14 @@ function commandsWithinCategory(categoryName, categories) {
         const fallbackCategory = categoryName === "default" && !categories.includes(cmd.category);
         return inCurrentCategory || fallbackCategory;
     };
+}
+
+export function splitCommandName(name, searchValue) {
+    if (name) {
+        const splitName = name.split(new RegExp(`(${escapeRegExp(searchValue)})`, "ig"));
+        return searchValue.length && splitName.length > 1 ? splitName : [name];
+    }
+    return [];
 }
 
 export class DefaultCommandItem extends Component {
@@ -227,7 +235,7 @@ export class CommandPalette extends Component {
             commands.slice(0, 100).map((command) => ({
                 ...command,
                 keyId: this.keyId++,
-                text: highlightText(options.searchValue, command.name, "fw-bolder text-primary"),
+                splitName: splitCommandName(command.name, options.searchValue),
             }))
         );
         this.selectCommand(this.state.commands.length ? 0 : -1);

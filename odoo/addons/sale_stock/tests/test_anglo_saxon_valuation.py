@@ -1,26 +1,77 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-
 from odoo import Command, fields
-from odoo.exceptions import UserError
 from odoo.tests import Form, tagged
-
-from odoo.addons.stock_account.tests.common import TestStockValuationCommon
-from odoo.addons.sale_stock.tests.common import TestSaleStockCommon
+from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import ValuationReconciliationTestCommon
+from odoo.exceptions import UserError
 
 
 @tagged('post_install', '-at_install')
-class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
+class TestAngloSaxonValuation(ValuationReconciliationTestCommon):
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.partner_b = cls.env['res.partner'].create({'name': 'Partner B'})
+
+        cls.env.user.company_id.anglo_saxon_accounting = True
+
+        cls.product = cls.env['product.product'].create({
+            'name': 'product',
+            'is_storable': True,
+            'categ_id': cls.stock_account_product_categ.id,
+            'invoice_policy': 'order',
+        })
+
+    def _inv_adj_two_units(self):
+        self.env['stock.quant'].with_context(inventory_mode=True).create({
+            'product_id': self.product.id,  # tracking serial
+            'inventory_quantity': 2,
+            'location_id': self.company_data['default_warehouse'].lot_stock_id.id,
+        }).action_apply_inventory()
+
+    def _so_and_confirm_two_units(self):
+        sale_order = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
+            'order_line': [
+                (0, 0, {
+                    'name': self.product.name,
+                    'product_id': self.product.id,
+                    'product_uom_qty': 2.0,
+                    'product_uom': self.product.uom_id.id,
+                    'price_unit': 12,
+                    'tax_id': False,  # no love taxes amls
+                })],
+        })
+        sale_order.flush_recordset()
+        sale_order.action_confirm()
+        return sale_order
 
     def _fifo_in_one_eight_one_ten(self):
         # Put two items in stock.
-        self._make_in_move(self.product_fifo_auto, 1, 8)
-        self._make_in_move(self.product_fifo_auto, 1, 10)
+        in_move_1 = self.env['stock.move'].create({
+            'name': 'a',
+            'product_id': self.product.id,
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.company_data['default_warehouse'].lot_stock_id.id,
+            'product_uom': self.product.uom_id.id,
+            'product_uom_qty': 1,
+            'price_unit': 8,
+        })
+        in_move_1._action_confirm()
+        in_move_1.write({'quantity': 1, 'picked': True})
+        in_move_1._action_done()
+        in_move_2 = self.env['stock.move'].create({
+            'name': 'a',
+            'product_id': self.product.id,
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.company_data['default_warehouse'].lot_stock_id.id,
+            'product_uom': self.product.uom_id.id,
+            'product_uom_qty': 1,
+            'price_unit': 10,
+        })
+        in_move_2._action_confirm()
+        in_move_2.write({'quantity': 1, 'picked': True})
+        in_move_2._action_done()
 
     # -------------------------------------------------------------------------
     # Standard Ordered
@@ -29,17 +80,18 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         """Standard price set to 10. Get 2 units in stock. Sale order 2@12. Standard price set
         to 14. Invoice 2 without delivering. The amount in Stock OUT and COGS should be 14*2.
         """
-        self.product_standard_auto.invoice_policy = 'order'
-        self.product_standard_auto.standard_price = 10.0
+        self.product.categ_id.property_cost_method = 'standard'
+        self.product.invoice_policy = 'order'
+        self.product.standard_price = 10.0
 
         # Put two items in stock.
-        self._inv_adj_two_units(self.product_standard_auto)
+        self._inv_adj_two_units()
 
         # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_standard_auto, 2, 12, picking=False)
+        sale_order = self._so_and_confirm_two_units()
 
         # standard price to 14
-        self.product_standard_auto.standard_price = 14.0
+        self.product.standard_price = 14.0
 
         # Invoice the sale order.
         invoice = sale_order._create_invoices()
@@ -48,16 +100,16 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         # Check the resulting accounting entries
         amls = invoice.line_ids
         self.assertEqual(len(amls), 4)
-        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 0)
         self.assertEqual(stock_out_aml.credit, 28)
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
         self.assertEqual(cogs_aml.debit, 28)
         self.assertEqual(cogs_aml.credit, 0)
-        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.account_receivable)
+        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml.debit, 24)
         self.assertEqual(receivable_aml.credit, 0)
-        income_aml = amls.filtered(lambda aml: aml.account_id == self.account_income)
+        income_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
         self.assertEqual(income_aml.debit, 0)
         self.assertEqual(income_aml.credit, 24)
 
@@ -65,11 +117,15 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         """Standard price set to 10. Get 2 units in stock. Sale order 2@12. Deliver 1, invoice 1,
         change the standard price to 14, deliver one, change the standard price to 16, invoice 1.
         The amounts used in Stock OUT and COGS should be 10 then 14."""
-        self.product_standard_auto.invoice_policy = 'order'
-        self.product_standard_auto.standard_price = 10.0
+        self.product.categ_id.property_cost_method = 'standard'
+        self.product.invoice_policy = 'order'
+        self.product.standard_price = 10.0
+
+        # Put two items in stock.
+        sale_order = self._so_and_confirm_two_units()
 
         # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_standard_auto, 2, 12, picking=False)
+        sale_order = self._so_and_confirm_two_units()
 
         # Deliver one.
         sale_order.picking_ids.move_ids.write({'quantity': 1, 'picked': True})
@@ -77,50 +133,53 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
 
         # Invoice 1
         invoice = sale_order._create_invoices()
-        invoice.invoice_line_ids[0].quantity = 1
+        invoice_form = Form(invoice)
+        with invoice_form.invoice_line_ids.edit(0) as invoice_line:
+            invoice_line.quantity = 1
+        invoice_form.save()
         invoice.action_post()
 
         # Check the resulting accounting entries
         amls = invoice.line_ids
         self.assertEqual(len(amls), 4)
-        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 0)
         self.assertEqual(stock_out_aml.credit, 10)
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
         self.assertEqual(cogs_aml.debit, 10)
         self.assertEqual(cogs_aml.credit, 0)
-        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.account_receivable)
+        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml.debit, 12)
         self.assertEqual(receivable_aml.credit, 0)
-        income_aml = amls.filtered(lambda aml: aml.account_id == self.account_income)
+        income_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
         self.assertEqual(income_aml.debit, 0)
         self.assertEqual(income_aml.credit, 12)
 
         # change the standard price to 14
-        self.product_standard_auto.standard_price = 14.0
+        self.product.standard_price = 14.0
 
         # deliver the backorder
         sale_order.picking_ids[0].move_ids.write({'quantity': 1, 'picked': True})
         sale_order.picking_ids[0].button_validate()
 
         # change the standard price to 16
-        self.product_standard_auto.standard_price = 16.0
+        self.product.standard_price = 16.0
 
-        # invoice 2
+        # invoice 1
         invoice2 = sale_order._create_invoices()
         invoice2.action_post()
         amls = invoice2.line_ids
         self.assertEqual(len(amls), 4)
-        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 0)
-        self.assertEqual(stock_out_aml.credit, 22)
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
-        self.assertEqual(cogs_aml.debit, 22)
+        self.assertEqual(stock_out_aml.credit, 14)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
+        self.assertEqual(cogs_aml.debit, 14)
         self.assertEqual(cogs_aml.credit, 0)
-        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.account_receivable)
+        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml.debit, 12)
         self.assertEqual(receivable_aml.credit, 0)
-        income_aml = amls.filtered(lambda aml: aml.account_id == self.account_income)
+        income_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
         self.assertEqual(income_aml.debit, 0)
         self.assertEqual(income_aml.credit, 12)
 
@@ -128,27 +187,22 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         """Standard price set to 10. Get 2 units in stock. Sale order 2@12. Deliver 1, change the
         standard price to 14, deliver one, invoice 2. The amounts used in Stock OUT and COGS should
         be 12*2."""
-        self.product_standard_auto.invoice_policy = 'order'
-        self.product_standard_auto.standard_price = 10
-        self._use_inventory_location_accounting()
+        self.product.categ_id.property_cost_method = 'standard'
+        self.product.invoice_policy = 'order'
+        self.product.standard_price = 10
 
         # Put two items in stock.
-        self._inv_adj_two_units(self.product_standard_auto)
-        amls = self.env['account.move.line'].search([('product_id', '=', self.product_standard_auto.id)])
-        self.assertRecordValues(amls, [
-            {'account_id': self.account_inventory.id, 'debit': 0.0, 'credit': 20.0},
-            {'account_id': self.account_stock_valuation.id, 'debit': 20.0, 'credit': 0.0},
-        ])
+        self._inv_adj_two_units()
 
         # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_standard_auto, 2, 12, picking=False)
+        sale_order = self._so_and_confirm_two_units()
 
         # Deliver one.
         sale_order.picking_ids.move_ids.write({'quantity': 1, 'picked': True})
         Form.from_action(self.env, sale_order.picking_ids.button_validate()).save().process()
 
         # change the standard price to 14
-        self.product_standard_auto.standard_price = 14.0
+        self.product.standard_price = 14.0
 
         # deliver the backorder
         sale_order.picking_ids.filtered('backorder_id').move_ids.write({'quantity': 1, 'picked': True})
@@ -161,69 +215,129 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         # Check the resulting accounting entries
         amls = invoice.line_ids
         self.assertEqual(len(amls), 4)
-        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 0)
-        self.assertEqual(stock_out_aml.credit, 28)
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
-        self.assertEqual(cogs_aml.debit, 28)
+        self.assertEqual(stock_out_aml.credit, 24)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
+        self.assertEqual(cogs_aml.debit, 24)
         self.assertEqual(cogs_aml.credit, 0)
-        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.account_receivable)
+        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml.debit, 24)
         self.assertEqual(receivable_aml.credit, 0)
-        income_aml = amls.filtered(lambda aml: aml.account_id == self.account_income)
+        income_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
         self.assertEqual(income_aml.debit, 0)
         self.assertEqual(income_aml.credit, 24)
-
-        closing_move = self._close()
-        self.assertRecordValues(closing_move.line_ids, [
-            {'account_id': self.account_stock_variation.id, 'debit': 0.0, 'credit': 8.0},
-            {'account_id': self.account_stock_valuation.id, 'debit': 8.0, 'credit': 0.0},
-        ])
 
     # -------------------------------------------------------------------------
     # Standard Delivered
     # -------------------------------------------------------------------------
     def test_standard_delivered_invoice_pre_delivery(self):
         """Not possible to invoice pre delivery."""
-        self.product_standard_auto.invoice_policy = 'delivery'
-        self.product_standard_auto.standard_price = 10
+        self.product.categ_id.property_cost_method = 'standard'
+        self.product.invoice_policy = 'delivery'
+        self.product.standard_price = 10
 
         # Put two items in stock.
-        self._inv_adj_two_units(self.product_standard_auto)
+        self._inv_adj_two_units()
 
         # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_standard_auto, 2, 12, picking=False)
+        sale_order = self._so_and_confirm_two_units()
 
         # Invoice the sale order.
         # Nothing delivered = nothing to invoice.
         with self.assertRaises(UserError):
             sale_order._create_invoices()
 
+    def test_standard_delivered_invoice_post_partial_delivery(self):
+        """Standard price set to 10. Get 2 units in stock. Sale order 2@12. Deliver 1, invoice 1,
+        change the standard price to 14, deliver one, change the standard price to 16, invoice 1.
+        The amounts used in Stock OUT and COGS should be 10 then 14."""
+        self.product.categ_id.property_cost_method = 'standard'
+        self.product.invoice_policy = 'delivery'
+        self.product.standard_price = 10
+
+        # Put two items in stock.
+        sale_order = self._so_and_confirm_two_units()
+
+        # Create and confirm a sale order for 2@12
+        sale_order = self._so_and_confirm_two_units()
+
+        # Deliver one.
+        sale_order.picking_ids.move_ids.write({'quantity': 1, 'picked': True})
+        Form.from_action(self.env, sale_order.picking_ids.button_validate()).save().process()
+
+        # Invoice 1
+        invoice = sale_order._create_invoices()
+        invoice_form = Form(invoice)
+        with invoice_form.invoice_line_ids.edit(0) as invoice_line:
+            invoice_line.quantity = 1
+        invoice_form.save()
+        invoice.action_post()
+
+        # Check the resulting accounting entries
+        amls = invoice.line_ids
+        self.assertEqual(len(amls), 4)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
+        self.assertEqual(stock_out_aml.debit, 0)
+        self.assertEqual(stock_out_aml.credit, 10)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
+        self.assertEqual(cogs_aml.debit, 10)
+        self.assertEqual(cogs_aml.credit, 0)
+        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
+        self.assertEqual(receivable_aml.debit, 12)
+        self.assertEqual(receivable_aml.credit, 0)
+        income_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
+        self.assertEqual(income_aml.debit, 0)
+        self.assertEqual(income_aml.credit, 12)
+
+        # change the standard price to 14
+        self.product.standard_price = 14.0
+
+        # deliver the backorder
+        sale_order.picking_ids[0].move_ids.write({'quantity': 1, 'picked': True})
+        sale_order.picking_ids[0].button_validate()
+
+        # change the standard price to 16
+        self.product.standard_price = 16.0
+
+        # invoice 1
+        invoice2 = sale_order._create_invoices()
+        invoice2.action_post()
+        amls = invoice2.line_ids
+        self.assertEqual(len(amls), 4)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
+        self.assertEqual(stock_out_aml.debit, 0)
+        self.assertEqual(stock_out_aml.credit, 14)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
+        self.assertEqual(cogs_aml.debit, 14)
+        self.assertEqual(cogs_aml.credit, 0)
+        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
+        self.assertEqual(receivable_aml.debit, 12)
+        self.assertEqual(receivable_aml.credit, 0)
+        income_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
+        self.assertEqual(income_aml.debit, 0)
+        self.assertEqual(income_aml.credit, 12)
+
     def test_standard_delivered_invoice_post_delivery(self):
         """Standard price set to 10. Get 2 units in stock. Sale order 2@12. Deliver 1, change the
         standard price to 14, deliver one, invoice 2. The amounts used in Stock OUT and COGS should
         be 12*2."""
-        self.product_standard_auto.invoice_policy = 'delivery'
-        self.product_standard_auto.standard_price = 10
-        self._use_inventory_location_accounting()
+        self.product.categ_id.property_cost_method = 'standard'
+        self.product.invoice_policy = 'delivery'
+        self.product.standard_price = 10
 
         # Put two items in stock.
-        self._inv_adj_two_units(self.product_standard_auto)
-        amls = self.env['account.move.line'].search([('product_id', '=', self.product_standard_auto.id)])
-        self.assertRecordValues(amls, [
-            {'account_id': self.account_inventory.id, 'debit': 0.0, 'credit': 20.0},
-            {'account_id': self.account_stock_valuation.id, 'debit': 20.0, 'credit': 0.0},
-        ])
+        self._inv_adj_two_units()
 
         # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_standard_auto, 2, 12, picking=False)
+        sale_order = self._so_and_confirm_two_units()
 
         # Deliver one.
         sale_order.picking_ids.move_ids.write({'quantity': 1, 'picked': True})
         Form.from_action(self.env, sale_order.picking_ids.button_validate()).save().process()
 
         # change the standard price to 14
-        self.product_standard_auto.standard_price = 14.0
+        self.product.standard_price = 14.0
 
         # deliver the backorder
         sale_order.picking_ids.filtered('backorder_id').move_ids.write({'quantity': 1, 'picked': True})
@@ -236,38 +350,33 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         # Check the resulting accounting entries
         amls = invoice.line_ids
         self.assertEqual(len(amls), 4)
-        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 0)
-        self.assertEqual(stock_out_aml.credit, 28)
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
-        self.assertEqual(cogs_aml.debit, 28)
+        self.assertEqual(stock_out_aml.credit, 24)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
+        self.assertEqual(cogs_aml.debit, 24)
         self.assertEqual(cogs_aml.credit, 0)
-        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.account_receivable)
+        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml.debit, 24)
         self.assertEqual(receivable_aml.credit, 0)
-        income_aml = amls.filtered(lambda aml: aml.account_id == self.account_income)
+        income_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
         self.assertEqual(income_aml.debit, 0)
         self.assertEqual(income_aml.credit, 24)
-
-        closing_move = self._close()
-        self.assertRecordValues(closing_move.line_ids, [
-            {'account_id': self.account_stock_variation.id, 'debit': 0.0, 'credit': 8.0},
-            {'account_id': self.account_stock_valuation.id, 'debit': 8.0, 'credit': 0.0},
-        ])
 
     # -------------------------------------------------------------------------
     # AVCO Ordered
     # -------------------------------------------------------------------------
     def test_avco_ordered_invoice_pre_delivery(self):
         """Standard price set to 10. Sale order 2@12. Invoice without delivering."""
-        self.product_avco_auto.invoice_policy = 'order'
-        self.product_avco_auto.standard_price = 10
+        self.product.categ_id.property_cost_method = 'average'
+        self.product.invoice_policy = 'order'
+        self.product.standard_price = 10
 
         # Put two items in stock.
-        self._inv_adj_two_units(self.product_avco_auto)
+        self._inv_adj_two_units()
 
         # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_avco_auto, 2, 12, picking=False)
+        sale_order = self._so_and_confirm_two_units()
 
         # Invoice the sale order.
         invoice = sale_order._create_invoices()
@@ -276,29 +385,30 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         # Check the resulting accounting entries
         amls = invoice.line_ids
         self.assertEqual(len(amls), 4)
-        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 0)
         self.assertEqual(stock_out_aml.credit, 20)
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
         self.assertEqual(cogs_aml.debit, 20)
         self.assertEqual(cogs_aml.credit, 0)
-        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.account_receivable)
+        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml.debit, 24)
         self.assertEqual(receivable_aml.credit, 0)
-        income_aml = amls.filtered(lambda aml: aml.account_id == self.account_income)
+        income_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
         self.assertEqual(income_aml.debit, 0)
         self.assertEqual(income_aml.credit, 24)
 
     def test_avco_ordered_invoice_post_partial_delivery(self):
         """Standard price set to 10. Sale order 2@12. Invoice after delivering 1."""
-        self.product_avco_auto.invoice_policy = 'order'
-        self.product_avco_auto.standard_price = 10
+        self.product.categ_id.property_cost_method = 'average'
+        self.product.invoice_policy = 'order'
+        self.product.standard_price = 10
 
         # Put two items in stock.
-        self._inv_adj_two_units(self.product_avco_auto)
+        self._inv_adj_two_units()
 
         # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_avco_auto, 2, 12, picking=False)
+        sale_order = self._so_and_confirm_two_units()
 
         # Deliver one.
         sale_order.picking_ids.move_ids.write({'quantity': 1, 'picked': True})
@@ -311,29 +421,34 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         # Check the resulting accounting entries
         amls = invoice.line_ids
         self.assertEqual(len(amls), 4)
-        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 0)
         self.assertEqual(stock_out_aml.credit, 20)
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
         self.assertEqual(cogs_aml.debit, 20)
         self.assertEqual(cogs_aml.credit, 0)
-        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.account_receivable)
+        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml.debit, 24)
         self.assertEqual(receivable_aml.credit, 0)
-        income_aml = amls.filtered(lambda aml: aml.account_id == self.account_income)
+        income_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
         self.assertEqual(income_aml.debit, 0)
         self.assertEqual(income_aml.credit, 24)
 
     def test_avco_ordered_invoice_post_delivery(self):
         """Standard price set to 10. Sale order 2@12. Invoice after full delivery."""
-        self.product_avco_auto.invoice_policy = 'order'
-        self.product_avco_auto.standard_price = 10
+        self.product.categ_id.property_cost_method = 'average'
+        self.product.invoice_policy = 'order'
+        self.product.standard_price = 10
 
         # Put two items in stock.
-        self._inv_adj_two_units(self.product_avco_auto)
+        self._inv_adj_two_units()
 
         # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_avco_auto, 2, 12)
+        sale_order = self._so_and_confirm_two_units()
+
+        # Deliver one.
+        sale_order.picking_ids.move_ids.write({'quantity': 2, 'picked': True})
+        sale_order.picking_ids.button_validate()
 
         # Invoice the sale order.
         invoice = sale_order._create_invoices()
@@ -342,22 +457,22 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         # Check the resulting accounting entries
         amls = invoice.line_ids
         self.assertEqual(len(amls), 4)
-        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 0)
         self.assertEqual(stock_out_aml.credit, 20)
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
         self.assertEqual(cogs_aml.debit, 20)
         self.assertEqual(cogs_aml.credit, 0)
-        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.account_receivable)
+        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml.debit, 24)
         self.assertEqual(receivable_aml.credit, 0)
-        income_aml = amls.filtered(lambda aml: aml.account_id == self.account_income)
+        income_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
         self.assertEqual(income_aml.debit, 0)
         self.assertEqual(income_aml.credit, 24)
 
     def test_avco_ordered_return_and_receipt(self):
         """ Sell and deliver some products before the user encodes the products receipt """
-        product = self.product_avco_auto
+        product = self.product
         product.invoice_policy = 'order'
         product.is_storable = True
         product.categ_id.property_cost_method = 'average'
@@ -365,8 +480,22 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         product.list_price = 100
         product.standard_price = 50
 
-        so = self._so_deliver(product, 5, product.list_price)
+        so = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
+            'partner_invoice_id': self.partner_a.id,
+            'partner_shipping_id': self.partner_a.id,
+            'order_line': [(0, 0, {
+                'name': product.name,
+                'product_id': product.id,
+                'product_uom_qty': 5.0,
+                'product_uom': product.uom_id.id,
+                'price_unit': product.list_price})],
+        })
+        so.action_confirm()
+
         pick = so.picking_ids
+        pick.move_ids.write({'quantity': 5, 'picked': True})
+        pick.button_validate()
 
         product.standard_price = 40
 
@@ -381,16 +510,23 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         return_pick.move_ids.write({'quantity': 1, 'picked': True})
         return_pick.button_validate()
 
-        # We don't set the price_unit so that the `standard_price` will be used (see _get_price_unit()):
-        move = self.env['stock.move'].create({
+        picking = self.env['stock.picking'].create({
             'location_id': self.env.ref('stock.stock_location_suppliers').id,
-            'location_dest_id': self.stock_location.id,
+            'location_dest_id': self.company_data['default_warehouse'].lot_stock_id.id,
+            'picking_type_id': self.company_data['default_warehouse'].in_type_id.id,
+        })
+        # We don't set the price_unit so that the `standard_price` will be used (see _get_price_unit()):
+        self.env['stock.move'].create({
+            'name': 'test_immediate_validate_1',
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.company_data['default_warehouse'].lot_stock_id.id,
+            'picking_id': picking.id,
             'product_id': product.id,
             'product_uom': product.uom_id.id,
             'quantity': 1,
             'picked': True,
         })
-        move._action_done()
+        picking.button_validate()
 
         invoice = so._create_invoices()
         invoice.action_post()
@@ -401,14 +537,15 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
     # -------------------------------------------------------------------------
     def test_avco_delivered_invoice_pre_delivery(self):
         """Standard price set to 10. Sale order 2@12. Invoice without delivering. """
-        self.product_avco_auto.invoice_policy = 'delivery'
-        self.product_avco_auto.standard_price = 10
+        self.product.categ_id.property_cost_method = 'average'
+        self.product.invoice_policy = 'delivery'
+        self.product.standard_price = 10
 
         # Put two items in stock.
-        self._inv_adj_two_units(self.product_avco_auto)
+        self._inv_adj_two_units()
 
         # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_avco_auto, 2, 12, picking=False)
+        sale_order = self._so_and_confirm_two_units()
 
         # Invoice the sale order.
         # Nothing delivered = nothing to invoice.
@@ -417,14 +554,15 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
 
     def test_avco_delivered_invoice_post_partial_delivery(self):
         """Standard price set to 10. Sale order 2@12. Invoice after delivering 1."""
-        self.product_avco_auto.invoice_policy = 'delivery'
-        self.product_avco_auto.standard_price = 10
+        self.product.categ_id.property_cost_method = 'average'
+        self.product.invoice_policy = 'delivery'
+        self.product.standard_price = 10
 
         # Put two items in stock.
-        self._inv_adj_two_units(self.product_avco_auto)
+        self._inv_adj_two_units()
 
         # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_avco_auto, 2, 12, picking=False)
+        sale_order = self._so_and_confirm_two_units()
 
         # Deliver one.
         sale_order.picking_ids.move_ids.write({'quantity': 1, 'picked': True})
@@ -437,29 +575,30 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         # Check the resulting accounting entries
         amls = invoice.line_ids
         self.assertEqual(len(amls), 4)
-        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 0)
         self.assertEqual(stock_out_aml.credit, 10)
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
         self.assertEqual(cogs_aml.debit, 10)
         self.assertEqual(cogs_aml.credit, 0)
-        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.account_receivable)
+        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml.debit, 12)
         self.assertEqual(receivable_aml.credit, 0)
-        income_aml = amls.filtered(lambda aml: aml.account_id == self.account_income)
+        income_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
         self.assertEqual(income_aml.debit, 0)
         self.assertEqual(income_aml.credit, 12)
 
     def test_avco_delivered_invoice_post_delivery(self):
         """Standard price set to 10. Sale order 2@12. Invoice after full delivery."""
-        self.product_avco_auto.invoice_policy = 'delivery'
-        self.product_avco_auto.standard_price = 10
+        self.product.categ_id.property_cost_method = 'average'
+        self.product.invoice_policy = 'delivery'
+        self.product.standard_price = 10
 
         # Put two items in stock.
-        self._inv_adj_two_units(self.product_avco_auto)
+        self._inv_adj_two_units()
 
         # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_avco_auto, 2, 12, picking=False)
+        sale_order = self._so_and_confirm_two_units()
         # Deliver one.
         sale_order.picking_ids.move_ids.write({'quantity': 2, 'picked': True})
         sale_order.picking_ids.button_validate()
@@ -471,16 +610,16 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         # Check the resulting accounting entries
         amls = invoice.line_ids
         self.assertEqual(len(amls), 4)
-        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 0)
         self.assertEqual(stock_out_aml.credit, 20)
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
         self.assertEqual(cogs_aml.debit, 20)
         self.assertEqual(cogs_aml.credit, 0)
-        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.account_receivable)
+        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml.debit, 24)
         self.assertEqual(receivable_aml.credit, 0)
-        income_aml = amls.filtered(lambda aml: aml.account_id == self.account_income)
+        income_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
         self.assertEqual(income_aml.debit, 0)
         self.assertEqual(income_aml.credit, 24)
 
@@ -489,21 +628,24 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         Standard price set to 10. Sale order 2@12. One of the delivered
         products was owned by an external partner. Invoice after full delivery.
         """
-        self.product_avco_auto.invoice_policy = 'delivery'
-        self.product_avco_auto.standard_price = 10
+        self.product.categ_id.property_cost_method = 'average'
+        self.product.invoice_policy = 'delivery'
+        self.product.standard_price = 10
 
-        self.env['stock.quant']._update_available_quantity(self.product_avco_auto, self.stock_location, 1, owner_id=self.partner_b)
-        self.env['stock.quant']._update_available_quantity(self.product_avco_auto, self.stock_location, 1)
+        self.env['stock.quant']._update_available_quantity(self.product, self.company_data['default_warehouse'].lot_stock_id, 1, owner_id=self.partner_b)
+        self.env['stock.quant']._update_available_quantity(self.product, self.company_data['default_warehouse'].lot_stock_id, 1)
 
         # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_avco_auto, 2, 12, picking=False)
+        sale_order = self._so_and_confirm_two_units()
         # Deliver both products (there should be two SML)
         sale_order.picking_ids.move_line_ids.write({'quantity': 1, 'picked': True})
         sale_order.picking_ids.button_validate()
 
         # Invoice one by one
         invoice01 = sale_order._create_invoices()
-        invoice01.invoice_line_ids[0].quantity = 1
+        with Form(invoice01) as invoice_form:
+            with invoice_form.invoice_line_ids.edit(0) as line_form:
+                line_form.quantity = 1
         invoice01.action_post()
 
         invoice02 = sale_order._create_invoices()
@@ -512,110 +654,15 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         # COGS should ignore the owned product
         self.assertRecordValues(invoice01.line_ids, [
             # pylint: disable=bad-whitespace
-            {'account_id': self.account_income.id,     'debit': 0,     'credit': 12},
-            {'account_id': self.account_receivable.id,  'debit': 12,    'credit': 0},
-            {'account_id': self.account_stock_valuation.id,   'debit': 0,     'credit': 5},
-            {'account_id': self.account_expense.id,     'debit': 5,    'credit': 0},
+            {'account_id': self.company_data['default_account_revenue'].id,     'debit': 0,     'credit': 12},
+            {'account_id': self.company_data['default_account_receivable'].id,  'debit': 12,    'credit': 0},
+            {'account_id': self.company_data['default_account_stock_out'].id,   'debit': 0,     'credit': 10},
+            {'account_id': self.company_data['default_account_expense'].id,     'debit': 10,    'credit': 0},
         ])
         self.assertRecordValues(invoice02.line_ids, [
             # pylint: disable=bad-whitespace
-            {'account_id': self.account_income.id,     'debit': 0,     'credit': 12},
-            {'account_id': self.account_receivable.id,  'debit': 12,    'credit': 0},
-            {'account_id': self.account_stock_valuation.id,   'debit': 0,     'credit': 5},
-            {'account_id': self.account_expense.id,     'debit': 5,    'credit': 0},
-        ])
-
-    def test_avco_partially_owned_invoice_post_delivery(self):
-        """
-        Avco product with cost of 10. Sale order 2@12. One of the delivered
-        products was owned by an external partner. Invoice all quantities at once.
-        Make sure the cogs is only for the non consigned product.
-        """
-        self.product_avco_auto.invoice_policy = 'delivery'
-        self.product_avco_auto.standard_price = 10
-
-        self.env['stock.quant']._update_available_quantity(self.product_avco_auto, self.stock_location, 1, owner_id=self.partner_b)
-        self.env['stock.quant']._update_available_quantity(self.product_avco_auto, self.stock_location, 1)
-
-        # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_avco_auto, 2, 12, picking=False)
-        # Deliver both products (there should be two SML)
-        sale_order.picking_ids.move_line_ids.write({'quantity': 1, 'picked': True})
-        sale_order.picking_ids.button_validate()
-
-        # Invoice
-        invoice01 = sale_order._create_invoices()
-        invoice01.action_post()
-
-        # COGS should ignore the owned product
-        self.assertRecordValues(invoice01.line_ids, [
-            # pylint: disable=bad-whitespace
-            {'account_id': self.account_income.id,     'debit': 0,     'credit': 24},
-            {'account_id': self.account_receivable.id,  'debit': 24,    'credit': 0},
-            {'account_id': self.account_stock_valuation.id,   'debit': 0,     'credit': 10},
-            {'account_id': self.account_expense.id,     'debit': 10,    'credit': 0},
-        ])
-
-    def test_std_price_partially_owned_invoice_post_delivery(self):
-        """
-        Standard price product with price of 10. Sale order 2@12. One of the delivered
-        products was owned by an external partner. Invoice all quantities at once.
-        Make sure the cogs is only for the non consigned product.
-        """
-        self.product_standard_auto.invoice_policy = 'delivery'
-        self.product_standard_auto.standard_price = 10
-
-        self.env['stock.quant']._update_available_quantity(self.product_standard_auto, self.stock_location, 1, owner_id=self.partner_b)
-        self.env['stock.quant']._update_available_quantity(self.product_standard_auto, self.stock_location, 1)
-
-        # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_standard_auto, 2, 12, picking=False)
-        # Deliver both products (there should be two SML)
-        sale_order.picking_ids.move_line_ids.write({'quantity': 1, 'picked': True})
-        sale_order.picking_ids.button_validate()
-
-        # Invoice
-        invoice01 = sale_order._create_invoices()
-        invoice01.action_post()
-
-        # COGS should ignore the owned product
-        self.assertRecordValues(invoice01.line_ids, [
-            # pylint: disable=bad-whitespace
-            {'account_id': self.account_income.id,     'debit': 0,     'credit': 24},
-            {'account_id': self.account_receivable.id,  'debit': 24,    'credit': 0},
-            {'account_id': self.account_stock_valuation.id,   'debit': 0,     'credit': 10},
-            {'account_id': self.account_expense.id,     'debit': 10,    'credit': 0},
-        ])
-
-    def test_fifo_partially_owned_invoice_post_delivery(self):
-        """
-        Fifo product with cost of 10. Sale order 2@12. One of the delivered
-        products was owned by an external partner. Invoice all quantities at once.
-        Make sure the cogs is only for the non consigned product.
-        """
-        self.product_fifo_auto.invoice_policy = 'delivery'
-        self.product_fifo_auto.standard_price = 10
-
-        self.env['stock.quant']._update_available_quantity(self.product_fifo_auto, self.stock_location, 1, owner_id=self.partner_b)
-        self.env['stock.quant']._update_available_quantity(self.product_fifo_auto, self.stock_location, 1)
-
-        # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_fifo_auto, 2, 12, picking=False)
-        # Deliver both products (there should be two SML)
-        sale_order.picking_ids.move_line_ids.write({'quantity': 1, 'picked': True})
-        sale_order.picking_ids.button_validate()
-
-        # Invoice
-        invoice01 = sale_order._create_invoices()
-        invoice01.action_post()
-
-        # COGS should ignore the owned product
-        self.assertRecordValues(invoice01.line_ids, [
-            # pylint: disable=bad-whitespace
-            {'account_id': self.account_income.id,     'debit': 0,     'credit': 24},
-            {'account_id': self.account_receivable.id,  'debit': 24,    'credit': 0},
-            {'account_id': self.account_stock_valuation.id,   'debit': 0,     'credit': 10},
-            {'account_id': self.account_expense.id,     'debit': 10,    'credit': 0},
+            {'account_id': self.company_data['default_account_revenue'].id,     'debit': 0,     'credit': 12},
+            {'account_id': self.company_data['default_account_receivable'].id,  'debit': 12,    'credit': 0},
         ])
 
     def test_avco_fully_owned_and_delivered_invoice_post_delivery(self):
@@ -623,12 +670,13 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         Standard price set to 10. Sale order 2@12. The products are owned by an
         external partner. Invoice after full delivery.
         """
-        self.product_avco_auto.invoice_policy = 'delivery'
-        self.product_avco_auto.standard_price = 10
+        self.product.categ_id.property_cost_method = 'average'
+        self.product.invoice_policy = 'delivery'
+        self.product.standard_price = 10
 
-        self.env['stock.quant']._update_available_quantity(self.product_avco_auto, self.stock_location, 2, owner_id=self.partner_b)
+        self.env['stock.quant']._update_available_quantity(self.product, self.company_data['default_warehouse'].lot_stock_id, 2, owner_id=self.partner_b)
 
-        sale_order = self._so_deliver(self.product_avco_auto, 2, 12, picking=False)
+        sale_order = self._so_and_confirm_two_units()
         sale_order.picking_ids.move_line_ids.write({'quantity': 2, 'picked': True})
         sale_order.picking_ids.button_validate()
 
@@ -639,8 +687,8 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         amls = invoice.line_ids
         self.assertRecordValues(amls, [
             # pylint: disable=bad-whitespace
-            {'account_id': self.account_income.id,     'debit': 0,     'credit': 24},
-            {'account_id': self.account_receivable.id,  'debit': 24,    'credit': 0},
+            {'account_id': self.company_data['default_account_revenue'].id,     'debit': 0,     'credit': 24},
+            {'account_id': self.company_data['default_account_receivable'].id,  'debit': 24,    'credit': 0},
         ])
 
     # -------------------------------------------------------------------------
@@ -649,12 +697,13 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
     def test_fifo_ordered_invoice_pre_delivery(self):
         """Receive at 8 then at 10. Sale order 2@12. Invoice without delivering.
         As no standard price is set, the Stock OUT and COGS amounts are 0."""
-        self.product_fifo_auto.invoice_policy = 'order'
+        self.product.categ_id.property_cost_method = 'fifo'
+        self.product.invoice_policy = 'order'
 
         self._fifo_in_one_eight_one_ten()
 
         # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_fifo_auto, 2, 12, picking=False)
+        sale_order = self._so_and_confirm_two_units()
 
         # Invoice the sale order.
         invoice = sale_order._create_invoices()
@@ -663,65 +712,70 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         # Check the resulting accounting entries
         amls = invoice.line_ids
         self.assertEqual(len(amls), 4)
-        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 0)
-        self.assertEqual(stock_out_aml.credit, 18)
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
-        self.assertEqual(cogs_aml.debit, 18)
+        self.assertAlmostEqual(stock_out_aml.credit, 18)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
+        self.assertAlmostEqual(cogs_aml.debit, 18)
         self.assertEqual(cogs_aml.credit, 0)
-        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.account_receivable)
+        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml.debit, 24)
         self.assertEqual(receivable_aml.credit, 0)
-        income_aml = amls.filtered(lambda aml: aml.account_id == self.account_income)
+        income_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
         self.assertEqual(income_aml.debit, 0)
         self.assertEqual(income_aml.credit, 24)
 
     def test_fifo_ordered_invoice_post_partial_delivery(self):
         """Receive 1@8, 1@10, so 2@12, standard price 12, deliver 1, invoice 2: the COGS amount
         should be 20: 1 really delivered at 10 and the other valued at the standard price 10."""
-        self.product_fifo_auto.invoice_policy = 'order'
+        self.product.categ_id.property_cost_method = 'fifo'
+        self.product.invoice_policy = 'order'
 
         self._fifo_in_one_eight_one_ten()
 
         # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_fifo_auto, 2, 12, picking=False)
+        sale_order = self._so_and_confirm_two_units()
 
         # Deliver one.
         sale_order.picking_ids.move_ids.write({'quantity': 1, 'picked': True})
         Form.from_action(self.env, sale_order.picking_ids.button_validate()).save().process()
 
         # upate the standard price to 12
-        self.product_fifo_auto.standard_price = 12
+        self.product.standard_price = 12
 
         # Invoice 2
         invoice = sale_order._create_invoices()
-        invoice.invoice_line_ids[0].quantity = 2
+        invoice_form = Form(invoice)
+        with invoice_form.invoice_line_ids.edit(0) as invoice_line:
+            invoice_line.quantity = 2
+        invoice_form.save()
         invoice.action_post()
 
         # Check the resulting accounting entries
         amls = invoice.line_ids
         self.assertEqual(len(amls), 4)
-        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 0)
-        self.assertEqual(stock_out_aml.credit, 16)
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
-        self.assertEqual(cogs_aml.debit, 16)
+        self.assertEqual(stock_out_aml.credit, 20)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
+        self.assertEqual(cogs_aml.debit, 20)
         self.assertEqual(cogs_aml.credit, 0)
-        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.account_receivable)
+        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml.debit, 24)
         self.assertEqual(receivable_aml.credit, 0)
-        income_aml = amls.filtered(lambda aml: aml.account_id == self.account_income)
+        income_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
         self.assertEqual(income_aml.debit, 0)
         self.assertEqual(income_aml.credit, 24)
 
     def test_fifo_ordered_invoice_post_delivery(self):
         """Receive at 8 then at 10. Sale order 2@12. Invoice after delivering everything."""
-        self.product_fifo_auto.invoice_policy = 'order'
+        self.product.categ_id.property_cost_method = 'fifo'
+        self.product.invoice_policy = 'order'
 
         self._fifo_in_one_eight_one_ten()
 
         # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_fifo_auto, 2, 12, picking=False)
+        sale_order = self._so_and_confirm_two_units()
 
         # Deliver one.
         sale_order.picking_ids.move_ids.write({'quantity': 2, 'picked': True})
@@ -734,16 +788,16 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         # Check the resulting accounting entries
         amls = invoice.line_ids
         self.assertEqual(len(amls), 4)
-        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 0)
         self.assertEqual(stock_out_aml.credit, 18)
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
         self.assertEqual(cogs_aml.debit, 18)
         self.assertEqual(cogs_aml.credit, 0)
-        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.account_receivable)
+        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml.debit, 24)
         self.assertEqual(receivable_aml.credit, 0)
-        income_aml = amls.filtered(lambda aml: aml.account_id == self.account_income)
+        income_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
         self.assertEqual(income_aml.debit, 0)
         self.assertEqual(income_aml.credit, 24)
 
@@ -751,13 +805,14 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
     # FIFO Delivered
     # -------------------------------------------------------------------------
     def test_fifo_delivered_invoice_pre_delivery(self):
-        self.product_fifo_auto.invoice_policy = 'delivery'
-        self.product_fifo_auto.standard_price = 10
+        self.product.categ_id.property_cost_method = 'fifo'
+        self.product.invoice_policy = 'delivery'
+        self.product.standard_price = 10
 
         self._fifo_in_one_eight_one_ten()
 
         # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_fifo_auto, 2, 12, picking=False)
+        sale_order = self._so_and_confirm_two_units()
 
         # Invoice the sale order.
         # Nothing delivered = nothing to invoice.
@@ -767,50 +822,55 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
     def test_fifo_delivered_invoice_post_partial_delivery(self):
         """Receive 1@8, 1@10, so 2@12, standard price 12, deliver 1, invoice 2: the price used should be 10:
         one at 8 and one at 10."""
-        self.product_fifo_auto.invoice_policy = 'delivery'
+        self.product.categ_id.property_cost_method = 'fifo'
+        self.product.invoice_policy = 'delivery'
 
         self._fifo_in_one_eight_one_ten()
 
         # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_fifo_auto, 2, 12, picking=False)
+        sale_order = self._so_and_confirm_two_units()
 
         # Deliver one.
         sale_order.picking_ids.move_ids.write({'quantity': 1, 'picked': True})
         Form.from_action(self.env, sale_order.picking_ids.button_validate()).save().process()
 
         # upate the standard price to 12
-        self.product_fifo_auto.standard_price = 12
+        self.product.standard_price = 12
 
         # Invoice 2
         invoice = sale_order._create_invoices()
-        invoice.line_ids[0].quantity = 2
+        invoice_form = Form(invoice)
+        with invoice_form.invoice_line_ids.edit(0) as invoice_line:
+            invoice_line.quantity = 2
+        invoice_form.save()
         invoice.action_post()
 
         # Check the resulting accounting entries
         amls = invoice.line_ids
         self.assertEqual(len(amls), 4)
-        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 0)
-        self.assertEqual(stock_out_aml.credit, 16)
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
-        self.assertEqual(cogs_aml.debit, 16)
+        self.assertEqual(stock_out_aml.credit, 20)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
+        self.assertEqual(cogs_aml.debit, 20)
         self.assertEqual(cogs_aml.credit, 0)
-        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.account_receivable)
+        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml.debit, 24)
         self.assertEqual(receivable_aml.credit, 0)
-        income_aml = amls.filtered(lambda aml: aml.account_id == self.account_income)
+        income_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
         self.assertEqual(income_aml.debit, 0)
         self.assertEqual(income_aml.credit, 24)
 
     def test_fifo_delivered_invoice_post_delivery(self):
         """Receive at 8 then at 10. Sale order 2@12. Invoice after delivering everything."""
-        self.product_fifo_auto.invoice_policy = 'delivery'
-        self.product_fifo_auto.standard_price = 10
+        self.product.categ_id.property_cost_method = 'fifo'
+        self.product.invoice_policy = 'delivery'
+        self.product.standard_price = 10
 
         self._fifo_in_one_eight_one_ten()
 
         # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_fifo_auto, 2, 12, picking=False)
+        sale_order = self._so_and_confirm_two_units()
 
         # Deliver one.
         sale_order.picking_ids.move_ids.write({'quantity': 2, 'picked': True})
@@ -823,33 +883,74 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         # Check the resulting accounting entries
         amls = invoice.line_ids
         self.assertEqual(len(amls), 4)
-        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 0)
         self.assertEqual(stock_out_aml.credit, 18)
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
         self.assertEqual(cogs_aml.debit, 18)
         self.assertEqual(cogs_aml.credit, 0)
-        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.account_receivable)
+        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml.debit, 24)
         self.assertEqual(receivable_aml.credit, 0)
-        income_aml = amls.filtered(lambda aml: aml.account_id == self.account_income)
+        income_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
         self.assertEqual(income_aml.debit, 0)
         self.assertEqual(income_aml.credit, 24)
 
     def test_fifo_delivered_invoice_post_delivery_2(self):
         """Receive at 8 then at 10. Sale order 10@12 and deliver without receiving the 2 missing.
         receive 2@12. Invoice."""
-        self.product_fifo_auto.invoice_policy = 'delivery'
-        self.product_fifo_auto.standard_price = 10
+        self.product.categ_id.property_cost_method = 'fifo'
+        self.product.invoice_policy = 'delivery'
+        self.product.standard_price = 10
 
-        self._make_in_move(self.product_fifo_auto, 8, 10)
+        in_move_1 = self.env['stock.move'].create({
+            'name': 'a',
+            'product_id': self.product.id,
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.company_data['default_warehouse'].lot_stock_id.id,
+            'product_uom': self.product.uom_id.id,
+            'product_uom_qty': 8,
+            'price_unit': 10,
+        })
+        in_move_1._action_confirm()
+        in_move_1.write({'quantity': 8, 'picked': True})
+        in_move_1._action_done()
 
         # Create and confirm a sale order for 2@12
-        sale_order = self._so_deliver(self.product_fifo_auto, 10, 12)
+        sale_order = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
+            'order_line': [
+                (0, 0, {
+                    'name': self.product.name,
+                    'product_id': self.product.id,
+                    'product_uom_qty': 10.0,
+                    'product_uom': self.product.uom_id.id,
+                    'price_unit': 12,
+                    'tax_id': False,  # no love taxes amls
+                })],
+        })
+        sale_order.action_confirm()
+
+        # Deliver 10
+        sale_order.picking_ids.move_ids.write({'quantity': 10, 'picked': True})
+        sale_order.picking_ids.button_validate()
 
         # Make the second receipt
-        in_move = self._make_in_move(self.product_fifo_auto, 12, 2)
-        self.assertEqual(in_move.value, 24)  # we sent two at 10 but they should have been sent at 12
+        in_move_2 = self.env['stock.move'].create({
+            'name': 'a',
+            'product_id': self.product.id,
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.company_data['default_warehouse'].lot_stock_id.id,
+            'product_uom': self.product.uom_id.id,
+            'product_uom_qty': 2,
+            'price_unit': 12,
+        })
+        in_move_2._action_confirm()
+        in_move_2.write({'quantity': 2, 'picked': True})
+        in_move_2._action_done()
+        self.assertEqual(self.product.stock_valuation_layer_ids[-1].value, -4)  # we sent two at 10 but they should have been sent at 12
+        self.assertEqual(self.product.stock_valuation_layer_ids[-1].quantity, 0)
+        self.assertEqual(sale_order.order_line.move_ids.stock_valuation_layer_ids[-1].quantity, 0)
 
         # Invoice the sale order.
         invoice = sale_order._create_invoices()
@@ -858,139 +959,183 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         # Check the resulting accounting entries
         amls = invoice.line_ids
         self.assertEqual(len(amls), 4)
-        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 0)
-        self.assertEqual(stock_out_aml.credit, 100)
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
-        self.assertEqual(cogs_aml.debit, 100)
+        self.assertEqual(stock_out_aml.credit, 104)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
+        self.assertEqual(cogs_aml.debit, 104)
         self.assertEqual(cogs_aml.credit, 0)
-        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.account_receivable)
+        receivable_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml.debit, 120)
         self.assertEqual(receivable_aml.credit, 0)
-        income_aml = amls.filtered(lambda aml: aml.account_id == self.account_income)
+        income_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
         self.assertEqual(income_aml.debit, 0)
         self.assertEqual(income_aml.credit, 120)
 
     def test_fifo_delivered_invoice_post_delivery_3(self):
         """Receive 5@8, receive 8@12, sale 1@20, deliver, sale 6@20, deliver. Make sure no rouding
         issues appear on the second invoice."""
-        self.product_fifo_auto.invoice_policy = 'delivery'
+        self.product.categ_id.property_cost_method = 'fifo'
+        self.product.invoice_policy = 'delivery'
 
         # +5@8
-        self._make_in_move(self.product_fifo_auto, 5, 8)
+        in_move_1 = self.env['stock.move'].create({
+            'name': 'a',
+            'product_id': self.product.id,
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.company_data['default_warehouse'].lot_stock_id.id,
+            'product_uom': self.product.uom_id.id,
+            'product_uom_qty': 5,
+            'price_unit': 8,
+        })
+        in_move_1._action_confirm()
+        in_move_1.write({'quantity': 5, 'picked': True})
+        in_move_1._action_done()
 
         # +8@12
-        self._make_in_move(self.product_fifo_auto, 8, 12)
+        in_move_2 = self.env['stock.move'].create({
+            'name': 'a',
+            'product_id': self.product.id,
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.company_data['default_warehouse'].lot_stock_id.id,
+            'product_uom': self.product.uom_id.id,
+            'product_uom_qty': 8,
+            'price_unit': 12,
+        })
+        in_move_2._action_confirm()
+        in_move_2.write({'quantity': 8, 'picked': True})
+        in_move_2._action_done()
 
         # sale 1@20, deliver, invoice
-        sale_order = self._so_deliver(self.product_fifo_auto, 1, 20)
+        sale_order = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
+            'order_line': [
+                (0, 0, {
+                    'name': self.product.name,
+                    'product_id': self.product.id,
+                    'product_uom_qty': 1,
+                    'product_uom': self.product.uom_id.id,
+                    'price_unit': 20,
+                    'tax_id': False,
+                })],
+        })
+        sale_order.action_confirm()
+        sale_order.picking_ids.move_ids.write({'quantity': 1, 'picked': True})
+        sale_order.picking_ids.button_validate()
         invoice = sale_order._create_invoices()
         invoice.action_post()
 
         # sale 6@20, deliver, invoice
-        sale_order = self._so_deliver(self.product_fifo_auto, 6, 20)
+        sale_order = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
+            'order_line': [
+                (0, 0, {
+                    'name': self.product.name,
+                    'product_id': self.product.id,
+                    'product_uom_qty': 6,
+                    'product_uom': self.product.uom_id.id,
+                    'price_unit': 20,
+                    'tax_id': False,
+                })],
+        })
+        sale_order.action_confirm()
+        sale_order.picking_ids.move_ids.write({'quantity': 6, 'picked': True})
+        sale_order.picking_ids.button_validate()
         invoice = sale_order._create_invoices()
         invoice.action_post()
 
         # check the last anglo saxon invoice line
         amls = invoice.line_ids
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
         self.assertEqual(cogs_aml.debit, 56)
         self.assertEqual(cogs_aml.credit, 0)
 
-    def test_fifo_delivered_invoice_post_delivery_same_product_multi_lines(self):
-        """Each separately invoiced SO line should keep the FIFO cost of its own stock move,
-        even when another line on the same sale order uses the same product."""
-        self.product_fifo_auto.invoice_policy = 'delivery'
+    def test_fifo_delivered_invoice_post_delivery_4(self):
+        """Receive 8@10. Sale order 10@12. Deliver and also invoice it without receiving the 2 missing.
+        Now, receive 2@12. Make sure price difference is correctly reflected in expense account."""
+        self.product.categ_id.property_cost_method = 'fifo'
+        self.product.invoice_policy = 'delivery'
+        self.product.standard_price = 10
 
-        self._fifo_in_one_eight_one_ten()
+        in_move_1 = self.env['stock.move'].create({
+            'name': 'a',
+            'product_id': self.product.id,
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.company_data['default_warehouse'].lot_stock_id.id,
+            'product_uom': self.product.uom_id.id,
+            'product_uom_qty': 8,
+            'price_unit': 10,
+        })
+        in_move_1._action_confirm()
+        in_move_1.write({'quantity': 8, 'picked': True})
+        in_move_1._action_done()
 
-        sale_order = self.env['sale.order'].sudo().create({
-            'partner_id': self.owner.id,
-            'warehouse_id': self.warehouse.id,
+        # Create and confirm a sale order for 10@12
+        sale_order = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
             'order_line': [
-                Command.create({
-                    'name': 'FIFO line 1',
-                    'product_id': self.product_fifo_auto.id,
-                    'product_uom_qty': 1,
-                    'price_unit': 20,
-                }),
-                Command.create({
-                    'name': 'FIFO line 2',
-                    'product_id': self.product_fifo_auto.id,
-                    'product_uom_qty': 1,
-                    'price_unit': 30,
-                }),
-            ],
+                (0, 0, {
+                    'name': self.product.name,
+                    'product_id': self.product.id,
+                    'product_uom_qty': 10.0,
+                    'product_uom': self.product.uom_id.id,
+                    'price_unit': 12,
+                    'tax_id': False,  # no love taxes amls
+                })],
         })
         sale_order.action_confirm()
 
-        first_line, second_line = sale_order.order_line.sorted('id')
-        first_delivery = sale_order.picking_ids
-        first_delivery.move_ids.filtered(lambda move: move.sale_line_id == second_line).quantity = 0
-        first_delivery.move_ids.picked = True
-        result = first_delivery.button_validate()
-        Form(self.env[result['res_model']].with_context(result['context'])).save().process()
-
-        invoice_1 = sale_order._create_invoices()
-        invoice_1.invoice_date = fields.Date.today()
-        invoice_1.action_post()
-        self.assertRecordValues(invoice_1.line_ids.filtered(lambda line: line.display_type == 'cogs'), [
-            {'account_id': self.account_stock_valuation.id, 'debit': 0, 'credit': 8},
-            {'account_id': self.account_expense.id, 'debit': 8, 'credit': 0},
-        ])
-
-        second_delivery = sale_order.picking_ids.filtered(lambda picking: picking.state != 'done')
-        second_delivery.move_ids.filtered(lambda move: move.sale_line_id == first_line).quantity = 0
-        second_delivery.move_ids.picked = True
-        second_delivery.button_validate()
-
-        invoice_2 = sale_order._create_invoices()
-        invoice_2.invoice_date = fields.Date.today()
-        invoice_2.action_post()
-        self.assertRecordValues(invoice_2.line_ids.filtered(lambda line: line.display_type == 'cogs'), [
-            {'account_id': self.account_stock_valuation.id, 'debit': 0, 'credit': 10},
-            {'account_id': self.account_expense.id, 'debit': 10, 'credit': 0},
-        ])
-
-    def test_fifo_delivered_invoice_post_delivery_4(self):
-        """Receive 8@10. Sale order 10@12. Deliver and also invoice it without receiving the 2 missing.
-        Now, receive 2@12. Make sure price difference is correctly reflected in expense account at
-        closing."""
-        self.product_fifo_auto.invoice_policy = 'delivery'
-        self.product_fifo_auto.standard_price = 10
-
-        self._make_in_move(self.product_fifo_auto, 8, 10)
-        self._create_bill(self.product_fifo_auto, 8, 10)
-
-        # Create and confirm a sale order for 10@12
-        sale_order = self._so_deliver(self.product_fifo_auto, 10, 12)
+        # Deliver 10
+        sale_order.picking_ids.move_ids.write({'quantity': 10, 'picked': True})
+        sale_order.picking_ids.button_validate()
 
         # Invoice the sale order.
         invoice = sale_order._create_invoices()
         invoice.action_post()
 
         # Make the second receipt
-        self._make_in_move(self.product_fifo_auto, 2, 12)
-        self._create_bill(self.product_fifo_auto, 2, 12)
+        in_move_2 = self.env['stock.move'].create({
+            'name': 'a',
+            'product_id': self.product.id,
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.company_data['default_warehouse'].lot_stock_id.id,
+            'product_uom': self.product.uom_id.id,
+            'product_uom_qty': 2,
+            'price_unit': 12,
+        })
+        in_move_2._action_confirm()
+        in_move_2.write({'quantity': 2, 'picked': True})
+        in_move_2._action_done()
 
         # check the last anglo saxon move line
-        closing_move = self._close()
-        self.assertRecordValues(closing_move.line_ids, [
-            {'account_id': self.account_stock_valuation.id, 'debit': 0.0, 'credit': 4.0},
-            {'account_id': self.account_stock_variation.id, 'debit': 4.0, 'credit': 0.0},
-        ])
+        revalued_anglo_expense_amls = sale_order.picking_ids.move_ids.stock_valuation_layer_ids[-1].stock_move_id.account_move_ids[-1].line_ids
+        revalued_cogs_aml = revalued_anglo_expense_amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
+        self.assertEqual(revalued_cogs_aml.debit, 4, 'Price difference should have correctly reflected in expense account.')
 
     def test_fifo_delivered_invoice_post_delivery_with_return(self):
         """Receive 2@10. SO1 2@12. Return 1 from SO1. SO2 1@12. Receive 1@20.
         Re-deliver returned from SO1. Invoice after delivering everything."""
-        self.product_fifo_auto.invoice_policy = 'delivery'
+        self.product.categ_id.property_cost_method = 'fifo'
+        self.product.invoice_policy = 'delivery'
 
         # Receive 2@10.
-        self._make_in_move(self.product_fifo_auto, 2, 10)
+        in_move_1 = self.env['stock.move'].create({
+            'name': 'a',
+            'product_id': self.product.id,
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.company_data['default_warehouse'].lot_stock_id.id,
+            'product_uom': self.product.uom_id.id,
+            'product_uom_qty': 2,
+            'price_unit': 10,
+        })
+        in_move_1._action_confirm()
+        in_move_1.write({'quantity': 2, 'picked': True})
+        in_move_1._action_done()
 
         # Create, confirm and deliver a sale order for 2@12 (SO1)
-        so_1 = self._so_deliver(self.product_fifo_auto, 2, 12)
+        so_1 = self._so_and_confirm_two_units()
+        so_1.picking_ids.move_ids.write({'quantity': 2, 'picked': True})
+        so_1.picking_ids.button_validate()
 
         # Return 1 from SO1
         stock_return_picking_form = Form(
@@ -1006,10 +1151,35 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         return_pick._action_done()
 
         # Create, confirm and deliver a sale order for 1@12 (SO2)
-        so_2 = self._so_deliver(self.product_fifo_auto, 1, 12)
+        so_2 = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
+            'order_line': [
+                (0, 0, {
+                    'name': self.product.name,
+                    'product_id': self.product.id,
+                    'product_uom_qty': 1.0,
+                    'product_uom': self.product.uom_id.id,
+                    'price_unit': 12,
+                    'tax_id': False,  # no love taxes amls
+                })],
+        })
+        so_2.action_confirm()
+        so_2.picking_ids.move_ids.write({'quantity': 1, 'picked': True})
+        so_2.picking_ids.button_validate()
 
         # Receive 1@20
-        self._make_in_move(self.product_fifo_auto, 1, 20)
+        in_move_2 = self.env['stock.move'].create({
+            'name': 'a',
+            'product_id': self.product.id,
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.company_data['default_warehouse'].lot_stock_id.id,
+            'product_uom': self.product.uom_id.id,
+            'product_uom_qty': 1,
+            'price_unit': 20,
+        })
+        in_move_2._action_confirm()
+        in_move_2.write({'quantity': 1, 'picked': True})
+        in_move_2._action_done()
 
         # Re-deliver returned 1 from SO1
         stock_redeliver_picking_form = Form(
@@ -1033,98 +1203,61 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         # Check the resulting accounting entries
         amls_1 = invoice_1.line_ids
         self.assertEqual(len(amls_1), 4)
-        stock_out_aml_1 = amls_1.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml_1 = amls_1.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml_1.debit, 0)
         self.assertEqual(stock_out_aml_1.credit, 30)
-        cogs_aml_1 = amls_1.filtered(lambda aml: aml.account_id == self.account_expense)
+        cogs_aml_1 = amls_1.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
         self.assertEqual(cogs_aml_1.debit, 30)
         self.assertEqual(cogs_aml_1.credit, 0)
-        receivable_aml_1 = amls_1.filtered(lambda aml: aml.account_id == self.account_receivable)
+        receivable_aml_1 = amls_1.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml_1.debit, 24)
         self.assertEqual(receivable_aml_1.credit, 0)
-        income_aml_1 = amls_1.filtered(lambda aml: aml.account_id == self.account_income)
+        income_aml_1 = amls_1.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
         self.assertEqual(income_aml_1.debit, 0)
         self.assertEqual(income_aml_1.credit, 24)
 
         amls_2 = invoice_2.line_ids
         self.assertEqual(len(amls_2), 4)
-        stock_out_aml_2 = amls_2.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml_2 = amls_2.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml_2.debit, 0)
         self.assertEqual(stock_out_aml_2.credit, 10)
-        cogs_aml_2 = amls_2.filtered(lambda aml: aml.account_id == self.account_expense)
+        cogs_aml_2 = amls_2.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
         self.assertEqual(cogs_aml_2.debit, 10)
         self.assertEqual(cogs_aml_2.credit, 0)
-        receivable_aml_2 = amls_2.filtered(lambda aml: aml.account_id == self.account_receivable)
+        receivable_aml_2 = amls_2.filtered(lambda aml: aml.account_id == self.company_data['default_account_receivable'])
         self.assertEqual(receivable_aml_2.debit, 12)
         self.assertEqual(receivable_aml_2.credit, 0)
-        income_aml_2 = amls_2.filtered(lambda aml: aml.account_id == self.account_income)
+        income_aml_2 = amls_2.filtered(lambda aml: aml.account_id == self.company_data['default_account_revenue'])
         self.assertEqual(income_aml_2.debit, 0)
         self.assertEqual(income_aml_2.credit, 12)
 
-    def test_fifo_invoice_with_delivery_with_return(self):
-        """ In FIFO, Deliver at $10 -> Return -> Deliver at $20 -> Post invoice
-        The COGS should be $20
-        """
-        self._make_in_move(self.product_fifo_auto, 1, 10)
-
-        # Sell and Deliver product at $10
-        so = self._so_deliver(self.product_fifo_auto, 1, 50)
-        delivery_1 = so.picking_ids
-        self.assertEqual(delivery_1.move_ids.value, 10)
-
-        # Return
-        ctx = {'active_id': delivery_1.id, 'active_model': 'stock.picking'}
-        return_wizard = Form(self.env['stock.return.picking'].with_context(ctx)).save()
-        return_wizard.product_return_moves.quantity = 1
-        return_picking = return_wizard._create_return()
-        return_picking.move_ids.write({'quantity': 1, 'picked': True})
-        return_picking.button_validate()
-
-        # Change product price from $10 to $20
-        self._make_out_move(self.product_fifo_auto, 1)
-        self._make_in_move(self.product_fifo_auto, 1, 20)
-
-        # Re deliver at $20
-        delivery_2 = delivery_1.copy()
-        delivery_2.action_confirm()
-        delivery_2.move_ids.write({'quantity': 1, 'picked': True})
-        delivery_2.button_validate()
-        self.assertEqual(delivery_2.move_ids.value, 20)
-
-        # Invoice the sale orders
-        invoice = so._create_invoices()
-        invoice.action_post()
-
-        # COGS should ignore the owned product
-        self.assertRecordValues(invoice.line_ids, [
-            {'account_id': self.account_income.id, 'debit': 0, 'credit': 50},
-            {'account_id': self.account_receivable.id, 'debit': 50, 'credit': 0},
-            {'account_id': self.account_stock_valuation.id, 'debit': 0, 'credit': 20},
-            {'account_id': self.account_expense.id, 'debit': 20, 'credit': 0},
-        ])
-
     def test_fifo_uom_computation(self):
-        self.product_fifo_auto.categ_id.property_valuation = 'real_time'
+        self.env.company.anglo_saxon_accounting = True
+        self.product.categ_id.property_cost_method = 'fifo'
+        self.product.categ_id.property_valuation = 'real_time'
         quantity = 50.0
-        self.product_fifo_auto.list_price = 1.5
-        self.product_fifo_auto.standard_price = 2.0
+        self.product.list_price = 1.5
+        self.product.standard_price = 2.0
         unit_12 = self.env['uom.uom'].create({
             'name': 'Pack of 12 units',
-            'relative_factor': 12,
-            'relative_uom_id': self.env.ref('uom.product_uom_unit').id,
+            'category_id': self.product.uom_id.category_id.id,
+            'uom_type': 'bigger',
+            'factor_inv': 12,
+            'rounding': 1,
         })
 
         # Create, confirm and deliver a sale order for 12@1.5 without reception with std_price = 2.0 (SO1)
-        so_1 = self.env['sale.order'].sudo().create({
-            'partner_id': self.owner.id,
-            'order_line': [Command.create({
-                'name': self.product_fifo_auto.name,
-                'product_id': self.product_fifo_auto.id,
-                'product_uom_qty': 1,
-                'product_uom_id': unit_12.id,
-                'price_unit': 18,
-                'tax_ids': False,  # no love taxes amls
-            })],
+        so_1 = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
+            'order_line': [
+                (0, 0, {
+                    'name': self.product.name,
+                    'product_id': self.product.id,
+                    'product_uom_qty': 1,
+                    'product_uom': unit_12.id,
+                    'price_unit': 18,
+                    'tax_id': False,  # no love taxes amls
+                })],
         })
         so_1.action_confirm()
         so_1.picking_ids.move_ids.write({'quantity': 12, 'picked': True})
@@ -1160,19 +1293,31 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         self.assertEqual(aml[3].credit, 0.0)
 
         # Create stock move 1
-        self._make_in_move(self.product_fifo_auto, quantity, 1.0)
+        in_move_1 = self.env['stock.move'].create({
+            'name': 'a',
+            'product_id': self.product.id,
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.company_data['default_warehouse'].lot_stock_id.id,
+            'product_uom': self.product.uom_id.id,
+            'product_uom_qty': quantity,
+            'price_unit': 1.0,
+        })
+        in_move_1._action_confirm()
+        in_move_1.write({'quantity': quantity, 'picked': True})
+        in_move_1._action_done()
 
         # Create, confirm and deliver a sale order for 12@1.5 with reception (50 * 1.0, 50 * 0.0)(SO2)
-        so_2 = self.env['sale.order'].sudo().create({
-            'partner_id': self.owner.id,
-            'order_line': [Command.create({
-                'name': self.product_fifo_auto.name,
-                'product_id': self.product_fifo_auto.id,
-                'product_uom_qty': 1,
-                'product_uom_id': unit_12.id,
-                'price_unit': 18,
-                'tax_ids': False,  # no love taxes amls
-            })],
+        so_2 = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
+            'order_line': [
+                (0, 0, {
+                    'name': self.product.name,
+                    'product_id': self.product.id,
+                    'product_uom_qty': 1,
+                    'product_uom': unit_12.id,
+                    'price_unit': 18,
+                    'tax_id': False,  # no love taxes amls
+                })],
         })
         so_2.action_confirm()
         so_2.picking_ids.move_ids.write({'quantity': 12, 'picked': True})
@@ -1212,13 +1357,36 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         When posting a credit note for a returned product, the value of the anglo-saxo lines
         should be based on the returned product's value
         """
+        self.product.categ_id.property_cost_method = 'fifo'
+
         # Receive one @10, one @20 and one @60
-        svl_values = [10, 20, 60]
-        for val in svl_values:
-            self._make_in_move(self.product_fifo_auto, 1, val)
+        in_moves = self.env['stock.move'].create([{
+            'name': 'IN move @%s' % p,
+            'product_id': self.product.id,
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.company_data['default_warehouse'].lot_stock_id.id,
+            'product_uom': self.product.uom_id.id,
+            'product_uom_qty': 1,
+            'price_unit': p,
+        } for p in [10, 20, 60]])
+        in_moves._action_confirm()
+        in_moves.write({'quantity': 1, 'picked': True})
+        in_moves._action_done()
 
         # Sell 3 units
-        so = self._so_deliver(self.product_fifo_auto, 3, 100, picking=False)
+        so = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
+            'order_line': [
+                (0, 0, {
+                    'name': self.product.name,
+                    'product_id': self.product.id,
+                    'product_uom_qty': 3.0,
+                    'product_uom': self.product.uom_id.id,
+                    'price_unit': 100,
+                    'tax_id': False,
+                })],
+        })
+        so.action_confirm()
 
         # Deliver 1@10, then 1@20 and then 1@60
         pickings = []
@@ -1235,7 +1403,18 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         invoice.action_post()
 
         # Receive one @100
-        self._make_in_move(self.product_fifo_auto, 1, 100)
+        in_moves = self.env['stock.move'].create({
+            'name': 'IN move @100',
+            'product_id': self.product.id,
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.company_data['default_warehouse'].lot_stock_id.id,
+            'product_uom': self.product.uom_id.id,
+            'product_uom_qty': 1,
+            'price_unit': 100,
+        })
+        in_moves._action_confirm()
+        in_moves.write({'quantity': 1, 'picked': True})
+        in_moves._action_done()
 
         # Return the second picking (i.e. 1@20)
         ctx = {'active_id': pickings[1].id, 'active_model': 'stock.picking'}
@@ -1252,36 +1431,91 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         })
         action = refund_wizard.refund_moves()
         reverse_invoice = self.env['account.move'].browse(action['res_id'])
-        reverse_invoice.invoice_line_ids[0].quantity = 1
+        with Form(reverse_invoice) as reverse_invoice_form:
+            with reverse_invoice_form.invoice_line_ids.edit(0) as line:
+                line.quantity = 1
         reverse_invoice.action_post()
 
         amls = reverse_invoice.line_ids
-        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 20, 'Should be to the value of the returned product')
         self.assertEqual(stock_out_aml.credit, 0)
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
         self.assertEqual(cogs_aml.debit, 0)
         self.assertEqual(cogs_aml.credit, 20, 'Should be to the value of the returned product')
 
-        closing_move = self._close()
-        self.assertRecordValues(closing_move.line_ids, [
-            {'account_id': self.account_stock_variation.id, 'debit': 0.0, 'credit': 190.0},
-            {'account_id': self.account_stock_valuation.id, 'debit': 190.0, 'credit': 0.0},
-        ])
+    def test_avco_credit_note_without_return(self):
+        """
+        Reversing an invoice without returning the delivered goods should post the COGS
+        at the cost of the original delivery/invoice, not at the current average cost,
+        even if the average cost changed since the invoice was posted.
+        """
+        self.product.categ_id.property_cost_method = 'average'
+        self.product.invoice_policy = 'order'
+        self.product.standard_price = 10
+
+        # Put two items in stock.
+        self._inv_adj_two_units()
+
+        # Create, confirm, deliver and invoice a sale order for 2@12.
+        sale_order = self._so_and_confirm_two_units()
+        sale_order.picking_ids.move_ids.write({'quantity': 2, 'picked': True})
+        sale_order.picking_ids.button_validate()
+        invoice = sale_order._create_invoices()
+        invoice.action_post()
+
+        cogs_aml = invoice.line_ids.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
+        self.assertEqual(cogs_aml.debit, 20)
+
+        self.product.standard_price = 30
+
+        refund_wizard = self.env['account.move.reversal'].with_context(
+            active_model='account.move', active_ids=invoice.ids,
+        ).create({'journal_id': invoice.journal_id.id})
+        action = refund_wizard.refund_moves()
+        credit_note = self.env['account.move'].browse(action['res_id'])
+        credit_note.action_post()
+
+        cogs_aml = credit_note.line_ids.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
+        self.assertEqual(cogs_aml.debit, 0)
+        self.assertEqual(cogs_aml.credit, 20)
 
     def test_fifo_return_and_create_invoice(self):
         """
         When creating an invoice for a returned product, the value of the anglo-saxo lines
         should be based on the returned product's value
         """
-        self.product_fifo_auto.invoice_policy = 'delivery'
+        self.product.categ_id.property_cost_method = 'fifo'
+        self.product.invoice_policy = 'delivery'
 
         # Receive one @10, one @20 and one @60
-        svl_values = [10, 20, 60]
-        for val in svl_values:
-            self._make_in_move(self.product_fifo_auto, 1, val)
+        in_moves = self.env['stock.move'].create([{
+            'name': 'IN move @%s' % p,
+            'product_id': self.product.id,
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.company_data['default_warehouse'].lot_stock_id.id,
+            'product_uom': self.product.uom_id.id,
+            'product_uom_qty': 1,
+            'price_unit': p,
+        } for p in [10, 20, 60]])
+        in_moves._action_confirm()
+        in_moves.write({'quantity': 1, 'picked': True})
+        in_moves._action_done()
+
         # Sell 3 units
-        so = self._so_deliver(self.product_fifo_auto, 3, 100, picking=False)
+        so = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
+            'order_line': [
+                (0, 0, {
+                    'name': self.product.name,
+                    'product_id': self.product.id,
+                    'product_uom_qty': 3.0,
+                    'product_uom': self.product.uom_id.id,
+                    'price_unit': 100,
+                    'tax_id': False,
+                })],
+        })
+        so.action_confirm()
 
         # Deliver 1@10, then 1@20 and then 1@60
         pickings = []
@@ -1298,7 +1532,18 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         invoice.action_post()
 
         # Receive one @100
-        self._make_in_move(self.product_fifo_auto, 1, 100)
+        in_moves = self.env['stock.move'].create({
+            'name': 'IN move @100',
+            'product_id': self.product.id,
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.company_data['default_warehouse'].lot_stock_id.id,
+            'product_uom': self.product.uom_id.id,
+            'product_uom_qty': 1,
+            'price_unit': 100,
+        })
+        in_moves._action_confirm()
+        in_moves.write({'quantity': 1, 'picked': True})
+        in_moves._action_done()
 
         # Return the second picking (i.e. 1@20)
         ctx = {'active_id': pickings[1].id, 'active_model': 'stock.picking'}
@@ -1309,81 +1554,55 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         return_picking.button_validate()
 
         # Create a new invoice for the returned product
-        self.env['sale.advance.payment.inv'].with_context({
-            'active_model': 'sale.order',
-            'active_ids': so.ids,
-        }).sudo().create({}).create_invoices()
+        ctx = {'active_model': 'sale.order', 'active_ids': so.ids}
+        create_invoice_wizard = self.env['sale.advance.payment.inv'].with_context(ctx).create({'advance_payment_method': 'delivered'})
+        create_invoice_wizard.create_invoices()
         reverse_invoice = so.invoice_ids[-1]
-        reverse_invoice.invoice_line_ids[0].quantity = 1
+        with Form(reverse_invoice) as reverse_invoice_form:
+            with reverse_invoice_form.invoice_line_ids.edit(0) as line:
+                line.quantity = 1
         reverse_invoice.action_post()
 
         amls = reverse_invoice.line_ids
-        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 20, 'Should be to the value of the returned product')
         self.assertEqual(stock_out_aml.credit, 0)
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
         self.assertEqual(cogs_aml.debit, 0)
         self.assertEqual(cogs_aml.credit, 20, 'Should be to the value of the returned product')
 
-        closing_move = self._close()
-        self.assertRecordValues(closing_move.line_ids, [
-            {'account_id': self.account_stock_variation.id, 'debit': 0.0, 'credit': 190.0},
-            {'account_id': self.account_stock_valuation.id, 'debit': 190.0, 'credit': 0.0},
-        ])
-
-    def test_fifo_two_step_return_store_picking_not_valued(self):
-        """Ensure 2-step customer return does not value the Input -> Stock leg and keeps COGS correct."""
-        self.product_fifo_auto.standard_price = 5
-        self.warehouse.reception_steps = 'two_steps'
-
-        in_move = self._make_in_move(self.product_fifo_auto, 1, 5)
-        self.assertEqual(in_move.value, 5)
-
-        so = self._so_deliver(self.product_fifo_auto, 1, 10)
-        original_delivery = so.picking_ids
-
-        # Return Delivery in 2 steps
-        ctx = {'active_id': original_delivery.id, 'active_model': 'stock.picking'}
-        return_wizard = Form(self.env['stock.return.picking'].with_context(ctx)).save()
-        return_wizard.product_return_moves.quantity = 1
-        return_picking = return_wizard._create_return()
-
-        # 1st step, Customer -> Input
-        return_picking.move_ids.write({'quantity': 1, 'picked': True})
-        return_picking.button_validate()
-
-        # 2nd step, Input -> Stock
-        store_pick = return_picking.move_ids.move_dest_ids.picking_id
-        store_pick.move_ids.write({'quantity': 1, 'picked': True})
-        store_pick.button_validate()
-
-        self.assertFalse(store_pick.move_ids.is_valued)
-        self.assertEqual(store_pick.move_ids.value, 0)
-        self.assertEqual(store_pick.move_ids.state, 'done')
-
-        # Re-deliver before creating invoice for COGS generation
-        new_delivery = original_delivery.copy()
-        new_delivery.move_ids.write({'quantity': 1, 'picked': True})
-        new_delivery.button_validate()
-
-        invoice = so._create_invoices()
-        invoice.action_post()
-
-        cogs_lines = invoice.line_ids.filtered(lambda l: l.display_type == 'cogs').sorted('debit')
-        self.assertRecordValues(cogs_lines, [
-            {'account_id': self.account_stock_valuation.id, 'debit': 0.0, 'credit': 5.0},
-            {'account_id': self.account_expense.id, 'debit': 5.0, 'credit': 0.0},
-        ])
-
     def test_fifo_several_invoices_reset_repost(self):
-        self.product_fifo_auto.invoice_policy = 'delivery'
+        self.product.categ_id.property_cost_method = 'fifo'
+        self.product.invoice_policy = 'delivery'
 
         svl_values = [10, 15, 65]
         total_value = sum(svl_values)
-        for val in svl_values:
-            self._make_in_move(self.product_fifo_auto, 1, val)
+        in_moves = self.env['stock.move'].create([{
+            'name': 'IN move @%s' % p,
+            'product_id': self.product.id,
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.company_data['default_warehouse'].lot_stock_id.id,
+            'product_uom': self.product.uom_id.id,
+            'product_uom_qty': 1,
+            'price_unit': p,
+        } for p in svl_values])
+        in_moves._action_confirm()
+        in_moves.write({'quantity': 1, 'picked': True})
+        in_moves._action_done()
 
-        so = self._so_deliver(self.product_fifo_auto, 3, 100, picking=False)
+        so = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
+            'order_line': [
+                (0, 0, {
+                    'name': self.product.name,
+                    'product_id': self.product.id,
+                    'product_uom_qty': 3.0,
+                    'product_uom': self.product.uom_id.id,
+                    'price_unit': 100,
+                    'tax_id': False,
+                })],
+        })
+        so.action_confirm()
 
         # Deliver one by one, so it creates an out-SVL each time.
         # Then invoice the delivered quantity
@@ -1400,7 +1619,7 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
             invoice.action_post()
             invoices |= invoice
 
-        out_account = self.account_stock_valuation
+        out_account = self.product.categ_id.property_stock_account_output_categ_id
         invoice01, _invoice02, invoice03 = invoices
         cogs = invoices.line_ids.filtered(lambda l: l.account_id == out_account)
         self.assertEqual(cogs.mapped('credit'), svl_values)
@@ -1438,16 +1657,46 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         Note: This test will also ensure that a user who only has access to
         account app can post such an invoice
         """
+        self.product.categ_id.property_cost_method = 'fifo'
+
         accountman = self.env['res.users'].create({
             'name': 'Super Accountman',
             'login': 'super_accountman',
             'password': 'super_accountman',
-            'group_ids': [(6, 0, self.env.ref('account.group_account_invoice').ids)],
+            'groups_id': [(6, 0, self.env.ref('account.group_account_invoice').ids)],
         })
 
-        self._make_in_move(self.product_fifo_auto, 1, 10)
-        self._make_in_move(self.product_fifo_auto, 1, 50)
-        so = self._so_deliver(self.product_fifo_auto, 1, 100)
+        in_moves = self.env['stock.move'].create([{
+            'name': 'IN move @%s' % p,
+            'product_id': self.product.id,
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.company_data['default_warehouse'].lot_stock_id.id,
+            'product_uom': self.product.uom_id.id,
+            'product_uom_qty': 1,
+            'price_unit': p,
+        } for p in [10, 50]])
+        in_moves._action_confirm()
+        in_moves.write({'quantity': 1, 'picked': True})
+        in_moves._action_done()
+
+        so = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
+            'order_line': [
+                (0, 0, {
+                    'name': self.product.name,
+                    'product_id': self.product.id,
+                    'product_uom_qty': 1.0,
+                    'product_uom': self.product.uom_id.id,
+                    'price_unit': 100,
+                    'tax_id': False,
+                })],
+        })
+        so.action_confirm()
+
+        picking = so.picking_ids
+        picking.move_ids.write({'quantity': 1.0, 'picked': True})
+        picking.button_validate()
+
         invoice01 = so._create_invoices()
 
         # Clear the cache to ensure access rights
@@ -1462,36 +1711,73 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         invoice02.action_post()
 
         amls = invoice02.line_ids
-        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.account_stock_valuation)
+        stock_out_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_stock_out'])
         self.assertEqual(stock_out_aml.debit, 0)
         self.assertEqual(stock_out_aml.credit, 10)
-        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.account_expense)
+        cogs_aml = amls.filtered(lambda aml: aml.account_id == self.company_data['default_account_expense'])
         self.assertEqual(cogs_aml.debit, 10)
         self.assertEqual(cogs_aml.credit, 0)
+
+    def test_fifo_edit_svl_without_reinvoice(self):
+        """Edit SVL move line after delivering. Check no reinvoicing occurs."""
+        self.product.categ_id.property_cost_method = 'fifo'
+        self.product.invoice_policy = 'delivery'
+        self.product.standard_price = 10
+        self.product.expense_policy = 'cost'
+
+        self._fifo_in_one_eight_one_ten()
+
+        # Create and confirm a sale order for 2@12
+        sale_order = self._so_and_confirm_two_units()
+        self.assertEqual(len(sale_order.order_line), 1)
+        self.assertEqual(sale_order.order_line.product_uom_qty, 2.0)
+
+        # Deliver one.
+        sale_order.picking_ids.move_ids.write({'quantity': 2, 'picked': True})
+        sale_order.picking_ids.button_validate()
+        svl_am = sale_order.order_line.move_ids.stock_valuation_layer_ids.account_move_id
+        svl_am.button_draft()
+        svl_am.action_post()
+
+        # Check no reinvoice line addded to the sale order
+        self.assertEqual(len(sale_order.order_line), 1)
+        self.assertEqual(sale_order.order_line.product_uom_qty, 2.0)
 
     def test_anglo_saxon_cogs_with_down_payment(self):
         """Create a SO with a product invoiced on delivered quantity.
         Do a 100% down payment, deliver a part of it with a backorder
         then invoice the delivered part from the down payment.
         Deliver the remaining part and invoice it."""
-        self.product_fifo_auto.invoice_policy = 'delivery'
-        self.product_fifo_auto.standard_price = 10
+        self.product.invoice_policy = 'delivery'
+        self.product.standard_price = 10
         self.env['stock.quant'].with_context(inventory_mode=True).create({
-            'product_id': self.product_fifo_auto.id,  # tracking serial
+            'product_id': self.product.id,  # tracking serial
             'inventory_quantity': 20,
-            'location_id': self.stock_location.id,
+            'location_id': self.company_data['default_warehouse'].lot_stock_id.id,
         }).action_apply_inventory()
 
         # Create a SO with a product invoiced on delivered quantity
-        so = self._so_deliver(self.product_fifo_auto, 10, 100, picking=False)
+        so = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
+            'order_line': [
+                (0, 0, {
+                    'name': self.product.name,
+                    'product_id': self.product.id,
+                    'product_uom_qty': 10.0,
+                    'product_uom': self.product.uom_id.id,
+                    'price_unit': 100,
+                    'tax_id': False,
+                })],
+        })
+        so.action_confirm()
 
         # Do a 100% down payment
-        self.env['sale.advance.payment.inv'].sudo().create({
+        down_payment = self.env['sale.advance.payment.inv'].create({
             'advance_payment_method': 'percentage',
             'amount': 100,
             'sale_order_ids': so.ids,
-        }).create_invoices()
-
+        })
+        down_payment.create_invoices()
         # Invoice the delivered part from the down payment
         down_payment_invoices = so.invoice_ids
         down_payment_invoices.action_post()
@@ -1501,9 +1787,8 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         so.picking_ids.move_ids.picked = True
         Form.from_action(self.env, so.picking_ids.button_validate()).save().process()
 
-        self.env['sale.advance.payment.inv'].with_context(
-            active_ids=so.ids,
-        ).sudo().create({}).create_invoices()
+        invoice_wizard = self.env['sale.advance.payment.inv'].with_context(active_ids=so.ids, open_invoices=True).create({})
+        invoice_wizard.create_invoices()
         credit_note = so.invoice_ids.filtered(lambda i: i.state != 'posted')
         self.assertEqual(len(credit_note), 1)
         self.assertEqual(len(credit_note.invoice_line_ids.filtered(lambda line: line.display_type == 'product')), 2)
@@ -1516,25 +1801,90 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         backorder.move_ids.picked = True
         backorder.button_validate()
 
-        self.env['sale.advance.payment.inv'].with_context(
-            active_ids=so.ids,
-        ).sudo().create({}).create_invoices()
+        invoice_wizard = self.env['sale.advance.payment.inv'].with_context(active_ids=so.ids, open_invoices=True).create({})
+        invoice_wizard.create_invoices()
 
         invoice = so.invoice_ids.filtered(lambda i: i.state != 'posted')
         invoice.action_post()
 
         # Check the resulting accounting entries
-        account_stock_out = self.account_stock_valuation
-        account_expense = self.account_expense
+        account_stock_out = self.company_data['default_account_stock_out']
+        account_expense = self.company_data['default_account_expense']
         invoice_1_cogs = credit_note.line_ids.filtered(lambda l: l.display_type == 'cogs')
         invoice_2_cogs = invoice.line_ids.filtered(lambda l: l.display_type == 'cogs')
         self.assertRecordValues(invoice_1_cogs, [
-            {'debit': 0, 'credit': 40, 'account_id': account_stock_out.id, 'reconciled': False},
+            {'debit': 0, 'credit': 40, 'account_id': account_stock_out.id, 'reconciled': True},
             {'debit': 40, 'credit': 0, 'account_id': account_expense.id, 'reconciled': False},
         ])
         self.assertRecordValues(invoice_2_cogs, [
-            {'debit': 0, 'credit': 60, 'account_id': account_stock_out.id, 'reconciled': False},
+            {'debit': 0, 'credit': 60, 'account_id': account_stock_out.id, 'reconciled': True},
             {'debit': 60, 'credit': 0, 'account_id': account_expense.id, 'reconciled': False},
+        ])
+
+    def test_anglo_saxon_cogs_partial_down_payment_credit_note(self):
+        """Create a SO with a product invoiced on ordered quantity.
+        Do a partial down payment, invoice the rest.
+        Create a credit note. The credit note should reverse the cogs"""
+        self.product.standard_price = 4
+        self.env['stock.quant'].with_context(inventory_mode=True).create({
+            'product_id': self.product.id,
+            'inventory_quantity': 20,
+            'location_id': self.company_data['default_warehouse'].lot_stock_id.id,
+        }).action_apply_inventory()
+
+        # Create the SO
+        so = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
+            'order_line': [
+                Command.create({
+                    'name': self.product.name,
+                    'product_id': self.product.id,
+                    'product_uom_qty': 10.0,
+                    'product_uom': self.product.uom_id.id,
+                    'price_unit': 10,
+                    'tax_id': False,
+                })],
+        })
+        so.action_confirm()
+
+        # Do a 25% down payment
+        down_payment = self.env['sale.advance.payment.inv'].create({
+            'advance_payment_method': 'percentage',
+            'amount': 25,
+            'sale_order_ids': so.ids,
+        })
+        down_payment.create_invoices()
+        # Invoice the the down payment
+        down_payment_invoices = so.invoice_ids
+        down_payment_invoices.action_post()
+
+        # Invoice the rest
+        invoice_wizard = self.env['sale.advance.payment.inv'].with_context(
+            active_ids=so.ids
+        ).create({})
+        action = invoice_wizard.create_invoices()
+        invoice = self.env['account.move'].browse(action['res_id'])
+        invoice.action_post()
+
+        move_reversal = self.env['account.move.reversal'].with_context(active_model="account.move", active_ids=invoice.ids).create({
+            'journal_id': invoice.journal_id.id,
+        })
+        reversal = move_reversal.refund_moves()
+        credit_note = self.env['account.move'].browse(reversal['res_id'])
+        credit_note.action_post()
+
+        # Check the resulting accounting entries
+        account_stock_out = self.company_data['default_account_stock_out']
+        account_expense = self.company_data['default_account_expense']
+        invoice_cogs = invoice.line_ids.filtered(lambda l: l.display_type == 'cogs').sorted('debit')
+        credit_note_cogs = credit_note.line_ids.filtered(lambda l: l.display_type == 'cogs').sorted('debit')
+        self.assertRecordValues(invoice_cogs, [
+            {'debit': 0, 'credit': 40, 'account_id': account_stock_out.id},
+            {'debit': 40, 'credit': 0, 'account_id': account_expense.id},
+        ])
+        self.assertRecordValues(credit_note_cogs, [
+            {'debit': 0, 'credit': 40, 'account_id': account_expense.id},
+            {'debit': 40, 'credit': 0, 'account_id': account_stock_out.id},
         ])
 
     def test_anglo_saxon_cogs_validate_invoice(self):
@@ -1547,17 +1897,29 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         In that scenario, if there have been any manual changes to a product's `standard_price`,
         there will be inaccurate product expense account (COGs) lines on the affected invoice.
         """
-        self._make_in_move(self.product_fifo_auto, 12, 100)
+        product = self.product
+        in_move = self.env['stock.move'].create({
+            'name': 'in 12 units @ $100',
+            'product_id': product.id,
+            'price_unit': 100,
+            'product_uom_qty': 12,
+            'location_id': self.env.ref('stock.stock_location_suppliers').id,
+            'location_dest_id': self.env.user._get_default_warehouse_id().lot_stock_id.id,
+        })
+        in_move._action_confirm()
+        in_move._action_assign()
+        in_move.move_line_ids.quantity = 12
+        in_move.picked = True
+        in_move._action_done()
 
-        sale_order = self.env['sale.order'].sudo().create({
-            'partner_id': self.owner.id,
-            'warehouse_id': self.warehouse.id,
+        sale_order = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
             'order_line': [Command.create({
-                'product_id': self.product_fifo_auto.id,
+                'product_id': product.id,
                 'product_uom_qty': 10,
                 'price_unit': 100,
             }), Command.create({
-                'product_id': self.product_fifo_auto.id,
+                'product_id': product.id,
                 'product_uom_qty': 2,
                 'price_unit': 100,
             })],
@@ -1565,25 +1927,26 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
         sale_order.action_confirm()
         delivery = sale_order.picking_ids
         delivery.move_ids.filtered(lambda m: m.product_uom_qty == 2).quantity = 0
-        delivery.move_ids.picked = True
         r = delivery.button_validate()
         Form(self.env[r['res_model']].with_context(r['context'])).save().process()
         backorder_delivery = sale_order.picking_ids.filtered(lambda p: p.state != 'done')
         backorder_delivery.move_ids.quantity = 2
         backorder_delivery.button_validate()
-        self.env['sale.advance.payment.inv'].with_context(
-            active_ids=sale_order.ids,
-        ).sudo().create({}).create_invoices()
+        invoice_wizard = self.env['sale.advance.payment.inv'].with_context(
+            active_ids=sale_order.ids, open_invoices=True
+        ).create({})
+        invoice_wizard.create_invoices()
 
         invoice = sale_order.invoice_ids
         qty_ten_invoice_line = invoice.invoice_line_ids.filtered(lambda l: l.quantity == 10)
         qty_ten_invoice_line.quantity = 5
         invoice.invoice_date = fields.Date.today()
         invoice.action_post()
-        self.product_fifo_autostandard_price = 50
-        self.env['sale.advance.payment.inv'].with_context(
-            active_ids=sale_order.ids,
-        ).sudo().create({}).create_invoices()
+        product.standard_price = 50
+        invoice_wizard = self.env['sale.advance.payment.inv'].with_context(
+            active_ids=sale_order.ids, open_invoices=True
+        ).create({})
+        invoice_wizard.create_invoices()
         invoice2 = sale_order.invoice_ids.filtered(lambda i: i.state != 'posted')
         invoice2.invoice_date = fields.Date.today()
         invoice2.action_post()
@@ -1596,235 +1959,38 @@ class TestAngloSaxonValuation(TestStockValuationCommon, TestSaleStockCommon):
             ]
         )
 
-    def test_cogs_valued_by_lots(self):
-        self.product_avco_auto.product_tmpl_id.categ_id.property_cost_method = 'average'
-        self.product_avco_auto.write({
-            'lot_valuated': True,
-            'tracking': 'lot',
+    def test_svl_account_move_analytic_account_model_change_from_SO(self):
+        """ Tests whether, when an analytic account rule is set, and user changes manually the analytic account on
+        the SO, it is the same that is mentioned in the account move created by the svl.
+        """
+        # Required for `analytic.group_analytic_accounting` to be visible in the view
+        self.env.user.groups_id += self.env.ref('analytic.group_analytic_accounting')
+        analytic_plan = self.env['account.analytic.plan'].create({'name': 'Plan Test'})
+        analytic_account_default = self.env['account.analytic.account'].create({'name': 'default', 'plan_id': analytic_plan.id})
+        analytic_account_manual = self.env['account.analytic.account'].create({'name': 'manual', 'plan_id': analytic_plan.id})
+        self.product.categ_id.property_cost_method = 'standard'
+        self.product.standard_price = 10
+        self.env['stock.quant']._update_available_quantity(self.product, self.company_data['default_warehouse'].lot_stock_id, 1)
+
+        self.env['account.analytic.distribution.model'].create({
+            'analytic_distribution': {analytic_account_default.id: 100},
+            'product_id': self.product.id,
         })
-        self.lot1, self.lot2 = self.env['stock.lot'].create([
-            {'name': 'lot1', 'product_id': self.product_avco_auto.id},
-            {'name': 'lot2', 'product_id': self.product_avco_auto.id},
-        ])
-        self._make_in_move(self.product_avco_auto, 2, 10, lot_ids=[self.lot1])
-        self._make_in_move(self.product_avco_auto, 2, 16, lot_ids=[self.lot2])
-        self.assertEqual(self.product_avco_auto.standard_price, 13)
-        self.assertEqual(self.lot1.standard_price, 10)
-        self.assertEqual(self.lot2.standard_price, 16)
-        so = self._so_deliver(self.product_avco_auto, 1, 1)
-        invoice = so._create_invoices()
-        invoice.action_post()
-        invoice_cogs_lines = invoice.line_ids.filtered(lambda l: l.display_type == 'cogs').sorted('debit')
-        self.assertRecordValues(
-            invoice_cogs_lines,
-            [
-                {'credit': 10, 'debit': 0},
-                {'credit': 0, 'debit': 10},
-            ]
-        )
-        self.assertEqual(self.lot1.standard_price, 10)
-        self.assertEqual(self.lot2.standard_price, 16)
-        self.assertEqual(self.product_avco_auto.standard_price, 14)
+        analytic_distribution_manual = {str(analytic_account_manual.id): 100}
 
-    def test_credit_note_cogs_uom(self):
-        """
-        Check that when posting a credit note for a returned product, in a
-        different uom than the product's uom, the cogs are computed correctly.
-        """
-        self.product_standard_auto.invoice_policy = 'delivery'
-        self.product_standard_auto.standard_price = 10.0
-        self.env['stock.quant'].with_context(inventory_mode=True).create({
-            'product_id': self.product_standard_auto.id,
-            'inventory_quantity': 12,
-            'location_id': self.stock_location.id,
-        }).action_apply_inventory()
+        so_form = Form(self.env['sale.order'].with_context(tracking_disable=True))
+        so_form.partner_id = self.partner_a
+        with so_form.order_line.new() as so_line_form:
+            so_line_form.name = self.product.name
+            so_line_form.product_id = self.product
+            so_line_form.product_uom_qty = 1.0
+            so_line_form.price_unit = 10
+            so_line_form.analytic_distribution = analytic_distribution_manual
 
-        # confirm a sale order in other uom
-        so_1 = self.env['sale.order'].sudo().create({
-            'partner_id': self.owner.id,
-            'order_line': [Command.create({
-                'name': self.product_standard_auto.name,
-                'product_id': self.product_standard_auto.id,
-                'product_uom_qty': 2,
-                'product_uom_id': self.uom_pack_of_6.id,
-                'price_unit': 20,
-                'tax_ids': False,
-            })],
-        })
-        so_1.action_confirm()
-        so_1.picking_ids.move_ids.write({'quantity': 12, 'picked': True})
-        so_1.picking_ids.button_validate()
-
-        # invoice the picking
-        invoice_1 = so_1._create_invoices()
-        invoice_1.action_post()
-
-        # create the return in the products uom
-        ctx = {'active_id': so_1.picking_ids.id, 'active_model': 'stock.picking'}
-        return_wizard = Form(self.env['stock.return.picking'].with_context(ctx)).save()
-        return_wizard.product_return_moves.quantity = 9
-        return_picking = return_wizard._create_return()
-        return_picking.move_ids.write({'quantity': 9, 'picked': True})
-        return_picking.button_validate()
-
-        # invoice the credit note
-        credit_note = so_1._create_invoices(final=True)
-        credit_note.action_post()
-        cogs_aml = credit_note.line_ids.filtered(lambda l: l.display_type == 'cogs').sorted('credit')
-        self.assertRecordValues(cogs_aml, [
-            {'account_id': self.account_stock_valuation.id, 'debit': 90.0, 'credit': 0.0},
-            {'account_id': self.account_expense.id, 'debit': 0.0, 'credit': 90.0},
-        ])
-
-    def test_avco_credit_note_same_unit_price(self):
-        """ Check that when a credit note is created from the sale order for an avco product,
-        the unit price for the cogs is the same as on the invoice (same as if the credit not
-        was created from the invoice)
-        """
-        self.product_avco_auto.invoice_policy = 'delivery'
-        # in move to make avco price 10
-        self._make_in_move(self.product_avco_auto, 10, 10)
-
-        # SO + deliver
-        sale_order = self._so_deliver(self.product_avco_auto, 5, 100)
+        sale_order = so_form.save()
+        sale_order.action_confirm()
         sale_order.picking_ids.button_validate()
 
-        # validate invoice
-        invoice = sale_order._create_invoices()
-        invoice.action_post()
-        cogs_aml = invoice.line_ids.filtered(lambda l: l.display_type == 'cogs').sorted('debit')
-        self.assertRecordValues(cogs_aml, [
-            {'account_id': self.account_stock_valuation.id, 'debit': 0.0, 'credit': 50.0},
-            {'account_id': self.account_expense.id, 'debit': 50.0, 'credit': 0.0},
-        ])
-        # in move to make avco price 20
-        self._make_in_move(self.product_avco_auto, 5, 30)
-
-        # Return 1 quantity
-        ctx = {'active_id': sale_order.picking_ids[0].id, 'active_model': 'stock.picking'}
-        return_wizard = Form(self.env['stock.return.picking'].with_context(ctx)).save()
-        return_wizard.product_return_moves.quantity = 1
-        return_picking = return_wizard._create_return()
-        return_picking.move_ids.write({'quantity': 1, 'picked': True})
-        return_picking.button_validate()
-
-        # create credit note from SO and confirm
-        credit_note = sale_order._create_invoices(final=True)
-        credit_note.action_post()
-        credit_note_cogs_aml = credit_note.line_ids.filtered(lambda l: l.display_type == 'cogs').sorted('debit')
-        self.assertRecordValues(credit_note_cogs_aml, [
-            {'account_id': self.account_expense.id, 'debit': 0.0, 'credit': 10.0},
-            {'account_id': self.account_stock_valuation.id, 'debit': 10.0, 'credit': 0.0},
-        ])
-
-    def test_backorder_cogs_different_uom(self):
-        """
-        Check that when posting a credit note for a returned product, in a
-        different uom than the product's uom, the cogs are computed correctly.
-        """
-        self.product_standard_auto.invoice_policy = 'delivery'
-        self.product_standard_auto.standard_price = 10.0
-        self.env['stock.quant'].with_context(inventory_mode=True).create({
-            'product_id': self.product_standard_auto.id,
-            'inventory_quantity': 12,
-            'location_id': self.stock_location.id,
-        }).action_apply_inventory()
-
-        # confirm a sale order in other uom
-        so_1 = self.env['sale.order'].sudo().create({
-            'partner_id': self.owner.id,
-            'order_line': [Command.create({
-                'name': self.product_standard_auto.name,
-                'product_id': self.product_standard_auto.id,
-                'product_uom_qty': 2,
-                'product_uom_id': self.uom_pack_of_6.id,
-                'price_unit': 20,
-                'tax_ids': False,
-            })],
-        })
-        so_1.action_confirm()
-
-        # deliver and invoice first part
-        picking = so_1.picking_ids
-        picking.move_ids.write({'quantity': 6, 'picked': True})
-        Form.from_action(self.env, so_1.picking_ids.button_validate()).save().process()
-        invoice_1 = so_1._create_invoices()
-        invoice_1.action_post()
-
-        # deliver and validate barckorder
-        picking.backorder_ids.move_ids.write({'quantity': 6, 'picked': True})
-        picking.backorder_ids.button_validate()
-        invoice_2 = so_1._create_invoices()
-        invoice_2.action_post()
-
-        cogs_aml = invoice_1.line_ids.filtered(lambda l: l.display_type == 'cogs').sorted('debit')
-        self.assertRecordValues(cogs_aml, [
-            {'account_id': self.account_stock_valuation.id, 'debit': 0.0, 'credit': 60.0},
-            {'account_id': self.account_expense.id, 'debit': 60.0, 'credit': 0.0},
-        ])
-        backorder_cogs_aml = invoice_2.line_ids.filtered(lambda l: l.display_type == 'cogs').sorted('debit')
-        self.assertRecordValues(backorder_cogs_aml, [
-            {'account_id': self.account_stock_valuation.id, 'debit': 0.0, 'credit': 60.0},
-            {'account_id': self.account_expense.id, 'debit': 60.0, 'credit': 0.0},
-        ])
-
-    def test_cogs_fifo_multiple_invoice_uom(self):
-        """
-        Ensure that multiple COGS lines with different UoM do not negatively impact the COGS computation.
-        Each COGS line quantity must be individually converted to the product UoM using its own UoM.
-        """
-        unit_6 = self.env['uom.uom'].create({
-            'name': 'Pack of 6',
-            'relative_factor': 6,
-            'relative_uom_id': self.env.ref('uom.product_uom_unit').id,
-        })
-        self.product_fifo_auto.write({"uom_ids": [Command.link(unit_6.id)]})
-
-        self._make_in_move(self.product_fifo_auto, 12, 1)
-
-        moves = self.env['stock.move'].search([('product_id', '=', self.product_fifo_auto.id)])
-        self.assertEqual(moves.value, 12)
-
-        sale_order = self._so_deliver(self.product_fifo_auto, 6, 5)
-        invoice1 = sale_order._create_invoices()
-        invoice1.action_post()
-
-        order_line = sale_order.order_line
-        order_line.product_uom_qty = 12
-
-        move = order_line.move_ids.filtered(lambda sm: sm.state != "done")
-        move.write({'quantity': 6, 'picked': True})
-        move.picking_id.button_validate()
-
-        invoice2 = sale_order._create_invoices()
-        # Change invoice UoM from 6 Units to 1 Pack of 6 (because why not?)
-        invoice2.invoice_line_ids.write({"quantity": 1, "product_uom_id": unit_6.id})
-        invoice2.action_post()
-
-        cogs_line_1 = invoice1.line_ids.filtered(lambda l: l.display_type == 'cogs').sorted('debit')
-        cogs_line_2 = invoice2.line_ids.filtered(lambda l: l.display_type == 'cogs')
-        self.assertRecordValues((cogs_line_1 | cogs_line_2), [
-            {'account_id': self.account_stock_valuation.id, 'debit': 0.0, 'credit': 6.0},
-            {'account_id': self.account_expense.id, 'debit': 6.0, 'credit': 0.0},
-            {'account_id': self.account_stock_valuation.id, 'debit': 0.0, 'credit': 6.0},
-            {'account_id': self.account_expense.id, 'debit': 6.0, 'credit': 0.0},
-        ])
-
-    def test_multi_steps_partially_delivered(self):
-        """Checks that when there is multi steps delivery, if one of the moves of the chain
-        is validated but not the other(s) we fallback on the standard price for the cogs.
-        """
-        self.warehouse.delivery_steps = 'pick_ship'
-        self._make_in_move(self.product_avco_auto, 1, 10)
-        # create a SO
-        sale_order = self._so_deliver(self.product_avco_auto, 1, 1, picking=False)
-        # validate only the first picking of the chain
-        sale_order.picking_ids.button_validate()
-        # validate invoice
-        invoice = sale_order._create_invoices()
-        invoice.action_post()
-        cogs_aml = invoice.line_ids.filtered(lambda l: l.display_type == 'cogs').sorted('debit')
-        self.assertRecordValues(cogs_aml, [
-            {'account_id': self.account_stock_valuation.id, 'debit': 0.0, 'credit': 10.0},
-            {'account_id': self.account_expense.id, 'debit': 10.0, 'credit': 0.0},
-        ])
+        amls = sale_order.picking_ids.move_ids.stock_valuation_layer_ids.account_move_id.line_ids
+        self.assertEqual(amls[0].analytic_distribution, analytic_distribution_manual)
+        self.assertEqual(amls[1].analytic_distribution, analytic_distribution_manual)

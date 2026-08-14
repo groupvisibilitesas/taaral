@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { evaluateExpr } from "@web/core/py_js/py";
@@ -44,7 +46,6 @@ export class AnalyticDistribution extends Component {
         force_applicability: { type: String, optional: true },
         allow_save: { type: Boolean, optional: true },
         multi_edit: { type: Boolean, optional: true },
-        placeholder: { type: String, optional: true },
     }
 
     setup(){
@@ -327,16 +328,14 @@ export class AnalyticDistribution extends Component {
             if (currency_field) {
                 const { string, name, type, relation } = this.props.record.fields[currency_field];
                 recordFields[currency_field] = { name, string, type, relation, invisible: true };
-                values[currency_field] = [this.props.record.data[currency_field].id, ""];
+                values[currency_field] = [this.props.record.data[currency_field][0], ""];
             }
         }
         return {
             fields: recordFields,
             values: values,
             activeFields: recordFields,
-            hooks: {
-                onRecordChanged: async (record, changes) => await this.lineChanged(record, changes, line),
-            }
+            onRecordChanged: async (record, changes) => await this.lineChanged(record, changes, line),
         }
     }
 
@@ -358,10 +357,10 @@ export class AnalyticDistribution extends Component {
             args['business_domain'] = this.props.business_domain;
         }
         if (this.props.product_field && record.data[this.props.product_field]) {
-            args['product'] = record.data[this.props.product_field].id;
+            args['product'] = record.data[this.props.product_field][0];
         }
         if (this.props.account_field && record.data[this.props.account_field]) {
-            args['account'] = record.data[this.props.account_field].id;
+            args['account'] = record.data[this.props.account_field][0];
         }
         if (this.props.force_applicability) {
             args['applicability'] = this.props.force_applicability;
@@ -371,7 +370,7 @@ export class AnalyticDistribution extends Component {
             args['existing_account_ids'] = existing_account_ids;
         }
         if (record.data.company_id) {
-            args['company_id'] = record.data.company_id.id;
+            args['company_id'] = record.data.company_id[0];
         }
         return args;
     }
@@ -406,8 +405,8 @@ export class AnalyticDistribution extends Component {
         // record analytic account changes to the state
         for (const account of line.analyticAccounts) {
             const selected = record.data[this.planIdToColumn[account.planId]];
-            account.accountId = selected.id;
-            account.accountDisplayName = selected.display_name;
+            account.accountId = selected[0];
+            account.accountDisplayName = selected[1];
             account.accountColor = account.planColor;
             account.accountRootPlanId = account.planId;
         }
@@ -491,7 +490,6 @@ export class AnalyticDistribution extends Component {
     async save() {
         await this.props.record.update({ [this.props.name]: this.dataToJson() });
         if (this.props.multi_edit) {
-            await this.props.record.model.root.load();
             await this.jsonToData(this.props.record.data[this.props.name]);
             this.initialFormattedData = this.state.formattedData;
             this.state.formattedData = [];
@@ -504,9 +502,9 @@ export class AnalyticDistribution extends Component {
         const { record, product_field, account_field } = this.props;
         this.openTemplate({ resId: false, context: {
             'default_analytic_distribution': this.dataToJson(),
-            'default_partner_id': record.data['partner_id'] ? record.data['partner_id'].id : undefined,
-            'default_product_id': product_field ? record.data[product_field].id : undefined,
-            'default_account_prefix': account_field ? record.data[account_field].display_name.substr(0, 3) : undefined,
+            'default_partner_id': record.data['partner_id'] ? record.data['partner_id'][0] : undefined,
+            'default_product_id': product_field ? record.data[product_field][0] : undefined,
+            'default_account_prefix': account_field ? record.data[account_field][1]?.substr(0, 3) : undefined,
         }});
     }
 
@@ -651,11 +649,14 @@ export class AnalyticDistribution extends Component {
 
     onWindowClick(ev) {
         /*
-        Dropdown should be closed only if all these condition are true:
+        Dropdown should be closed only if all these conditions are true:
             - dropdown is open
             - click is outside widget element (widgetRef)
-            - there is no active modal containing a list/kanban view (search more modal)
-            - there is no popover (click is not in search modal's search bar menu)
+            - Either:
+                - The click is not inside an active modal with a list/kanban view (search more modal)
+                    and not inside a popover (search bar menu)
+                OR
+                - The widget is inside an active modal
             - click is not targeting document dom element (drag and drop search more modal)
         */
 
@@ -665,8 +666,8 @@ export class AnalyticDistribution extends Component {
         ];
         if (this.isDropdownOpen
             && !this.widgetRef.el.contains(ev.target)
-            && (!ev.target.closest(selectors.join(",")) ||
-                document.querySelector(".modal:not(.o_inactive_modal)").contains(this.widgetRef.el))
+            && (!ev.target.closest(selectors.join(","))
+                || document.querySelector(".modal:not(.o_inactive_modal)").contains(this.widgetRef.el))
             && !ev.target.isSameNode(document.documentElement)
            ) {
             this.forceCloseEditor();
@@ -683,9 +684,10 @@ export class AnalyticDistribution extends Component {
 
 export const analyticDistribution = {
     component: AnalyticDistribution,
-    supportedTypes: ["json"],
+    supportedTypes: ["char", "text"],
     fieldDependencies: [
         { name: "analytic_precision", type: "integer" },
+        { name: "company_id", type: "many2one" },
     ],
     supportedOptions: [
         {
@@ -725,15 +727,9 @@ export const analyticDistribution = {
             name: "account_field",
             type: "field",
             availableTypes: ["many2one"],
-        },
-        {
-            label: _t("Dynamic Placeholder"),
-            name: "placeholder_field",
-            type: "field",
-            availableTypes: ["char"],
-        },
+        }
     ],
-    extractProps: ({ attrs, options, placeholder }) => ({
+    extractProps: ({ attrs, options }) => ({
         business_domain: options.business_domain,
         account_field: options.account_field,
         product_field: options.product_field,
@@ -742,7 +738,6 @@ export const analyticDistribution = {
         force_applicability: options.force_applicability,
         allow_save: !options.disable_save,
         multi_edit: options.multi_edit,
-        placeholder: placeholder,
     }),
 };
 

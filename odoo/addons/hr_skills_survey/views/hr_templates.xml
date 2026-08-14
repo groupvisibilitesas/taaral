@@ -6,12 +6,15 @@
         <field name="inherit_id" ref="hr_skills.resume_line_view_form"/>
         <field eval="20" name="priority"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='certificate_file']" position="before">
+            <xpath expr="//field[@name='display_type']" position="after">
                 <field name="survey_id"
                     domain="[('certification', '=', True)]"
                     readonly="0"
-                    invisible="line_type_id != %(hr_skills_survey.resume_type_certification)d"/>
+                    invisible="display_type != 'certification'"/>
             </xpath>
+            <field name="employee_id" position="attributes">
+                <attribute name="invisible">0</attribute>
+            </field>
             <field name="survey_id" position="attributes">
                 <attribute name="context">
                     {'default_certification': True}

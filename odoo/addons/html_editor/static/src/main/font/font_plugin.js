@@ -1,17 +1,8 @@
 import { Plugin } from "@html_editor/plugin";
 import { isBlock, closestBlock } from "@html_editor/utils/blocks";
-import { unwrapContents } from "@html_editor/utils/dom";
+import { fillEmpty, unwrapContents } from "@html_editor/utils/dom";
+import { isEmptyBlock, isRedundantElement, isVisibleTextNode } from "@html_editor/utils/dom_info";
 import {
-    isParagraphRelatedElement,
-    isRedundantElement,
-    isEmptyBlock,
-    isVisibleTextNode,
-    isZWS,
-    isContentEditableAncestor,
-} from "@html_editor/utils/dom_info";
-import {
-    ancestors,
-    childNodes,
     closestElement,
     createDOMPathGenerator,
     descendants,
@@ -22,30 +13,78 @@ import {
     getCSSVariableValue,
     getHtmlStyle,
     getFontSizeDisplayValue,
-    FONT_SIZE_CLASSES,
 } from "@html_editor/utils/formatting";
 import { DIRECTIONS } from "@html_editor/utils/position";
 import { _t } from "@web/core/l10n/translation";
 import { FontSelector } from "./font_selector";
-import {
-    getBaseContainerSelector,
-    SUPPORTED_BASE_CONTAINER_NAMES,
-} from "@html_editor/utils/base_container";
-import { READ, withSequence } from "@html_editor/utils/resource";
+import { getBaseContainerSelector } from "@html_editor/utils/base_container";
+import { withSequence } from "@html_editor/utils/resource";
 import { reactive } from "@odoo/owl";
 import { FontSizeSelector } from "./font_size_selector";
-import { isHtmlContentSupported } from "@html_editor/core/selection_plugin";
-import { weakMemoize } from "@html_editor/utils/functions";
+import { childNodes } from "../../utils/dom_traversal";
 
-/** @typedef {import("plugins").TranslatedString} TranslatedString */
+export const fontItems = [
+    {
+        name: _t("Header 1 Display 1"),
+        tagName: "h1",
+        extraClass: "display-1",
+    },
+    // TODO @phoenix use them if showExtendedTextStylesOptions is true
+    // {
+    //     name: _t("Header 1 Display 2"),
+    //     tagName: "h1",
+    //     extraClass: "display-2",
+    // },
+    // {
+    //     name: _t("Header 1 Display 3"),
+    //     tagName: "h1",
+    //     extraClass: "display-3",
+    // },
+    // {
+    //     name: _t("Header 1 Display 4"),
+    //     tagName: "h1",
+    //     extraClass: "display-4",
+    // },
+    // ----
 
-/**
- * @typedef {((insertedNode: Node) => insertedNode)[]} before_insert_within_pre_processors
- * @typedef {{ name: TranslatedString; tagName: string; extraClass?: string; }[]} font_items
- */
+    { name: _t("Header 1"), tagName: "h1" },
+    { name: _t("Header 2"), tagName: "h2" },
+    { name: _t("Header 3"), tagName: "h3" },
+    { name: _t("Header 4"), tagName: "h4" },
+    { name: _t("Header 5"), tagName: "h5" },
+    { name: _t("Header 6"), tagName: "h6" },
+
+    {
+        name: _t("Normal"),
+        tagName: "div",
+        // for the FontSelector component
+        selector: getBaseContainerSelector("DIV"),
+    },
+    { name: _t("Paragraph"), tagName: "p" },
+
+    // TODO @phoenix use them if showExtendedTextStylesOptions is true
+    // consider baseContainer if enabling them
+    // {
+    //     name: _t("Light"),
+    //     tagName: "p",
+    //     extraClass: "lead",
+    // },
+    // {
+    //     name: _t("Small"),
+    //     tagName: "p",
+    //     extraClass: "small",
+    // },
+    // ----
+
+    { name: _t("Code"), tagName: "pre" },
+    { name: _t("Quote"), tagName: "blockquote" },
+];
 
 export const fontSizeItems = [
-    { variableName: "display-1-font-size", className: "display-1-fs" },
+    {
+        variableName: "display-1-font-size",
+        className: "display-1-fs",
+    },
     { variableName: "display-2-font-size", className: "display-2-fs" },
     { variableName: "display-3-font-size", className: "display-3-fs" },
     { variableName: "display-4-font-size", className: "display-4-fs" },
@@ -65,76 +104,39 @@ const rightLeafOnlyNotBlockPath = createDOMPathGenerator(DIRECTIONS.RIGHT, {
     stopFunction: isBlock,
 });
 
-export const headingTags = ["H1", "H2", "H3", "H4", "H5", "H6"];
+const headingTags = ["H1", "H2", "H3", "H4", "H5", "H6"];
 const handledElemSelector = [...headingTags, "PRE", "BLOCKQUOTE"].join(", ");
 
 export class FontPlugin extends Plugin {
     static id = "font";
-    static dependencies = [
-        "baseContainer",
-        "input",
-        "split",
-        "selection",
-        "dom",
-        "format",
-        "lineBreak",
-    ];
-    /** @type {import("plugins").EditorResources} */
+    static dependencies = ["baseContainer", "input", "split", "selection", "dom", "format"];
     resources = {
-        font_items: [
-            withSequence(10, {
-                name: _t("Header 1 Display 1"),
-                tagName: "h1",
-                extraClass: "display-1",
-            }),
-            ...[
-                { name: _t("Header 1"), tagName: "h1" },
-                { name: _t("Header 2"), tagName: "h2" },
-                { name: _t("Header 3"), tagName: "h3" },
-                { name: _t("Header 4"), tagName: "h4" },
-                { name: _t("Header 5"), tagName: "h5" },
-                { name: _t("Header 6"), tagName: "h6" },
-            ].map((item) => withSequence(20, item)),
-            withSequence(30, {
-                name: _t("Normal"),
-                tagName: "div",
-                // for the FontSelector component
-                selector: getBaseContainerSelector("DIV"),
-            }),
-            withSequence(40, { name: _t("Paragraph"), tagName: "p" }),
-            withSequence(50, { name: _t("Code"), tagName: "pre" }),
-            withSequence(60, { name: _t("Quote"), tagName: "blockquote" }),
-        ],
         user_commands: [
             {
                 id: "setTagHeading",
                 run: ({ level } = {}) =>
-                    this.dependencies.dom.setBlock({ tagName: `H${level ?? 1}` }),
-                isAvailable: this.blockFormatIsAvailable.bind(this),
+                    this.dependencies.dom.setTag({ tagName: `H${level ?? 1}` }),
             },
             {
                 id: "setTagHeading1",
                 title: _t("Heading 1"),
                 description: _t("Big section heading"),
                 icon: "fa-header",
-                run: () => this.dependencies.dom.setBlock({ tagName: "H1" }),
-                isAvailable: this.blockFormatIsAvailable.bind(this),
+                run: () => this.dependencies.dom.setTag({ tagName: "H1" }),
             },
             {
                 id: "setTagHeading2",
                 title: _t("Heading 2"),
                 description: _t("Medium section heading"),
                 icon: "fa-header",
-                run: () => this.dependencies.dom.setBlock({ tagName: "H2" }),
-                isAvailable: this.blockFormatIsAvailable.bind(this),
+                run: () => this.dependencies.dom.setTag({ tagName: "H2" }),
             },
             {
                 id: "setTagHeading3",
                 title: _t("Heading 3"),
                 description: _t("Small section heading"),
                 icon: "fa-header",
-                run: () => this.dependencies.dom.setBlock({ tagName: "H3" }),
-                isAvailable: this.blockFormatIsAvailable.bind(this),
+                run: () => this.dependencies.dom.setTag({ tagName: "H3" }),
             },
             {
                 id: "setTagParagraph",
@@ -142,59 +144,56 @@ export class FontPlugin extends Plugin {
                 description: _t("Paragraph block"),
                 icon: "fa-paragraph",
                 run: () => {
-                    this.dependencies.dom.setBlock({
+                    this.dependencies.dom.setTag({
                         tagName: this.dependencies.baseContainer.getDefaultNodeName(),
                     });
                 },
-                isAvailable: this.blockFormatIsAvailable.bind(this),
             },
             {
                 id: "setTagQuote",
                 title: _t("Quote"),
                 description: _t("Add a blockquote section"),
                 icon: "fa-quote-right",
-                run: () => this.dependencies.dom.setBlock({ tagName: "blockquote" }),
-                isAvailable: this.blockFormatIsAvailable.bind(this),
+                run: () => this.dependencies.dom.setTag({ tagName: "blockquote" }),
             },
             {
                 id: "setTagPre",
                 title: _t("Code"),
                 description: _t("Add a code section"),
                 icon: "fa-code",
-                run: () => this.dependencies.dom.setBlock({ tagName: "pre" }),
-                isAvailable: this.blockFormatIsAvailable.bind(this),
+                run: () => this.dependencies.dom.setTag({ tagName: "pre" }),
             },
         ],
         toolbar_groups: [
             withSequence(10, {
                 id: "font",
             }),
+            withSequence(29, {
+                id: "font-size",
+            }),
         ],
         toolbar_items: [
-            withSequence(10, {
+            {
                 id: "font",
                 groupId: "font",
-                namespaces: ["compact", "expanded"],
-                description: _t("Select font style"),
+                title: _t("Font style"),
                 Component: FontSelector,
                 props: {
-                    getItems: () => this.availableFontItems,
+                    getItems: () => fontItems,
                     getDisplay: () => this.font,
                     onSelected: (item) => {
-                        this.dependencies.dom.setBlock({
+                        this.dependencies.dom.setTag({
                             tagName: item.tagName,
                             extraClass: item.extraClass,
                         });
                         this.updateFontSelectorParams();
                     },
                 },
-                isAvailable: this.blockFormatIsAvailable.bind(this),
-            }),
-            withSequence(20, {
+            },
+            {
                 id: "font-size",
-                groupId: "font",
-                namespaces: ["compact", "expanded"],
-                description: _t("Select font size"),
+                groupId: "font-size",
+                title: _t("Font size"),
                 Component: FontSizeSelector,
                 props: {
                     getItems: () => this.fontSizeItems,
@@ -216,36 +215,32 @@ export class FontPlugin extends Plugin {
                     onBlur: () => this.dependencies.selection.focusEditable(),
                     document: this.document,
                 },
-                isAvailable: isHtmlContentSupported,
-            }),
+            },
         ],
-        powerbox_categories: withSequence(5, { id: "format", name: _t("Format") }),
+        powerbox_categories: withSequence(30, { id: "format", name: _t("Format") }),
         powerbox_items: [
             {
                 categoryId: "format",
                 commandId: "setTagHeading1",
-                keywords: [_t("title")],
             },
             {
                 categoryId: "format",
                 commandId: "setTagHeading2",
-                keywords: [_t("title")],
             },
             {
                 categoryId: "format",
                 commandId: "setTagHeading3",
-                keywords: [_t("title")],
             },
             {
                 categoryId: "format",
                 commandId: "setTagParagraph",
             },
             {
-                categoryId: "format",
+                categoryId: "structure",
                 commandId: "setTagQuote",
             },
             {
-                categoryId: "format",
+                categoryId: "structure",
                 commandId: "setTagPre",
             },
         ],
@@ -298,8 +293,8 @@ export class FontPlugin extends Plugin {
 
         /** Handlers */
         selectionchange_handlers: [
-            withSequence(READ, this.updateFontSelectorParams.bind(this)),
-            withSequence(READ, this.updateFontSizeSelectorParams.bind(this)),
+            this.updateFontSelectorParams.bind(this),
+            this.updateFontSizeSelectorParams.bind(this),
         ],
         post_undo_handlers: [
             this.updateFontSelectorParams.bind(this),
@@ -332,25 +327,12 @@ export class FontPlugin extends Plugin {
             }
         },
 
-        /** Processors */
-        clipboard_content_processors: this.processContentForClipboard.bind(this),
         before_insert_processors: this.handleInsertWithinPre.bind(this),
-
-        format_class_predicates: (className) =>
-            [...FONT_SIZE_CLASSES, "o_default_font_size"].includes(className),
     };
 
     setup() {
         this.fontSize = reactive({ displayName: "" });
         this.font = reactive({ displayName: "" });
-        this.blockFormatIsAvailableMemoized = weakMemoize(
-            (selection) => isHtmlContentSupported(selection) && this.dependencies.dom.canSetBlock()
-        );
-        this.availableFontItems = this.getResource("font_items").filter(
-            ({ tagName }) =>
-                !SUPPORTED_BASE_CONTAINER_NAMES.includes(tagName.toUpperCase()) ||
-                this.config.baseContainers.includes(tagName.toUpperCase())
-        );
     }
 
     normalize(root) {
@@ -373,9 +355,9 @@ export class FontPlugin extends Plugin {
         const block = closestBlock(anchorNode);
         const tagName = block.tagName.toLowerCase();
 
-        const matchingItems = this.availableFontItems.filter((item) =>
-            item.selector ? block.matches(item.selector) : item.tagName === tagName
-        );
+        const matchingItems = fontItems.filter((item) => {
+            return item.selector ? block.matches(item.selector) : item.tagName === tagName;
+        });
 
         const matchingItemsWitoutExtraClass = matchingItems.filter((item) => !item.extraClass);
 
@@ -400,27 +382,21 @@ export class FontPlugin extends Plugin {
     get fontSizeItems() {
         const style = getHtmlStyle(this.document);
         const nameAlreadyUsed = new Set();
-        return fontSizeItems
-            .flatMap((item) => {
-                const strValue = getCSSVariableValue(item.variableName, style);
-                if (!strValue) {
-                    return [];
-                }
-                const remValue = parseFloat(strValue);
-                const pxValue = convertNumericToUnit(remValue, "rem", "px", style);
-                const roundedValue = Math.round(pxValue);
-                if (nameAlreadyUsed.has(roundedValue)) {
-                    return [];
-                }
-                nameAlreadyUsed.add(roundedValue);
+        return fontSizeItems.flatMap((item) => {
+            const strValue = getCSSVariableValue(item.variableName, style);
+            if (!strValue) {
+                return [];
+            }
+            const remValue = parseFloat(strValue);
+            const pxValue = convertNumericToUnit(remValue, "rem", "px", style);
+            const roundedValue = Math.round(pxValue);
+            if (nameAlreadyUsed.has(roundedValue)) {
+                return [];
+            }
+            nameAlreadyUsed.add(roundedValue);
 
-                return [{ ...item, tagName: "span", name: roundedValue }];
-            })
-            .sort((a, b) => a.name - b.name);
-    }
-
-    blockFormatIsAvailable(selection) {
-        return this.blockFormatIsAvailableMemoized(selection);
+            return [{ ...item, tagName: "span", name: roundedValue }];
+        });
     }
 
     // @todo @phoenix: Move this to a specific Pre/CodeBlock plugin?
@@ -434,8 +410,7 @@ export class FontPlugin extends Plugin {
         if (
             !closestPre ||
             (closestBlockNode.nodeName !== "PRE" &&
-                ((closestBlockNode.textContent && !isZWS(closestBlockNode)) ||
-                    closestBlockNode.nextSibling))
+                (closestBlockNode.textContent || closestBlockNode.nextSibling))
         ) {
             return;
         }
@@ -444,30 +419,19 @@ export class FontPlugin extends Plugin {
         const nodesAfterTarget = [...rightLeafOnlyNotBlockPath(targetNode, targetOffset)];
         if (
             !nodesAfterTarget.length ||
-            (nodesAfterTarget.length === 1 && nodesAfterTarget[0].nodeName === "BR") ||
-            isEmptyBlock(closestBlockNode)
+            (nodesAfterTarget.length === 1 && nodesAfterTarget[0].nodeName === "BR")
         ) {
             // Remove the last empty block node within pre tag
-            const [beforeElement, afterElement] = this.dependencies.split.splitElementBlock({
-                targetNode,
-                targetOffset,
-                blockToSplit: closestBlockNode,
-            });
-            const isPreBlock = beforeElement.nodeName === "PRE";
-            const baseContainer = isPreBlock
-                ? this.dependencies.baseContainer.createBaseContainer()
-                : afterElement;
-            if (isPreBlock) {
-                baseContainer.replaceChildren(...afterElement.childNodes);
-                afterElement.replaceWith(baseContainer);
-            } else {
-                beforeElement.remove();
-                closestPre.after(afterElement);
+            if (closestBlockNode.nodeName !== "PRE") {
+                closestBlockNode.remove();
             }
+            const baseContainer = this.dependencies.baseContainer.createBaseContainer();
             const dir = closestBlockNode.getAttribute("dir") || closestPre.getAttribute("dir");
             if (dir) {
                 baseContainer.setAttribute("dir", dir);
             }
+            closestPre.after(baseContainer);
+            fillEmpty(baseContainer);
             this.dependencies.selection.setCursorStart(baseContainer);
         } else {
             const lineBreak = this.document.createElement("br");
@@ -481,54 +445,37 @@ export class FontPlugin extends Plugin {
      * Specific behavior for blockquote: insert p at end and remove the last
      * empty node.
      */
-    handleSplitBlockquote({ targetNode, targetOffset, blockToSplit }) {
+    handleSplitBlockquote({ targetNode, targetOffset }) {
         const closestQuote = closestElement(targetNode, "blockquote");
         const closestBlockNode = closestBlock(targetNode);
-        const blockQuotedir = closestQuote && closestQuote.getAttribute("dir");
-
-        if (!closestQuote || closestBlockNode.nodeName !== "BLOCKQUOTE") {
-            // If the closestBlockNode is the last element child of its parent
-            // and the parent is a blockquote
-            // we should move the current block ouside of the blockquote.
-            if (
-                closestBlockNode.parentElement === closestQuote &&
-                closestBlockNode.parentElement.lastElementChild === closestBlockNode &&
-                !closestBlockNode.textContent
-            ) {
-                closestQuote.after(closestBlockNode);
-
-                if (blockQuotedir && !closestBlockNode.getAttribute("dir")) {
-                    closestBlockNode.setAttribute("dir", blockQuotedir);
-                }
-                this.dependencies.selection.setSelection({
-                    anchorNode: closestBlockNode,
-                    anchorOffset: 0,
-                });
-                return true;
-            }
+        if (
+            !closestQuote ||
+            (closestBlockNode.nodeName !== "BLOCKQUOTE" &&
+                (closestBlockNode.textContent || closestBlockNode.nextSibling))
+        ) {
             return;
         }
 
-        const selection = this.dependencies.selection.getEditableSelection();
-        const previousElementSibling = selection.anchorNode?.childNodes[selection.anchorOffset - 1];
-        const nextElementSibling = selection.anchorNode?.childNodes[selection.anchorOffset];
-        // Double enter at the end of blockquote => we should break out of the blockquote element.
-        if (previousElementSibling?.tagName === "BR" && nextElementSibling?.tagName === "BR") {
-            nextElementSibling.remove();
-            previousElementSibling.remove();
-            this.dependencies.split.splitElementBlock({
-                targetNode,
-                targetOffset,
-                blockToSplit,
-            });
-            this.dependencies.dom.setBlock({
-                tagName: this.dependencies.baseContainer.getDefaultNodeName(),
-            });
+        // Nodes to the right of the split position.
+        const nodesAfterTarget = [...rightLeafOnlyNotBlockPath(targetNode, targetOffset)];
+        if (
+            !nodesAfterTarget.length ||
+            (nodesAfterTarget.length === 1 && nodesAfterTarget[0].nodeName === "BR")
+        ) {
+            // Remove the last empty block node within blockquote tag
+            if (closestBlockNode.nodeName !== "BLOCKQUOTE") {
+                closestBlockNode.remove();
+            }
+            const baseContainer = this.dependencies.baseContainer.createBaseContainer();
+            const dir = closestBlockNode.getAttribute("dir") || closestQuote.getAttribute("dir");
+            if (dir) {
+                baseContainer.setAttribute("dir", dir);
+            }
+            closestQuote.after(baseContainer);
+            fillEmpty(baseContainer);
+            this.dependencies.selection.setCursorStart(baseContainer);
             return true;
         }
-
-        this.dependencies.lineBreak.insertLineBreakElement({ targetNode, targetOffset });
-        return true;
     }
 
     // @todo @phoenix: Move this to a specific Heading plugin?
@@ -598,33 +545,6 @@ export class FontPlugin extends Plugin {
 
     updateFontSizeSelectorParams() {
         this.fontSize.displayName = this.fontSizeName;
-    }
-
-    processContentForClipboard(clonedContents, selection) {
-        const commonAncestorElement = closestElement(selection.commonAncestorContainer);
-        if (commonAncestorElement && !isBlock(clonedContents.firstChild)) {
-            // Get the list of ancestor elements starting from the provided
-            // commonAncestorElement up to the block-level element.
-            const blockEl = closestBlock(commonAncestorElement);
-            const ancestorsList = [
-                commonAncestorElement,
-                ...ancestors(commonAncestorElement, blockEl),
-            ];
-            // Wrap rangeContent with clones of their ancestors to keep the styles.
-            for (const ancestor of ancestorsList) {
-                if (isContentEditableAncestor(ancestor)) {
-                    break;
-                }
-                // Keep the formatting by keeping inline ancestors and paragraph
-                // related ones like headings etc.
-                if (!isBlock(ancestor) || isParagraphRelatedElement(ancestor)) {
-                    const clone = ancestor.cloneNode();
-                    clone.append(...childNodes(clonedContents));
-                    clonedContents.appendChild(clone);
-                }
-            }
-        }
-        return clonedContents;
     }
 
     handleInsertWithinPre(insertContainer, block) {

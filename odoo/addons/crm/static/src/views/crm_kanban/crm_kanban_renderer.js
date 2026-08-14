@@ -1,19 +1,20 @@
-import { CrmColumnProgress } from "./crm_column_progress";
-import { RottingKanbanRecord } from "@mail/js/rotting_mixin/rotting_kanban_record";
-import { RottingKanbanHeader } from "@mail/js/rotting_mixin/rotting_kanban_header";
-import { RottingKanbanRenderer } from "@mail/js/rotting_mixin/rotting_kanban_renderer";
+/** @odoo-module **/
 
-class CrmKanbanHeader extends RottingKanbanHeader {
+import { CrmColumnProgress } from "./crm_column_progress";
+import { KanbanRenderer } from "@web/views/kanban/kanban_renderer";
+import { KanbanHeader } from "@web/views/kanban/kanban_header";
+
+class CrmKanbanHeader extends KanbanHeader {
+    static template = "crm.CrmKanbanHeader";
     static components = {
-        ...RottingKanbanHeader.components,
+        ...KanbanHeader.components,
         ColumnProgress: CrmColumnProgress,
     };
 }
 
-export class CrmKanbanRenderer extends RottingKanbanRenderer {
+export class CrmKanbanRenderer extends KanbanRenderer {
     static components = {
-        ...RottingKanbanRenderer.components,
+        ...KanbanRenderer.components,
         KanbanHeader: CrmKanbanHeader,
-        KanbanRecord: RottingKanbanRecord,
     };
 }

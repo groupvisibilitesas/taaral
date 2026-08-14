@@ -5,8 +5,8 @@ from odoo import api, fields, models
 from .hr_homeworking import DAYS
 
 
-class HrEmployee(models.Model):
-    _inherit = "hr.employee"
+class HrEmployeeBase(models.AbstractModel):
+    _inherit = "hr.employee.base"
 
     monday_location_id = fields.Many2one('hr.work.location', string='Monday')
     tuesday_location_id = fields.Many2one('hr.work.location', string='Tuesday')
@@ -18,7 +18,7 @@ class HrEmployee(models.Model):
     exceptional_location_id = fields.Many2one(
         'hr.work.location', string='Current',
         compute='_compute_exceptional_location_id',
-        help='This is the exceptional, non-weekly, location set for today.', groups="hr.group_hr_user")
+        help='This is the exceptional, non-weekly, location set for today.')
     hr_icon_display = fields.Selection(selection_add=[('presence_home', 'At Home'),
                                                       ('presence_office', 'At Office'),
                                                       ('presence_other', 'At Other')])
@@ -41,6 +41,15 @@ class HrEmployee(models.Model):
         res["models"][self._name]["fields"].update(self.fields_get([dayfield]))
         return res
 
+    @api.depends("work_location_id.name", "work_location_id.location_type", "exceptional_location_id", *DAYS)
+    def _compute_work_location_name_type(self):
+        super()._compute_work_location_name_type()
+        dayfield = self._get_current_day_location_field()
+        for employee in self:
+            current_location_id = employee.exceptional_location_id or employee[dayfield]
+            employee.work_location_name = current_location_id.name or employee.work_location_name
+            employee.work_location_type = current_location_id.location_type or employee.work_location_type
+
     def _compute_exceptional_location_id(self):
         today = fields.Date.today()
         current_employee_locations = self.env['hr.employee.location'].search([
@@ -57,22 +66,8 @@ class HrEmployee(models.Model):
         super()._compute_presence_icon()
         dayfield = self._get_current_day_location_field()
         for employee in self:
-            today_employee_location_id = employee.sudo().exceptional_location_id or employee[dayfield]
-            if not today_employee_location_id:
+            today_employee_location_id = employee.exceptional_location_id or employee[dayfield]
+            if not today_employee_location_id or employee.hr_icon_display.startswith('presence_holiday'):
                 continue
             employee.hr_icon_display = f'presence_{today_employee_location_id.location_type}'
             employee.show_hr_icon_display = True
-
-    @api.depends(*DAYS, "exceptional_location_id")
-    def _compute_work_location_name(self):
-        dayfield = self.env['hr.employee']._get_current_day_location_field()
-        for employee in self:
-            current_location = employee.exceptional_location_id or employee[dayfield]
-            employee.work_location_name = current_location.name
-
-    @api.depends(*DAYS, "exceptional_location_id")
-    def _compute_work_location_type(self):
-        dayfield = self.env['hr.employee']._get_current_day_location_field()
-        for employee in self:
-            current_location = employee.exceptional_location_id or employee[dayfield]
-            employee.work_location_type = current_location.location_type

@@ -1,11 +1,6 @@
 import { renderToElement } from "@web/core/utils/render";
 import { useDebounced } from "@web/core/utils/timing";
-import {
-    formatDate,
-    formatDateTime,
-    toLocaleDateString,
-    toLocaleDateTimeString,
-} from "@web/core/l10n/dates";
+import { formatDate, formatDateTime } from "@web/core/l10n/dates";
 import { localization } from "@web/core/l10n/localization";
 
 import {
@@ -66,33 +61,22 @@ const DEFAULT_MIN_WIDTH = 80;
 const SELECTOR_WIDTH = 20;
 const OPEN_FORM_VIEW_BUTTON_WIDTH = 54;
 const DELETE_BUTTON_WIDTH = 12;
-let _dateWidths = null; // computed dynamically, lazily, see @computeOptimalDateWidths
+let _dateFieldWidth = null; // computed dynamically, lazily, see @computeOptimalDateWidths
+let _datetimeFieldWidth = null; // computed dynamically, lazily, see @computeOptimalDateWidths
 export const FIELD_WIDTHS = Object.freeze({
     boolean: [20, 100], // [minWidth, maxWidth]
     char: [80], // only minWidth, no maxWidth
     get date() {
-        if (!_dateWidths) {
+        if (!_dateFieldWidth) {
             computeOptimalDateWidths();
         }
-        return _dateWidths.date;
+        return _dateFieldWidth;
     },
     get datetime() {
-        if (!_dateWidths) {
+        if (!_datetimeFieldWidth) {
             computeOptimalDateWidths();
         }
-        return _dateWidths.datetime;
-    },
-    get numeric_date() {
-        if (!_dateWidths) {
-            computeOptimalDateWidths();
-        }
-        return _dateWidths.numericDate;
-    },
-    get numeric_datetime() {
-        if (!_dateWidths) {
-            computeOptimalDateWidths();
-        }
-        return _dateWidths.numericDatetime;
+        return _datetimeFieldWidth;
     },
     float: 93,
     integer: 71,
@@ -108,7 +92,8 @@ export const FIELD_WIDTHS = Object.freeze({
 
 export function resetDateFieldWidths() {
     // useful for tests
-    _dateWidths = null;
+    _dateFieldWidth = null;
+    _datetimeFieldWidth = null;
 }
 
 /**
@@ -118,56 +103,47 @@ export function resetDateFieldWidths() {
  * them into the DOM and compute their width.
  */
 function computeOptimalDateWidths() {
-    const { timeFormat } = localization;
-    const values = {
-        date: [],
-        datetime: [],
-        numericDate: [],
-        numericDatetime: [],
-    };
-    // dates in the "human readable" format (must generate a date by month as width could vary)
-    for (let month = 1; month <= 12; month++) {
-        values.date.push(toLocaleDateString(luxon.DateTime.local(2017, month, 20)));
-        values.datetime.push(
-            toLocaleDateTimeString(luxon.DateTime.local(2017, month, 25, 10, 0, 0), {
-                showSeconds: true,
-            })
-        );
-        if (timeFormat === "hh:mm:ss a") {
-            // generate a date in the afternoon if time is displayed with AM/PM or equivalent
-            values.datetime.push(
-                toLocaleDateTimeString(luxon.DateTime.local(2017, month, 25, 22, 0, 0), {
-                    showSeconds: true,
-                })
-            );
+    const dates = [];
+    const datetimes = [];
+    const { dateFormat, timeFormat } = localization;
+    const escapedPartsRegex = /('[^']*')/g;
+    const dateFormatWoEscParts = dateFormat.replaceAll(escapedPartsRegex, "");
+    // generate a date for each month if date format contains MMMM or MMM (full or abbrev. month)
+    for (let month = 1; month <= (/MMM/.test(dateFormatWoEscParts) ? 12 : 1); month++) {
+        // generate a date for each day if date format contains cccc or ccc (full or abbrev. day)
+        for (let day = 1; day <= (/ccc/.test(dateFormatWoEscParts) ? 7 : 1); day++) {
+            dates.push(formatDate(luxon.DateTime.local(2017, month, day)));
+            datetimes.push(formatDateTime(luxon.DateTime.local(2017, month, day, 8, 0, 0)));
+            const timeFormatWoEscParts = timeFormat.replaceAll(escapedPartsRegex, "");
+            if (/a/.test(timeFormatWoEscParts)) {
+                // generate a date in the afternoon if time is displayed with AM/PM or equivalent
+                datetimes.push(formatDateTime(luxon.DateTime.local(2017, month, day, 20, 0, 0)));
+            }
         }
     }
-    // dates in the "numeric" format
-    values.numericDate.push(formatDate(luxon.DateTime.local(2017, 1, 1)));
-    values.numericDatetime.push(formatDateTime(luxon.DateTime.local(2017, 1, 1, 10, 0, 0)));
-    if (timeFormat === "hh:mm:ss a") {
-        // generate a date in the afternoon if time is displayed with AM/PM or equivalent
-        values.numericDatetime.push(formatDateTime(luxon.DateTime.local(2017, 1, 1, 22, 0, 0)));
-    }
-
     const template = xml`
         <div class="invisible" style="font-variant-numeric: tabular-nums;">
-            <div t-foreach="Object.keys(values)" t-as="key" t-key="key" t-att-class="key">
-                <div t-foreach="values[key]" t-as="value" t-key="value_index">
-                    <span t-esc="value"/>
+            <div class="dates">
+                <div t-foreach="dates" t-as="date" t-key="date_index">
+                    <span t-esc="date"/>
+                </div>
+            </div>
+            <div class="datetimes">
+                <div t-foreach="datetimes" t-as="datetime" t-key="datetime_index">
+                    <span t-esc="datetime"/>
                 </div>
             </div>
         </div>`;
-    const div = renderToElement(template, { values });
+    const div = renderToElement(template, { dates, datetimes });
     document.body.append(div);
-    _dateWidths = {};
-    for (const key in values) {
-        const spans = div.querySelectorAll(`.${key} span`);
-        const widths = [...spans].map((span) => span.getBoundingClientRect().width);
-        // add a 5% margin to cope with potential bold decorations
-        _dateWidths[key] = Math.ceil(Math.max(...widths) * 1.05);
-    }
+    const dateSpans = div.querySelectorAll(".dates span");
+    const dateWidths = [...dateSpans].map((span) => span.getBoundingClientRect().width);
+    const datetimeSpans = div.querySelectorAll(".datetimes span");
+    const datetimeWidths = [...datetimeSpans].map((span) => span.getBoundingClientRect().width);
     document.body.removeChild(div);
+    // add a 5% margin to cope with potential bold decorations
+    _dateFieldWidth = Math.ceil(Math.max(...dateWidths) * 1.05);
+    _datetimeFieldWidth = Math.ceil(Math.max(...datetimeWidths) * 1.05);
 }
 
 /**
@@ -385,7 +361,7 @@ export function useMagicColumnWidths(tableRef, getState) {
         const nextHash = `${columns.map((column) => column.id).join("/")}/${headers.length}`;
         if (nextHash !== hash) {
             hash = nextHash;
-            unsetWidths();
+            resetWidths();
         }
         // If the table has always been empty until now, and it now contains records, we want to
         // recompute the widths based on the records (typical case: we removed a filter).
@@ -394,7 +370,7 @@ export function useMagicColumnWidths(tableRef, getState) {
             hasAlwaysBeenEmpty = false;
             const rows = table.querySelectorAll(".o_data_row");
             if (rows.length !== 1 || !rows[0].classList.contains("o_selected_row")) {
-                unsetWidths();
+                resetWidths();
             }
         }
 
@@ -420,9 +396,9 @@ export function useMagicColumnWidths(tableRef, getState) {
     }
 
     /**
-     * Unsets the widths. After next patch, ideal widths will be recomputed.
+     * Resets the widths. After next patch, ideal widths will be recomputed.
      */
-    function unsetWidths() {
+    function resetWidths() {
         columnWidths = null;
         // Unset widths that might have been set on the table by resizing a column
         tableRef.el.style.width = null;
@@ -441,6 +417,7 @@ export function useMagicColumnWidths(tableRef, getState) {
         _resizing = true;
         const table = tableRef.el;
         const th = ev.target.closest("th");
+        const handler = th.querySelector(".o_resize");
         table.style.width = `${Math.floor(table.getBoundingClientRect().width)}px`;
         const thPosition = [...th.parentNode.children].indexOf(th);
         const resizingColumnElements = [...table.getElementsByTagName("tr")]
@@ -459,9 +436,12 @@ export function useMagicColumnWidths(tableRef, getState) {
             )}px`;
         }
 
-        // Apply classes to the selected column
+        // Apply classes to table and selected column
+        table.classList.add("o_resizing");
         for (const el of resizingColumnElements) {
             el.classList.add("o_column_resizing");
+            handler.classList.add("bg-primary", "opacity-100");
+            handler.classList.remove("bg-black-25", "opacity-50-hover");
         }
         // Mousemove event : resize header
         const resizeHeader = (ev) => {
@@ -493,8 +473,11 @@ export function useMagicColumnWidths(tableRef, getState) {
             ev.preventDefault();
             ev.stopPropagation();
 
+            table.classList.remove("o_resizing");
             for (const el of resizingColumnElements) {
                 el.classList.remove("o_column_resizing");
+                handler.classList.remove("bg-primary", "opacity-100");
+                handler.classList.add("bg-black-25", "opacity-50-hover");
             }
 
             window.removeEventListener("pointermove", resizeHeader);
@@ -516,19 +499,11 @@ export function useMagicColumnWidths(tableRef, getState) {
         }
     }
 
-    /**
-     * Forces a recomputation of column widths
-     */
-    function resetWidths() {
-        unsetWidths();
-        forceColumnWidths();
-    }
-
     // Side effects
     if (renderer.constructor.useMagicColumnWidths) {
         useEffect(forceColumnWidths);
         // Forget computed widths (and potential manual column resize) on window resize
-        useExternalListener(window, "resize", unsetWidths);
+        useExternalListener(window, "resize", resetWidths);
         // Listen to width changes on the parent node of the table, to recompute ideal widths
         // Note: we compute the widths once, directly, and once after parent width stabilization.
         // The first call is only necessary to avoid an annoying flickering when opening form views
@@ -566,6 +541,5 @@ export function useMagicColumnWidths(tableRef, getState) {
             return _resizing;
         },
         onStartResize,
-        resetWidths,
     };
 }

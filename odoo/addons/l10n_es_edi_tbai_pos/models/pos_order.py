@@ -73,9 +73,9 @@ class PosOrder(models.Model):
             raise UserError(self.env._("Please create an invoice for an amount over %s.", self.company_id.l10n_es_simplified_invoice_limit))
 
         if self.refunded_order_id:
-            if self.to_invoice and not self.refunded_order_id.account_move:
+            if self.to_invoice and self.refunded_order_id.state != 'invoiced':
                 raise UserError(self.env._("You cannot invoice a refund whose linked order hasn't been invoiced."))
-            if not self.to_invoice and self.refunded_order_id.account_move:
+            if not self.to_invoice and self.refunded_order_id.state == 'invoiced':
                 raise UserError(self.env._("Please invoice the refund as the linked order has been invoiced."))
 
         return super()._process_saved_order(draft)
@@ -100,14 +100,9 @@ class PosOrder(models.Model):
 
     def _prepare_invoice_vals(self):
         vals = super()._prepare_invoice_vals()
-        mapped_tbai_req = self.mapped('l10n_es_tbai_is_required')
-        if len(set(mapped_tbai_req)) > 1:
-            raise UserError(self.env._("You cannot mix orders that require TicketBAI with those that don't."))
-        if mapped_tbai_req[0]:
-            refund_reasons = set(self.mapped('l10n_es_tbai_refund_reason'))
-            if len(refund_reasons) > 1:
-                raise UserError(self.env._("You cannot consolidate orders with different TicketBAI refund reasons."))
-            vals['l10n_es_tbai_refund_reason'] = refund_reasons.pop()
+
+        if self.l10n_es_tbai_is_required:
+            vals['l10n_es_tbai_refund_reason'] = self.l10n_es_tbai_refund_reason
 
         return vals
 
@@ -154,13 +149,9 @@ class PosOrder(models.Model):
         # Return the error message if the xml document was not accepted
         return edi_document.response_message
 
-    def _l10n_es_tbai_get_document_name(self):
-        self.ensure_one()
-        return self.pos_reference
-
     def _l10n_es_tbai_create_edi_document(self, cancel=False):
         return self.sudo().env['l10n_es_edi_tbai.document'].create({
-            'name': self._l10n_es_tbai_get_document_name(),
+            'name': self.name,
             'company_id': self.company_id.id,
             'is_cancel': False,
             'date': self.date_order,
@@ -212,5 +203,5 @@ class PosOrder(models.Model):
             'refund_reason': 'R5',
             'refunded_doc': self.refunded_order_id.l10n_es_tbai_post_document_id,
             'refunded_doc_invoice_date': self.refunded_order_id.date_order if self.refunded_order_id else False,
-            'refunded_name': self.refunded_order_id._l10n_es_tbai_get_document_name() if self.refunded_order_id else False,
+            'refunded_name': self.refunded_order_id.name,
         }

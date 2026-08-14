@@ -38,7 +38,6 @@ const SERVER_STATE_VALUES = {
         {
             id: 1,
             name: "Hermit",
-            currency_id: 1,
         },
     ],
     currencies: [
@@ -61,7 +60,6 @@ const SERVER_STATE_VALUES = {
     lang: "en",
     multiLang: false,
     odoobotId: 418,
-    odoobotUid: 518,
     partnerId: 17,
     partnerName: "Mitchell Admin",
     publicPartnerId: 18,

@@ -7,7 +7,6 @@ import { ListController } from "@web/views/list/list_controller";
 import { registry } from "@web/core/registry";
 import { standardWidgetProps } from "@web/views/widgets/standard_widget_props";
 import { useService } from "@web/core/utils/hooks";
-import { user } from "@web/core/user";
 import { StockListView } from "@stock/views/stock_empty_list_help";
 
 export class L10nTrEreceiptUploader extends Component {
@@ -94,7 +93,7 @@ export class L10nTrNilveraEdispatchListController extends ListController {
         this.orm = useService("orm");
         super.setup();
         onWillStart(async () => {
-            const currentCompanyId = user.activeCompany.id;
+            const currentCompanyId = this.env.services.company.currentCompany.id;
             this.data = await this.orm.searchRead(
                 "res.company",
                 [["id", "=", currentCompanyId]],

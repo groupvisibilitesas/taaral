@@ -7,7 +7,7 @@ from unittest.mock import patch
 from odoo.addons.mail.tests.common import MailCommon, mail_new_test_user
 from odoo.exceptions import AccessError, ValidationError, UserError
 from odoo.tests import Form, HttpCase, tagged, users
-from odoo.tools import convert_file, mute_logger
+from odoo.tools import convert_file
 
 
 @tagged('mail_template')
@@ -18,11 +18,7 @@ class TestMailTemplate(MailCommon):
         super(TestMailTemplate, cls).setUpClass()
         # Enable the Jinja rendering restriction
         cls.env['ir.config_parameter'].set_param('mail.restrict.template.rendering', True)
-        cls.user_employee.group_ids -= cls.env.ref('mail.group_mail_template_editor')
-        cls.test_partner = cls.env['res.partner'].create({
-            'email': 'test.rendering@test.example.com',
-            'name': 'Test Rendering',
-        })
+        cls.user_employee.groups_id -= cls.env.ref('mail.group_mail_template_editor')
 
         cls.mail_template = cls.env['mail.template'].create({
             'name': 'Test template',
@@ -31,7 +27,6 @@ class TestMailTemplate(MailCommon):
             'lang': '{{ object.lang }}',
             'auto_delete': True,
             'model_id': cls.env.ref('base.model_res_partner').id,
-            'use_default_to': False,
         })
 
         cls.user_employee_2 = mail_new_test_user(
@@ -43,55 +38,9 @@ class TestMailTemplate(MailCommon):
             name='Albertine Another Employee',
         )
 
-    @users('admin')
-    @mute_logger('odoo.addons.mail.models.mail_template')
-    @mute_logger('odoo.addons.mail.models.mail_render_mixin')
-    def test_invalid_template_on_save(self):
-        mail_template = self.env['mail.template'].create({
-                'name': 'Test template',
-                'model_id': self.env['ir.model']._get_id('res.users'),
-                'subject': 'Template {{ object.company_id.email }}',
-                'lang': '{{ object.partner_id.lang }}'
-            })
-
-        for fname in [
-            'body_html', 'email_cc', 'email_from', 'email_to',
-            'lang', 'partner_to', 'reply_to', 'scheduled_date',
-            'subject'
-        ]:
-            with self.subTest(fname=fname):
-                if fname == 'body_html':
-                    value_field = '<p>Hello <t t-out="object.unknown_field"/></p>'
-                    value_fun = '<p>Hello <t t-out="object.is_portal_0()"/></p>'
-                else:
-                    value_field = '{{ object.unknown_field }}'
-                    value_fun = '{{ object.is_portal_0() }}'
-                # cannot update with a wrong field
-                with self.assertRaises(ValidationError):
-                    mail_template.write({
-                        fname: value_field,
-                    })
-                with self.assertRaises(ValidationError):
-                    mail_template.write({
-                        fname: value_fun,
-                    })
-                # Check templates having invalid object references can't be created
-                with self.assertRaises(ValidationError):
-                    self.env['mail.template'].create({
-                        'name': 'Test template',
-                        'model_id': self.env['ir.model']._get('res.users').id,
-                        fname: value_field,
-                    })
-
-        # new model would crash at rendering
-        with self.assertRaises(ValidationError):
-            mail_template.write({
-                'model_id': self.env['ir.model']._get_id('res.partner'),
-            })
-
     @users('employee')
     def test_mail_compose_message_content_from_template(self):
-        form = Form(self.env['mail.compose.message'].with_context(default_model='res.partner', active_ids=self.test_partner.ids))
+        form = Form(self.env['mail.compose.message'])
         form.template_id = self.mail_template
         mail_compose_message = form.save()
 
@@ -115,7 +64,7 @@ class TestMailTemplate(MailCommon):
     def test_mail_template_abstract_model(self):
         """Check abstract models cannot be set on templates."""
         # create
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValidationError), self.cr.savepoint():
             self.env['mail.template'].create({
                 'name': 'Test abstract template',
                 'model_id': self.env['ir.model']._get('mail.thread').id, # abstract model
@@ -125,7 +74,7 @@ class TestMailTemplate(MailCommon):
             'name': 'Test abstract template',
             'model_id': self.env['ir.model']._get('res.partner').id,
         })
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ValidationError), self.cr.savepoint():
             template.write({
                 'name': 'Test abstract template',
                 'model_id': self.env['ir.model']._get('mail.thread').id,
@@ -138,8 +87,8 @@ class TestMailTemplate(MailCommon):
         self.assertFalse(self.user_employee.has_group('mail.group_mail_template_editor'))
         self.assertFalse(self.user_employee.has_group('base.group_sanitize_override'))
 
-        model = self.env['ir.model']._get_id('res.users')
-        record = self.user_employee
+        model = self.env['ir.model']._get_id('res.partner')
+        record = self.user_employee.partner_id
 
         # Group System can create / write / unlink mail template
         mail_template = self.env['mail.template'].with_user(self.user_admin).create({
@@ -192,7 +141,7 @@ class TestMailTemplate(MailCommon):
             'object.partner_id.email',
             'object.password',
             "object.name or (1+1)",
-            'user.password',
+            'password',
             'object.name or object.name',
             '[a for a in (1,)]',
             "object.name or f''",
@@ -242,7 +191,8 @@ class TestMailTemplate(MailCommon):
             '<p t-set="x" t-value="object.name"></p>',
             '<p t-set="x" t-value="object.name"></p>',
             '<p t-groups="base.group_system"></p>',
-            '<t t-call="template"/>',
+            '<p t-call="template"></p>',
+            '<p t-cache="object.name"></p>',
             '<t t-set="namn" t-value="Hello {{world}} !"/>',
             '<t t-att-test="object.name"/>',
             '<p t-att-title="object.name"></p>',
@@ -274,7 +224,7 @@ class TestMailTemplate(MailCommon):
             })
             self.assertFalse(self.env['mail.render.mixin']._has_unsafe_expression_template_qweb(expression, 'res.partner'))
 
-            with (patch('odoo.addons.base.models.ir_qweb.IrQweb._render', side_effect=o_qweb_render) as qweb_render,
+            with (patch('odoo.addons.base.models.ir_qweb.IrQWeb._render', side_effect=o_qweb_render) as qweb_render,
                 patch('odoo.addons.base.models.ir_qweb.unsafe_eval', side_effect=eval) as unsafe_eval):
                 rendered = template._render_field('body_html', record.ids)[record.id]
                 self.assertNotIn('t-out', rendered)
@@ -283,7 +233,7 @@ class TestMailTemplate(MailCommon):
 
         # double check that we can detect the qweb rendering
         mail_template.body_html = '<t t-out="1+1"/>'
-        with (patch('odoo.addons.base.models.ir_qweb.IrQweb._render', side_effect=o_qweb_render) as qweb_render,
+        with (patch('odoo.addons.base.models.ir_qweb.IrQWeb._render', side_effect=o_qweb_render) as qweb_render,
             patch('odoo.addons.base.models.ir_qweb.unsafe_eval', side_effect=eval) as unsafe_eval):
             rendered = mail_template._render_field('body_html', record.ids)[record.id]
             self.assertNotIn('t-out', rendered)
@@ -327,11 +277,6 @@ class TestMailTemplate(MailCommon):
             self.assertEqual(rendered, "&lt;b&gt; test &lt;/b&gt;")
             self.assertTrue(render.called)
 
-        # Check that the environment is the evaluation context
-        mail_template.with_user(self.user_admin).email_to = '{{ env.user.name }}'
-        rendered = mail_template._render_field('email_to', record.ids)[record.id]
-        self.assertIn(self.user_admin.name, rendered)
-
     def test_mail_template_acl_translation(self):
         ''' Test that a user that doesn't have the group_mail_template_editor cannot create / edit
         translation with dynamic code if he cannot write dynamic code on the related record itself.
@@ -365,13 +310,13 @@ class TestMailTemplate(MailCommon):
 
         # cannot write dynamic code on mail_template translation for employee without the group mail_template_editor.
         with self.assertRaises(AccessError):
-            employee_template.with_context(lang='fr_FR').subject = '{{ object.city }}'
+            employee_template.with_context(lang='fr_FR').subject = '{{ object.foo }}'
 
-        employee_template.with_context(lang='fr_FR').sudo().subject = '{{ object.city }}'
+        employee_template.with_context(lang='fr_FR').sudo().subject = '{{ object.foo }}'
 
     def test_mail_template_copy(self):
         (self.user_employee + self.user_employee_2).write({
-            'group_ids': [(4, self.env.ref('mail.group_mail_template_editor').id)],
+            'groups_id': [(4, self.env.ref('mail.group_mail_template_editor').id)],
         })
         attachment_data_list = self._generate_attachments_data(4, self.mail_template._name, self.mail_template.id)
         self.mail_template.write({
@@ -491,7 +436,7 @@ class TestMailTemplateReset(MailCommon):
         # pylint: disable=no-value-for-parameter
         convert_file(self.env, module='mail',
                      filename=filepath,
-                     idref={}, mode='init', noupdate=False)
+                     idref={}, mode='init', noupdate=False, kind='test')
 
     def test_mail_template_reset(self):
         self._load('mail', 'tests/test_mail_template.xml')
@@ -572,8 +517,7 @@ class TestMailTemplateReset(MailCommon):
 class TestMailTemplateUI(HttpCase):
 
     def test_mail_template_dynamic_placeholder_tour(self):
-        # keep debug for technical fields visibility
-        self.start_tour('/odoo?debug=1', 'mail_template_dynamic_placeholder_tour', login='admin')
+        self.start_tour("/odoo", 'mail_template_dynamic_placeholder_tour', login="admin")
 
 
 @tagged("mail_template", "-at_install", "post_install")
@@ -581,15 +525,8 @@ class TestTemplateConfigRestrictEditor(MailCommon):
 
     def test_switch_icp_value(self):
         # Sanity check
-        group = self.env.ref('mail.group_mail_template_editor')
-
         self.assertTrue(self.user_employee.has_group('mail.group_mail_template_editor'))
         self.assertFalse(self.user_employee.has_group('base.group_system'))
-
-        # Check that the group is on the user via the settings configuration and not that
-        # the right has been added specifically to this person.
-        self.assertIn(group, self.user_employee.all_group_ids)
-        self.assertNotIn(group, self.user_employee.group_ids)
 
         self.env['ir.config_parameter'].set_param('mail.restrict.template.rendering', True)
         self.assertFalse(self.user_employee.has_group('mail.group_mail_template_editor'))

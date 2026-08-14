@@ -1,15 +1,22 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import json
+import re
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval
 
-from odoo.addons.account_tax_python.tools.formula_utils import check_formula, normalize_formula
+
+FORMULA_ALLOWED_TOKENS = {
+    '(', ')',
+    '+', '-', '*', '/', ',', '<', '>', '<=', '>=',
+    'and', 'or', 'None',
+    'base', 'quantity', 'price_unit',
+    'min', 'max',
+}
 
 
-class AccountTax(models.Model):
+class AccountTaxPython(models.Model):
     _inherit = "account.tax"
 
     amount_type = fields.Selection(
@@ -31,7 +38,7 @@ class AccountTax(models.Model):
     def _check_amount_type_code_formula(self):
         for tax in self:
             if tax.amount_type == 'code':
-                self._check_and_normalize_formula(tax.formula)
+                tax._check_formula()
 
     def _eval_taxes_computation_prepare_product_fields(self):
         # EXTENDS 'account'
@@ -54,45 +61,100 @@ class AccountTax(models.Model):
                 tax.formula_decoded_info = None
                 continue
 
-            py_formula, accessed_fields = self._check_and_normalize_formula(tax.formula)
-
-            tax.formula_decoded_info = {
-                'js_formula': py_formula,
-                'py_formula': py_formula,
-                'product_fields': list(accessed_fields['product.product']),
-                'product_uom_fields': list(accessed_fields['uom.uom']),
+            formula = (tax.formula or '0.0').strip()
+            formula_decoded_info = {
+                'js_formula': formula,
+                'py_formula': formula,
             }
 
-    @api.model
-    def _check_and_normalize_formula(self, formula):
+            product_fields = set()
+            groups = re.findall(r'((?:product\.)(?P<field>\w+))+', formula) or []
+            Product = self.env['product.product']
+            for group in groups:
+                field_name = group[1]
+                if field_name in Product and not Product._fields[field_name].relational:
+                    product_fields.add(field_name)
+                    formula_decoded_info['py_formula'] = formula_decoded_info['py_formula'].replace(f"product.{field_name}", f"product['{field_name}']")
+            formula_decoded_info['product_fields'] = list(product_fields)
+
+            product_uom_fields = set()
+            groups = re.findall(r'((?:uom\.)(?P<field>\w+))+', formula) or []
+            Uom = self.env['uom.uom']
+            for group in groups:
+                field_name = group[1]
+                if field_name in Uom and not Uom._fields[field_name].relational:
+                    product_uom_fields.add(field_name)
+                    formula_decoded_info['py_formula'] = formula_decoded_info['py_formula'].replace(f"uom.{field_name}", f"uom['{field_name}']")
+            formula_decoded_info['product_uom_fields'] = list(product_uom_fields)
+
+            tax.formula_decoded_info = formula_decoded_info
+
+    def _check_formula(self):
         """ Check the formula is passing the minimum check to ensure the compatibility between both evaluation
         in python & javascript.
         """
+        self.ensure_one()
 
-        def is_field_serializable(model, field_name):
-            assert isinstance(field_name, str), "Field name must be a string"
-            field = self.env[model]._fields.get(field_name)
-            return isinstance(field, fields.Field) and not field.relational
+        def get_number_size(formula, i):
+            starting_i = i
+            seen_separator = False
+            while i < len(formula):
+                if formula[i].isnumeric():
+                    i += 1
+                elif formula[i] == '.' and (i - starting_i) > 0 and not seen_separator:
+                    i += 1
+                    seen_separator = True
+                else:
+                    break
+            return i - starting_i
 
-        transformed_formula, accessed_fields = normalize_formula(
-            self.env,
-            (formula or '0.0').strip(),
-            field_predicate=is_field_serializable,
+        formula_decoded_info = self.formula_decoded_info
+        allowed_tokens = (
+            FORMULA_ALLOWED_TOKENS
+            .union(f"product['{field_name}']" for field_name in formula_decoded_info['product_fields'])
+            .union(f"uom['{field_name}']" for field_name in formula_decoded_info['product_uom_fields'])
         )
-        check_formula(self.env, transformed_formula)
-        return transformed_formula, accessed_fields
+        formula = formula_decoded_info['py_formula']
 
+        i = 0
+        while i < len(formula):
+
+            if formula[i] == ' ':
+                i += 1
+                continue
+
+            continue_needed = False
+            # Token consumption should be greedy, so the set of allowed tokens should be
+            # sorted from longer to shorter. Otherwise, if the set has '>' before '>=',
+            # the '>=' token will raise an error. This is because the '>' is consumed and
+            # then it leaves the '=' character next, wich is not in the allowed_tokens.
+            for token in sorted(allowed_tokens, key=len, reverse=True):
+                if formula[i:i + len(token)] == token:
+                    i += len(token)
+                    continue_needed = True
+                    break
+            if continue_needed:
+                continue
+
+            number_size = get_number_size(formula, i)
+            if number_size > 0:
+                i += number_size
+                continue
+
+            raise ValidationError(_("Malformed formula '%(formula)s' at position %(position)s", formula=formula, position=i))
+
+    @api.model
     def _eval_tax_amount_formula(self, raw_base, evaluation_context):
         """ Evaluate the formula of the tax passed as parameter.
 
         [!] Mirror of the same method in account_tax.js.
         PLZ KEEP BOTH METHODS CONSISTENT WITH EACH OTHERS.
 
-        :param raw_base:
+        :param tax_data:          The values of a tax returned by '_prepare_taxes_computation'.
         :param evaluation_context:  The context created by '_eval_taxes_computation_prepare_context'.
         :return:                    The tax base amount.
         """
-        normalized_formula, accessed_fields = self._check_and_normalize_formula(self.formula_decoded_info['py_formula'])
+        self._check_formula()
 
         # Safe eval.
         formula_context = {
@@ -101,15 +163,17 @@ class AccountTax(models.Model):
             'product': evaluation_context['product'],
             'uom': evaluation_context['uom'],
             'base': raw_base,
+            'min': min,
+            'max': max,
         }
-        assert accessed_fields['product'] <= formula_context['product'].keys(), "product fields used in formula must be present in the product dict"
-        assert accessed_fields['uom'] <= formula_context['uom'].keys(), "uom fields used in formula must be present in the product dict"
         try:
-            formula_context = json.loads(json.dumps(formula_context))
-        except TypeError:
-            raise ValidationError(_("Only primitive types are allowed in python tax formula context."))
-        try:
-            return safe_eval(normalized_formula, formula_context)
+            return safe_eval(
+                self.formula_decoded_info['py_formula'],
+                globals_dict=formula_context,
+                locals_dict={},
+                locals_builtins=False,
+                nocopy=True,
+            )
         except ZeroDivisionError:
             return 0.0
 

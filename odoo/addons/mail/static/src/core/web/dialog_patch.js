@@ -6,8 +6,7 @@ patch(Dialog.prototype, {
      * @override
      */
     onEscape() {
-        const messageModels = ["mail.compose.message", "mail.scheduled.message"];
-        if (messageModels.includes(this.data.model)) {
+        if (this.data.model === "mail.compose.message") {
             return;
         }
         super.onEscape();

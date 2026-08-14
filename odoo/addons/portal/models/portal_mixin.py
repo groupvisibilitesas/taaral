@@ -7,7 +7,7 @@ from odoo import api, exceptions, fields, models, _
 
 
 class PortalMixin(models.AbstractModel):
-    _name = 'portal.mixin'
+    _name = "portal.mixin"
     _description = 'Portal Mixin'
 
     access_url = fields.Char(
@@ -56,7 +56,6 @@ class PortalMixin(models.AbstractModel):
         else:
             params = {}
         if share_token and hasattr(self, 'access_token'):
-            self.check_access('read')
             params['access_token'] = self._portal_ensure_token()
         if pid:
             params['pid'] = pid

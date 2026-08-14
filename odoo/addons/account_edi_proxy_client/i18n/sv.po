@@ -2,25 +2,29 @@
 # This file contains the translation of the following modules:
 # * account_edi_proxy_client
 #
-# "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
-# Jakob Krabbe <jakob.krabbe@vertel.se>, 2025.
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Translators:
+# lynnliuying <lynn.liu1971@gmail.com>, 2024
+# Robin Calvin, 2024
+# Martin Trigaux, 2024
+# Anders Wallenquist <anders.wallenquist@vertel.se>, 2024
+# Jakob Krabbe <jakob.krabbe@vertel.se>, 2024
+# Jacob Ljungström <jacob.ljungstrom03@gmail.com>, 2025.
 # Hanna Kharraziha <hakha@odoo.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~18.4\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-25 18:36+0000\n"
-"PO-Revision-Date: 2026-08-05 00:11+0000\n"
+"POT-Creation-Date: 2026-01-15 18:38+0000\n"
+"PO-Revision-Date: 2026-03-03 11:59+0000\n"
 "Last-Translator: Hanna Kharraziha <hakha@odoo.com>\n"
-"Language-Team: Swedish <https://translate.odoo.com/projects/odoo-19/"
+"Language-Team: Swedish <https://translate.odoo.com/projects/odoo-18/"
 "account_edi_proxy_client/sv/>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.6.1\n"
+"X-Generator: Weblate 5.16.1\n"
 
 #. module: account_edi_proxy_client
 #. odoo-python
@@ -29,8 +33,8 @@ msgid ""
 "A user already exists with theses credentials on our server. Please check "
 "your information."
 msgstr ""
-"En användare med dessa inloggningsuppgifter finns redan på vår server. "
-"Vänligen kontrollera din information."
+"En användare med dessa uppgifter finns redan på vår server. Vänligen "
+"kontrollera din information."
 
 #. module: account_edi_proxy_client
 #: model:ir.model,name:account_edi_proxy_client.model_account_edi_proxy_client_user
@@ -45,7 +49,7 @@ msgstr "EDI-överföringar genom en proxy för kunder"
 #. module: account_edi_proxy_client
 #: model_terms:ir.ui.view,arch_db:account_edi_proxy_client.view_form_account_edi_proxy_client_user
 msgid "Account Journal"
-msgstr "Bokföringsjournal"
+msgstr "Verifikationsserie"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__active
@@ -84,8 +88,6 @@ msgstr "Demo-läge"
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__display_name
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_certificate_key__display_name
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_res_company__display_name
 msgid "Display Name"
 msgstr "Visningsnamn"
 
@@ -110,26 +112,7 @@ msgid "Edi Identification"
 msgstr "Identifiering av EDI"
 
 #. module: account_edi_proxy_client
-#. odoo-python
-#: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
-msgid ""
-"Failed to connect to Odoo Access Point server. This might be due to another "
-"connection to Odoo Access Point server. It can occur if you have duplicated "
-"your database. \n"
-"\n"
-"If you are not sure how to fix this, please contact our support."
-msgstr ""
-"Lyckades inte ansluta till en Odoo Åtkomstpunkt för servern. Detta kan vara "
-"på grund av en annan befintlig anslutning till åtkomstpunkten. Detta sker "
-"ibland på grund av en duplicerad databas. \n"
-"\n"
-"Om du inte är säker på hur du ska åtgärda problemet, vänligen kontakta vår "
-"kundtjänst."
-
-#. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__id
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_certificate_key__id
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_res_company__id
 msgid "ID"
 msgstr "ID"
 
@@ -137,6 +120,17 @@ msgstr "ID"
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__id_client
 msgid "Id Client"
 msgstr "Kundnummer"
+
+#. module: account_edi_proxy_client
+#. odoo-python
+#: code:addons/account_edi_proxy_client/models/account_edi_proxy_user.py:0
+msgid ""
+"Invalid signature for request. This might be due to another connection to "
+"odoo Access Point server. It can occur if you have duplicated your "
+"database. \n"
+"\n"
+"If you are not sure how to fix this, please contact our support."
+msgstr ""
 
 #. module: account_edi_proxy_client
 #: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__write_uid
@@ -220,30 +214,9 @@ msgid "This company has an active user already created for this EDI type"
 msgstr "Företaget har redan en aktiv användare för denna EDI-typ"
 
 #. module: account_edi_proxy_client
-#: model:ir.model.fields,help:account_edi_proxy_client.field_account_edi_proxy_client_user__is_token_out_of_sync
-msgid ""
-"This field is used to indicate that the edi user token is out of sync with "
-"the proxy server. It is set to True when the token needs to be refreshed or "
-"updated."
-msgstr ""
-"Fältet används för att ange att EDI-användarens token inte är synkroniserad "
-"med proxyservern. Det anges som True när den relaterade token behöver laddas "
-"om eller uppdateras."
-
-#. module: account_edi_proxy_client
 #: model:ir.model.constraint,message:account_edi_proxy_client.constraint_account_edi_proxy_client_user_unique_id_client
 msgid "This id_client is already used on another user."
 msgstr "Denna id_client används redan."
-
-#. module: account_edi_proxy_client
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__is_token_out_of_sync
-msgid "Token Out of Sync"
-msgstr "Token synkroniseras inte"
-
-#. module: account_edi_proxy_client
-#: model:ir.model.fields,field_description:account_edi_proxy_client.field_account_edi_proxy_client_user__token_sync_version
-msgid "Token Sync Version"
-msgstr "Synkroniserad version av token"
 
 #~ msgid "This edi identification is already assigned to an active user"
 #~ msgstr "Denna edi-identifiering är redan tilldelad en aktiv användare"

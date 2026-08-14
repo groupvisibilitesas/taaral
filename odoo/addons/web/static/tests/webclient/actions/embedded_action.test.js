@@ -1,5 +1,5 @@
-import { describe, expect, test, beforeEach } from "@odoo/hoot";
-import { queryAllTexts, waitFor } from "@odoo/hoot-dom";
+import { describe, expect, test } from "@odoo/hoot";
+import { queryAllTexts } from "@odoo/hoot-dom";
 import {
     contains,
     defineActions,
@@ -12,19 +12,17 @@ import {
     toggleMenuItem,
     toggleSearchBarMenu,
     webModels,
-    getKwArgs,
 } from "@web/../tests/web_test_helpers";
 
-import { animationFrame, mockTouch, runAllTimers } from "@odoo/hoot-mock";
+import { mockTouch, runAllTimers } from "@odoo/hoot-mock";
 import { browser } from "@web/core/browser/browser";
-import { router, routerBus } from "@web/core/browser/router";
-import { rpcBus } from "@web/core/network/rpc";
+import { router } from "@web/core/browser/router";
 import { user } from "@web/core/user";
 import { WebClient } from "@web/webclient/webclient";
 
 describe.current.tags("desktop");
 
-const { ResCompany, ResPartner, ResUsers, ResUsersSettings: WebResUsersSettings } = webModels;
+const { ResCompany, ResPartner, ResUsers } = webModels;
 
 class Partner extends models.Model {
     _rec_name = "display_name";
@@ -104,98 +102,9 @@ class Pony extends models.Model {
     };
 }
 
-class ResUsersSettings extends WebResUsersSettings {
-    /** @param {number[]} id */
-    get_embedded_actions_settings(id) {
-        /** @type {import("mock_models").ResUsersSettingsEmbeddedAction} */
-        const ResUsersSettingsEmbeddedAction = this.env["res.users.settings.embedded.action"];
-        return ResUsersSettingsEmbeddedAction.embedded_action_settings_format(id);
-    }
+defineModels([Partner, Pony, ResCompany, ResPartner, ResUsers]);
 
-    /**
-     * @param {number} action_id
-     * @param {number} res_id
-     * @param {number} vals
-     */
-    set_embedded_actions_setting(id, action_id, res_id, vals) {
-        const kwargs = getKwArgs(arguments, "id", "action_id", "res_id", "vals");
-        id = kwargs.id;
-        action_id = kwargs.action_id;
-        res_id = kwargs.res_id;
-        vals = kwargs.vals;
-
-        /** @type {import("mock_models").ResUsersSettingsEmbeddedAction} */
-        const ResUsersSettingsEmbeddedAction = this.env["res.users.settings.embedded.action"];
-
-        let [embeddedSettings] = ResUsersSettingsEmbeddedAction.search_read([
-            ["user_setting_id", "=", id],
-            ["action_id", "=", action_id],
-            ["res_id", "=", res_id],
-        ]);
-        for (const [field, value] of Object.entries(vals)) {
-            if (["embedded_actions_order", "embedded_actions_visibility"].includes(field)) {
-                vals[field] = value
-                    .map((action_id) => (action_id === false ? "false" : String(action_id)))
-                    .join(",");
-            }
-        }
-        if (!embeddedSettings) {
-            embeddedSettings = ResUsersSettingsEmbeddedAction.create({
-                action_id,
-                res_id,
-                ...vals,
-            });
-        } else {
-            ResUsersSettingsEmbeddedAction.write(embeddedSettings.id, vals);
-        }
-    }
-}
-
-class ResUsersSettingsEmbeddedAction extends models.ServerModel {
-    _name = "res.users.settings.embedded.action";
-
-    /** @param {number[]} ids */
-    embedded_action_settings_format(ids) {
-        const embeddedSettings = {};
-        for (const embeddedSettingsRecord of this.browse(ids)) {
-            embeddedSettings[
-                `${embeddedSettingsRecord.action_id}+${embeddedSettingsRecord.resId || ""}`
-            ] = {
-                embedded_actions_order: embeddedSettingsRecord.embedded_actions_order
-                    ? embeddedSettingsRecord.embedded_actions_order
-                          .split(",")
-                          .map((action_id) => (action_id === "false" ? false : parseInt(action_id)))
-                    : [],
-                embedded_actions_visibility: embeddedSettingsRecord.embedded_actions_visibility
-                    ? embeddedSettingsRecord.embedded_actions_visibility
-                          .split(",")
-                          .map((action_id) => (action_id === "false" ? false : parseInt(action_id)))
-                    : [],
-                embedded_visibility: embeddedSettingsRecord.embedded_visibility,
-            };
-        }
-        return embeddedSettings;
-    }
-}
-
-class IrActionsAct_Window extends models.ServerModel {
-    _name = "ir.actions.act_window";
-
-    _records = [{ id: 1 }, { id: 4 }];
-}
-
-defineModels([
-    Partner,
-    Pony,
-    ResCompany,
-    ResPartner,
-    ResUsers,
-    ResUsersSettings,
-    ResUsersSettingsEmbeddedAction,
-    IrActionsAct_Window,
-]);
-
-const actions = [
+defineActions([
     {
         id: 1,
         xml_id: "action_1",
@@ -264,14 +173,7 @@ const actions = [
         parent_action_id: 4,
         action_id: 4,
     },
-];
-
-defineActions(actions);
-
-beforeEach(() => {
-    user.updateUserSettings("id", 1); // workaround to populate the user settings
-    user.updateUserSettings("embedded_actions_config_ids", {}); // workaround to populate the embedded user settings
-});
+]);
 
 test("can display embedded actions linked to the current action", async () => {
     await mountWithCleanup(WebClient);
@@ -287,21 +189,13 @@ test("can display embedded actions linked to the current action", async () => {
         message:
             "The first embedded action should be the parent one and should be shown by default",
     });
-    expect(user.settings.embedded_actions_config_ids).toEqual({
-        "1+": {
-            embedded_actions_order: [],
-            embedded_actions_visibility: [false],
-            embedded_visibility: true,
-            res_model: "partner",
-        },
-    });
 });
 
 test("can toggle visibility of embedded actions", async () => {
     await mountWithCleanup(WebClient);
     await getService("action").doAction(1);
     await contains(".o_control_panel_navigation > button > i.fa-sliders").click();
-    await waitFor(".o_popover.dropdown-menu");
+    await contains(".o_embedded_actions .dropdown").click();
     expect(".o_popover.dropdown-menu .dropdown-item").toHaveCount(4, {
         message: "Three embedded actions should be displayed in the dropdown + button 'Save View'",
     });
@@ -314,21 +208,13 @@ test("can toggle visibility of embedded actions", async () => {
     expect(".o_embedded_actions > button").toHaveCount(3, {
         message: "Should have 2 embedded actions in the embedded + the dropdown button",
     });
-    expect(user.settings.embedded_actions_config_ids).toEqual({
-        "1+": {
-            embedded_actions_order: [],
-            embedded_actions_visibility: [false, 102],
-            embedded_visibility: true,
-            res_model: "partner",
-        },
-    });
 });
 
 test("can click on a embedded action and execute the corresponding action (with xml_id)", async () => {
     await mountWithCleanup(WebClient);
     await getService("action").doAction(1);
     await contains(".o_control_panel_navigation > button > i.fa-sliders").click();
-    await waitFor(".o_popover.dropdown-menu");
+    await contains(".o_embedded_actions .dropdown").click();
     await contains(
         ".o_popover.dropdown-menu .dropdown-item > div > span:contains('Embedded Action 2')"
     ).click();
@@ -346,16 +232,18 @@ test("can click on a embedded action and execute the corresponding action (with 
 
 test("can click on a embedded action and execute the corresponding action (with python_method)", async () => {
     await mountWithCleanup(WebClient);
-    onRpc("do_python_method", () => ({
-        id: 4,
-        name: "Favorite Ponies from python action",
-        res_model: "pony",
-        type: "ir.actions.act_window",
-        views: [[false, "kanban"]],
-    }));
+    onRpc("do_python_method", () => {
+        return {
+            id: 4,
+            name: "Favorite Ponies from python action",
+            res_model: "pony",
+            type: "ir.actions.act_window",
+            views: [[false, "kanban"]],
+        };
+    });
     await getService("action").doAction(1);
     await contains(".o_control_panel_navigation > button > i.fa-sliders").click();
-    await waitFor(".o_popover.dropdown-menu");
+    await contains(".o_embedded_actions .dropdown").click();
     await contains(
         ".o_popover.dropdown-menu .dropdown-item > div > span:contains('Embedded Action 3')"
     ).click();
@@ -373,16 +261,18 @@ test("can click on a embedded action and execute the corresponding action (with 
 
 test("breadcrumbs are updated when clicking on embeddeds", async () => {
     await mountWithCleanup(WebClient);
-    onRpc("do_python_method", () => ({
-        id: 4,
-        name: "Favorite Ponies from python action",
-        res_model: "pony",
-        type: "ir.actions.act_window",
-        views: [[false, "kanban"]],
-    }));
+    onRpc("do_python_method", () => {
+        return {
+            id: 4,
+            name: "Favorite Ponies from python action",
+            res_model: "pony",
+            type: "ir.actions.act_window",
+            views: [[false, "kanban"]],
+        };
+    });
     await getService("action").doAction(1);
     await contains(".o_control_panel_navigation > button > i.fa-sliders").click();
-    await waitFor(".o_popover.dropdown-menu");
+    await contains(".o_embedded_actions .dropdown").click();
     await contains(
         ".o_popover.dropdown-menu .dropdown-item > div > span:contains('Embedded Action 2')"
     ).click();
@@ -418,16 +308,16 @@ test("a view coming from a embedded can be saved in the embedded actions", async
         expect(values).not.toInclude("python_method");
         return [4, values.name]; // Fake new embedded action id
     });
-    onRpc("create_filter", ({ args }) => {
+    onRpc("create_or_replace", ({ args }) => {
         expect(args[0].domain).toBe(`[["name", "=", "Applejack"]]`);
         expect(args[0].embedded_action_id).toBe(4);
-        expect(args[0].user_ids).toEqual([]);
-        return [5]; // Fake new filter id
+        expect(args[0].user_id).toBe(false);
+        return 5; // Fake new filter id
     });
     await mountWithCleanup(WebClient);
     await getService("action").doAction(1);
     await contains(".o_control_panel_navigation > button > i.fa-sliders").click();
-    await waitFor(".o_popover.dropdown-menu");
+    await contains(".o_embedded_actions .dropdown").click();
     await contains(
         ".o_popover.dropdown-menu .dropdown-item > div > span:contains('Embedded Action 2')"
     ).click();
@@ -452,14 +342,6 @@ test("a view coming from a embedded can be saved in the embedded actions", async
     expect(".o_embedded_actions > button").toHaveCount(4, {
         message: "Should have 2 embedded actions in the embedded + the dropdown button",
     });
-    expect(user.settings.embedded_actions_config_ids).toEqual({
-        "1+": {
-            embedded_actions_order: [false, 102, 103, 4],
-            embedded_actions_visibility: [false, 102, 4],
-            embedded_visibility: true,
-            res_model: "partner",
-        },
-    });
 });
 
 test("a view coming from a embedded with python_method can be saved in the embedded actions", async () => {
@@ -471,11 +353,11 @@ test("a view coming from a embedded with python_method can be saved in the embed
             expect(values.python_method).toBe("do_python_method");
             expect(values).not.toInclude("action_id");
             return [4, values.name]; // Fake new embedded action id
-        } else if (method === "create_filter") {
+        } else if (method === "create_or_replace") {
             values = args[0][0];
             expect(args[0].domain).toBe(`[["name", "=", "Applejack"]]`);
             expect(args[0].embedded_action_id).toBe(4);
-            expect(args[0].user_ids).toEqual([]);
+            expect(args[0].user_id).toBe(false);
             return 5; // Fake new filter id
         } else if (method === "do_python_method") {
             return {
@@ -493,7 +375,7 @@ test("a view coming from a embedded with python_method can be saved in the embed
     await mountWithCleanup(WebClient);
     await getService("action").doAction(1);
     await contains(".o_control_panel_navigation > button > i.fa-sliders").click();
-    await waitFor(".o_popover.dropdown-menu");
+    await contains(".o_embedded_actions .dropdown").click();
     await contains(
         ".o_popover.dropdown-menu .dropdown-item > div > span:contains('Embedded Action 3')"
     ).click();
@@ -518,21 +400,13 @@ test("a view coming from a embedded with python_method can be saved in the embed
     expect(".o_embedded_actions > button").toHaveCount(4, {
         message: "Should have 2 embedded actions in the embedded + the dropdown button",
     });
-    expect(user.settings.embedded_actions_config_ids).toEqual({
-        "1+": {
-            embedded_actions_order: [false, 102, 103, 4],
-            embedded_actions_visibility: [false, 103, 4],
-            embedded_visibility: true,
-            res_model: "partner",
-        },
-    });
 });
 
 test("the embedded actions should not be displayed when switching view", async () => {
     await mountWithCleanup(WebClient);
     await getService("action").doAction(1);
     await contains(".o_control_panel_navigation > button > i.fa-sliders").click();
-    await waitFor(".o_popover.dropdown-menu");
+    await contains(".o_embedded_actions .dropdown").click();
     await contains(
         ".o_popover.dropdown-menu .dropdown-item > div > span:contains('Embedded Action 2')"
     ).click();
@@ -549,7 +423,7 @@ test("User can move the main (first) embedded action", async () => {
     await mountWithCleanup(WebClient);
     await getService("action").doAction(1);
     await contains(".o_control_panel_navigation > button > i.fa-sliders").click();
-    await waitFor(".o_popover.dropdown-menu");
+    await contains(".o_embedded_actions .dropdown").click();
     await contains(
         ".o_popover.dropdown-menu .dropdown-item > div > span:contains('Embedded Action 2')"
     ).click();
@@ -559,21 +433,13 @@ test("User can move the main (first) embedded action", async () => {
     expect(".o_embedded_actions > button:nth-child(2) > span").toHaveText("Partners Action 1", {
         message: "Main embedded action should've been moved to 2nd position",
     });
-    expect(user.settings.embedded_actions_config_ids).toEqual({
-        "1+": {
-            embedded_actions_order: [102, false, 103],
-            embedded_actions_visibility: [false, 102],
-            embedded_visibility: true,
-            res_model: "partner",
-        },
-    });
 });
 
 test("User can unselect the main (first) embedded action", async () => {
     await mountWithCleanup(WebClient);
     await getService("action").doAction(1);
     await contains(".o_control_panel_navigation > button > i.fa-sliders").click();
-    await waitFor(".o_popover.dropdown-menu");
+    await contains(".o_embedded_actions .dropdown").click();
     const dropdownItem =
         ".o_popover.dropdown-menu .dropdown-item > div > span:contains('Partners Action 1')";
     expect(dropdownItem).not.toHaveClass("text-muted", {
@@ -583,26 +449,14 @@ test("User can unselect the main (first) embedded action", async () => {
     expect(dropdownItem).not.toHaveClass("selected", {
         message: "Main embedded action should be unselected",
     });
-    expect(user.settings.embedded_actions_config_ids).toEqual({
-        "1+": {
-            embedded_actions_order: [],
-            embedded_actions_visibility: [],
-            embedded_visibility: true,
-            res_model: "partner",
-        },
-    });
 });
 
-test("User should be redirected to the first embedded action set in user settings", async () => {
-    // set embedded action 2 in first
-    user.updateUserSettings("embedded_actions_config_ids", {
-        "1+": {
-            embedded_actions_visibility: [102],
-            embedded_visibility: false,
-            embedded_actions_order: [102, false, 103],
-        },
-    });
+test("User should be redirected to the first embedded action set in localStorage", async () => {
     await mountWithCleanup(WebClient);
+    browser.localStorage.setItem(
+        `orderEmbedded1++${user.userId}`,
+        JSON.stringify([102, false, 103])
+    ); // set embedded action 2 in first
     await getService("action").doActionButton({
         name: 1,
         type: "action",
@@ -636,7 +490,7 @@ test("execute a regular action from an embedded action", async () => {
     await contains(".o_control_panel_navigation button .fa-sliders").click();
     expect(".o_control_panel .o_embedded_actions button:not(.dropdown-toggle)").toHaveCount(1);
 
-    await waitFor(".o_popover.dropdown-menu");
+    await contains(".o_embedded_actions .dropdown").click();
     await contains(".dropdown-menu .dropdown-item span:contains('Embedded Action 2')").click();
     expect(".o_control_panel .o_embedded_actions button:not(.dropdown-toggle)").toHaveCount(2);
 
@@ -651,15 +505,8 @@ test("execute a regular action from an embedded action", async () => {
 });
 
 test("custom embedded action loaded first", async () => {
-    // set embedded action 4 in first
-    user.updateUserSettings("embedded_actions_config_ids", {
-        "4+": {
-            embedded_actions_visibility: [104],
-            embedded_visibility: false,
-            embedded_actions_order: [104, false],
-        },
-    });
     await mountWithCleanup(WebClient);
+    browser.localStorage.setItem(`orderEmbedded4++${user.userId}`, JSON.stringify([104, false])); // set embedded action 4 in first
     await getService("action").doActionButton({
         name: 4,
         type: "action",
@@ -677,74 +524,5 @@ test("custom embedded action loaded first", async () => {
     );
     expect(".o_last_breadcrumb_item > span").toHaveText("Ponies", {
         message: "'Favorite Ponies' view should be loaded",
-    });
-});
-
-test("test get_embedded_actions_settings rpc args", async () => {
-    onRpc("res.users.settings", "get_embedded_actions_settings", ({ args, kwargs }) => {
-        expect(args.length).toBe(1, {
-            message: "Should have one positional argument, which is the id of the user setting.",
-        });
-        expect(args[0]).toBe(1, { message: "The id of the user setting should be 1." });
-        expect(kwargs.context.res_id).toBe(5, {
-            message: "The context should contain the res_id passed to the action.",
-        });
-        expect(kwargs.context.res_model).toBe("partner", {
-            message: "The context should contain the res_model passed to the action.",
-        });
-        expect.step("get_embedded_actions_settings");
-    });
-    await mountWithCleanup(WebClient);
-    await getService("action").doAction(1, {
-        additionalContext: { active_id: 5 },
-    });
-    await contains(".o_control_panel_navigation > button > i.fa-sliders").click();
-    expect.verifySteps(["get_embedded_actions_settings"]);
-});
-
-test("an action containing embedded actions should reload if the page is refreshed", async () => {
-    onRpc("create", ({ args }) => {
-        const values = args[0][0];
-        expect(values.name).toBe("Custom Partners Action 1");
-        expect(values.action_id).toBe(1);
-        // Add the created embedded action to the actions list so that the mock server knows it when reloading (/web/action/load)
-        defineActions([
-            ...actions,
-            {
-                id: 4,
-                name: "Custom Partners Action 1",
-                parent_res_model: values.parent_res_model,
-                type: "ir.embedded.actions",
-                parent_action_id: 1,
-                action_id: values.action_id,
-            },
-        ]);
-        return [4, values.name]; // Fake new embedded action id
-    });
-    onRpc(
-        "create_filter",
-        () => [5] // Fake new filter id
-    );
-
-    await mountWithCleanup(WebClient);
-    await getService("action").doAction(1);
-    // First, we create a new (custom) embedded action based on the current one
-    await contains(".o_control_panel_navigation > button > i.fa-sliders").click();
-    await waitFor(".o_popover.dropdown-menu");
-    await contains(".o_save_current_view ").click();
-    await contains(".o_save_favorite ").click();
-    expect(".o_embedded_actions > button").toHaveCount(3, {
-        message: "Should have 2 embedded actions in the embedded + the dropdown button",
-    });
-
-    // Emulate a hard refresh of the page
-    rpcBus.trigger("CLEAR-CACHES", "/web/action/load");
-    routerBus.trigger("ROUTE_CHANGE");
-    await animationFrame();
-
-    // Check that the created embedded action is still there, as the reload should be done
-    expect(".o_embedded_actions > button").toHaveCount(3, {
-        message:
-            "After refresh, we should still have 2 embedded actions in the embedded + the dropdown button",
     });
 });

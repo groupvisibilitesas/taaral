@@ -3,7 +3,6 @@ import string
 
 from odoo.tools.safe_eval import _UNSAFE_ATTRIBUTES
 
-
 #
 # Monkey-Patch C types
 #
@@ -44,22 +43,17 @@ def _is_safe_expr(expr):
     return '__' not in expr and not any(att_name in expr for att_name in _UNSAFE_ATTRIBUTES)
 
 
-#
-# String patch
-#
-
-
 def _patch_string_formatter_get_field():
     origin_formatter_get_field = string.Formatter.get_field
 
-    def _patched_get_field(self, field_name, args, kwargs):
+    def _get_field(self, field_name, args, kwargs):
         # Monkey-patch `get_field` to raise in case of access to a forbidden name
         # Ref: https://github.com/python/cpython/blob/812245ecce2d8344c3748228047bab456816180a/Lib/string.py#L267
         if not _is_safe_expr(field_name):
             raise NameError('Access to forbidden name %r' % (field_name))
         return origin_formatter_get_field(self, field_name, args, kwargs)
 
-    string.Formatter.get_field = _patched_get_field
+    string.Formatter.get_field = _get_field
 
 
 def _patch_str_format():
@@ -122,7 +116,7 @@ def _patch_attribute_error():
     patch_c_type(AttributeError, "obj", EmptyMember())
 
 
-def patch_module():
+def patch_cpython():
     _patch_string_formatter_get_field()
     _patch_str_format()
     _patch_attribute_error()

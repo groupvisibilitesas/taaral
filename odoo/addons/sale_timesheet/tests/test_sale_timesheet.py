@@ -3,7 +3,7 @@ from datetime import date, timedelta
 
 from odoo import Command
 from odoo.fields import Date
-from odoo.fields import Domain
+from odoo.osv import expression
 from odoo.tools import float_is_zero
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.addons.mail.tests.common import mail_new_test_user
@@ -73,6 +73,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
             'partner_id': self.partner_a.id,
             'partner_invoice_id': self.partner_a.id,
             'partner_shipping_id': self.partner_a.id,
+            'pricelist_id': self.company_data['default_pricelist'].id,
         })
         so_line_ordered_project_only = self.env['sale.order.line'].create({
             'product_id': self.product_order_timesheet4.id,
@@ -199,6 +200,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
             'partner_id': self.partner_a.id,
             'partner_invoice_id': self.partner_a.id,
             'partner_shipping_id': self.partner_a.id,
+            'pricelist_id': self.company_data['default_pricelist'].id,
         })
         so_line_deliver_global_project = self.env['sale.order.line'].create({
             'product_id': self.product_delivery_timesheet2.id,
@@ -321,6 +323,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
             'partner_id': self.partner_a.id,
             'partner_invoice_id': self.partner_a.id,
             'partner_shipping_id': self.partner_a.id,
+            'pricelist_id': self.company_data['default_pricelist'].id,
         })
         so_line_manual_global_project = self.env['sale.order.line'].create({
             'product_id': self.product_delivery_manual2.id,
@@ -401,6 +404,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
             'partner_id': self.partner_a.id,
             'partner_invoice_id': self.partner_a.id,
             'partner_shipping_id': self.partner_a.id,
+            'pricelist_id': self.company_data['default_pricelist'].id,
         })
         # Section Line
         so_line_ordered_project_only = self.env['sale.order.line'].create({
@@ -625,11 +629,13 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
             'partner_id': self.partner_a.id,
             'partner_invoice_id': self.partner_a.id,
             'partner_shipping_id': self.partner_a.id,
+            'pricelist_id': self.company_data['default_pricelist'].id,
         })
         sale_order2 = self.env['sale.order'].create({
             'partner_id': self.partner_b.id,
             'partner_invoice_id': self.partner_b.id,
             'partner_shipping_id': self.partner_b.id,
+            'pricelist_id': self.company_data['default_pricelist'].id,
         })
         so1_product_global_project_so_line = self.env['sale.order.line'].create({
             'product_id': self.product_delivery_timesheet2.id,
@@ -698,7 +704,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
         sale_order_line = self.env['sale.order.line'].create({
             'order_id': sale_order.id,
             'product_id': self.product_order_timesheet3.id,
-            'product_uom_id': uom_days.id,
+            'product_uom': uom_days.id,
         })
         sale_order.action_confirm()
         task = sale_order_line.task_id
@@ -725,7 +731,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
         self.assertEqual(sale_order.invoice_status, 'upselling', 'Sale Timesheet: "invoice on delivery" timesheets should not modify the invoice_status of the so')
         message_sent = self.env['mail.message'].search([
             ('id', '>', last_message_id),
-            ('subject', 'like', 'To-Do'),
+            ('subject', 'like', 'Upsell'),
             ('model', '=', 'sale.order'),
             ('res_id', '=', sale_order.id),
         ])
@@ -742,7 +748,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
 
         message_sent = self.env['mail.message'].search([
             ('id', '>', last_message_id),
-            ('subject', 'like', 'To-Do'),
+            ('subject', 'like', 'Upsell'),
             ('model', '=', 'sale.order'),
             ('res_id', '=', sale_order.id),
         ])
@@ -762,7 +768,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
         sale_order_line = self.env['sale.order.line'].create({
             'order_id': sale_order.id,
             'product_id': self.product_order_timesheet3.id,
-            'product_uom_id': uom_days.id,
+            'product_uom': uom_days.id,
         })
         sale_order.action_confirm()
         task = sale_order_line.task_id
@@ -789,7 +795,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
         self.assertEqual(sale_order.invoice_status, 'upselling', 'Sale Timesheet: "invoice on delivery" timesheets should not modify the invoice_status of the so')
         message_sent = self.env['mail.message'].search([
             ('id', '>', last_message_id),
-            ('subject', 'like', 'To-Do'),
+            ('subject', 'like', 'Upsell'),
             ('model', '=', 'sale.order'),
             ('res_id', '=', sale_order.id),
         ])
@@ -806,7 +812,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
 
         message_sent = self.env['mail.message'].search([
             ('id', '>', last_message_id),
-            ('subject', 'like', 'To-Do'),
+            ('subject', 'like', 'Upsell'),
             ('model', '=', 'sale.order'),
             ('res_id', '=', sale_order.id),
         ])
@@ -838,7 +844,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
         self.assertEqual(sale_order.invoice_status, 'upselling', 'Sale Timesheet: "invoice on delivery" timesheets should not modify the invoice_status of the so')
         message_sent = self.env['mail.message'].search([
             ('id', '>', last_message_id),
-            ('subject', 'like', 'To-Do'),
+            ('subject', 'like', 'Upsell'),
             ('model', '=', 'sale.order'),
             ('res_id', '=', sale_order.id),
         ])
@@ -855,7 +861,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
 
         message_sent = self.env['mail.message'].search([
             ('id', '>', last_message_id),
-            ('subject', 'like', 'To-Do'),
+            ('subject', 'like', 'Upsell'),
             ('model', '=', 'sale.order'),
             ('res_id', '=', sale_order.id),
         ])
@@ -866,11 +872,13 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
             'partner_id': self.partner_a.id,
             'partner_invoice_id': self.partner_a.id,
             'partner_shipping_id': self.partner_a.id,
+            'pricelist_id': self.company_data['default_pricelist'].id,
         })
         so_line = self.env['sale.order.line'].create({
             'name': self.product_delivery_timesheet2.name,
             'product_id': self.product_delivery_timesheet2.id,
             'product_uom_qty': 50,
+            'product_uom': self.product_delivery_timesheet2.uom_id.id,
             'price_unit': self.product_delivery_timesheet2.list_price,
             'order_id': sale_order.id,
         })
@@ -907,6 +915,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
             'name': self.product_order_timesheet3.name,
             'product_id': self.product_order_timesheet3.id,
             'product_uom_qty': 1,
+            'product_uom': self.product_order_timesheet3.uom_id.id,
             'price_unit': product_price,
             'order_id': sale_order.id,
         })
@@ -941,6 +950,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
                 'type': 'service',
                 'invoice_policy': 'order',
                 'uom_id': self.uom_hour.id,
+                'uom_po_id': self.uom_hour.id,
                 'default_code': 'c1',
                 'service_tracking': 'task_in_project',
                 'project_id': False,  # will create a project,
@@ -952,6 +962,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
                 'type': 'service',
                 'invoice_policy': 'order',
                 'uom_id': self.uom_hour.id,
+                'uom_po_id': self.uom_hour.id,
                 'default_code': 'c2',
                 'service_tracking': 'task_in_project',
                 'project_id': False,  # will create a project,
@@ -965,12 +976,14 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
                 'name': product_1.name,
                 'product_id': product_1.id,
                 'product_uom_qty': 10,
+                'product_uom': product_1.uom_id.id,
                 'price_unit': product_1.list_price,
             }, {
                 'order_id': sale_order.id,
                 'name': product_2.name,
                 'product_id': product_2.id,
                 'product_uom_qty': 5,
+                'product_uom': product_2.uom_id.id,
                 'price_unit': product_2.list_price,
             },
         ])
@@ -1030,6 +1043,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
             'type': 'service',
             'invoice_policy': 'order',
             'uom_id': self.uom_hour.id,
+            'uom_po_id': self.uom_hour.id,
             'default_code': 'c1',
             'service_tracking': 'task_in_project',
             'project_id': False,  # will create a project,
@@ -1043,6 +1057,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
             'name': product.name,
             'product_id': product.id,
             'product_uom_qty': 10,
+            'product_uom': product.uom_id.id,
             'price_unit': product.list_price,
         })
         project = sale_order_line._timesheet_create_project()
@@ -1115,6 +1130,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
             'partner_id': self.partner_a.id,
             'partner_invoice_id': self.partner_a.id,
             'partner_shipping_id': self.partner_a.id,
+            'pricelist_id': self.company_data['default_pricelist'].id,
         })
         so_line = self.env['sale.order.line'].create({
             'product_id': self.product_delivery_timesheet2.id,
@@ -1150,6 +1166,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
             'partner_id': self.partner_a.id,
             'partner_invoice_id': self.partner_a.id,
             'partner_shipping_id': self.partner_a.id,
+            'pricelist_id': self.company_data['default_pricelist'].id,
         })
         so_line1 = self.env['sale.order.line'].create({
             'product_id': self.product_delivery_timesheet2.id,
@@ -1346,28 +1363,35 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
 
     def test_invoice_timesheet_uom_conversion_with_period(self):
         """
-        Ensure that invoice quantities are correctly computed when the
-        sale order line UoM differs from the timesheet UoM.
+        Ensure that invoice quantities are correctly computed when:
+        - SOL and timesheet UoMs differ
+        - SOL and timesheet UoMs are the same (days)
         """
+        uom_days = self.env.ref('uom.product_uom_day')
+
+        # Case 1: SOL in Days, Encoding in Hours
         self.env.company.timesheet_encode_uom_id = self.uom_hour.id
-        product = self.env['product.product'].create({
-            'name': "Test service product",
+        product_vals = {
             'standard_price': 30,
             'list_price': 90,
             'type': 'service',
             'service_policy': 'delivered_timesheet',
-            'invoice_policy': 'delivery',
-            'service_type': 'timesheet',
             'service_tracking': 'task_global_project',
             'project_id': self.project_global.id,
             'taxes_id': False,
-            'uom_id': self.uom_hour.id,
-        })
-        uom_days = self.env.ref('uom.product_uom_day')
+        }
+        product_uom_hour, product_uom_days = self.env['product.product'].create([
+            {**product_vals, 'name': "Test product(Hour)", 'uom_id': self.uom_hour.id},
+            {**product_vals, 'name': "Test product(Days)", 'uom_id': uom_days.id}
+        ])
         sale_order = self.env['sale.order'].create({
             'partner_id': self.partner_a.id,
             'order_line': [
-                Command.create({'product_id': product.id, 'product_uom_qty': 3, 'product_uom_id': uom_days.id}),
+                Command.create({
+                    'product_id': product_uom_hour.id,
+                    'product_uom_qty': 3,
+                    'product_uom': uom_days.id
+                }),
             ],
         })
         sale_order.action_confirm()
@@ -1383,7 +1407,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
         })
         context = {
             'active_model': 'sale.order',
-            'active_ids': [sale_order.id],
+            'active_ids': sale_order.ids,
             'active_id': sale_order.id,
             'default_journal_id': self.company_data['default_journal_sale'].id
         }
@@ -1391,11 +1415,50 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
             'advance_payment_method': 'delivered',
             'date_start_invoice_timesheet': '2026-03-16',
             'date_end_invoice_timesheet': '2026-03-20',
-            'sale_order_ids': [(6, 0, sale_order.ids)],
+            'sale_order_ids': [Command.set(sale_order.ids)],
         })
         invoice_dict = wizard.create_invoices()
         invoice = self.env['account.move'].browse(invoice_dict['res_id'])
         self.assertEqual(invoice.invoice_line_ids.quantity, 2)
+
+        # Case 2: Both SOL and Encoding in Days
+        self.env.company.timesheet_encode_uom_id = uom_days.id
+        sale_order_days = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
+            'order_line': [
+                Command.create({
+                    'product_id': product_uom_days.id,
+                    'product_uom_qty': 1,
+                    'product_uom': uom_days.id
+                }),
+            ],
+        })
+        sale_order_days.action_confirm()
+        task = sale_order_days.tasks_ids
+        self.env['account.analytic.line'].create({
+            'name': 'Test Line',
+            'date': '2026-04-02',
+            'project_id': task.project_id.id,
+            'task_id': task.id,
+            'unit_amount': 8,
+            'employee_id': self.employee_user.id,
+            'company_id': self.company_data['company'].id,
+        })
+        context = {
+            'active_model': 'sale.order',
+            'active_ids': sale_order_days.ids,
+            'active_id': sale_order_days.id,
+            'default_journal_id': self.company_data['default_journal_sale'].id
+        }
+        wizard = self.env['sale.advance.payment.inv'].with_context(context).create({
+            'advance_payment_method': 'delivered',
+            'date_start_invoice_timesheet': '2026-04-02',
+            'date_end_invoice_timesheet': '2026-04-02',
+            'sale_order_ids': [Command.set(sale_order_days.ids)],
+        })
+        invoice_dict = wizard.create_invoices()
+        invoice_days = self.env['account.move'].browse(invoice_dict['res_id'])
+        self.assertEqual(invoice_days.invoice_line_ids.quantity, 1)
 
     def test_partial_refund_timesheet_qty_to_invoice(self):
         """When a delivered-timesheet invoice line is partially refunded, the next invoice must
@@ -1405,6 +1468,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
             'partner_id': self.partner_a.id,
             'partner_invoice_id': self.partner_a.id,
             'partner_shipping_id': self.partner_a.id,
+            'pricelist_id': self.company_data['default_pricelist'].id,
             'order_line': [
                 Command.create({
                     'product_id': self.product_delivery_timesheet3.id,
@@ -1506,7 +1570,7 @@ class TestSaleTimesheet(TestCommonSaleTimesheet):
         timesheet_1, timesheet_2 = timesheets_entry[0], timesheets_entry[1]
         (so_line_1.task_id | so_line_2.task_id).message_subscribe(partner_ids=portal_user.partner_id.ids)
         domain = AnalyticLine.with_user(portal_user)._timesheet_get_portal_domain()
-        domain = Domain.AND([
+        domain = expression.AND([
             domain,
             [('so_line', 'in', so_line_1.ids)]
         ])

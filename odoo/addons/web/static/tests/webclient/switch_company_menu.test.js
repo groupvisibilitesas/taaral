@@ -3,34 +3,31 @@ import { edit, keyDown, press, queryAllAttributes, queryAllTexts } from "@odoo/h
 import { animationFrame, runAllTimers } from "@odoo/hoot-mock";
 import {
     contains,
+    getService,
     mountWithCleanup,
     patchWithCleanup,
     serverState,
 } from "@web/../tests/web_test_helpers";
+import { session } from "@web/session";
 
 import { cookie } from "@web/core/browser/cookie";
-import { user } from "@web/core/user";
 import { SwitchCompanyMenu } from "@web/webclient/switch_company_menu/switch_company_menu";
-
-const ORIGINAL_TOGGLE_DELAY = SwitchCompanyMenu.toggleDelay;
-
-async function createSwitchCompanyMenu(options = { toggleDelay: 0 }) {
-    patchWithCleanup(SwitchCompanyMenu, { toggleDelay: options.toggleDelay });
-    await mountWithCleanup(SwitchCompanyMenu);
-}
-
-function patchUserActiveCompanies(cids) {
-    patchWithCleanup(
-        user.activeCompanies,
-        cids.map((cid) => serverState.companies.find((company) => company.id === cid))
-    );
-}
 
 describe.current.tags("desktop");
 
 const clickConfirm = () => contains(".o_switch_company_menu_buttons button:first").click();
 
 const openCompanyMenu = () => contains(".dropdown-toggle").click();
+
+const stepOnCookieChange = () =>
+    patchWithCleanup(cookie, {
+        set(key, value) {
+            if (key === "cids") {
+                expect.step(value);
+            }
+            return super.set(key, value);
+        },
+    });
 
 /**
  * @param {number} index
@@ -39,7 +36,6 @@ const toggleCompany = (index) =>
     contains(`[data-company-id] [role=menuitemcheckbox]:eq(${index})`).click();
 
 beforeEach(() => {
-    cookie.set("cids", "3");
     serverState.companies = [
         { id: 3, name: "Hermit", sequence: 1, parent_id: false, child_ids: [] },
         { id: 2, name: "Herman's", sequence: 2, parent_id: false, child_ids: [] },
@@ -50,7 +46,7 @@ beforeEach(() => {
 });
 
 test("basic rendering", async () => {
-    await createSwitchCompanyMenu();
+    await mountWithCleanup(SwitchCompanyMenu);
 
     expect("div.o_switch_company_menu").toHaveCount(1);
     expect("div.o_switch_company_menu").toHaveText("Hermit");
@@ -67,7 +63,11 @@ test("basic rendering", async () => {
 });
 
 test("companies can be toggled: toggle a second company", async () => {
-    await createSwitchCompanyMenu();
+    stepOnCookieChange();
+
+    await mountWithCleanup(SwitchCompanyMenu);
+
+    expect.verifySteps(["3"]);
 
     /**
      *   [x] **Hermit**
@@ -76,8 +76,8 @@ test("companies can be toggled: toggle a second company", async () => {
      *   [ ]    Hercules
      *   [ ]    Hulk
      */
-    expect(user.activeCompanies.map((c) => c.id)).toEqual([3]);
-    expect(user.activeCompany.id).toBe(3);
+    expect(getService("company").activeCompanyIds).toEqual([3]);
+    expect(getService("company").currentCompany.id).toBe(3);
     await openCompanyMenu();
     expect("[data-company-id]").toHaveCount(5);
     expect("[data-company-id] .fa-check-square").toHaveCount(1);
@@ -115,11 +115,15 @@ test("companies can be toggled: toggle a second company", async () => {
         "false",
     ]);
     await clickConfirm();
-    expect(cookie.get("cids")).toEqual("3-2");
+    expect.verifySteps(["3-2"]);
 });
 
 test("can toggle multiple companies at once", async () => {
-    await createSwitchCompanyMenu({ toggleDelay: ORIGINAL_TOGGLE_DELAY });
+    stepOnCookieChange();
+
+    await mountWithCleanup(SwitchCompanyMenu);
+
+    expect.verifySteps(["3"]);
 
     /**
      *   [x] **Hermit**
@@ -128,8 +132,8 @@ test("can toggle multiple companies at once", async () => {
      *   [ ]    Hercules
      *   [ ]    Hulk
      */
-    expect(user.activeCompanies.map((c) => c.id)).toEqual([3]);
-    expect(user.activeCompany.id).toBe(3);
+    expect(getService("company").activeCompanyIds).toEqual([3]);
+    expect(getService("company").currentCompany.id).toBe(3);
     await openCompanyMenu();
     expect("[data-company-id]").toHaveCount(5);
     expect("[data-company-id] .fa-check-square").toHaveCount(1);
@@ -151,11 +155,15 @@ test("can toggle multiple companies at once", async () => {
 
     expect.verifySteps([]);
     await clickConfirm();
-    expect(cookie.get("cids")).toEqual("2-1-4-5");
+    expect.verifySteps(["2-1-4-5"]);
 });
 
 test("single company selected: toggling it off will keep it", async () => {
-    await createSwitchCompanyMenu();
+    stepOnCookieChange();
+
+    await mountWithCleanup(SwitchCompanyMenu);
+
+    expect.verifySteps(["3"]);
 
     /**
      *   [x] **Hermit**
@@ -166,8 +174,8 @@ test("single company selected: toggling it off will keep it", async () => {
      */
     await runAllTimers();
     expect(cookie.get("cids")).toBe("3");
-    expect(user.activeCompanies.map((c) => c.id)).toEqual([3]);
-    expect(user.activeCompany.id).toBe(3);
+    expect(getService("company").activeCompanyIds).toEqual([3]);
+    expect(getService("company").currentCompany.id).toBe(3);
     await openCompanyMenu();
     expect("[data-company-id]").toHaveCount(5);
     expect("[data-company-id] .fa-check-square").toHaveCount(1);
@@ -183,17 +191,21 @@ test("single company selected: toggling it off will keep it", async () => {
     await toggleCompany(0);
     await clickConfirm();
     await animationFrame();
-    expect(cookie.get("cids")).toEqual("3");
-    expect(user.activeCompanies.map((c) => c.id)).toEqual([3]);
-    expect(user.activeCompany.id).toBe(3);
+    expect.verifySteps(["3"]);
+    expect(getService("company").activeCompanyIds).toEqual([3]);
+    expect(getService("company").currentCompany.id).toBe(3);
 
     await openCompanyMenu();
-    expect("[data-company-id] .fa-check-square").toHaveCount(1);
-    expect("[data-company-id] .fa-square-o").toHaveCount(4);
+    expect("[data-company-id] .fa-check-square").toHaveCount(0);
+    expect("[data-company-id] .fa-square-o").toHaveCount(5);
 });
 
 test("single company mode: companies can be logged in", async () => {
-    await createSwitchCompanyMenu({ toggleDelay: ORIGINAL_TOGGLE_DELAY });
+    stepOnCookieChange();
+
+    await mountWithCleanup(SwitchCompanyMenu);
+
+    expect.verifySteps(["3"]);
 
     /**
      *   [x] **Hermit**
@@ -202,8 +214,8 @@ test("single company mode: companies can be logged in", async () => {
      *   [ ]    Hercules
      *   [ ]    Hulk
      */
-    expect(user.activeCompanies.map((c) => c.id)).toEqual([3]);
-    expect(user.activeCompany.id).toBe(3);
+    expect(getService("company").activeCompanyIds).toEqual([3]);
+    expect(getService("company").currentCompany.id).toBe(3);
     await openCompanyMenu();
     expect("[data-company-id]").toHaveCount(5);
     expect("[data-company-id] .fa-check-square").toHaveCount(1);
@@ -218,12 +230,15 @@ test("single company mode: companies can be logged in", async () => {
      */
     await contains(".log_into:eq(1)").click();
     expect(".dropdown-menu").toHaveCount(0, { message: "dropdown is directly closed" });
-    expect(cookie.get("cids")).toEqual("2");
+    expect.verifySteps(["2"]);
 });
 
 test("multi company mode: log into a non selected company", async () => {
-    patchUserActiveCompanies([3, 1]);
-    await createSwitchCompanyMenu();
+    cookie.set("cids", "3-1");
+    stepOnCookieChange();
+
+    await mountWithCleanup(SwitchCompanyMenu);
+    expect.verifySteps(["3-1"]);
 
     /**
      *   [x] Hermit
@@ -232,8 +247,8 @@ test("multi company mode: log into a non selected company", async () => {
      *   [ ]    Hercules
      *   [ ]    Hulk
      */
-    expect(user.activeCompanies.map((c) => c.id)).toEqual([3, 1]);
-    expect(user.activeCompany.id).toBe(3);
+    expect(getService("company").activeCompanyIds).toEqual([3, 1]);
+    expect(getService("company").currentCompany.id).toBe(3);
     await openCompanyMenu();
     expect("[data-company-id]").toHaveCount(5);
     expect("[data-company-id] .fa-check-square").toHaveCount(2);
@@ -248,12 +263,15 @@ test("multi company mode: log into a non selected company", async () => {
      */
     await contains(".log_into:eq(1)").click();
     expect(".dropdown-menu").toHaveCount(0, { message: "dropdown is directly closed" });
-    expect(cookie.get("cids")).toEqual("2-1-3"); // 1-3 in that order, they are sorted
+    expect.verifySteps(["2-3-1"]);
 });
 
 test("multi company mode: log into an already selected company", async () => {
-    patchUserActiveCompanies([2, 1]);
-    await createSwitchCompanyMenu();
+    cookie.set("cids", "2-1");
+    stepOnCookieChange();
+
+    await mountWithCleanup(SwitchCompanyMenu);
+    expect.verifySteps(["2-1"]);
 
     /**
      *   [ ] Hermit
@@ -262,8 +280,8 @@ test("multi company mode: log into an already selected company", async () => {
      *   [ ]    Hercules
      *   [ ]    Hulk
      */
-    expect(user.activeCompanies.map((c) => c.id)).toEqual([2, 1]);
-    expect(user.activeCompany.id).toBe(2);
+    expect(getService("company").activeCompanyIds).toEqual([2, 1]);
+    expect(getService("company").currentCompany.id).toBe(2);
     await openCompanyMenu();
     expect("[data-company-id]").toHaveCount(5);
     expect("[data-company-id] .fa-check-square").toHaveCount(2);
@@ -278,11 +296,14 @@ test("multi company mode: log into an already selected company", async () => {
      */
     await contains(".log_into:eq(2)").click();
     expect(".dropdown-menu").toHaveCount(0, { message: "dropdown is directly closed" });
-    expect(cookie.get("cids")).toEqual("1-2-4-5");
+    expect.verifySteps(["1-2-4-5"]);
 });
 
 test("companies can be logged in even if some toggled within delay", async () => {
-    await createSwitchCompanyMenu({ toggleDelay: ORIGINAL_TOGGLE_DELAY });
+    stepOnCookieChange();
+
+    await mountWithCleanup(SwitchCompanyMenu);
+    expect.verifySteps(["3"]);
 
     /**
      *   [x] **Hermit**
@@ -291,8 +312,8 @@ test("companies can be logged in even if some toggled within delay", async () =>
      *   [ ]    Hercules
      *   [ ]    Hulk
      */
-    expect(user.activeCompanies.map((c) => c.id)).toEqual([3]);
-    expect(user.activeCompany.id).toBe(3);
+    expect(getService("company").activeCompanyIds).toEqual([3]);
+    expect(getService("company").currentCompany.id).toBe(3);
     await openCompanyMenu();
     expect("[data-company-id]").toHaveCount(5);
     expect("[data-company-id] .fa-check-square").toHaveCount(1);
@@ -309,26 +330,31 @@ test("companies can be logged in even if some toggled within delay", async () =>
     await contains("[data-company-id] [role=menuitemcheckbox]:eq(0)").click();
     await contains(".log_into:eq(1)").click();
     expect(".dropdown-menu").toHaveCount(0, { message: "dropdown is directly closed" });
-    expect(cookie.get("cids")).toEqual("2");
+    expect.verifySteps(["2"]);
 });
 
 test("always show the name of the company on the top right of the app", async () => {
     // initialize a single company
-    const companyName = "Single company";
     serverState.companies = [
-        { id: 1, name: companyName, sequence: 1, parent_id: false, child_ids: [] },
+        { id: 1, name: "Single company", sequence: 1, parent_id: false, child_ids: [] },
     ];
 
-    await createSwitchCompanyMenu();
+    stepOnCookieChange();
+
+    await mountWithCleanup(SwitchCompanyMenu);
+    expect.verifySteps(["1"]);
 
     // in case of a single company, drop down button should be displayed but disabled
-    expect(".dropdown-toggle").toBeVisible();
+    expect(".dropdown-toggle").toBeDisplayed();
     expect(".dropdown-toggle").not.toBeEnabled();
-    expect(".dropdown-toggle").toHaveText(companyName);
+    expect(".dropdown-toggle").toHaveText("Single company");
 });
 
 test("single company mode: from company loginto branch", async () => {
-    await createSwitchCompanyMenu();
+    stepOnCookieChange();
+
+    await mountWithCleanup(SwitchCompanyMenu);
+    expect.verifySteps(["3"]);
 
     /**
      *   [x] **Hermit**
@@ -337,8 +363,8 @@ test("single company mode: from company loginto branch", async () => {
      *   [ ]    Hercules
      *   [ ]    Hulk
      */
-    expect(user.activeCompanies.map((c) => c.id)).toEqual([3]);
-    expect(user.activeCompany.id).toBe(3);
+    expect(getService("company").activeCompanyIds).toEqual([3]);
+    expect(getService("company").currentCompany.id).toBe(3);
     await contains(".dropdown-toggle").click();
     expect("[data-company-id]").toHaveCount(5);
     expect("[data-company-id] .fa-check-square").toHaveCount(1);
@@ -352,12 +378,15 @@ test("single company mode: from company loginto branch", async () => {
      *   [x]    Hulk
      */
     await contains(".log_into:eq(2)").click();
-    expect(cookie.get("cids")).toEqual("1-4-5");
+    expect.verifySteps(["1-4-5"]);
 });
 
 test("single company mode: from branch loginto company", async () => {
-    patchUserActiveCompanies([1, 4, 5]);
-    await createSwitchCompanyMenu();
+    cookie.set("cids", "1-4-5");
+    stepOnCookieChange();
+
+    await mountWithCleanup(SwitchCompanyMenu);
+    expect.verifySteps(["1-4-5"]);
 
     /**
      *   [ ] Hermit
@@ -366,8 +395,8 @@ test("single company mode: from branch loginto company", async () => {
      *   [x]    Hercules
      *   [x]    Hulk
      */
-    expect(user.activeCompanies.map((c) => c.id)).toEqual([1, 4, 5]);
-    expect(user.activeCompany.id).toBe(1);
+    expect(getService("company").activeCompanyIds).toEqual([1, 4, 5]);
+    expect(getService("company").currentCompany.id).toBe(1);
     await contains(".dropdown-toggle").click();
     expect("[data-company-id]").toHaveCount(5);
     expect("[data-company-id] .fa-check-square").toHaveCount(3);
@@ -381,12 +410,15 @@ test("single company mode: from branch loginto company", async () => {
      *   [ ]    Hulk
      */
     await contains(".log_into:eq(0)").click();
-    expect(cookie.get("cids")).toEqual("3");
+    expect.verifySteps(["3"]);
 });
 
 test("single company mode: from leaf (only one company in branch selected) loginto company", async () => {
-    patchUserActiveCompanies([1]);
-    await createSwitchCompanyMenu();
+    cookie.set("cids", "1");
+    stepOnCookieChange();
+
+    await mountWithCleanup(SwitchCompanyMenu);
+    expect.verifySteps(["1"]);
 
     /**
      *   [ ] Hermit
@@ -395,8 +427,8 @@ test("single company mode: from leaf (only one company in branch selected) login
      *   [ ]    Hercules
      *   [ ]    Hulk
      */
-    expect(user.activeCompanies.map((c) => c.id)).toEqual([1]);
-    expect(user.activeCompany.id).toBe(1);
+    expect(getService("company").activeCompanyIds).toEqual([1]);
+    expect(getService("company").currentCompany.id).toBe(1);
     await contains(".dropdown-toggle").click();
     expect("[data-company-id]").toHaveCount(5);
     expect("[data-company-id] .fa-check-square").toHaveCount(1);
@@ -410,12 +442,15 @@ test("single company mode: from leaf (only one company in branch selected) login
      *   [ ]    Hulk
      */
     await contains(".log_into:eq(1)").click();
-    expect(cookie.get("cids")).toEqual("2");
+    expect.verifySteps(["2"]);
 });
 
 test("multi company mode: switching company doesn't deselect already selected ones", async () => {
-    patchUserActiveCompanies([1, 2, 4, 5]);
-    await createSwitchCompanyMenu();
+    cookie.set("cids", "1-2-4-5");
+    stepOnCookieChange();
+
+    await mountWithCleanup(SwitchCompanyMenu);
+    expect.verifySteps(["1-2-4-5"]);
 
     /**
      *   [ ] Hermit
@@ -424,8 +459,8 @@ test("multi company mode: switching company doesn't deselect already selected on
      *   [x]    Hercules
      *   [x]    Hulk
      */
-    expect(user.activeCompanies.map((c) => c.id)).toEqual([1, 2, 4, 5]);
-    expect(user.activeCompany.id).toBe(1);
+    expect(getService("company").activeCompanyIds).toEqual([1, 2, 4, 5]);
+    expect(getService("company").currentCompany.id).toBe(1);
     await contains(".dropdown-toggle").click();
     expect("[data-company-id]").toHaveCount(5);
     expect("[data-company-id] .fa-check-square").toHaveCount(4);
@@ -439,11 +474,11 @@ test("multi company mode: switching company doesn't deselect already selected on
      *   [x]    Hulk
      */
     await contains(".log_into:eq(1)").click();
-    expect(cookie.get("cids")).toEqual("2-1-4-5");
+    expect.verifySteps(["2-1-4-5"]);
 });
 
 test("show confirm and reset buttons only when selection has changed", async () => {
-    await createSwitchCompanyMenu();
+    await mountWithCleanup(SwitchCompanyMenu);
     await openCompanyMenu();
 
     expect(".o_switch_company_menu_buttons").toHaveCount(0);
@@ -456,7 +491,7 @@ test("show confirm and reset buttons only when selection has changed", async () 
 });
 
 test("no search input when less that 10 companies", async () => {
-    await createSwitchCompanyMenu();
+    await mountWithCleanup(SwitchCompanyMenu);
 
     await openCompanyMenu();
     expect(".o-dropdown--menu .visually-hidden input").toHaveCount(1);
@@ -476,7 +511,7 @@ test("show search input when more that 10 companies & search filters items but i
         { id: 10, name: "Random e", sequence: 10, parent_id: false, child_ids: [] },
     ];
 
-    await createSwitchCompanyMenu();
+    await mountWithCleanup(SwitchCompanyMenu);
 
     await openCompanyMenu();
     expect(".o-dropdown--menu input").toHaveCount(1);
@@ -495,7 +530,7 @@ test("show search input when more that 10 companies & search filters items but i
 });
 
 test("when less than 10 companies, typing key makes the search input visible", async () => {
-    await createSwitchCompanyMenu();
+    await mountWithCleanup(SwitchCompanyMenu);
     await openCompanyMenu();
 
     expect(".o-dropdown--menu input").toHaveCount(1);
@@ -524,7 +559,10 @@ test("navigation with search input", async () => {
         { id: 10, name: "Random e", sequence: 10, parent_id: false, child_ids: [] },
     ];
 
-    await createSwitchCompanyMenu();
+    stepOnCookieChange();
+
+    await mountWithCleanup(SwitchCompanyMenu);
+    expect.verifySteps(["3"]);
     await openCompanyMenu();
 
     expect(".o-dropdown--menu input").toBeFocused();
@@ -576,13 +614,12 @@ test("navigation with search input", async () => {
     await keyDown(["control", "enter"]);
     await animationFrame();
 
-    expect(cookie.get("cids")).toEqual("3-2");
+    expect.verifySteps([...navigationSteps, "3-2"]);
     expect(".o_switch_company_item").toHaveCount(0);
-    expect.verifySteps(navigationSteps);
 });
 
 test("select and de-select all", async () => {
-    await createSwitchCompanyMenu();
+    await mountWithCleanup(SwitchCompanyMenu);
     await openCompanyMenu();
 
     // Show search
@@ -608,62 +645,34 @@ test("select and de-select all", async () => {
     expect(".o_switch_company_item:has([role=menuitemcheckbox][aria-checked=true])").toHaveCount(0);
 });
 
-test("de-select only changes visible companies", async () => {
-    await createSwitchCompanyMenu();
-    await openCompanyMenu();
-
-    // Show search
-    await edit(" ");
-    await toggleCompany(4);
-    expect(".o_switch_company_item:has([role=menuitemcheckbox][aria-checked=true])").toHaveCount(2);
-
-    // Show search
-    await contains("input").edit("m");
-    await animationFrame();
-
-    // One company is selected, unselect all
-    await contains("[role=menuitemcheckbox][title='Deselect all']").click();
-    expect(".o_switch_company_item:has([role=menuitemcheckbox][aria-checked=true])").toHaveCount(0);
-
-    // Hidden company is still selected
-    await contains("input").clear();
-    await animationFrame();
-    expect(".o_switch_company_item:has([role=menuitemcheckbox][aria-checked=true])").toHaveCount(1);
-
-    // Filter and select all visible companies
-    await contains("input").edit("m");
-    await animationFrame();
-    await contains("[role=menuitemcheckbox][title='Select all']").click();
-    expect(".o_switch_company_item:has([role=menuitemcheckbox][aria-checked=true])").toHaveCount(3);
-
-    // Hidden company is unchanged
-    await contains("input").clear();
-    await animationFrame();
-    expect(".o_switch_company_item:has([role=menuitemcheckbox][aria-checked=true])").toHaveCount(4);
-    expect(".o_switch_company_item:has([role=menuitemcheckbox][aria-checked=false])").toHaveCount(
-        1
-    );
-});
-
 test("disallowed companies in between allowed companies are not enabled", async () => {
+    const companies = {
+        1: { id: 1, name: "Parent", sequence: 1, parent_id: false, child_ids: [2] },
+        2: { id: 2, name: "Child A", sequence: 2, parent_id: 1, child_ids: [3] },
+        3: { id: 3, name: "Child B", sequence: 3, parent_id: 2, child_ids: [] },
+    };
+
+    patchWithCleanup(session.user_companies, {
+        allowed_companies: companies,
+        current_company: 3,
+        disallowed_ancestor_companies: {
+            2: companies[2]
+        },
+    });
+
     cookie.set("cids", "3");
-    serverState.companies = [
-        { id: 1, name: "Parent", sequence: 1, parent_id: false, child_ids: [2] },
-        { id: 2, name: "Child A", sequence: 2, parent_id: 1, child_ids: [3] },
-        { id: 3, name: "Child B", sequence: 3, parent_id: 2, child_ids: [] },
-    ];
+    stepOnCookieChange();
 
-    patchWithCleanup(user.allowedCompanies, [serverState.companies[0], serverState.companies[2]]);
-
-    await createSwitchCompanyMenu();
+    await mountWithCleanup(SwitchCompanyMenu);
+    expect.verifySteps(["3"]);
 
     /**
      *   [ ] Parent
      *   [ ]    Child A
      *   [x]        Child B
      */
-    expect(user.activeCompanies.map((c) => c.id)).toEqual([3]);
-    expect(user.activeCompany.id).toBe(3);
+    expect(getService("company").activeCompanyIds).toEqual([3]);
+    expect(getService("company").currentCompany.id).toBe(3);
     await openCompanyMenu();
     expect("[data-company-id]").toHaveCount(3);
     expect("[data-company-id] .fa-check-square").toHaveCount(1);
@@ -675,10 +684,5 @@ test("disallowed companies in between allowed companies are not enabled", async 
      *   [x]        Child B
      */
     await contains(".log_into:eq(0)").click();
-    expect(cookie.get("cids")).toEqual("1-3");
-
-    await openCompanyMenu();
-    await toggleCompany(0);
-    expect("[data-company-id] .fa-check-square").toHaveCount(0);
-    expect("[data-company-id] .fa-square-o").toHaveCount(3);
+    expect.verifySteps(["1-3"]);
 });

@@ -1,5 +1,6 @@
-import { Plugin, isValidTargetForDomListener } from "../plugin";
+import { Plugin } from "../plugin";
 import { closestBlock } from "@html_editor/utils/blocks";
+import { fillEmpty } from "@html_editor/utils/dom";
 import { leftLeafOnlyNotBlockPath } from "@html_editor/utils/dom_state";
 
 /**
@@ -7,37 +8,23 @@ import { leftLeafOnlyNotBlockPath } from "@html_editor/utils/dom_state";
  * @property {string} hotkey
  * @property {string} commandId
  * @property {Object} [commandParams]
- * @property {boolean} [global]
- *
- * @typedef {Shortcut[]} shortcuts
  *
  * Example:
  *
  *     resources = {
- *         // See UserCommand
  *         user_commands: [
  *             { id: "myCommands", run: myCommandFunction },
  *         ],
- *         // See Shortcut
  *         shortcuts: [
  *             { hotkey: "control+shift+q", commandId: "myCommands" },
  *         ],
  *     }
  */
 
-/**
- * @typedef {{
- *     pattern: RegExp;
- *     commandId: string;
- *     commandParams?: object;
- * }[]} shorthands
- */
-
 export class ShortCutPlugin extends Plugin {
     static id = "shortcut";
-    static dependencies = ["userCommand", "selection", "delete"];
+    static dependencies = ["userCommand", "selection"];
 
-    /** @type {import("plugins").EditorResources} */
     resources = {
         input_handlers: this.onInput.bind(this),
     };
@@ -67,22 +54,14 @@ export class ShortCutPlugin extends Plugin {
             }
         );
         if (document !== this.document) {
-            hotkeyService.registerIframe({ contentWindow: this.window });
+            hotkeyService.registerIframe({ contentWindow: this.document.defaultView });
         }
         for (const shortcut of this.getResource("shortcuts")) {
             const command = this.dependencies.userCommand.getCommand(shortcut.commandId);
-            this.addShortcut(
-                shortcut.hotkey,
-                () => {
-                    command.run(shortcut.commandParams);
-                },
-                {
-                    isAvailable: command.isAvailable,
-                    global: !!shortcut.global,
-                }
-            );
+            this.addShortcut(shortcut.hotkey, () => {
+                command.run(shortcut.commandParams);
+            });
         }
-        this.shorthands = this.getResource("shorthands");
     }
 
     destroy() {
@@ -90,18 +69,12 @@ export class ShortCutPlugin extends Plugin {
         this.removeEditorCommandPalette();
     }
 
-    addShortcut(hotkey, action, { isAvailable, global }) {
-        this._cleanups.push(
-            this.services.hotkey.add(hotkey, action, {
-                area: () => this.editable,
-                bypassEditableProtection: true,
-                allowRepeat: true,
-                isAvailable: (target) =>
-                    (!isAvailable ||
-                        isAvailable(this.dependencies.selection.getEditableSelection())) &&
-                    (global || isValidTargetForDomListener(target)),
-            })
-        );
+    addShortcut(hotkey, action) {
+        this.services.hotkey.add(hotkey, action, {
+            area: () => this.editable,
+            bypassEditableProtection: true,
+            allowRepeat: true,
+        });
     }
 
     onInput(ev) {
@@ -124,17 +97,22 @@ export class ShortCutPlugin extends Plugin {
             leftLeaf = leftDOMPath.next().value;
         }
         const precedingText = blockEl.textContent.substring(0, spaceOffset - 1);
-        const matchedShortcut = this.shorthands.find(({ pattern }) => pattern.test(precedingText));
+        const matchedShortcut = this.getResource("shorthands").find(({ pattern }) =>
+            pattern.test(precedingText)
+        );
         if (matchedShortcut) {
             const command = this.dependencies.userCommand.getCommand(matchedShortcut.commandId);
-            if (command && command.isAvailable(selection)) {
+            if (command) {
                 this.dependencies.selection.setSelection({
                     anchorNode: blockEl.firstChild,
                     anchorOffset: 0,
                     focusNode: selection.focusNode,
                     focusOffset: selection.focusOffset,
                 });
-                this.dependencies.delete.deleteSelection();
+                this.dependencies.selection.extractContent(
+                    this.dependencies.selection.getEditableSelection()
+                );
+                fillEmpty(blockEl);
                 command.run(matchedShortcut.commandParams);
             }
         }

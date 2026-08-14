@@ -3,72 +3,39 @@ import { CheckBox } from "@web/core/checkbox/checkbox";
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 import { getActiveHotkey } from "@web/core/hotkeys/hotkey_service";
-import { localization } from "@web/core/l10n/localization";
 import { Pager } from "@web/core/pager/pager";
 import { evaluateBooleanExpr } from "@web/core/py_js/py";
 import { registry } from "@web/core/registry";
-import { useAutofocus, useBus, useService } from "@web/core/utils/hooks";
+import { useBus, useService } from "@web/core/utils/hooks";
 import { useSortable } from "@web/core/utils/sortable_owl";
 import { getTabableElements } from "@web/core/utils/ui";
-import { AGGREGATABLE_FIELD_TYPES, combineModifiers } from "@web/model/relational_model/utils";
 import { Field, getPropertyFieldInfo } from "@web/views/fields/field";
 import { getTooltipInfo } from "@web/views/fields/field_tooltip";
-import {
-    computeAggregatedValue,
-    getClassNameFromDecoration,
-    getFormattedValue,
-} from "@web/views/utils";
+import { getClassNameFromDecoration } from "@web/views/utils";
+import { combineModifiers } from "@web/model/relational_model/utils";
 import { ViewButton } from "@web/views/view_button/view_button";
 import { useBounceButton } from "@web/views/view_hook";
 import { Widget } from "@web/views/widgets/widget";
+import { getFormattedValue } from "../utils";
+import { localization } from "@web/core/l10n/localization";
 import { useMagicColumnWidths } from "./column_width_hook";
 
 import {
     Component,
     onMounted,
     onPatched,
-    onWillDestroy,
     onWillPatch,
     onWillRender,
-    onWillStart,
     status,
     useExternalListener,
     useRef,
-    useState,
 } from "@odoo/owl";
-import { getCurrencyRates } from "@web/core/currency";
 import { _t } from "@web/core/l10n/translation";
-import { usePopover } from "@web/core/popover/popover_hook";
-import { user } from "@web/core/user";
 import { exprToBoolean } from "@web/core/utils/strings";
-import { MOVABLE_RECORD_TYPES } from "@web/model/relational_model/dynamic_group_list";
-import { ActionHelper } from "@web/views/action_helper";
-import { GroupConfigMenu } from "@web/views/view_components/group_config_menu";
-import { MultiCurrencyPopover } from "@web/views/view_components/multi_currency_popover";
-
-/**
- * @typedef {import('@web/model/relational_model/dynamic_list').DynamicList} DynamicList
- * @typedef {import('@web/model/relational_model/group').Group} Group
- * @typedef {import('@web/model/relational_model/record').Record} RelationalRecord
- * @typedef {import('@web/model/relational_model/relational_model').RelationalModel} RelationalModel
- * @typedef {import('@web/model/relational_model/static_list').StaticList} StaticList
- * @typedef {import("../view").ViewProps} ViewProps
- *
- * @typedef {{
- *  name: string;
- *  type: string;
- *  attrs: Record<string, string>;
- *  [key: string]: unknown;
- * }} Column
- *
- * @typedef {"up" | "down" | "left" | "right"} Direction
- *
- * @typedef {ViewProps & {
- *  list: DynamicList | StaticList;
- * }} ListRendererProps
- */
 
 const formatters = registry.category("formatters");
+
+const DEFAULT_GROUP_PAGER_COLSPAN = 1;
 
 const FIELD_CLASSES = {
     char: "o_list_char",
@@ -88,14 +55,13 @@ function containsActiveElement(parent) {
 }
 
 /**
- * @param {HTMLTableCellElement} cell
+ * @param {HTMLElement} cell
  * @param {number} index
  */
 function getElementToFocus(cell, index) {
     return getTabableElements(cell).at(index) || cell;
 }
 
-/** @extends Component<ListRendererProps, OdooEnv> */
 export class ListRenderer extends Component {
     static template = "web.ListRenderer";
     static rowsTemplate = "web.ListRenderer.Rows";
@@ -103,19 +69,8 @@ export class ListRenderer extends Component {
     static groupRowTemplate = "web.ListRenderer.GroupRow";
     static useMagicColumnWidths = true;
     static LONG_TOUCH_THRESHOLD = 400;
-    static components = {
-        DropdownItem,
-        Field,
-        ViewButton,
-        CheckBox,
-        Dropdown,
-        Pager,
-        Widget,
-        ActionHelper,
-        GroupConfigMenu,
-    };
-    static defaultProps = { allowSelectors: false, cycleOnTab: true };
-
+    static components = { DropdownItem, Field, ViewButton, CheckBox, Dropdown, Pager, Widget };
+    static defaultProps = { hasSelectors: false, cycleOnTab: true };
     static props = [
         "activeActions?",
         "list",
@@ -130,13 +85,11 @@ export class ListRenderer extends Component {
         "noContentHelp?",
         "nestedKeyOptionalFieldsData?",
         "optionalActiveFields?",
-        "readonly?",
     ];
 
     setup() {
         this.uiService = useService("ui");
         this.notificationService = useService("notification");
-        this.orm = useService("orm");
         const key = this.createViewKey();
         this.keyOptionalFields = `optional_fields,${key}`;
         this.keyDebugOpenView = `debug_open_view,${key}`;
@@ -159,10 +112,9 @@ export class ListRenderer extends Component {
          */
         this.preventReorder = false;
 
-        this.controls = this.props.archInfo.controls.length
-            ? this.props.archInfo.controls
+        this.creates = this.props.archInfo.creates.length
+            ? this.props.archInfo.creates
             : [{ type: "create", string: _t("Add a line") }];
-        this.deleteControl = this.controls.find((control) => control.type === "delete") || {};
 
         this.cellToFocus = null;
         this.activeRowId = null;
@@ -177,9 +129,7 @@ export class ListRenderer extends Component {
             this.activeRowId = activeRow ? activeRow.dataset.id : null;
         });
         this.optionalActiveFields = this.props.optionalActiveFields || {};
-        /** @type {Column[]} */
         this.allColumns = [];
-        /** @type {Column[]} */
         this.columns = [];
         this.editedRecord = null;
         onWillRender(() => {
@@ -187,37 +137,10 @@ export class ListRenderer extends Component {
             this.allColumns = this.processAllColumn(this.props.archInfo.columns, this.props.list);
             Object.assign(this.optionalActiveFields, this.computeOptionalActiveFields());
             this.debugOpenView = exprToBoolean(browser.localStorage.getItem(this.keyDebugOpenView));
-            this.columns = this.getActiveColumns();
+            this.columns = this.getActiveColumns(this.props.list);
             this.withHandleColumn = this.columns.some((col) => col.widget === "handle");
-            this.aggregates = this.computeAggregates();
         });
-        this.multiCurrencyPopover = usePopover(MultiCurrencyPopover, {
-            position: "right",
-        });
-        this.state = useState({ groupInput: false, currencyRates: null });
-        onWillStart(async () => {
-            const needsCurrencyRates = this.props.archInfo.columns.some((column) => {
-                if (column.type !== "field") {
-                    return false;
-                }
-                const field = this.props.list.fields[column.name];
-                if (field.type !== "monetary" && column.widget !== "monetary") {
-                    return false;
-                }
-                const currencyField = this.getCurrencyField(column);
-                if (!(currencyField in this.props.list.activeFields)) {
-                    return false;
-                }
-                return ["sum", "avg", "max", "min"].some((agg) => agg in column.attrs);
-            });
-            if (needsCurrencyRates) {
-                this.state.currencyRates = await getCurrencyRates();
-            }
-        });
-        this.groupInputRef = useRef("groupInput");
-        useAutofocus({ refName: "groupInput" });
         let dataRowId;
-        let dataGroupId;
         this.rootRef = useRef("root");
         this.resequencePromise = Promise.resolve();
         useSortable({
@@ -232,11 +155,10 @@ export class ListRenderer extends Component {
             onDragStart: (params) => {
                 const { element } = params;
                 dataRowId = element.dataset.id;
-                dataGroupId = this.props.list.isGrouped && element.dataset.groupId;
                 return this.sortStart(params);
             },
             onDragEnd: (params) => this.sortStop(params),
-            onDrop: (params) => this.sortDrop(dataRowId, dataGroupId, params),
+            onDrop: (params) => this.sortDrop(dataRowId, params),
         });
 
         if (this.env.searchModel) {
@@ -254,7 +176,9 @@ export class ListRenderer extends Component {
 
         useBus(this.props.list.model.bus, "FIELD_IS_DIRTY", (ev) => (this.lastIsDirty = ev.detail));
 
-        useBounceButton(this.rootRef, () => this.showNoContentHelper);
+        useBounceButton(this.rootRef, () => {
+            return this.showNoContentHelper;
+        });
 
         let isSmall = this.uiService.isSmall;
         useBus(this.uiService.bus, "resize", () => {
@@ -264,13 +188,15 @@ export class ListRenderer extends Component {
             }
         });
 
-        this.columnWidths = useMagicColumnWidths(this.tableRef, () => ({
-            columns: this.columns,
-            isEmpty: !this.props.list.records.length || this.props.list.model.useSampleModel,
-            hasSelectors: this.hasSelectors,
-            hasOpenFormViewColumn: this.hasOpenFormViewColumn,
-            hasActionsColumn: this.hasActionsColumn,
-        }));
+        this.columnWidths = useMagicColumnWidths(this.tableRef, () => {
+            return {
+                columns: this.columns,
+                isEmpty: !this.props.list.records.length || this.props.list.model.useSampleModel,
+                hasSelectors: this.hasSelectors,
+                hasOpenFormViewColumn: this.hasOpenFormViewColumn,
+                hasActionsColumn: this.hasActionsColumn,
+            };
+        });
 
         useExternalListener(window, "keydown", (ev) => {
             this.shiftKeyMode = ev.shiftKey;
@@ -300,21 +226,16 @@ export class ListRenderer extends Component {
                     const column = this.cellToFocus.column;
                     const forward = this.cellToFocus.forward;
                     this.focusCell(column, forward);
+                } else if (this.lastEditedCell) {
+                    this.focusCell(this.lastEditedCell.column, true);
                 } else {
-                    const column = this.lastEditedCell?.column || this.columns[0];
-                    if (column.widget !== "daterange" || !this.editedRecord.data[column.name]) {
-                        this.focusCell(column);
-                    }
+                    this.focusCell(this.columns[0]);
                 }
             }
             this.cellToFocus = null;
             this.lastEditedCell = null;
         });
         this.isRTL = localization.direction === "rtl";
-        this.dialogClose = [];
-        onWillDestroy(() => {
-            this.dialogClose.forEach((close) => close());
-        });
     }
 
     displaySaveNotification() {
@@ -323,8 +244,11 @@ export class ListRenderer extends Component {
         });
     }
 
-    getActiveColumns() {
+    getActiveColumns(list) {
         return this.allColumns.filter((col) => {
+            if (list.isGrouped && col.widget === "handle") {
+                return false; // no handle column if the list is grouped
+            }
             if (col.optional && !this.optionalActiveFields[col.name]) {
                 return false;
             }
@@ -351,23 +275,8 @@ export class ListRenderer extends Component {
         return !!(
             this.displayOptionalFields ||
             this.activeActions.onDelete ||
-            this.hasOptionalOpenFormViewColumn ||
-            // spare some space to display the cog icon in group headers
-            this.props.list.isGrouped
+            this.hasOptionalOpenFormViewColumn
         );
-    }
-
-    // deprecated, remove in master
-    get hasMonetary() {
-        return this.props.archInfo.columns.some((column) => {
-            if (column.type !== "field") {
-                return false;
-            }
-            const field = this.props.list.fields[column.name];
-            return (
-                (field.type === "monetary" && field.currency_field) || column.widget === "monetary"
-            );
-        });
     }
 
     add(params) {
@@ -376,9 +285,6 @@ export class ListRenderer extends Component {
         }
     }
 
-    /**
-     * @param {Group} group
-     */
     async addInGroup(group) {
         const left = await this.props.list.leaveEditMode({ canAbandon: false });
         if (left) {
@@ -386,10 +292,6 @@ export class ListRenderer extends Component {
         }
     }
 
-    /**
-     * @param {Column[]} allColumns
-     * @param {DynamicList | StaticList} list
-     */
     processAllColumn(allColumns, list) {
         return allColumns.flatMap((column) => {
             if (column.type === "field" && list.fields[column.name].type === "properties") {
@@ -400,10 +302,6 @@ export class ListRenderer extends Component {
         });
     }
 
-    /**
-     * @param {Column} column
-     * @param {DynamicList | StaticList} list
-     */
     getPropertyFieldColumns(column, list) {
         return Object.values(list.fields)
             .filter(
@@ -429,6 +327,7 @@ export class ListRenderer extends Component {
                     type: "field",
                     hasLabel: true,
                     label: propertyField.string,
+                    sortable: false,
                     attrs: ["integer", "float"].includes(propertyField.type)
                         ? { sum: propertyField.string }
                         : {},
@@ -436,17 +335,9 @@ export class ListRenderer extends Component {
             });
     }
 
-    /**
-     * @param {RelationalRecord} record
-     * @param {Column} column
-     */
     getFieldProps(record, column) {
         return {
-            readonly:
-                this.props.readonly ||
-                this.isCellReadonly(column, record) ||
-                this.isRecordReadonly(record) ||
-                (column.widget === "handle" && !this.canResequenceRows),
+            readonly: this.isCellReadonly(column, record) || this.isRecordReadonly(record),
         };
     }
 
@@ -454,25 +345,11 @@ export class ListRenderer extends Component {
         return this.props.activeActions || {};
     }
 
-    get canCreateGroup() {
-        const { archInfo, list, readonly } = this.props;
-        const { activeActions, defaultGroupBy } = archInfo;
-        return (
-            !readonly &&
-            activeActions.createGroup &&
-            list.groupByField.type === "many2one" &&
-            list.groupByField.name === defaultGroupBy?.[0]
-        );
-    }
-
     get canResequenceRows() {
-        if (!this.props.list.canResequence() || this.props.readonly) {
+        if (!this.props.list.canResequence()) {
             return false;
         }
-        const { groupBy, groupByField, handleField, orderBy } = this.props.list;
-        if (groupBy?.length > 1 || (groupByField && !this.isMovableField(groupByField))) {
-            return false;
-        }
+        const { handleField, orderBy } = this.props.list;
         return !orderBy.length || (orderBy.length && orderBy[0].name === handleField);
     }
 
@@ -494,10 +371,6 @@ export class ListRenderer extends Component {
         return nbCols;
     }
 
-    /**
-     * @param {Column} column
-     * @param {RelationalRecord} record
-     */
     canUseFormatter(column, record) {
         if (column.widget) {
             return false;
@@ -510,9 +383,6 @@ export class ListRenderer extends Component {
         return true;
     }
 
-    /**
-     * @param {RelationalRecord} record
-     */
     isRecordReadonly(record) {
         if (record.isNew) {
             return false;
@@ -526,10 +396,6 @@ export class ListRenderer extends Component {
             return true;
         }
         return false;
-    }
-
-    isMovableField(field) {
-        return MOVABLE_RECORD_TYPES.includes(field.type);
     }
 
     focusCell(column, forward = true) {
@@ -594,6 +460,7 @@ export class ListRenderer extends Component {
             res_id: resId,
             type: "ir.actions.act_window",
             views: [[false, "form"]],
+            flags: { mode: "edit" },
         });
     }
 
@@ -623,7 +490,9 @@ export class ListRenderer extends Component {
         });
         keyParts.fields
             .sort((left, right) => (left < right ? -1 : 1))
-            .forEach((fieldName) => viewIdentifier.push(fieldName));
+            .forEach((fieldName) => {
+                return viewIdentifier.push(fieldName);
+            });
         return viewIdentifier.join(",");
     }
 
@@ -689,9 +558,9 @@ export class ListRenderer extends Component {
         }
     }
 
-    computeAggregates() {
+    get aggregates() {
         let values;
-        if (this.props.list.selection.length) {
+        if (this.props.list.selection && this.props.list.selection.length) {
             values = this.props.list.selection.map((r) => r.data);
         } else if (this.props.list.isGrouped) {
             values = this.props.list.groups.map((g) => g.aggregates);
@@ -699,7 +568,7 @@ export class ListRenderer extends Component {
             values = this.props.list.records.map((r) => r.data);
         }
         const aggregates = {};
-        for (const column of this.columns) {
+        for (const column of this.allColumns) {
             if (column.type !== "field") {
                 continue;
             }
@@ -713,7 +582,7 @@ export class ListRenderer extends Component {
                 continue;
             }
             const type = field.type;
-            if (!AGGREGATABLE_FIELD_TYPES.includes(type)) {
+            if (type !== "integer" && type !== "float" && type !== "monetary") {
                 continue;
             }
             const { attrs, widget } = column;
@@ -723,46 +592,45 @@ export class ListRenderer extends Component {
                 (attrs.max && "max") ||
                 (attrs.min && "min");
             let currencyId;
-            let multiCurrency = false;
             if (type === "monetary" || widget === "monetary") {
-                const currencyField = this.getCurrencyField(column);
-                if (currencyField in this.props.list.activeFields) {
-                    if (this.props.list.isGrouped && !this.props.list.selection.length) {
-                        currencyId = values.find((v) => v[currencyField]?.length)?.[
-                            currencyField
-                        ][0];
-                    } else {
-                        currencyId = values[0][currencyField] && values[0][currencyField].id;
-                    }
-                    if (func && type === "monetary") {
-                        const currencies = this.getFieldCurrencies(fieldName);
-                        // in case of multiple currencies, convert values into default currency using conversion rates
-                        if (currencies.size > 1) {
-                            multiCurrency = true;
-                            currencyId = user.activeCompany.currency_id;
-                            for (const i in values) {
-                                let currency = values[i][currencyField].id;
-                                if (
-                                    this.props.list.isGrouped &&
-                                    !this.props.list.selection.length
-                                ) {
-                                    currency =
-                                        values[i][currencyField].length > 1
-                                            ? currencyId
-                                            : values[i][currencyField][0];
-                                }
-                                if (currency !== currencyId) {
-                                    fieldValues[i] *= currency
-                                        ? this.state.currencyRates[currency]
-                                        : 1;
-                                }
-                            }
-                        }
+                const currencyField =
+                    column.options.currency_field ||
+                    this.fields[fieldName].currency_field ||
+                    "currency_id";
+                if (!(currencyField in this.props.list.activeFields)) {
+                    aggregates[fieldName] = {
+                        help: _t("No currency provided"),
+                        value: "—",
+                    };
+                    continue;
+                }
+                currencyId = values[0][currencyField] && values[0][currencyField][0];
+                if (currencyId && func) {
+                    const sameCurrency = values.every(
+                        (value) => currencyId === value[currencyField][0]
+                    );
+                    if (!sameCurrency) {
+                        aggregates[fieldName] = {
+                            help: _t("Different currencies cannot be aggregated"),
+                            value: "—",
+                        };
+                        continue;
                     }
                 }
             }
             if (func) {
-                const aggregatedValue = computeAggregatedValue(fieldValues, func);
+                let aggregateValue = 0;
+                if (func === "max") {
+                    aggregateValue = Math.max(-Infinity, ...fieldValues);
+                } else if (func === "min") {
+                    aggregateValue = Math.min(Infinity, ...fieldValues);
+                } else if (func === "avg") {
+                    aggregateValue =
+                        fieldValues.reduce((acc, val) => acc + val) / fieldValues.length;
+                } else if (func === "sum") {
+                    aggregateValue = fieldValues.reduce((acc, val) => acc + val);
+                }
+
                 const formatter = formatters.get(widget, false) || formatters.get(type, false);
                 const formatOptions = {
                     digits: attrs.digits ? JSON.parse(attrs.digits) : undefined,
@@ -772,90 +640,27 @@ export class ListRenderer extends Component {
                     formatOptions.currencyId = currencyId;
                 }
                 aggregates[fieldName] = {
-                    help: multiCurrency ? "" : attrs[func],
-                    value: formatter ? formatter(aggregatedValue, formatOptions) : aggregatedValue,
-                    multiCurrency,
-                    rawValue: aggregatedValue,
+                    help: attrs[func],
+                    value: formatter ? formatter(aggregateValue, formatOptions) : aggregateValue,
                 };
             }
         }
         return aggregates;
     }
 
-    getFieldCurrencies(fieldName) {
-        const column = this.columns.find((c) => c.name === fieldName);
-        const currencyField = this.getCurrencyField(column);
-        let values;
-        if (this.props.list.selection.length) {
-            values = this.props.list.selection.map((r) => r.data);
-        } else if (this.props.list.isGrouped) {
-            values = this.props.list.groups.map((g) => g.aggregates);
-        } else {
-            values = this.props.list.records.map((r) => r.data);
-        }
-        if (this.props.list.isGrouped && !this.props.list.selection.length) {
-            return values.reduce((set, value) => {
-                value[currencyField].forEach((c) => {
-                    set.add(c);
-                });
-                return set;
-            }, new Set());
-        }
-        return values.reduce((set, value) => set.add(value[currencyField]?.id), new Set());
-    }
-
-    getCurrencyField(column) {
-        return (
-            column.options.currency_field ||
-            this.fields[column.name].currency_field ||
-            "currency_id"
-        );
-    }
-
-    getGroupConfigMenuProps(group) {
-        return {
-            activeActions: this.props.activeActions,
-            configItems: registry.category("group_config_items").getEntries(),
-            deleteGroup: async () => await this.props.list.deleteGroups([group]),
-            dialogClose: this.dialogClose,
-            group,
-            list: this.props.list,
-        };
-    }
-
-    formatGroupAggregate(group, column) {
+    formatAggregateValue(group, column) {
         const { widget, attrs } = column;
         const field = this.props.list.fields[column.name];
         const aggregateValue = group.aggregates[column.name];
-        if (
-            !(column.name in group.aggregates) ||
-            widget === "handle" ||
-            !AGGREGATABLE_FIELD_TYPES.includes(field.type)
-        ) {
-            return {
-                value: "",
-            };
+        if (!(column.name in group.aggregates)) {
+            return "";
         }
         const formatter = formatters.get(widget, false) || formatters.get(field.type, false);
         const formatOptions = {
             digits: attrs.digits ? JSON.parse(attrs.digits) : field.digits,
             escape: true,
         };
-        if (field.type === "monetary") {
-            const currencies = group.aggregates[field.currency_field];
-            if (currencies.length > 1 && aggregateValue !== false) {
-                formatOptions.currencyId = user.activeCompany.currency_id;
-                return {
-                    value: formatter ? formatter(aggregateValue, formatOptions) : aggregateValue,
-                    multiCurrency: true,
-                    rawValue: aggregateValue,
-                };
-            }
-            formatOptions.currencyId = currencies[0];
-        }
-        return {
-            value: formatter ? formatter(aggregateValue, formatOptions) : aggregateValue,
-        };
+        return formatter ? formatter(aggregateValue, formatOptions) : aggregateValue;
     }
 
     getGroupLevel(group) {
@@ -891,11 +696,7 @@ export class ListRenderer extends Component {
         return classNames.join(" ");
     }
 
-    /**
-     *
-     * @param {RelationalRecord} _record
-     */
-    getColumns(_record) {
+    getColumns(record) {
         return this.columns;
     }
 
@@ -912,11 +713,11 @@ export class ListRenderer extends Component {
 
     getSortableIconClass(column) {
         const { orderBy } = this.props.list;
-        const classNames = this.isSortable(column) ? ["fa"] : ["d-none"];
+        const classNames = this.isSortable(column) ? ["fa", "fa-lg"] : ["d-none"];
         if (orderBy.length && orderBy[0].name === column.name) {
-            classNames.push(orderBy[0].asc ? "fa-sort-asc" : "fa-sort-desc");
+            classNames.push(orderBy[0].asc ? "fa-angle-up" : "fa-angle-down");
         } else {
-            classNames.push("fa-sort", "opacity-0", "opacity-100-hover");
+            classNames.push("fa-angle-down", "opacity-0", "opacity-100-hover");
         }
 
         return classNames.join(" ");
@@ -924,13 +725,11 @@ export class ListRenderer extends Component {
 
     /**
      * Returns the classnames to apply to the row representing the given record.
-     * @param {RelationalRecord} record
+     * @param {Record} record
+     * @returns {string}
      */
     getRowClass(record) {
-        /**
-         * Classnames coming from decorations
-         * @type {string[]}
-         */
+        // classnames coming from decorations
         const classNames = this.props.archInfo.decorations
             .filter((decoration) =>
                 evaluateBooleanExpr(decoration.condition, record.evalContextWithVirtualIds)
@@ -952,10 +751,6 @@ export class ListRenderer extends Component {
         return classNames.join(" ");
     }
 
-    /**
-     * @param {Column} column
-     * @param {RelationalRecord} record
-     */
     getCellClass(column, record) {
         if (column.relatedPropertyField && !(column.name in record.data)) {
             return "";
@@ -1017,10 +812,6 @@ export class ListRenderer extends Component {
         return classNames.join(" ");
     }
 
-    /**
-     * @param {Column} column
-     * @param {RelationalRecord} record
-     */
     isCellReadonly(column, record) {
         return !!(
             this.isRecordReadonly(record) ||
@@ -1029,10 +820,6 @@ export class ListRenderer extends Component {
         );
     }
 
-    /**
-     * @param {Column} column
-     * @param {RelationalRecord} record
-     */
     getCellTitle(column, record) {
         // Because we freeze the column sizes, it may happen that we have to shorten field values.
         // In order for the user to have access to the complete value in those situations, we put
@@ -1046,10 +833,6 @@ export class ListRenderer extends Component {
         return column.attrs && column.attrs.class;
     }
 
-    /**
-     * @param {Column} column
-     * @param {RelationalRecord} record
-     */
     getFormattedValue(column, record) {
         const fieldName = column.name;
         if (column.options.enable_formatting === false) {
@@ -1059,16 +842,22 @@ export class ListRenderer extends Component {
         return getFormattedValue(record, fieldName, column);
     }
 
-    /**
-     * @param {string} invisible
-     * @param {RelationalRecord} record
-     */
     evalInvisible(invisible, record) {
         return evaluateBooleanExpr(invisible, record.evalContextWithVirtualIds);
     }
 
     evalColumnInvisible(columnInvisible) {
         return evaluateBooleanExpr(columnInvisible, this.props.list.evalContext);
+    }
+
+    getGroupDisplayName(group) {
+        if (group.groupByField.type === "boolean") {
+            return group.value === undefined ? _t("None") : group.value ? _t("Yes") : _t("No");
+        } else {
+            return group.value === undefined || group.value === false
+                ? _t("None")
+                : group.displayName;
+        }
     }
 
     get canCreate() {
@@ -1091,13 +880,6 @@ export class ListRenderer extends Component {
         return this.isX2Many && this.canCreate;
     }
 
-    /**
-     * @param {RelationalRecord} record
-     */
-    displayDeleteIcon(record) {
-        return !evaluateBooleanExpr(this.deleteControl.invisible, record.evalContext);
-    }
-
     // Group headers logic:
     // if there are aggregates, the first th spans until the first
     // aggregate column then all cells between aggregates are rendered
@@ -1110,23 +892,11 @@ export class ListRenderer extends Component {
     // [ group name ][ aggregate cells  ][ pager]
     // TODO: move this somewhere, compute this only once (same result for each groups actually) ?
     getFirstAggregateIndex(group) {
-        const aggregates = group ? group.aggregates : this.aggregates;
-        return this.columns.findIndex(
-            (col) =>
-                col.name in aggregates &&
-                col.widget !== "handle" &&
-                AGGREGATABLE_FIELD_TYPES.includes(this.fields[col.name].type)
-        );
+        return this.columns.findIndex((col) => col.name in group.aggregates);
     }
     getLastAggregateIndex(group) {
-        const aggregates = group ? group.aggregates : this.aggregates;
         const reversedColumns = [...this.columns].reverse(); // reverse is destructive
-        const index = reversedColumns.findIndex(
-            (col) =>
-                col.name in aggregates &&
-                col.widget !== "handle" &&
-                AGGREGATABLE_FIELD_TYPES.includes(this.fields[col.name].type)
-        );
+        const index = reversedColumns.findIndex((col) => col.name in group.aggregates);
         return index > -1 ? this.columns.length - index - 1 : -1;
     }
     getAggregateColumns(group) {
@@ -1138,18 +908,36 @@ export class ListRenderer extends Component {
         // if there are aggregates, the first th spans until the first
         // aggregate column then all cells between aggregates are rendered
         const firstAggregateIndex = this.getFirstAggregateIndex(group);
-        let colspan = firstAggregateIndex > -1 ? firstAggregateIndex : this.columns.length;
+        let colspan;
+        if (firstAggregateIndex > -1) {
+            colspan = firstAggregateIndex;
+        } else {
+            colspan = Math.max(1, this.columns.length - DEFAULT_GROUP_PAGER_COLSPAN);
+            if (this.displayOptionalFields) {
+                colspan++;
+            }
+        }
         if (this.hasSelectors) {
             colspan++;
         }
         return colspan;
     }
 
-    // TODO: rename in master
     getGroupPagerCellColspan(group) {
-        // this colspan is the number of columns after the last column with aggregates
-        const lastIndex = this.getLastAggregateIndex(group);
-        return lastIndex > -1 ? this.columns.length - lastIndex - 1 : 0;
+        const lastAggregateIndex = this.getLastAggregateIndex(group);
+        let colspan;
+        if (lastAggregateIndex > -1) {
+            colspan = this.columns.length - lastAggregateIndex - 1;
+            if (this.displayOptionalFields) {
+                colspan++;
+            }
+        } else {
+            colspan = this.columns.length > 1 ? DEFAULT_GROUP_PAGER_COLSPAN : 0;
+        }
+        if (this.hasOpenFormViewColumn) {
+            colspan++;
+        }
+        return colspan;
     }
 
     getGroupPagerProps(group) {
@@ -1204,11 +992,6 @@ export class ListRenderer extends Component {
         }
     }
 
-    /**
-     * @param {RelationalRecord} record
-     * @param {Column} column
-     * @param {PointerEvent} ev
-     */
     onButtonCellClicked(record, column, ev) {
         if (!ev.target.closest("button")) {
             this.onCellClicked(record, column, ev);
@@ -1216,23 +999,22 @@ export class ListRenderer extends Component {
     }
 
     /**
-     * @param {RelationalRecord} record
-     * @param {Column} column
+     * @param {Object} record
+     * @param {Object} column
      * @param {PointerEvent} ev
      */
-    async onCellClicked(record, column, ev, newWindow) {
+    async onCellClicked(record, column, ev) {
         if (ev.target.special_click) {
             return;
         }
+        const recordAfterResequence = async () => {
+            const recordIndex = this.props.list.records.indexOf(record);
+            await this.resequencePromise;
+            // row might have changed record after resequence
+            record = this.props.list.records[recordIndex] || record;
+        };
 
-        const multiEdit = this.props.list.model.multiEdit;
-        const hasSelection = !!this.props.list.selection.length;
-        if (hasSelection && this.canSelectRecord && (!multiEdit || !record.selected)) {
-            this.toggleRecordSelection(record);
-        } else if (
-            (multiEdit && record.selected) ||
-            (this.isInlineEditable(record) && !hasSelection)
-        ) {
+        if ((this.props.list.model.multiEdit && record.selected) || this.isInlineEditable(record)) {
             if (record.isInEdition && this.editedRecord === record) {
                 const cell = this.tableRef.el.querySelector(
                     `.o_selected_row td[name='${column.name}']`
@@ -1245,10 +1027,7 @@ export class ListRenderer extends Component {
                 this.focusCell(column);
                 this.cellToFocus = null;
             } else {
-                const recordIndex = this.props.list.records.indexOf(record);
-                await this.resequencePromise;
-                // row might have changed record after resequence
-                record = this.props.list.records[recordIndex] || record;
+                await recordAfterResequence();
                 await this.props.list.enterEditMode(record);
                 this.cellToFocus = { column, record };
                 if (
@@ -1267,41 +1046,23 @@ export class ListRenderer extends Component {
         } else if (this.editedRecord && this.editedRecord !== record) {
             this.props.list.leaveEditMode();
         } else if (!this.props.archInfo.noOpen) {
-            this.props.openRecord(record, { newWindow });
+            this.props.openRecord(record);
         }
     }
 
-    /**
-     * @param {RelationalRecord} record
-     * @param {PointerEvent} ev
-     */
-    async onRemoveCellClicked(record, ev) {
+    onRemoveCellClicked(record, ev) {
         const element = ev.target.closest(".o_list_record_remove");
         if (element.dataset.clicked) {
             return;
         }
         element.dataset.clicked = true;
-        try {
-            await this.onDeleteRecord(record, ev);
-        } finally {
-            delete element.dataset.clicked;
-        }
+        // re-enable the button after a while (this is a manual debounce, but record by record)
+        setTimeout(() => delete element.dataset.clicked, 500);
+        this.onDeleteRecord(record, ev);
     }
 
-    openMultiCurrencyPopover(ev, value, fieldName) {
-        if (!this.multiCurrencyPopover.isOpen) {
-            this.multiCurrencyPopover.open(ev.target, {
-                currencyIds: Array.from(this.getFieldCurrencies(fieldName)),
-                target: ev.target,
-                value,
-            });
-        }
-    }
-
-    /**
-     * @param {RelationalRecord} record
-     */
     async onDeleteRecord(record) {
+        this.keepColumnWidths = true;
         if (this.editedRecord && this.editedRecord !== record) {
             const left = await this.props.list.leaveEditMode();
             if (!left) {
@@ -1309,21 +1070,20 @@ export class ListRenderer extends Component {
             }
         }
         if (this.activeActions.onDelete) {
-            return this.activeActions.onDelete(record);
+            this.activeActions.onDelete(record);
         }
     }
 
     /**
      * @param {HTMLTableCellElement} cell
      * @param {boolean} cellIsInGroupRow
-     * @param {Direction} direction
+     * @param {"up"|"down"|"left"|"right"} direction
      */
     findFocusFutureCell(cell, cellIsInGroupRow, direction) {
         const row = cell.parentElement;
         const children = [...row.children];
         const index = children.indexOf(cell);
         let futureCell;
-        let targetIndex;
         switch (direction) {
             case "up": {
                 let futureRow = row.previousElementSibling;
@@ -1335,15 +1095,10 @@ export class ListRenderer extends Component {
                     );
                     const nextIsGroup = futureRow.classList.contains("o_group_header");
                     const rowTypeSwitched = cellIsInGroupRow !== nextIsGroup;
-                    const isGroupToGroup = cellIsInGroupRow && nextIsGroup;
-                    if (rowTypeSwitched || isGroupToGroup) {
-                        targetIndex = this.lastKnownIndex || 0;
-                    } else {
-                        this.lastKnownIndex = index;
+                    let defaultIndex = 0;
+                    if (cellIsInGroupRow) {
+                        defaultIndex = this.hasSelectors ? 1 : 0;
                     }
-
-                    const defaultIndex = cellIsInGroupRow ? targetIndex : 0;
-
                     futureCell =
                         addCell ||
                         (futureRow && futureRow.children[rowTypeSwitched ? defaultIndex : index]);
@@ -1359,19 +1114,10 @@ export class ListRenderer extends Component {
                     );
                     const nextIsGroup = futureRow.classList.contains("o_group_header");
                     const rowTypeSwitched = cellIsInGroupRow !== nextIsGroup;
-                    const isGroupToGroup = cellIsInGroupRow && nextIsGroup;
-                    const headerRow = this.tableRef.el.querySelector("thead tr");
-                    if (rowTypeSwitched || isGroupToGroup) {
-                        targetIndex = this.lastKnownIndex || 0;
-                    } else {
-                        this.lastKnownIndex = index;
+                    let defaultIndex = 0;
+                    if (cellIsInGroupRow) {
+                        defaultIndex = this.hasSelectors ? 1 : 0;
                     }
-
-                    const defaultIndex = cellIsInGroupRow ? targetIndex : 0;
-                    if (headerRow == row) {
-                        this.lastKnownIndex = index;
-                    }
-
                     futureCell =
                         addCell ||
                         (futureRow && futureRow.children[rowTypeSwitched ? defaultIndex : index]);
@@ -1380,26 +1126,17 @@ export class ListRenderer extends Component {
             }
             case "left": {
                 futureCell = children[index - 1];
-                if (futureCell) {
-                    this.lastKnownIndex = index - 1;
-                }
                 break;
             }
             case "right": {
                 futureCell = children[index + 1];
-                if (futureCell) {
-                    this.lastKnownIndex = index + 1;
-                }
                 break;
             }
         }
         return futureCell && getElementToFocus(futureCell);
     }
 
-    /**
-     * @param {RelationalRecord} _record
-     */
-    isInlineEditable(_record) {
+    isInlineEditable(record) {
         // /!\ the keyboard navigation works under the hypothesis that all or
         // none records are editable.
         return !!this.props.editable;
@@ -1407,8 +1144,8 @@ export class ListRenderer extends Component {
 
     /**
      * @param {KeyboardEvent} ev
-     * @param {Group | null} group
-     * @param {RelationalRecord | null} record
+     * @param { import('@web/model/relational_model/group').Group | null } group
+     * @param { import('@web/model/relational_model/record').Record | null } record
      */
     onCellKeydown(ev, group = null, record = null) {
         if (this.props.list.model.useSampleModel) {
@@ -1422,9 +1159,6 @@ export class ListRenderer extends Component {
         }
 
         const closestCell = ev.target.closest("td, th");
-        if (closestCell.querySelector(".o_select_menu [aria-expanded=true]")) {
-            return;
-        }
 
         if (this.toggleFocusInsideCell(hotkey, closestCell)) {
             return;
@@ -1436,41 +1170,12 @@ export class ListRenderer extends Component {
 
         if (handled) {
             this.lastCreatingAction = false;
-            for (const tbody of this.tableRef.el.getElementsByTagName("tbody")) {
-                tbody.classList.add("o_keyboard_navigation");
-            }
+            this.tableRef.el.querySelector("tbody").classList.add("o_keyboard_navigation");
             ev.preventDefault();
             ev.stopPropagation();
         }
     }
 
-    /**
-     * @param {KeyboardEvent} ev
-     */
-    onGroupInputKeydown(ev) {
-        const hotkey = getActiveHotkey(ev);
-        if (hotkey === "enter") {
-            ev.stopPropagation();
-            this.addNewGroup();
-        }
-        if (hotkey === "escape") {
-            ev.stopPropagation();
-            this.state.showGroupInput = false;
-        }
-    }
-
-    addNewGroup() {
-        this.state.showGroupInput = false;
-        const value = this.groupInputRef.el.value;
-        if (value) {
-            this.props.list.createGroup(value);
-        }
-    }
-
-    /**
-     * @param {HTMLElement} row
-     * @param {HTMLTableCellElement} cell
-     */
     findNextFocusableOnRow(row, cell) {
         const children = [...row.children];
         const index = children.indexOf(cell);
@@ -1494,10 +1199,6 @@ export class ListRenderer extends Component {
         return null;
     }
 
-    /**
-     * @param {HTMLElement} row
-     * @param {HTMLTableCellElement} cell
-     */
     findPreviousFocusableOnRow(row, cell) {
         const children = [...row.children];
         const index = children.indexOf(cell);
@@ -1521,10 +1222,6 @@ export class ListRenderer extends Component {
         return null;
     }
 
-    /**
-     * @param {RelationalRecord} record
-     * @param {Direction} direction
-     */
     expandCheckboxes(record, direction) {
         const { records } = this.props.list;
         if (!record && direction === "down") {
@@ -1564,12 +1261,6 @@ export class ListRenderer extends Component {
         return true;
     }
 
-    /**
-     * @param {string} hotkey
-     * @param {HTMLTableCellElement} cell
-     * @param {Group} group
-     * @param {RelationalRecord} record
-     */
     applyCellKeydownMultiEditMode(hotkey, cell, group, record) {
         const { list } = this.props;
         const row = cell.parentElement;
@@ -1623,19 +1314,13 @@ export class ListRenderer extends Component {
         return false;
     }
 
-    /**
-     * @param {string} hotkey
-     * @param {HTMLElement} _cell
-     * @param {Group} group
-     * @param {RelationalRecord} record
-     */
     applyCellKeydownEditModeGroup(hotkey, _cell, group, record) {
         const { editable } = this.props;
         const groupIndex = group.list.records.indexOf(record);
         const isLastOfGroup = groupIndex === group.list.records.length - 1;
         const isDirty = record.dirty || this.lastIsDirty;
-        const isEnterBehavior = hotkey === "enter" && (isDirty || !record.canBeAbandoned);
-        const isTabBehavior = hotkey === "tab" && isDirty;
+        const isEnterBehavior = hotkey === "enter" && (!record.canBeAbandoned || isDirty);
+        const isTabBehavior = hotkey === "tab" && !record.canBeAbandoned && isDirty;
         if (
             isLastOfGroup &&
             this.canCreate &&
@@ -1648,13 +1333,7 @@ export class ListRenderer extends Component {
         return false;
     }
 
-    /**
-     * @param {string} hotkey
-     * @param {HTMLTableCellElement} cell
-     * @param {Group} _group
-     * @param {RelationalRecord} _record
-     */
-    applyCellKeydownEditModeStayOnRow(hotkey, cell, _group, _record) {
+    applyCellKeydownEditModeStayOnRow(hotkey, cell, group, record) {
         let toFocus;
         const row = cell.parentElement;
 
@@ -1674,49 +1353,17 @@ export class ListRenderer extends Component {
         return false;
     }
 
-    editNextRecord(record, group) {
-        const list = this.props.list;
-        const topReCreate = this.props.editable === "top" && record.isNew;
-        const index = list.records.indexOf(record);
-        let futureRecord = list.records[index + 1];
-        if (topReCreate && index === 0) {
-            futureRecord = null;
-        }
-
-        if (!futureRecord && !this.canCreate) {
-            futureRecord = list.records[0];
-        }
-
-        if (futureRecord) {
-            list.leaveEditMode({ validate: true }).then((canProceed) => {
-                if (canProceed) {
-                    list.enterEditMode(futureRecord);
-                }
-            });
-        } else if (this.lastIsDirty || !record.canBeAbandoned || this.displayRowCreates) {
-            this.add({ group });
-        } else {
-            futureRecord = list.records.at(0);
-            list.enterEditMode(futureRecord);
-        }
-    }
-
     /**
      * @param {string} hotkey
      * @param {HTMLTableCellElement} cell
-     * @param {Group | null} group
-     * @param {RelationalRecord | null} record
+     * @param { import('@web/model/relational_model/group').Group | null } group
+     * @param { import('@web/model/relational_model/record').Record } record
      * @returns {boolean} true if some behavior has been taken
      */
     onCellKeydownEditMode(hotkey, cell, group, record) {
-        if (!record) {
-            return false;
-        }
-
         const { cycleOnTab, list } = this.props;
         const row = cell.parentElement;
-        const applyMultiEditBehavior = record.selected && list.model.multiEdit;
-        const isDirty = record.dirty || this.lastIsDirty;
+        const applyMultiEditBehavior = record && record.selected && list.model.multiEdit;
         const topReCreate = this.props.editable === "top" && record.isNew;
 
         if (
@@ -1738,16 +1385,20 @@ export class ListRenderer extends Component {
             case "tab": {
                 const index = list.records.indexOf(record);
                 const lastIndex = topReCreate ? 0 : list.records.length - 1;
-                if (index === lastIndex) {
+                if (index === lastIndex || index === list.records.length - 1) {
                     if (this.displayRowCreates) {
-                        if (!isDirty && record.isNew) {
+                        if (record.isNew && !record.dirty) {
                             list.leaveEditMode();
                             return false;
                         }
                         // add a line
-                        const { context } = this.controls[0];
+                        const { context } = this.creates[0];
                         this.add({ context });
-                    } else if (isDirty && this.canCreate) {
+                    } else if (
+                        this.canCreate &&
+                        !record.canBeAbandoned &&
+                        (record.dirty || this.lastIsDirty)
+                    ) {
                         this.add({ group });
                     } else if (cycleOnTab) {
                         if (record.canBeAbandoned) {
@@ -1798,7 +1449,28 @@ export class ListRenderer extends Component {
                 break;
             }
             case "enter": {
-                this.editNextRecord(record, group);
+                const index = list.records.indexOf(record);
+                let futureRecord = list.records[index + 1];
+                if (topReCreate && index === 0) {
+                    futureRecord = null;
+                }
+
+                if (!futureRecord && !this.canCreate) {
+                    futureRecord = list.records[0];
+                }
+
+                if (futureRecord) {
+                    list.leaveEditMode({ validate: true }).then((canProceed) => {
+                        if (canProceed) {
+                            list.enterEditMode(futureRecord);
+                        }
+                    });
+                } else if (this.lastIsDirty || !record.canBeAbandoned || this.displayRowCreates) {
+                    this.add({ group });
+                } else {
+                    futureRecord = list.records.at(0);
+                    list.enterEditMode(futureRecord);
+                }
                 break;
             }
             case "escape": {
@@ -1842,8 +1514,10 @@ export class ListRenderer extends Component {
     /**
      * @param {string} hotkey
      * @param {HTMLTableCellElement} cell
-     * @param {Group | null} group
-     * @param {RelationalRecord | null} record
+     * @param { import('@web/model/relational_model/group').Group
+     *  | null
+     * } group
+     * @param { import('@web/model/relational_model/record').Record | null } record
      * @returns {boolean} true if some behavior has been taken
      */
     onCellKeydownReadOnlyMode(hotkey, cell, group, record) {
@@ -1983,18 +1657,8 @@ export class ListRenderer extends Component {
         return this.props.noContentHelp && (model.useSampleModel || !model.hasData());
     }
 
-    /**
-     * @param {Group} group
-     */
     showGroupPager(group) {
         return !group.isFolded && group.list.limit < group.list.count;
-    }
-
-    /**
-     * @param {Group} group
-     */
-    showGroupConfigMenu(group) {
-        return group.value && ["many2one", "many2many"].includes(group.groupByField.type);
     }
 
     /**
@@ -2008,9 +1672,7 @@ export class ListRenderer extends Component {
             return false;
         }
         const focusableEls = getTabableElements(cell).filter(
-            (el) =>
-                el === document.activeElement ||
-                ["INPUT", "BUTTON", "TEXTAREA"].includes(el.tagName)
+            (el) => el === document.activeElement || ["INPUT", "TEXTAREA"].includes(el.tagName)
         );
         const index = focusableEls.indexOf(document.activeElement);
         return (
@@ -2019,20 +1681,13 @@ export class ListRenderer extends Component {
         );
     }
 
-    /**
-     * @param {PointerEvent} _ev
-     * @param {Group} group
-     */
-    async onGroupHeaderClicked(_ev, group) {
+    async onGroupHeaderClicked(ev, group) {
         const left = await this.props.list.leaveEditMode();
         if (left) {
             this.toggleGroup(group);
         }
     }
 
-    /**
-     * @param {Group} group
-     */
     toggleGroup(group) {
         group.toggle();
     }
@@ -2049,40 +1704,32 @@ export class ListRenderer extends Component {
         return list.toggleSelection();
     }
 
-    /**
-     * @param {RelationalRecord} record
-     * @param {PointerEvent} _ev
-     */
-    toggleRecordSelection(record, _ev) {
+    toggleRecordSelection(record, ev) {
         if (!this.canSelectRecord) {
             return;
         }
         const isRecordPresent = this.props.list.records.includes(this.lastCheckedRecord);
         if (this.shiftKeyMode && isRecordPresent) {
-            this.toggleRangeSelection(record);
+            this.toggleRecordShiftSelection(record);
         } else {
             record.toggleSelection();
         }
         this.lastCheckedRecord = record;
     }
 
-    /**
-     * @param {RelationalRecord} record
-     */
-    toggleRangeSelection(record) {
+    toggleRecordShiftSelection(record) {
         const { records } = this.props.list;
         const recordIndex = records.indexOf(record);
         const lastCheckedRecordIndex = records.indexOf(this.lastCheckedRecord);
         const start = Math.min(recordIndex, lastCheckedRecordIndex);
         const end = Math.max(recordIndex, lastCheckedRecordIndex);
+        const { selected } = record;
+
         for (let i = start; i <= end; i++) {
-            records[i].toggleSelection(!record.selected);
+            records[i].toggleSelection(!selected);
         }
     }
 
-    /**
-     * @param {string} fieldName
-     */
     async toggleOptionalField(fieldName) {
         this.optionalActiveFields[fieldName] = !this.optionalActiveFields[fieldName];
         this.saveOptionalActiveFields(
@@ -2091,9 +1738,6 @@ export class ListRenderer extends Component {
         this.render();
     }
 
-    /**
-     * @param {string} groupId
-     */
     toggleOptionalFieldGroup(groupId) {
         const fieldNames = this.allColumns
             .filter(
@@ -2119,20 +1763,14 @@ export class ListRenderer extends Component {
         this.render();
     }
 
-    /**
-     * @param {PointerEvent} ev
-     */
     onGlobalClick(ev) {
-        if (!(this.editedRecord || this.state.showGroupInput)) {
-            return; // there's no row or group in edition
+        if (!this.editedRecord) {
+            return; // there's no row in edition
         }
 
         this.tableRef.el.querySelector("tbody").classList.remove("o_keyboard_navigation");
 
         const target = ev.target;
-        if (this.state.showGroupInput && this.groupInputRef.el !== target) {
-            this.state.showGroupInput = false;
-        }
         if (this.tableRef.el.contains(target) && target.closest(".o_data_row")) {
             // ignore clicks inside the table that are originating from a record row
             // as they are handled directly by the renderer.
@@ -2156,9 +1794,6 @@ export class ListRenderer extends Component {
         return Boolean(odoo.debug);
     }
 
-    /**
-     * @param {Column} column
-     */
     makeTooltip(column) {
         return getTooltipInfo({
             viewMode: "list",
@@ -2181,10 +1816,6 @@ export class ListRenderer extends Component {
         }
     }
 
-    /**
-     * @param {RelationalRecord} record
-     * @param {TouchEvent} ev
-     */
     onRowTouchStart(record, ev) {
         if (!this.props.allowSelectors) {
             return;
@@ -2200,21 +1831,13 @@ export class ListRenderer extends Component {
             }, this.constructor.LONG_TOUCH_THRESHOLD);
         }
     }
-
-    /**
-     * @param {RelationalRecord} _record
-     */
-    onRowTouchEnd(_record) {
+    onRowTouchEnd(record) {
         const elapsedTime = Date.now() - this.touchStartMs;
         if (elapsedTime < this.constructor.LONG_TOUCH_THRESHOLD) {
             this.resetLongTouchTimer();
         }
     }
-
-    /**
-     * @param {RelationalRecord} _record
-     */
-    onRowTouchMove(_record) {
+    onRowTouchMove(record) {
         this.resetLongTouchTimer();
     }
 
@@ -2227,26 +1850,17 @@ export class ListRenderer extends Component {
      * @param {HTMLElement} [params.parent]
      * @param {HTMLElement} [params.previous]
      */
-    async sortDrop(dataRowId, dataGroupId, { element, previous }) {
+    async sortDrop(dataRowId, { element, previous }) {
+        await this.props.list.leaveEditMode();
         element.classList.remove("o_row_draggable");
         const refId = previous ? previous.dataset.id : null;
         try {
-            if (dataGroupId) {
-                this.resequencePromise = this.props.list.moveRecord(
-                    dataRowId,
-                    dataGroupId,
-                    refId,
-                    previous.dataset.groupId
-                );
-            } else {
-                this.resequencePromise = this.props.list.resequence(dataRowId, refId, {
-                    handleField: this.props.list.handleField,
-                });
-            }
+            this.resequencePromise = this.props.list.resequence(dataRowId, refId, {
+                handleField: this.props.list.handleField,
+            });
             await this.resequencePromise;
         } finally {
             element.classList.add("o_row_draggable");
-            await this.props.list.leaveEditMode();
         }
     }
 
@@ -2283,25 +1897,18 @@ export class ListRenderer extends Component {
         }
     }
 
-    /**
-     * @param {MouseEvent} ev
-     */
     ignoreEventInSelectionMode(ev) {
         const { list } = this.props;
-        if (this.env.isSmall && list.selection.length) {
+        if (this.env.isSmall && list.selection && list.selection.length) {
             // in selection mode, only selection is allowed.
             ev.stopPropagation();
             ev.preventDefault();
         }
     }
 
-    /**
-     * @param {RelationalRecord} record
-     * @param {PointerEvent} ev
-     */
     onClickCapture(record, ev) {
         const { list } = this.props;
-        if (this.env.isSmall && list.selection.length) {
+        if (this.env.isSmall && list.selection && list.selection.length) {
             ev.stopPropagation();
             ev.preventDefault();
             this.toggleRecordSelection(record);

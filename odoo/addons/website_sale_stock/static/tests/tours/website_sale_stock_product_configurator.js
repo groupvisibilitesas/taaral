@@ -40,7 +40,7 @@ registry
             configuratorTourUtils.removeOptionalProduct("Optional product"),
             {
                 content: "Proceed to checkout",
-                trigger: 'button:contains(Go to Checkout)',
+                trigger: 'button:contains(Proceed to Checkout)',
                 run: 'click',
                 expectUnloadPage: true,
             },

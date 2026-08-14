@@ -20,10 +20,10 @@ class AccountChartTemplate(models.AbstractModel):
         return match.get(chart_template)
 
     def _load(self, template_code, company, install_demo,force_create=True):
-        """ Set companies ARCA Responsibility and Country if AR CoA is installed, also set tax calculation rounding
-        method required in order to properly validate match ARCA invoices.
+        """ Set companies AFIP Responsibility and Country if AR CoA is installed, also set tax calculation rounding
+        method required in order to properly validate match AFIP invoices.
 
-        Also, raise a warning if the user is trying to install a CoA that does not match with the defined ARCA
+        Also, raise a warning if the user is trying to install a CoA that does not match with the defined AFIP
         Responsibility defined in the company
         """
         coa_responsibility = self._get_ar_responsibility_match(template_code)
@@ -52,7 +52,7 @@ class AccountChartTemplate(models.AbstractModel):
         return res
 
     def try_loading(self, template_code, company, install_demo=False, force_create=True):
-        # During company creation load template code corresponding to the ARCA Responsibility
+        # During company creation load template code corresponding to the AFIP Responsibility
         if not company:
             return
         if isinstance(company, int):

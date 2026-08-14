@@ -1,44 +1,39 @@
-import { registerThreadAction } from "@mail/core/common/thread_actions";
+import { threadActionsRegistry } from "@mail/core/common/thread_actions";
+import { useComponent } from "@odoo/owl";
 
 import { _t } from "@web/core/l10n/translation";
+import { useService } from "@web/core/utils/hooks";
 
-registerThreadAction("expand-discuss", {
-    condition: ({ owner, store, thread }) =>
-        thread &&
-        owner.props.chatWindow?.isOpen &&
-        thread.model === "discuss.channel" &&
-        !store.env.services.ui.isSmall &&
-        !owner.isDiscussSidebarChannelActions,
+threadActionsRegistry.add("expand-discuss", {
+    condition(component) {
+        return (
+            component.thread &&
+            component.props.chatWindow?.isOpen &&
+            component.thread.model === "discuss.channel" &&
+            !component.ui.isSmall
+        );
+    },
+    setup() {
+        const component = useComponent();
+        component.actionService = useService("action");
+    },
     icon: "fa fa-fw fa-expand",
     name: _t("Open in Discuss"),
-    open({ owner, store, thread }) {
-        store.env.services.action.doAction(
+    shouldClearBreadcrumbs(component) {
+        return false;
+    },
+    open(component) {
+        component.actionService.doAction(
             {
                 type: "ir.actions.client",
                 tag: "mail.action_discuss",
             },
             {
-                clearBreadcrumbs: owner.env.services["home_menu"]?.hasHomeMenu,
-                additionalContext: { active_id: thread.id },
+                clearBreadcrumbs: this.shouldClearBreadcrumbs(component),
+                additionalContext: { active_id: component.thread.id },
             }
         );
     },
-    sequence: 10,
-    sequenceGroup: 5,
-});
-registerThreadAction("advanced-settings", {
-    condition: ({ owner, thread }) => thread && owner.isDiscussSidebarChannelActions,
-    open: ({ owner, store, thread }) => {
-        store.env.services.action.doAction({
-            type: "ir.actions.act_window",
-            res_model: "discuss.channel",
-            views: [[false, "form"]],
-            res_id: thread.id,
-            target: "current",
-        });
-    },
-    icon: "fa fa-fw fa-gear",
-    name: _t("Advanced Settings"),
-    sequence: 20,
-    sequenceGroup: 30,
+    sequence: 40,
+    sequenceGroup: 20,
 });

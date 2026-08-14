@@ -9,7 +9,6 @@ class HrDepartureWizard(models.TransientModel):
     unassign_equipment = fields.Boolean("Free Equiments", default=True, help="Unassign Employee from Equipments")
 
     def action_register_departure(self):
-        action = super().action_register_departure()
+        super().action_register_departure()
         if self.unassign_equipment:
-            self.employee_ids.write({'equipment_ids': [Command.clear()]})
-        return action
+            self.employee_id.update({'equipment_ids': [Command.unlink(equipment.id) for equipment in self.employee_id.equipment_ids]})

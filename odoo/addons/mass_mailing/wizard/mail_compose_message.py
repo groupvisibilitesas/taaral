@@ -3,7 +3,7 @@
 
 from markupsafe import Markup
 
-from odoo import _, fields, models
+from odoo import fields, models
 from odoo.tools.misc import file_open
 
 
@@ -25,23 +25,15 @@ class MailComposeMessage(models.TransientModel):
             self.mass_mailing_id = mass_mailing.id
         return super()._action_send_mail(auto_commit=auto_commit)
 
-    def _invalid_email_state(self):
-        """Always cancel invalid emails for mailings due to likely untractable number of failures."""
-        if self.mass_mailing_name or self.mass_mailing_id:
-            return 'cancel'
-        return super()._invalid_email_state()
-
-    def _generate_mail_notification_values(self, mails):
-        """Prevent notification creation as traces are generated."""
-        if self.mass_mailing_name or self.mass_mailing_id:
-            return []
-        return super()._generate_mail_notification_values(mails)
-
     def _prepare_mail_values(self, res_ids):
-        # When being in mass mailing mode, add 'mailing.trace' values directly in the o2m field of mail.mail.
+        """ When being in mass mailing mode, add 'mailing.trace' values directly
+        in the o2m field of mail.mail. """
         mail_values_all = super()._prepare_mail_values(res_ids)
 
-        if not self._is_mass_mailing():
+        # use only for allowed models in mass mailing
+        if (self.composition_mode != 'mass_mail' or
+            not self.mass_mailing_id or
+            not self.model_is_thread):
             return mail_values_all
 
         trace_values_all = self._prepare_mail_values_mailing_traces(mail_values_all)
@@ -53,24 +45,11 @@ class MailComposeMessage(models.TransientModel):
                     'mass_mailing.mass_mailing_mail_layout',
                     {'body': mail_values['body_html'], 'mailing_style': Markup(f'<style>{styles}</style>')},
                     minimal_qcontext=True,
-                    raise_if_not_found=False
+                    raise_if_not_found=False,
+                    preserve_comments=True,
                 )
                 if body:
                     mail_values['body_html'] = body
-            if mail_values.get('body'):
-                mail_values['body'] = Markup(
-                    '<div><span>{mailing_sent_message}</span></div>'
-                    '<blockquote class="border-start" data-o-mail-quote="1" data-o-mail-quote-node="1">'
-                    '{original_body}'
-                    '</blockquote>'
-                ).format(
-                    mailing_sent_message=Markup(_(
-                        'Received the mailing <b>{mailing_name}</b>',
-                    )).format(
-                        mailing_name=self.mass_mailing_name or self.mass_mailing_id.display_name
-                    ),
-                    original_body=mail_values['body'],
-                )
 
             mail_values.update({
                 'mailing_id': self.mass_mailing_id.id,
@@ -94,13 +73,9 @@ class MailComposeMessage(models.TransientModel):
         trace_values_all = dict.fromkeys(mail_values_all.keys(), False)
         recipients_info = self._get_recipients_data(mail_values_all)
         for res_id, mail_values in mail_values_all.items():
-            emails = recipients_info[res_id]['mail_to_normalized']
-            # if mail_to is void, keep falsy values to allow searching / debugging traces
-            if not emails:
-                emails = recipients_info[res_id]['mail_to']
-            email = emails[0] if emails else ''
             trace_vals = {
-                'email': email,
+                # if mail_to is void, keep falsy values to allow searching / debugging traces
+                'email': recipients_info[res_id]['mail_to'][0] if recipients_info[res_id]['mail_to'] else '',
                 'mass_mailing_id': self.mass_mailing_id.id,
                 'message_id': mail_values['message_id'],
                 'model': self.model,
@@ -130,27 +105,4 @@ class MailComposeMessage(models.TransientModel):
             'sent_date': now,
             'state': 'done',
             'subject': self.subject,
-            'use_exclusion_list': self.use_exclusion_list,
         }
-
-    def _manage_mail_values(self, mail_values_all):
-        # Filter out canceled messages of mass mailing and create traces for canceled ones.
-        results = super()._manage_mail_values(mail_values_all)
-        if not self._is_mass_mailing():
-            return results
-        self.env['mailing.trace'].sudo().create([
-            trace_commands[0][2]
-            for mail_values in results.values()
-            if (mail_values.get('state') == 'cancel' and (trace_commands := mail_values['mailing_trace_ids'])
-                # Ensure it is a create command
-                and len(trace_commands) == 1 and len(trace_commands[0]) == 3 and trace_commands[0][0] == 0)
-        ])
-        return {
-            res_id: mail_values
-            for res_id, mail_values in results.items()
-            if mail_values.get('state') != 'cancel'
-        }
-
-    def _is_mass_mailing(self):
-        # allowed models in mass mailing
-        return self.composition_mode == 'mass_mail' and self.mass_mailing_id and self.model_is_thread

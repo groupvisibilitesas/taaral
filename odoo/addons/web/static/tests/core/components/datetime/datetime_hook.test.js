@@ -1,11 +1,10 @@
-import { expect, test } from "@odoo/hoot";
+import { test, expect } from "@odoo/hoot";
 import { click, edit } from "@odoo/hoot-dom";
 import { animationFrame, tick } from "@odoo/hoot-mock";
 import { Component, reactive, useState, xml } from "@odoo/owl";
 import { mountWithCleanup } from "@web/../tests/web_test_helpers";
+import { useDateTimePicker } from "@web/core/datetime/datetime_hook";
 import { DateTimeInput } from "@web/core/datetime/datetime_input";
-import { useDateTimePicker } from "@web/core/datetime/datetime_picker_hook";
-import { usePopover } from "@web/core/popover/popover_hook";
 
 const { DateTime } = luxon;
 
@@ -157,7 +156,6 @@ test("close popover when owner component is unmounted", async() => {
 
         setup() {
             useDateTimePicker({
-                createPopover: usePopover,
                 pickerProps: {
                     value: [false, false],
                     type: "date",

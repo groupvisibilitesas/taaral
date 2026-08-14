@@ -13,7 +13,7 @@ import { registry } from "@web/core/registry";
  *   onClose?: () => void;
  *   onPositioned?: import("@web/core/position/position_hook").UsePositionOptions["onPositioned"];
  *   popoverClass?: string;
- *   role?: string;
+ *   popoverRole?: string;
  *   position?: import("@web/core/position/position_hook").UsePositionOptions["position"];
  *   ref?: Function;
  * }} PopoverServiceAddOptions
@@ -47,12 +47,11 @@ export const popoverService = {
                     closeOnEscape: options.closeOnEscape,
                     component,
                     componentProps: markRaw(props),
-                    extendedFlipping: options.extendedFlipping,
                     ref: options.ref,
                     class: options.popoverClass,
                     animation: options.animation,
                     arrow: options.arrow,
-                    role: options.role,
+                    role: options.popoverRole,
                     position: options.position,
                     onPositioned: options.onPositioned,
                     fixedPosition: options.fixedPosition,
@@ -63,7 +62,6 @@ export const popoverService = {
                     env: options.env,
                     onRemove: options.onClose,
                     rootId: target.getRootNode()?.host?.id,
-                    sequence: options.sequence,
                 }
             );
 

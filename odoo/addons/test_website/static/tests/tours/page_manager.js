@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { registry } from "@web/core/registry";
 
 registry.category("web_tour.tours").add('test_website_page_manager', {
@@ -17,7 +19,7 @@ registry.category("web_tour.tours").add('test_website_page_manager', {
     run: "click",
 }, {
     content: "Check that there is only 2 records selected",
-    trigger: ".o_selection_box:contains(2):contains(selected)",
+    trigger: ".o_list_selection_box:contains(2):contains(selected)",
 }, {
     content: "Click on the 'Select all records' checkbox again to unselect all records and see the search bar",
     trigger: "thead .o_list_record_selector",
@@ -27,12 +29,8 @@ registry.category("web_tour.tours").add('test_website_page_manager', {
 	trigger: ".o_searchview_dropdown_toggler",
     run: "click",
 }, {
-    content: "Remove 'My Website' filter",
-    trigger: ".o_filter_menu .o-dropdown-item:contains('My Website')",
-    run: "click",
-}, {
-    content: "Select 'My Website 2' filter",
-    trigger: ".o_filter_menu .o-dropdown-item:contains('My Website 2')",
+    content: "Select My Website 2",
+    trigger: ".o_dropdown_container.o_website_menu > .dropdown-item:contains('My Website 2')",
     run: "click",
 }, {
     // This step is just here to ensure there is more records than the 2

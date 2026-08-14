@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { registry } from "@web/core/registry";
 
 registry.category("web_tour.tours").add("test_dblclick_event_from_calendar", {
@@ -33,18 +35,14 @@ registry.category("web_tour.tours").add("test_dblclick_event_from_calendar", {
             run: "dblclick",
         },
         {
-            content: "Change Scheduled End",
-            trigger: "button#schedule_end_0",
-            run: "click",
+            content: "Change equipment",
+            trigger: "input#duration_0",
+            run: "edit 2:00",
         },
         {
-            trigger: "input#schedule_end_0",
-            async run({ edit, anchor }) {
-                const value = luxon.DateTime.fromFormat(anchor.value, "MM/dd/yyyy hh:mm:ss a")
-                    .plus({ hours: 1 })
-                    .toFormat("MM/dd/yyyy hh:mm:ss a");
-                await edit(value);
-            },
+            content: "Save duration change",
+            trigger: 'button[data-hotkey="s"]',
+            run: "click",
         },
         {
             content: "Return to calendar",
@@ -70,8 +68,8 @@ registry.category("web_tour.tours").add("test_drag_and_drop_event_in_calendar", 
             run: "click",
         },
         {
-            content: 'Wait for monthly view to load',
-            trigger: '.fc-dayGridMonth-view',
+            content: "Wait the view is month",
+            trigger: ".fc-dayGridMonth-view",
         },
         {
             content: "Move event to 15th of the month",

@@ -1,21 +1,14 @@
-import { expect, mockFetch, test } from "@odoo/hoot";
-import {
-    click,
-    dblclick,
-    pointerUp,
-    press,
-    queryOne,
-    waitFor,
-    waitForNone,
-    manuallyDispatchProgrammaticEvent,
-} from "@odoo/hoot-dom";
+import { expect, test } from "@odoo/hoot";
+import { click, dblclick, pointerUp, press, queryOne, waitFor, waitForNone } from "@odoo/hoot-dom";
 import { animationFrame } from "@odoo/hoot-mock";
 import { contains } from "@web/../tests/web_test_helpers";
-import { base64Img, setupEditor } from "./_helpers/editor";
+import { setupEditor } from "./_helpers/editor";
 import { getContent, moveSelectionOutsideEditor, setContent } from "./_helpers/selection";
 import { insertText, undo } from "./_helpers/user_actions";
 import { expectElementCount } from "./_helpers/ui_expectations";
-import { getFetchedMimetype } from "@html_editor/utils/image";
+
+const base64Img =
+    "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUA\n        AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO\n            9TXL0Y4OHwAAAABJRU5ErkJggg==";
 
 test("image can be selected", async () => {
     const { plugins } = await setupEditor(`
@@ -43,27 +36,27 @@ test("can shape an image", async () => {
     }
 
     await click(buttons["shape_rounded"]);
-    await waitFor(buttons["shape_rounded"] + ".active");
+    await animationFrame();
     expect(buttons["shape_rounded"]).toHaveClass("active");
     expect(img).toHaveClass("rounded");
 
     await click(buttons["shape_rounded"]);
-    await waitFor(buttons["shape_rounded"] + ":not(.active)");
+    await animationFrame();
     expect(buttons["shape_rounded"]).not.toHaveClass("active");
     expect(img).not.toHaveClass("rounded");
 
     await click(buttons["shape_circle"]);
-    await waitFor(buttons["shape_circle"] + ".active");
+    await animationFrame();
     expect(buttons["shape_circle"]).toHaveClass("active");
     expect(img).toHaveClass("rounded-circle");
 
     await click(buttons["shape_shadow"]);
-    await waitFor(buttons["shape_shadow"] + ".active");
+    await animationFrame();
     expect(buttons["shape_shadow"]).toHaveClass("active");
     expect(img).toHaveClass("shadow");
 
     await click(buttons["shape_thumbnail"]);
-    await waitFor(buttons["shape_thumbnail"] + ".active");
+    await animationFrame();
     expect(buttons["shape_thumbnail"]).toHaveClass("active");
     expect(img).toHaveClass("img-thumbnail");
 });
@@ -82,17 +75,20 @@ test("shape_circle and shape_rounded are mutually exclusive", async () => {
     }
 
     await click(buttons["shape_rounded"]);
-    await waitFor(buttons["shape_rounded"] + ".active");
+    await animationFrame();
+    expect(buttons["shape_rounded"]).toHaveClass("active");
     expect(img).toHaveClass("rounded");
 
     await click(buttons["shape_circle"]);
-    await waitFor(buttons["shape_circle"] + ".active");
+    await animationFrame();
+    expect(buttons["shape_circle"]).toHaveClass("active");
     expect(img).toHaveClass("rounded-circle");
     expect(buttons["shape_rounded"]).not.toHaveClass("active");
     expect(img).not.toHaveClass("rounded");
 
     await click(buttons["shape_rounded"]);
-    await waitFor(buttons["shape_rounded"] + ".active");
+    await animationFrame();
+    expect(buttons["shape_rounded"]).toHaveClass("active");
     expect(img).toHaveClass("rounded");
     expect(buttons["shape_circle"]).not.toHaveClass("active");
     expect(img).not.toHaveClass("rounded-circle");
@@ -114,20 +110,6 @@ test("can undo a shape", async () => {
     expect("img").not.toHaveClass("rounded");
 });
 
-test("focus description input by default when image description popover opens", async () => {
-    await setupEditor(`
-        <img src="${base64Img}">
-    `);
-    await click("img");
-    await waitFor(".o-we-toolbar");
-
-    await click(".o-we-toolbar .btn-group[name='image_description'] button");
-    await animationFrame();
-
-    expect(".o-we-image-description-popover").toHaveCount(1);
-    expect("input[name='description']").toBeFocused();
-});
-
 test("can add an image description & tooltip", async () => {
     await setupEditor(`
         <img src="${base64Img}">
@@ -138,33 +120,13 @@ test("can add an image description & tooltip", async () => {
     await click(".o-we-toolbar .btn-group[name='image_description'] button");
     await animationFrame();
 
-    expect(".o-we-image-description-popover").toHaveCount(1);
+    expect(".modal-body").toHaveCount(1);
     await contains("input[name='description']").edit("description modified");
     await contains("input[name='tooltip']").edit("tooltip modified");
-    await click(".o-we-image-description-popover button");
+    await click(".modal-footer button");
     await animationFrame();
     expect("img").toHaveAttribute("alt", "description modified");
     expect("img").toHaveAttribute("title", "tooltip modified");
-});
-
-test("should close image description popover on escape", async () => {
-    await setupEditor(`
-        <img src="${base64Img}" alt="description" title="tooltip">
-    `);
-    await click("img");
-    await waitFor(".o-we-toolbar");
-
-    await click(".o-we-toolbar .btn-group[name='image_description'] button");
-    await animationFrame();
-
-    expect(".o-we-image-description-popover").toHaveCount(1);
-    await contains("input[name='description']").edit("description modified");
-    await contains("input[name='tooltip']").edit("tooltip modified");
-    await press("Escape");
-    await animationFrame();
-    expect(".o-we-image-description-popover").toHaveCount(0);
-    expect("img").toHaveAttribute("alt", "description");
-    expect("img").toHaveAttribute("title", "tooltip");
 });
 
 test("can edit an image description & tooltip", async () => {
@@ -177,12 +139,12 @@ test("can edit an image description & tooltip", async () => {
     await click(".o-we-toolbar .btn-group[name='image_description'] button");
     await animationFrame();
 
-    expect(".o-we-image-description-popover").toHaveCount(1);
+    expect(".modal-body").toHaveCount(1);
     expect("input[name='description']").toHaveValue("description");
     expect("input[name='tooltip']").toHaveValue("tooltip");
     await contains("input[name='description']").edit("description modified");
     await contains("input[name='tooltip']").edit("tooltip modified");
-    await click(".o-we-image-description-popover button");
+    await click(".modal-footer button");
     await animationFrame();
     expect("img").toHaveAttribute("alt", "description modified");
     expect("img").toHaveAttribute("title", "tooltip modified");
@@ -195,26 +157,27 @@ test("Can change an image size", async () => {
     await click("img.test-image");
     await waitFor(".o-we-toolbar");
     expect(queryOne("img").style.width).toBe("");
+    expect(".o-we-toolbar button[name='resize_default']").toHaveClass("active");
 
-    await click(".o-we-toolbar [name='image_size'] .dropdown-toggle");
+    await click(".o-we-toolbar button[name='resize_100']");
     await animationFrame();
-    await click(".image_size_selector .dropdown-item:contains('100%')");
     expect(queryOne("img").style.width).toBe("100%");
+    expect(".o-we-toolbar button[name='resize_100']").toHaveClass("active");
 
-    await click(".o-we-toolbar [name='image_size'] .dropdown-toggle");
+    await click(".o-we-toolbar button[name='resize_50']");
     await animationFrame();
-    await click(".image_size_selector .dropdown-item:contains('50%')");
     expect(queryOne("img").style.width).toBe("50%");
+    expect(".o-we-toolbar button[name='resize_50']").toHaveClass("active");
 
-    await click(".o-we-toolbar [name='image_size'] .dropdown-toggle");
+    await click(".o-we-toolbar button[name='resize_25']");
     await animationFrame();
-    await click(".image_size_selector .dropdown-item:contains('25%')");
     expect(queryOne("img").style.width).toBe("25%");
+    expect(".o-we-toolbar button[name='resize_25']").toHaveClass("active");
 
-    await click(".o-we-toolbar [name='image_size'] .dropdown-toggle");
+    await click(".o-we-toolbar button[name='resize_default']");
     await animationFrame();
-    await click(".image_size_selector .dropdown-item:contains('Default')");
     expect(queryOne("img").style.width).toBe("");
+    expect(".o-we-toolbar button[name='resize_default']").toHaveClass("active");
 });
 
 test("Can undo the image sizing", async () => {
@@ -224,10 +187,10 @@ test("Can undo the image sizing", async () => {
     await click("img.test-image");
     await waitFor(".o-we-toolbar");
 
-    await click(".o-we-toolbar [name='image_size'] .dropdown-toggle");
+    await click(".o-we-toolbar button[name='resize_100']");
     await animationFrame();
-    await click(".image_size_selector .dropdown-item:contains('100%')");
     expect(queryOne("img").style.width).toBe("100%");
+    expect(".o-we-toolbar button[name='resize_100']").toHaveClass("active");
 
     undo(editor);
     expect(queryOne("img").style.width).toBe("");
@@ -240,36 +203,36 @@ test("Can change the padding of an image", async () => {
     await click("img.test-image");
     await waitFor(".o-we-toolbar");
 
-    await click(".o-we-toolbar div[name='image_padding'] .dropdown-toggle");
+    await click(".o-we-toolbar div[name='image_padding'] button");
     await animationFrame();
-    await click(".o-dropdown--menu span:contains('Small')");
+    await click(".o_popover span:contains('Small')");
     await animationFrame();
     expect("img").toHaveClass("p-1");
 
-    await click(".o-we-toolbar div[name='image_padding'] .dropdown-toggle");
+    await click(".o-we-toolbar div[name='image_padding'] button");
     await animationFrame();
-    await click(".o-dropdown--menu span:contains('Medium')");
+    await click(".o_popover span:contains('Medium')");
     await animationFrame();
     expect("img").not.toHaveClass("p-1");
     expect("img").toHaveClass("p-2");
 
-    await click(".o-we-toolbar div[name='image_padding'] .dropdown-toggle");
+    await click(".o-we-toolbar div[name='image_padding'] button");
     await animationFrame();
-    await click(".o-dropdown--menu span:contains('Large')");
+    await click(".o_popover span:contains('Large')");
     await animationFrame();
     expect("img").not.toHaveClass("p-2");
     expect("img").toHaveClass("p-3");
 
-    await click(".o-we-toolbar div[name='image_padding'] .dropdown-toggle");
+    await click(".o-we-toolbar div[name='image_padding'] button");
     await animationFrame();
-    await click(".o-dropdown--menu span:contains('XL')");
+    await click(".o_popover span:contains('XL')");
     await animationFrame();
     expect("img").not.toHaveClass("p-3");
     expect("img").toHaveClass("p-5");
 
-    await click(".o-we-toolbar div[name='image_padding'] .dropdown-toggle");
+    await click(".o-we-toolbar div[name='image_padding'] button");
     await animationFrame();
-    await click(".o-dropdown--menu span:contains('None')");
+    await click(".o_popover span:contains('None')");
     await animationFrame();
     expect("img").not.toHaveClass("p-5");
 });
@@ -281,9 +244,9 @@ test("Can undo the image padding", async () => {
     await click("img.test-image");
     await waitFor(".o-we-toolbar");
 
-    await click(".o-we-toolbar div[name='image_padding'] .dropdown-toggle");
+    await click(".o-we-toolbar div[name='image_padding'] button");
     await animationFrame();
-    await click(".o-dropdown--menu span:contains('Small')");
+    await click(".o_popover span:contains('Small')");
     await animationFrame();
     expect("img").toHaveClass("p-1");
 
@@ -309,7 +272,7 @@ test("Can transform an image", async () => {
     `);
     await click("img.test-image");
     await waitFor(".o-we-toolbar");
-    await click(".o-we-toolbar div[name='image_modifiers'] button[name='image_transform']");
+    await click(".o-we-toolbar div[name='image_transform'] button");
     await animationFrame();
     const transfoContainers = document.querySelectorAll(".transfo-container");
     expect(transfoContainers).toHaveCount(1);
@@ -319,17 +282,6 @@ test("Can transform an image", async () => {
     }
 });
 
-test("Image transform button is not available when config option is disabled", async () => {
-    await setupEditor(`<img class="img-fluid test-image" src="${base64Img}">`, {
-        config: { allowImageTransform: false },
-    });
-    await click("img.test-image");
-    await waitFor(".o-we-toolbar");
-    expect(".o-we-toolbar div[name='image_modifiers'] button[name='image_transform']").toHaveCount(
-        0
-    );
-});
-
 test("Image transformation dissapear when selection change", async () => {
     const { el } = await setupEditor(`
         <img class="img-fluid test-image" src="${base64Img}">
@@ -337,7 +289,7 @@ test("Image transformation dissapear when selection change", async () => {
     `);
     await click("img.test-image");
     await waitFor(".o-we-toolbar");
-    await click(".o-we-toolbar div[name='image_modifiers'] button[name='image_transform']");
+    await click(".o-we-toolbar div[name='image_transform'] button");
     await animationFrame();
     let transfoContainers = document.querySelectorAll(".transfo-container");
     expect(transfoContainers).toHaveCount(1);
@@ -364,7 +316,7 @@ test("Image transformation disappear on escape", async () => {
     await waitFor(".o-we-toolbar");
     let toolbar = document.querySelectorAll(".o-we-toolbar");
     expect(toolbar.length).toBe(1);
-    click(".o-we-toolbar div[name='image_modifiers'] button[name='image_transform']");
+    click(".o-we-toolbar div[name='image_transform'] button");
     await animationFrame();
     toolbar = document.querySelectorAll(".o-we-toolbar");
     expect(toolbar.length).toBe(1);
@@ -382,20 +334,14 @@ test("Image transformation disappears on backspace/delete", async () => {
     `);
     click("img.test-image");
     await expectElementCount(".o-we-toolbar", 1);
-    await contains(
-        ".o-we-toolbar div[name='image_modifiers'] button[name='image_transform']"
-    ).click();
+    await contains(".o-we-toolbar div[name='image_transform'] button").click();
     await expectElementCount(".transfo-container", 1);
     press("backspace");
     await expectElementCount(".transfo-container", 0);
-    await waitForNone(".o-we-toolbar[data-namespace='image']");
     undo(editor);
     click("img.test-image");
-    await waitFor(".o-we-toolbar");
     await expectElementCount(".o-we-toolbar", 1);
-    await contains(
-        ".o-we-toolbar div[name='image_modifiers'] button[name='image_transform']"
-    ).click();
+    await contains(".o-we-toolbar div[name='image_transform'] button").click();
     await expectElementCount(".transfo-container", 1);
     press("delete");
     await expectElementCount(".transfo-container", 0);
@@ -407,9 +353,7 @@ test("Image transformation disappears on character key press", async () => {
     `);
     click("img.test-image");
     await expectElementCount(".o-we-toolbar", 1);
-    await contains(
-        ".o-we-toolbar div[name='image_modifiers'] button[name='image_transform']"
-    ).click();
+    await contains(".o-we-toolbar div[name='image_transform'] button").click();
     await expectElementCount(".transfo-container", 1);
     insertText(editor, "a");
     await expectElementCount(".transfo-container", 0);
@@ -443,15 +387,13 @@ test("Image transformation scalers position", async () => {
     };
     click("img.test-image");
     await expectElementCount(".o-we-toolbar", 1);
-    click(".o-we-toolbar div[name='image_modifiers'] button[name='image_transform']");
+    click(".o-we-toolbar div[name='image_transform'] button");
     await animationFrame();
     await expectElementCount(".o-we-toolbar", 1);
     expect(".transfo-container").toHaveCount(1);
     checkScalersPositions(queryOne("img"));
     // resize by 25% update the position of the scalers
-    await click(".o-we-toolbar [name='image_size'] .dropdown-toggle");
-    await animationFrame();
-    await click(".image_size_selector .dropdown-item:contains('25%')");
+    click('.o-we-toolbar [name="resize_25"]');
     await animationFrame();
     expect(".transfo-container").toHaveCount(0);
 });
@@ -464,10 +406,8 @@ test("Image transformation reset", async () => {
         "transform",
         "rotate(25deg) translateX(-0.2%) translateY(0.4%)"
     );
-    const transformButtonSelector =
-        ".o-we-toolbar div[name='image_modifiers'] button[name='image_transform']";
-    const resetTransformButtonSelector =
-        ".o-we-toolbar div[name='image_modifiers'] button[name='image_transform'].active";
+    const transformButtonSelector = ".o-we-toolbar div[name='image_transform'] button";
+    const resetTransformButtonSelector = ".o-we-toolbar div[name='image_transform'] button.active";
     await click("img.test-image");
     await waitFor(".o-we-toolbar");
 
@@ -498,34 +438,23 @@ test("Can delete an image", async () => {
     expect(".test-image").toHaveCount(0);
 });
 
-test("Can delete an image with display block style applied", async () => {
-    await setupEditor(`
-        <p><img class="img-fluid test-image d-block" src="${base64Img}"></p>
-    `);
-    await click("img");
-    await expectElementCount(".o-we-toolbar button[name='image_delete']", 1);
-    await click("button[name='image_delete']");
-    await animationFrame();
-    await expectElementCount(".test-image", 0);
-});
-
 test("Deleting an image that is alone inside `p` should set selection at start of `p`", async () => {
     const { el } = await setupEditor(`<p><img>[]</p>`);
     await click("img");
-    await waitFor('.o-we-toolbar[data-namespace="image"');
+    await waitFor(".o-we-toolbar");
     expect("button[name='image_delete']").toHaveCount(1);
     await click("button[name='image_delete']");
     await animationFrame();
     expect(".test-image").toHaveCount(0);
     expect(getContent(el)).toBe(
-        `<p o-we-hint-text='Type "/" for commands' class="o-we-hint">[]<br></p>`
+        `<p placeholder='Type "/" for commands' class="o-we-hint">[]<br></p>`
     );
 });
 
 test("Deleting an image that is the only content inside a <p> tag should place the selection at the start of the <p>", async () => {
     const { el } = await setupEditor(`<p>abc<img>[]</p>`);
     await click("img");
-    await waitFor('.o-we-toolbar[data-namespace="image"');
+    await waitFor(".o-we-toolbar");
     expect("button[name='image_delete']").toHaveCount(1);
     await click("button[name='image_delete']");
     await animationFrame();
@@ -597,7 +526,7 @@ test("can undo adding link to image", async () => {
 
 test("can remove the link of an image", async () => {
     await setupEditor(`
-        <a href="http://test.test/"><img src="${base64Img}"></a>
+        <a href="#"><img src="${base64Img}"></a>
     `);
     const img = queryOne("img");
     await click("img");
@@ -611,7 +540,7 @@ test("can remove the link of an image", async () => {
 
 test("can undo link removing of an image", async () => {
     const { editor } = await setupEditor(`
-        <a href="http://test.test/"><img src="${base64Img}"></a>
+        <a href="#"><img src="${base64Img}"></a>
     `);
     const img = queryOne("img");
     await click("img");
@@ -647,33 +576,4 @@ test("Preview an image on dblclick", async () => {
     await dblclick("img.test-image");
     await animationFrame();
     expect(".o-FileViewer").toHaveCount(1);
-});
-
-test("should select image on pointerdown", async () => {
-    const { plugins } = await setupEditor(`
-        <img src="${base64Img}">
-        <p>test[]</p>
-    `);
-
-    const imgElement = document.querySelector("img");
-    await manuallyDispatchProgrammaticEvent(imgElement, "pointerdown");
-    await animationFrame();
-
-    const selectionPlugin = plugins.get("selection");
-    const selectedNode = selectionPlugin.getTargetedNodes()[0];
-
-    expect(selectedNode.tagName).toBe("IMG");
-});
-
-test("Correctly determine the mimetype of an image with wrong extension", async () => {
-    const imgSrc = "/web/image/wrongExtension.jpeg";
-    mockFetch((url) => {
-        if (url === imgSrc) {
-            return new Response("", { headers: new Headers([["content-Type", "image/png"]]) });
-        }
-    });
-    const imageEl = document.createElement("img");
-    imageEl.setAttribute("src", imgSrc);
-    const mimetype = await getFetchedMimetype(imageEl);
-    expect(mimetype).toBe("image/png");
 });

@@ -3,10 +3,9 @@
 from base64 import b64encode
 
 from odoo import Command, tests
+from odoo.addons.base.tests.common import HttpCaseWithUserDemo, HttpCaseWithUserPortal
 from odoo.tools import mute_logger
 from odoo.tools.json import scriptsafe as json_safe
-
-from odoo.addons.base.tests.common import HttpCaseWithUserDemo, HttpCaseWithUserPortal
 
 
 @tests.tagged('-at_install', 'post_install')
@@ -29,13 +28,13 @@ class TestWebEditorController(HttpCaseWithUserDemo, HttpCaseWithUserPortal):
             params = {
                 'name': name,
                 'mimetype': 'image/svg+xml',
-                'data': b64encode(svg).decode('ascii'),
+                'data': b64encode(svg).decode('ascii')
             }
             if attachment.res_id:
                 params['res_model'] = attachment.res_model
                 params['res_id'] = attachment.res_id
             response = self.url_open(
-                f'/html_editor/modify_image/{attachment.id}',
+                f'/web_editor/modify_image/{attachment.id}',
                 headers={'Content-Type': 'application/json'},
                 data=json_safe.dumps({
                     "params": params,
@@ -52,17 +51,16 @@ class TestWebEditorController(HttpCaseWithUserDemo, HttpCaseWithUserPortal):
             self.assertEqual(200, response.status_code, "Expect response")
             self.assertTrue('image/svg+xml' in response.headers.get('Content-Type'), "Expect SVG mimetype")
             self.assertEqual(svg, response.content, "Expect unchanged SVG")
-            return True
 
         # Admin can modify page
         modify('admin', 'page-admin.gif')
 
         # Base user cannot modify page
         self.user_demo.write({
-            'group_ids': [
+            'groups_id': [
                 Command.clear(),
                 Command.link(self.env.ref('base.group_user').id),
-            ],
+            ]
         })
         with mute_logger('odoo.http'):
             json = modify('demo', 'page-demofail.gif', True)
@@ -70,12 +68,12 @@ class TestWebEditorController(HttpCaseWithUserDemo, HttpCaseWithUserPortal):
 
         # Restricted editor with event right cannot modify page
         self.user_demo.write({
-            'group_ids': [
+            'groups_id': [
                 Command.clear(),
                 Command.link(self.env.ref('base.group_user').id),
                 Command.link(self.env.ref('website.group_website_restricted_editor').id),
                 Command.link(self.env.ref('event.group_event_manager').id),
-            ],
+            ]
         })
         with mute_logger('odoo.http'):
             json = modify('demo', 'page-demofail2.gif', True)
@@ -83,11 +81,11 @@ class TestWebEditorController(HttpCaseWithUserDemo, HttpCaseWithUserPortal):
 
         # Website designer can modify page
         self.user_demo.write({
-            'group_ids': [
+            'groups_id': [
                 Command.clear(),
                 Command.link(self.env.ref('base.group_user').id),
                 Command.link(self.env.ref('website.group_website_designer').id),
-            ],
+            ]
         })
         modify('demo', 'page-demo.gif')
 
@@ -96,7 +94,12 @@ class TestWebEditorController(HttpCaseWithUserDemo, HttpCaseWithUserPortal):
         modify('demo', 'page-logo-unique.gif')
         attachment.url = False  # Reset previous value
 
-        event = self.env['event.event'].create({'name': 'test event'})
+        # Portal user cannot modify page
+        with mute_logger('odoo.http'):
+            json = modify('portal', 'page-portalfail.gif', True)
+        self.assertEqual('odoo.exceptions.AccessError', json['error']['data']['name'], "Expect access error")
+
+        event = self.env['event.event'].create({'name': 'Event'})
         attachment.res_model = 'event.event'
         attachment.res_id = event.id
 
@@ -105,10 +108,10 @@ class TestWebEditorController(HttpCaseWithUserDemo, HttpCaseWithUserPortal):
 
         # Base user cannot modify event
         self.user_demo.write({
-            'group_ids': [
+            'groups_id': [
                 Command.clear(),
                 Command.link(self.env.ref('base.group_user').id),
-            ],
+            ]
         })
         with mute_logger('odoo.http'):
             json = modify('demo', 'event-demofail.gif', True)
@@ -116,12 +119,12 @@ class TestWebEditorController(HttpCaseWithUserDemo, HttpCaseWithUserPortal):
 
         # Restricted editor with sales rights cannot modify event
         self.user_demo.write({
-            'group_ids': [
+            'groups_id': [
                 Command.clear(),
                 Command.link(self.env.ref('base.group_user').id),
                 Command.link(self.env.ref('website.group_website_restricted_editor').id),
                 Command.link(self.env.ref('sales_team.group_sale_manager').id),
-            ],
+            ]
         })
         with mute_logger('odoo.http'):
             json = modify('demo', 'event-demofail2.gif', True)
@@ -129,23 +132,28 @@ class TestWebEditorController(HttpCaseWithUserDemo, HttpCaseWithUserPortal):
 
         # Restricted editor with event rights can modify event
         self.user_demo.write({
-            'group_ids': [
+            'groups_id': [
                 Command.clear(),
                 Command.link(self.env.ref('base.group_user').id),
                 Command.link(self.env.ref('website.group_website_restricted_editor').id),
                 Command.link(self.env.ref('event.group_event_manager').id),
-            ],
+            ]
         })
         modify('demo', 'event-demo.gif')
 
         # Website designer cannot modify event
         self.user_demo.write({
-            'group_ids': [
+            'groups_id': [
                 Command.clear(),
                 Command.link(self.env.ref('base.group_user').id),
                 Command.link(self.env.ref('website.group_website_designer').id),
-            ],
+            ]
         })
         with mute_logger('odoo.http'):
             json = modify('demo', 'event-demofail3.gif', True)
         self.assertFalse(json.get('result'), "Expect no URL when called with insufficient rights")
+
+        # Portal user cannot modify event
+        with mute_logger('odoo.http'):
+            json = modify('portal', 'event-portalfail.gif', True)
+        self.assertEqual('odoo.exceptions.AccessError', json['error']['data']['name'], "Expect access error")

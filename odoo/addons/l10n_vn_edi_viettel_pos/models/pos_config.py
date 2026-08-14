@@ -23,10 +23,13 @@ class PosConfig(models.Model):
             if not pos_config.l10n_vn_pos_symbol and pos_config.company_id.l10n_vn_pos_default_symbol:
                 pos_config.l10n_vn_pos_symbol = pos_config.company_id.l10n_vn_pos_default_symbol
 
-    @api.model
-    def _load_pos_data_read(self, records, config):
-        data = super()._load_pos_data_read(records, config)
+    def _load_pos_data(self, data):
+        response = super()._load_pos_data(data)
+
         company_id = self.env.company
-        if data and company_id.country_id.code == 'VN':
-            data[0]['_is_vn_edi_pos_applicable'] = bool(data[0].get('l10n_vn_pos_symbol') or company_id.l10n_vn_pos_default_symbol)
-        return data
+        if company_id.country_id.code != 'VN':
+            return response
+
+        response['data'][0]['_is_vn_edi_pos_applicable'] = bool(response['data'][0].get('l10n_vn_pos_symbol') or company_id.l10n_vn_pos_default_symbol)
+
+        return response

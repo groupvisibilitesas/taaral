@@ -1,6 +1,6 @@
 import { MessagingMenu } from "@mail/core/public_web/messaging_menu";
 import { onExternalClick } from "@mail/utils/common/hooks";
-import { useEffect } from "@odoo/owl";
+import { useEffect, useState } from "@odoo/owl";
 
 import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
@@ -13,8 +13,8 @@ patch(MessagingMenu.prototype, {
     setup() {
         super.setup();
         this.action = useService("action");
-        this.pwa = useService("pwa");
-        this.notification = useService("mail.notification.permission");
+        this.pwa = useState(useService("pwa"));
+        this.notification = useState(useService("mail.notification.permission"));
         Object.assign(this.state, {
             searchOpen: false,
         });
@@ -64,10 +64,15 @@ patch(MessagingMenu.prototype, {
     get hasPreviews() {
         return (
             this.threads.length > 0 ||
-            this.visibleStandaloneMessages.length > 0 ||
-            (this.store.failures.length > 0 && this.store.discuss.activeTab === "notification") ||
-            (this.shouldAskPushPermission && this.store.discuss.activeTab === "notification") ||
-            (this.canPromptToInstall && this.store.discuss.activeTab === "notification")
+            (this.store.failures.length > 0 &&
+                this.store.discuss.activeTab === "main" &&
+                !this.env.inDiscussApp) ||
+            (this.shouldAskPushPermission &&
+                this.store.discuss.activeTab === "main" &&
+                !this.env.inDiscussApp) ||
+            (this.canPromptToInstall &&
+                this.store.discuss.activeTab === "main" &&
+                !this.env.inDiscussApp)
         );
     },
     get installationRequest() {
@@ -79,7 +84,7 @@ patch(MessagingMenu.prototype, {
             },
             iconSrc: this.store.odoobot.avatarUrl,
             partner: this.store.odoobot,
-            isShown: this.store.discuss.activeTab === "notification" && this.canPromptToInstall,
+            isShown: this.store.discuss.activeTab === "main" && this.canPromptToInstall,
         };
     },
     get notificationRequest() {
@@ -88,58 +93,44 @@ patch(MessagingMenu.prototype, {
             displayName: _t("Turn on notifications"),
             iconSrc: this.store.odoobot.avatarUrl,
             partner: this.store.odoobot,
-            isShown:
-                this.store.discuss.activeTab === "notification" && this.shouldAskPushPermission,
+            isShown: this.store.discuss.activeTab === "main" && this.shouldAskPushPermission,
         };
     },
-    get _tabs() {
+    get tabs() {
         return [
             {
-                icon: "fa fa-bell-o",
-                activeIcon: "fa fa-bell",
-                id: "notification",
-                label: _t("Notifications"),
-                sequence: 10,
+                icon: this.env.inDiscussApp ? "fa fa-inbox" : "fa fa-envelope",
+                id: "main",
+                label: this.env.inDiscussApp ? _t("Mailboxes") : _t("All"),
             },
-            {
-                counter:
-                    this.store.self.main_user_id?.notification_type === "inbox"
-                        ? this.store.inbox.counter
-                        : this.store.starred.counter,
-                icon:
-                    this.store.self.main_user_id?.notification_type === "inbox"
-                        ? "fa fa-inbox"
-                        : "fa fa-star-o",
-                activeIcon:
-                    this.store.self.main_user_id?.notification_type !== "inbox" && "fa fa-star",
-                id:
-                    this.store.self.main_user_id?.notification_type === "inbox"
-                        ? "inbox"
-                        : "starred",
-                label:
-                    this.store.self.main_user_id?.notification_type === "inbox"
-                        ? _t("Inbox")
-                        : _t("Starred"),
-                sequence: 100,
-            },
-            ...super._tabs,
+            ...super.tabs,
         ];
     },
     /** @param {import("models").Failure} failure */
     onClickFailure(failure) {
-        const threadIds = new Set(
-            failure.notifications.map(({ mail_message_id: message }) => message.thread.id)
-        );
+        const threadIds = new Set(failure.notifications.map(({ message }) => message.thread.id));
         if (threadIds.size === 1) {
-            const message = failure.notifications[0].mail_message_id;
+            const message = failure.notifications[0].message;
             this.openThread(message.thread);
         } else {
             this.openFailureView(failure);
             this.dropdown.close();
         }
     },
-    async openThread(thread) {
-        thread.open({ focus: true, fromMessagingMenu: true });
+    openThread(thread) {
+        if (this.store.discuss.isActive) {
+            this.action.doAction({
+                type: "ir.actions.act_window",
+                res_model: thread.model,
+                views: [[false, "form"]],
+                res_id: thread.id,
+            });
+            // Close the related chat window as having both the form view
+            // and the chat window does not look good.
+            this.store.ChatWindow.get({ thread })?.close();
+        } else {
+            thread.open({ fromMessagingMenu: true });
+        }
         this.dropdown.close();
     },
     openFailureView(failure) {
@@ -172,7 +163,7 @@ patch(MessagingMenu.prototype, {
     },
     get counter() {
         let value =
-            this.store.globalCounter +
+            this.store.inbox.counter +
             this.store.failures.reduce((acc, f) => acc + parseInt(f.notifications.length), 0);
         if (this.canPromptToInstall) {
             value++;
@@ -181,6 +172,9 @@ patch(MessagingMenu.prototype, {
             value++;
         }
         return value;
+    },
+    get displayStartConversation() {
+        return this.store.discuss.activeTab !== "channel" && !this.state.adding;
     },
     get shouldAskPushPermission() {
         return (

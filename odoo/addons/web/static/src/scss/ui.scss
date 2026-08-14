@@ -28,10 +28,6 @@
     max-height: $o-dropdown-max-height;
     overflow: auto;
     background-clip: border-box;
-
-    &:not(.o-hb-select-dropdown) {
-        scrollbar-width: thin;
-    }
 }
 .dropdown-toggle {
     white-space: nowrap;
@@ -56,7 +52,6 @@
 // @param {number} --treeEntry-padding-v - Entry's vertical padding.
 // @param {number} --treeEntry--before-top - Vertical-line top position.
 // @param {string} --treeEntry--after-display - Horizzontal-line display mode.
-// @param {string} --treeEntry--after-width - Horizontal-line width.
 // @param {color}  --treeEntry--beforeAfter-color - Lines color
 // @param {color}  --treeEntry--beforeAfter-left - Lines left position
 // ----------------------------------------------------------------------------
@@ -83,7 +78,7 @@
     &:after {
         display: var(--treeEntry--after-display, initial);
         top: calc(.5em + #{$-padding-v});
-        width: var(--treeEntry--after-width, calc(#{$-padding-h} * .5));
+        width: calc(#{$-padding-h} * .5);
         height: 1px;
     }
 
@@ -136,6 +131,16 @@ span.o_force_ltr {
 }
 */
 
+// To fill the available space while keeping aspect ratio (crop).
+// Assuming the important part of the image is its center.
+.o_object_fit_cover {
+    object-fit: cover;
+}
+
+.o_object_fit_contain {
+    object-fit: contain;
+}
+
 .o_image_24_cover {
     width: 24px;
     height: 24px;
@@ -186,18 +191,3 @@ span.o_force_ltr {
         --oi-color: currentColor;
     }
  }
-
-.o_button_area {
-    @include o-position-absolute(0, 0, 0, 0);
-}
-
-// Remove default user-agent styles on buttons
-.o_btn_reset {
-    appearance: none;
-    margin: unset;
-    padding: unset;
-    background: unset;
-    border: unset;
-    font-family: inherit;
-    font-size: 100%;
-}

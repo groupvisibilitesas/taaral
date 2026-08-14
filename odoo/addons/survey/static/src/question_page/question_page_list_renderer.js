@@ -1,3 +1,5 @@
+/** @odoo-module */
+
 import { makeContext } from "@web/core/context";
 import { ListRenderer } from "@web/views/list/list_renderer";
 import { useEffect } from "@odoo/owl";
@@ -131,7 +133,7 @@ export class QuestionPageListRenderer extends ListRenderer {
      */
     async onDeleteRecord(record) {
         const triggeredRecords = this.props.list.records.filter(
-            (rec) => rec.data.triggering_question_ids.currentIds.includes(record.resId)
+            (rec) => rec.data.triggering_question_ids.records.map(a => a.resId).includes(record.resId)
         );
         if (triggeredRecords.length) {
             const res = await super.onDeleteRecord(record);

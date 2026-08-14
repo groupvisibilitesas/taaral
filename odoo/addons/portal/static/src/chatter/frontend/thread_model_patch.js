@@ -9,10 +9,18 @@ patch(Thread.prototype, {
         this.hasReadAccess;
     },
     get effectiveSelf() {
-        if (this.portal_partner && !this.store.self_partner) {
+        if (this.portal_partner && this.store.self.type !== "partner") {
             return this.portal_partner;
         }
         return super.effectiveSelf;
+    },
+    /** @deprecated */
+    get selves() {
+        const result = super.selves;
+        if (this.portal_partner) {
+            result.push(this.portal_partner);
+        }
+        return result;
     },
     get rpcParams() {
         return {

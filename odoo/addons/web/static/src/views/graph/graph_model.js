@@ -1,13 +1,12 @@
-import { Domain } from "@web/core/domain";
 import { _t } from "@web/core/l10n/translation";
-import { user } from "@web/core/user";
-import { sortBy } from "@web/core/utils/arrays";
+import { sortBy, groupBy } from "@web/core/utils/arrays";
 import { KeepLast, Race } from "@web/core/utils/concurrency";
-import { addPropertyFieldDefs, Model } from "@web/model/model";
 import { rankInterval } from "@web/search/utils/dates";
 import { getGroupBy } from "@web/search/utils/group_by";
 import { GROUPABLE_TYPES } from "@web/search/utils/misc";
+import { addPropertyFieldDefs, Model } from "@web/model/model";
 import { computeReportMeasures, processMeasure } from "@web/views/utils";
+import { Domain } from "@web/core/domain";
 
 export const SEP = " / ";
 const DATA_LIMIT = 80;
@@ -18,6 +17,72 @@ export const SEQUENTIAL_TYPES = ["date", "datetime"];
  * @typedef {import("@web/search/search_model").SearchParams} SearchParams
  */
 
+class DateClasses {
+    // We view the param "array" as a matrix of values and undefined.
+    // An equivalence class is formed of defined values of a column.
+    // So nothing has to do with dates but we only use Dateclasses to manage
+    // identification of dates.
+    /**
+     * @param {(any[])[]} array
+     */
+    constructor(array) {
+        this.__referenceIndex = null;
+        this.__array = array;
+        for (let i = 0; i < this.__array.length; i++) {
+            const arr = this.__array[i];
+            if (arr.length && this.__referenceIndex === null) {
+                this.__referenceIndex = i;
+            }
+        }
+    }
+
+    /**
+     * @param {number} index
+     * @param {any} o
+     * @returns {string}
+     */
+    classLabel(index, o) {
+        return `${this.__array[index].indexOf(o)}`;
+    }
+
+    /**
+     * @param {string} classLabel
+     * @returns {any[]}
+     */
+    classMembers(classLabel) {
+        const classNumber = Number(classLabel);
+        const classMembers = new Set();
+        for (const arr of this.__array) {
+            if (arr[classNumber] !== undefined) {
+                classMembers.add(arr[classNumber]);
+            }
+        }
+        return [...classMembers];
+    }
+
+    /**
+     * @param {string} classLabel
+     * @param {number} [index]
+     * @returns {any}
+     */
+    representative(classLabel, index) {
+        const classNumber = Number(classLabel);
+        const i = index === undefined ? this.__referenceIndex : index;
+        if (i === null) {
+            return null;
+        }
+        return this.__array[i][classNumber];
+    }
+
+    /**
+     * @param {number} index
+     * @returns {number}
+     */
+    arrayLength(index) {
+        return this.__array[index].length;
+    }
+}
+
 export class GraphModel extends Model {
     /**
      * @override
@@ -27,7 +92,9 @@ export class GraphModel extends Model {
         this.keepLast = new KeepLast();
         this.race = new Race();
         const _fetchDataPoints = this._fetchDataPoints.bind(this);
-        this._fetchDataPoints = (...args) => this.race.add(_fetchDataPoints(...args));
+        this._fetchDataPoints = (...args) => {
+            return this.race.add(_fetchDataPoints(...args));
+        };
 
         this.initialGroupBy = null;
 
@@ -71,7 +138,7 @@ export class GraphModel extends Model {
      * @override
      */
     hasData() {
-        return this.dataPoints?.length > 0;
+        return this.dataPoints.length > 0;
     }
 
     /**
@@ -102,16 +169,23 @@ export class GraphModel extends Model {
      * @returns {Object}
      */
     _buildMetaData(params) {
-        const { domain, context, groupBy } = this.searchParams;
+        const { comparison, domain, context, groupBy } = this.searchParams;
 
         const metaData = Object.assign({}, this.metaData, { context });
-        metaData.domain = domain;
+        if (comparison) {
+            metaData.domains = comparison.domains;
+            metaData.comparisonField = comparison.fieldName;
+        } else {
+            metaData.domains = [{ arrayRepr: domain, description: null }];
+        }
         metaData.measure = context.graph_measure || metaData.measure;
         metaData.mode = context.graph_mode || metaData.mode;
         metaData.groupBy = groupBy.length ? groupBy : this.initialGroupBy;
         if (metaData.mode !== "pie") {
             metaData.order = "graph_order" in context ? context.graph_order : metaData.order;
-            if ("graph_stacked" in context) {
+            if (comparison) {
+                metaData.stacked = false;
+            } else if ("graph_stacked" in context) {
                 metaData.stacked = context.graph_stacked;
             }
             if (metaData.mode === "line") {
@@ -138,7 +212,7 @@ export class GraphModel extends Model {
      * @param {boolean} [forceUseAllDataPoints=false]
      */
     async _fetchDataPoints(metaData, forceUseAllDataPoints = false) {
-        [this.dataPoints] = await this.keepLast.add(this._loadDataPoints(metaData));
+        this.dataPoints = await this.keepLast.add(this._loadDataPoints(metaData));
         this.metaData = metaData;
         this._prepareData(forceUseAllDataPoints);
     }
@@ -153,14 +227,20 @@ export class GraphModel extends Model {
      * @returns {Object}
      */
     _getData(dataPoints, forceUseAllDataPoints) {
-        const { mode } = this.metaData;
+        const { comparisonField, groupBy, mode } = this.metaData;
+
+        let identify = false;
+        if (comparisonField && groupBy.length && groupBy[0].fieldName === comparisonField) {
+            identify = true;
+        }
+        const dateClasses = identify ? this._getDateClasses(dataPoints) : null;
 
         const dataPtMapping = new WeakMap();
         const datasetsTmp = {};
         let exceeds = false;
 
         // dataPoints --> labels
-        const labels = [];
+        let labels = [];
         const labelMap = {};
         for (const dataPt of dataPoints) {
             const datasetLabel = this._getDatasetLabel(dataPt);
@@ -169,15 +249,28 @@ export class GraphModel extends Model {
                     exceeds = true;
                     continue;
                 }
-                datasetsTmp[datasetLabel] = { label: datasetLabel }; // add the entry but don't initialize it entirely
+                datasetsTmp[datasetLabel] = {
+                    label: datasetLabel,
+                    originIndex: dataPt.originIndex,
+                }; // add the entry but don't initialize it entirely
             }
             dataPtMapping.set(dataPt, datasetsTmp[datasetLabel]);
 
             const x = dataPt.labels.slice(0, mode === "pie" ? undefined : 1);
             const trueLabel = x.length ? x.join(SEP) : _t("Total");
+            if (dateClasses) {
+                x[0] = dateClasses.classLabel(dataPt.originIndex, x[0]);
+            }
             const key = JSON.stringify(x);
             if (labelMap[key] === undefined) {
                 labelMap[key] = labels.length;
+                if (dateClasses) {
+                    if (mode === "pie") {
+                        x[0] = dateClasses.classMembers(x[0]).join(", ");
+                    } else {
+                        x[0] = dateClasses.representative(x[0]);
+                    }
+                }
                 const label = x.length ? x.join(SEP) : _t("Total");
                 labels.push(label);
             }
@@ -191,52 +284,94 @@ export class GraphModel extends Model {
                 continue;
             }
 
-            const { domain, labelIndex, trueLabel, value, identifier, cumulatedStart, currencyId } =
-                dataPt;
+            const {
+                domain,
+                labelIndex,
+                originIndex,
+                trueLabel,
+                value,
+                identifier,
+                cumulatedStart,
+            } = dataPt;
             const dataset = dataPtMapping.get(dataPt);
             if (!dataset.data) {
-                const dataLength = labels.length;
+                let dataLength = labels.length;
+                if (mode !== "pie" && dateClasses) {
+                    dataLength = dateClasses.arrayLength(originIndex);
+                }
                 Object.assign(dataset, {
                     data: new Array(dataLength).fill(0),
                     cumulatedStart,
-                    trueLabels: labels.slice(0, dataLength),
+                    trueLabels: labels.slice(0, dataLength), // should be good // check this in case identify = true
                     domains: new Array(dataLength).fill([]),
                     identifiers: new Set(),
-                    currencyIds: new Array(dataLength).fill(),
                 });
             }
             dataset.data[labelIndex] = value;
             dataset.domains[labelIndex] = domain;
             dataset.trueLabels[labelIndex] = trueLabel;
             dataset.identifiers.add(identifier);
-            dataset.currencyIds[labelIndex] = currencyId;
+        }
+        // sort by origin
+        let datasets = sortBy(Object.values(datasetsTmp), "originIndex");
+
+        if (mode === "pie") {
+            // We kinda have a matrix. We remove the zero columns and rows. This is a global operation.
+            // That's why it cannot be done before.
+            datasets = datasets.filter((dataset) => dataset.data.some((v) => Boolean(v)));
+            const labelsToKeepIndexes = {};
+            labels.forEach((_, index) => {
+                if (datasets.some((dataset) => Boolean(dataset.data[index]))) {
+                    labelsToKeepIndexes[index] = true;
+                }
+            });
+            labels = labels.filter((_, index) => labelsToKeepIndexes[index]);
+            for (const dataset of datasets) {
+                dataset.data = dataset.data.filter((_, index) => labelsToKeepIndexes[index]);
+                dataset.domains = dataset.domains.filter((_, index) => labelsToKeepIndexes[index]);
+                dataset.trueLabels = dataset.trueLabels.filter(
+                    (_, index) => labelsToKeepIndexes[index]
+                );
+            }
         }
 
-        const datasets = Object.values(datasetsTmp);
+        return {
+            datasets,
+            labels,
+            exceeds,
+        };
+    }
 
-        return { datasets, labels, exceeds };
+    _getLabel(description) {
+        if (!description) {
+            return _t("Sum");
+        } else {
+            return _t("Sum (%s)", description);
+        }
     }
 
     _getLineOverlayDataset() {
-        const { stacked } = this.metaData;
-        const datasets = this.data.datasets;
+        const { domains, stacked } = this.metaData;
+        const data = this.data;
         let lineOverlayDataset = null;
-        if (stacked && datasets.length > 1) {
-            const label = _t("Sum");
-            const data = [];
-            const currencyIds = [];
-            for (const dataset of datasets) {
-                for (let i = 0; i < dataset.data.length; i++) {
-                    data[i] = (data[i] || 0) + dataset.data[i];
-                    currencyIds[i] = dataset.currencyIds[i] || currencyIds[i];
+        if (stacked) {
+            const stacks = groupBy(data.datasets, (dataset) => dataset.originIndex);
+            if (Object.keys(stacks).length == 1) {
+                const [[originIndex, datasets]] = Object.entries(stacks);
+                if (datasets.length > 1) {
+                    const data = [];
+                    for (const dataset of datasets) {
+                        for (let i = 0; i < dataset.data.length; i++) {
+                            data[i] = (data[i] || 0) + dataset.data[i];
+                        }
+                    }
+                    lineOverlayDataset = {
+                        label: this._getLabel(domains[originIndex].description),
+                        data,
+                        trueLabels: datasets[0].trueLabels,
+                    };
                 }
             }
-            lineOverlayDataset = {
-                label,
-                data,
-                currencyIds,
-                trueLabels: datasets[0].trueLabels,
-            };
         }
         return lineOverlayDataset;
     }
@@ -248,20 +383,43 @@ export class GraphModel extends Model {
      * @returns {string}
      */
     _getDatasetLabel(dataPoint) {
-        const { measure, measures, mode } = this.metaData;
-        const { labels } = dataPoint;
+        const { measure, measures, domains, mode } = this.metaData;
+        const { labels, originIndex } = dataPoint;
         if (mode === "pie") {
-            return "";
+            return domains[originIndex].description || "";
         }
-        return labels.slice(1).join(SEP) || measures[measure].string;
+        // ([origin] + second to last groupBys) or measure
+        let datasetLabel = labels.slice(1).join(SEP);
+        if (domains.length > 1) {
+            datasetLabel =
+                domains[originIndex].description + (datasetLabel ? SEP + datasetLabel : "");
+        }
+        datasetLabel = datasetLabel || measures[measure].string;
+        return datasetLabel;
+    }
+
+    /**
+     * @protected
+     * @param {Object[]} dataPoints
+     * @returns {DateClasses}
+     */
+    _getDateClasses(dataPoints) {
+        const { domains } = this.metaData;
+        const dateSets = domains.map(() => new Set());
+        for (const { labels, originIndex } of dataPoints) {
+            const date = labels[0];
+            dateSets[originIndex].add(date);
+        }
+        const arrays = dateSets.map((dateSet) => [...dateSet]);
+        return new DateClasses(arrays);
     }
 
     /**
      * @protected
      * @returns {string}
      */
-    _getDefaultFilterLabel(gb) {
-        return this.metaData.fields[gb?.fieldName]?.falsy_value_label || _t("None");
+    _getDefaultFilterLabel(field) {
+        return _t("None");
     }
 
     /**
@@ -270,7 +428,7 @@ export class GraphModel extends Model {
      * @returns {Object[]}
      */
     _getProcessedDataPoints() {
-        const { groupBy, mode, order } = this.metaData;
+        const { domains, groupBy, mode, order } = this.metaData;
         let processedDataPoints = [];
         if (mode === "line") {
             processedDataPoints = this.dataPoints.filter(
@@ -284,7 +442,7 @@ export class GraphModel extends Model {
             processedDataPoints = this.dataPoints.filter((dataPoint) => dataPoint.count !== 0);
         }
 
-        if (order !== null && mode !== "pie" && groupBy.length > 0) {
+        if (order !== null && mode !== "pie" && domains.length === 1 && groupBy.length > 0) {
             // group data by their x-axis value, and then sort datapoints
             // based on the sum of values by group in ascending/descending order
             const groupedDataPoints = Object.create(null);
@@ -310,19 +468,17 @@ export class GraphModel extends Model {
      * with an aggregation function, such as my_date:week.
      * @protected
      * @param {Object} metaData
-     * @returns {Array}
+     * @returns {Object[]}
      */
     async _loadDataPoints(metaData) {
-        const { measure, domain, fields, groupBy, resModel, cumulatedStart } = metaData;
+        const { measure, domains, fields, groupBy, resModel, cumulatedStart } = metaData;
         const fieldName = groupBy[0]?.fieldName;
-        const sequentialField =
+        const sequential_field =
             cumulatedStart && SEQUENTIAL_TYPES.includes(fields[fieldName]?.type) ? fieldName : null;
-        const sequentialSpec = sequentialField && groupBy[0].spec;
+        const sequential_spec = sequential_field && groupBy[0].spec;
         const measures = ["__count"];
-        let fieldAggregate = "__count",
-            monetaryAggregates;
         if (measure !== "__count") {
-            let { aggregator, currency_field, name, type } = fields[measure];
+            let { aggregator, type } = fields[measure];
             if (type === "many2one") {
                 aggregator = "count_distinct";
             }
@@ -331,140 +487,118 @@ export class GraphModel extends Model {
                     `No aggregate function has been provided for the measure '${measure}'`
                 );
             }
-            if (type === "monetary" && currency_field) {
-                monetaryAggregates = [
-                    `${currency_field}:array_agg_distinct`,
-                    `${name}:sum_currency`,
-                ];
-                measures.push(...monetaryAggregates);
-            }
-            fieldAggregate = `${measure}:${aggregator}`;
-            measures.push(fieldAggregate);
+            measures.push(`${measure}:${aggregator}`);
         }
 
         const numbering = {}; // used to avoid ambiguity with many2one with values with same labels:
         // for instance [1, "ABC"] [3, "ABC"] should be distinguished.
 
-        const groups = await this.orm.formattedReadGroup(
-            resModel,
-            domain,
-            groupBy.map((gb) => gb.spec),
-            measures,
-            {
-                context: { fill_temporal: true, ...this.searchParams.context },
-            }
-        );
-        let startGroups = false;
-        if (
-            cumulatedStart &&
-            sequentialField &&
-            groups.length &&
-            domain.some((leaf) => leaf.length === 3 && leaf[0] == sequentialField)
-        ) {
-            const firstDate = groups[0][sequentialSpec][0];
-            const newDomain = Domain.combine(
-                [
-                    new Domain([[sequentialField, "<", firstDate]]),
-                    Domain.removeDomainLeaves(domain, [sequentialField]),
-                ],
-                "AND"
-            ).toList();
-            startGroups = await this.orm.formattedReadGroup(
+        const proms = domains.map(async (domain, originIndex) => {
+            const data = await this.orm.webReadGroup(
                 resModel,
-                newDomain,
-                groupBy.filter((gb) => gb.fieldName != sequentialField).map((gb) => gb.spec),
+                domain.arrayRepr,
                 measures,
+                groupBy.map((gb) => gb.spec),
                 {
-                    context: { ...this.searchParams.context },
+                    lazy: false, // what is this thing???
+                    context: { fill_temporal: true, ...this.searchParams.context },
                 }
             );
-        }
-        const dataPoints = [];
-        const cumulatedStartValue = {};
-        if (startGroups) {
-            for (const group of startGroups) {
+            let start = false;
+            if (
+                cumulatedStart &&
+                sequential_field &&
+                data.groups.length &&
+                domain.arrayRepr.some((leaf) => leaf.length === 3 && leaf[0] == sequential_field)
+            ) {
+                const first_date = data.groups[0].__range[sequential_spec].from;
+                const new_domain = Domain.combine(
+                    [
+                        new Domain([[sequential_field, "<", first_date]]),
+                        Domain.removeDomainLeaves(domain.arrayRepr, [sequential_field]),
+                    ],
+                    "AND"
+                ).toList();
+                start = await this.orm.webReadGroup(
+                    resModel,
+                    new_domain,
+                    measures,
+                    groupBy.filter((gb) => gb.fieldName != sequential_field).map((gb) => gb.spec),
+                    {
+                        lazy: false, // what is this thing???
+                        context: { ...this.searchParams.context },
+                    }
+                );
+            }
+            const dataPoints = [];
+            const cumulatedStartValue = {};
+            if (start) {
+                for (const group of start.groups) {
+                    const rawValues = [];
+                    for (const gb of groupBy.filter((gb) => gb.fieldName != sequential_field)) {
+                        rawValues.push({ [gb.spec]: group[gb.spec] });
+                    }
+                    cumulatedStartValue[JSON.stringify(rawValues)] = group[measure];
+                }
+            }
+            for (const group of data.groups) {
+                const { __domain, __count } = group;
+                const labels = [];
                 const rawValues = [];
-                for (const gb of groupBy.filter((gb) => gb.fieldName != sequentialField)) {
-                    rawValues.push({ [gb.spec]: group[gb.spec] });
-                }
-                cumulatedStartValue[JSON.stringify(rawValues)] = group[measures.slice(-1)];
-            }
-        }
-        const graphCurrencies = new Set();
-        const defaultCurrency = user.activeCompany.currency_id;
-        for (const group of groups) {
-            const { __domain, __count } = group;
-            const labels = [];
-            const rawValues = [];
-            for (const gb of groupBy) {
-                let label;
-                const val = group[gb.spec];
-                rawValues.push({ [gb.spec]: val });
-                const fieldName = gb.fieldName;
-                const { type } = fields[fieldName];
-                if (type === "boolean") {
-                    label = `${val}`; // toUpperCase?
-                } else if (type === "integer") {
-                    label = val === false ? "0" : `${val}`;
-                } else if (val === false) {
-                    label = this._getDefaultFilterLabel(gb);
-                } else if (["many2many", "many2one"].includes(type)) {
-                    const [id, name] = val;
-                    const key = JSON.stringify([fieldName, name]);
-                    if (!numbering[key]) {
-                        numbering[key] = {};
+                for (const gb of groupBy) {
+                    let label;
+                    const val = group[gb.spec];
+                    rawValues.push({ [gb.spec]: val });
+                    const fieldName = gb.fieldName;
+                    const { type } = fields[fieldName];
+                    if (type === "boolean") {
+                        label = `${val}`; // toUpperCase?
+                    } else if (val === false) {
+                        label = this._getDefaultFilterLabel(gb);
+                    } else if (["many2many", "many2one"].includes(type)) {
+                        const [id, name] = val;
+                        const key = JSON.stringify([fieldName, name]);
+                        if (!numbering[key]) {
+                            numbering[key] = {};
+                        }
+                        const numbers = numbering[key];
+                        if (!numbers[id]) {
+                            numbers[id] = Object.keys(numbers).length + 1;
+                        }
+                        const num = numbers[id];
+                        label = num === 1 ? name : `${name} (${num})`;
+                    } else if (type === "selection") {
+                        const selected = fields[fieldName].selection.find((s) => s[0] === val);
+                        label = selected[1];
+                    } else {
+                        label = val;
                     }
-                    const numbers = numbering[key];
-                    if (!numbers[id]) {
-                        numbers[id] = Object.keys(numbers).length + 1;
-                    }
-                    const num = numbers[id];
-                    label = num === 1 ? name : `${name} (${num})`;
-                } else if (type === "selection") {
-                    const selected = fields[fieldName].selection.find((s) => s[0] === val);
-                    label = selected[1];
-                } else if (["date", "datetime"].includes(type)) {
-                    label = val[1];
-                } else {
-                    label = val;
+                    labels.push(label);
                 }
-                labels.push(label);
-            }
 
-            const value = group[fieldAggregate];
-            if (!Number.isInteger(value)) {
-                metaData.allIntegers = false;
-            }
-            const groupId = JSON.stringify(rawValues.slice(1));
-            const dataPoint = {
-                count: __count,
-                domain: __domain,
-                value,
-                labels,
-                identifier: JSON.stringify(rawValues),
-                cumulatedStart: cumulatedStartValue[groupId] || 0,
-            };
-            // There is a currency aggregate
-            if (monetaryAggregates && __count) {
-                const currencies = group[monetaryAggregates[0]];
-                dataPoint.currencyId = currencies[0];
-                dataPoint.convertedValue = group[monetaryAggregates[1]];
-                if (currencies.length > 1) {
-                    dataPoint.currencyId = defaultCurrency;
-                    dataPoint.value = dataPoint.convertedValue;
+                let value = group[measure];
+                if (value instanceof Array) {
+                    // case where measure is a many2one and is used as groupBy
+                    value = 1;
                 }
-                graphCurrencies.add(dataPoint.currencyId);
+                if (!Number.isInteger(value)) {
+                    metaData.allIntegers = false;
+                }
+                const group_id = JSON.stringify(rawValues.slice(1));
+                dataPoints.push({
+                    count: __count,
+                    domain: __domain,
+                    value,
+                    labels,
+                    originIndex,
+                    identifier: JSON.stringify(rawValues),
+                    cumulatedStart: cumulatedStartValue[group_id] || 0,
+                });
             }
-            dataPoints.push(dataPoint);
-        }
-        for (const dataPoint of dataPoints) {
-            if (graphCurrencies.size > 1) {
-                dataPoint.currencyId = defaultCurrency;
-                dataPoint.value = dataPoint.convertedValue;
-            }
-            delete dataPoint.convertedValue;
-        }
-        return [dataPoints, graphCurrencies];
+            return dataPoints;
+        });
+        const promResults = await Promise.all(proms);
+        return promResults.flat();
     }
 
     /**

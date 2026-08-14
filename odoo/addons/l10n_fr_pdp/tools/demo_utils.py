@@ -16,7 +16,6 @@ def _mock_call_peppol_proxy(func, self, endpoint, params=None):
     if self.proxy_type != 'pdp':
         return func(self, endpoint, params=params)
 
-    endpoint = endpoint.rsplit('/', 1)[-1]
     if endpoint not in ('register_receiver', 'cancel_pdp_registration', 'get_all_ppf_documents', 'get_ppf_document', 'pilot_phase', 'send_response'):
         return func(self, endpoint, params=params)
 
@@ -53,7 +52,7 @@ def _mock_register_proxy_user(func, self, company, proxy_type, edi_mode):
     return edi_user
 
 
-def _mock_pdp_register_receiver(func, self):
+def _mock_peppol_register_receiver(func, self):
     func(self)
     if self.proxy_type != 'pdp':
         return
@@ -69,9 +68,9 @@ def _mock_pdp_annuaire_lookup_participant(func, self, edi_identification):
     return {'in_annuaire': peppol_eas == '0225'}
 
 
-def _mock_get_peppol_verification_state(func, self, peppol_endpoint, peppol_eas, invoice_edi_format, process_type='billing'):
+def _mock_get_peppol_verification_state(func, self, peppol_endpoint, peppol_eas, invoice_edi_format):
     if peppol_eas != '0225' or self.env.company._get_peppol_proxy_type() != 'pdp':
-        return func(self, peppol_endpoint, peppol_eas, invoice_edi_format, process_type=process_type)
+        return func(self, peppol_endpoint, peppol_eas, invoice_edi_format)
     if not invoice_edi_format:
         return 'not_valid'
     if invoice_edi_format != 'ubl_21_fr':
@@ -105,7 +104,7 @@ def _mock_button_trigger_authentication(func, self):
 _demo_behaviour = {
     'button_account_peppol_check_partner_endpoint': _mock_button_verify_partner_endpoint,
     '_register_proxy_user': _mock_register_proxy_user,  # account_edi_proxy_client.user
-    '_pdp_register_receiver': _mock_pdp_register_receiver,  # account_edi_proxy_client.user
+    '_peppol_register_receiver': _mock_peppol_register_receiver,  # account_edi_proxy_client.user
     '_call_peppol_proxy': _mock_call_peppol_proxy,  # account_edi_proxy_client.user
     '_pdp_annuaire_lookup_participant': _mock_pdp_annuaire_lookup_participant,  # res.partner
     '_get_peppol_verification_state': _mock_get_peppol_verification_state,  # res.partner

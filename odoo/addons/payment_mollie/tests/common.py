@@ -15,7 +15,7 @@ class MollieCommon(PaymentCommon):
         cls.provider = cls.mollie
         cls.currency = cls.currency_euro
 
-        cls.payment_data = {
+        cls.notification_data = {
             'ref': cls.reference,
             'id': 'tr_ABCxyz0123',
         }

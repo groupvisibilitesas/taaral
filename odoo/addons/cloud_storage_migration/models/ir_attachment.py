@@ -36,7 +36,7 @@ class CloudStorageAttachmentMigration(models.Model):
             # google cloud storage or azure blob storage by url matching
             response = session.request(upload_info['method'], upload_info['url'], data=f, headers=headers, timeout=(10, 30))
             if response.status_code != upload_info['response_status']:
-                raise ValidationError(_('Failed to upload attachment %(id)s to cloud storage: %(code)s', id=self.id, code=response.status_code))
+                raise ValidationError(f'Failed to upload attachment {self.id} to cloud storage: {response.status_code}')
         self.write({
             'type': 'cloud_storage',
             'mimetype': self.mimetype,  # force kept the mimetype
@@ -71,18 +71,23 @@ class CloudStorageAttachmentMigration(models.Model):
             max_attachment_id = self.env['ir.attachment'].sudo().search_fetch([], ['id'], limit=1, order='id desc').id or 1
             ICP.set_param('cloud_storage_migration_max_attachment_id', max_attachment_id)
 
+        if request:
+            # Don't upload in HTTP server, if the method is called by ``Manually Run`` button from web client
+            # The cron job should be rescheduled asap in cron server
+            cron._trigger()
+            return
+
         def commit_min_attachment_id(attachment_id):
             # directly write data of ir_config_parameter to avoid invalidating ormcache
             self.env.cr.execute("UPDATE ir_config_parameter SET value = %s WHERE key = 'cloud_storage_migration_min_attachment_id'", (str(attachment_id),))
-            self.env['ir.cron']._commit_progress(1)  # record this attachment as attempted to avoid reprocessing
+            self.env.cr.commit()
 
         limit_time_real = config['limit_time_real'] or 120
         # ``config['limit_time_real_cron'] == 0`` means unlimited time for cron worker,
         # but will fallback to ``config['limit_time_real']`` for cron thread
         # here we use ``config['limit_time_real']`` for simplicity
-        if not request:
-            if config['limit_time_real_cron'] and config['limit_time_real_cron'] > 0:
-                limit_time_real = config['limit_time_real_cron']
+        if config['limit_time_real_cron'] and config['limit_time_real_cron'] > 0:
+            limit_time_real = config['limit_time_real_cron']
         # use half of the time limit to mitigate the timeout problem
         log_msg = f'Starting cloud storage migration with timeout {limit_time_real // 2} seconds'
         if max_batch_file_size:
@@ -173,7 +178,7 @@ class CloudStorageAttachmentMigration(models.Model):
 
             try:
                 attachment._migrate_local_to_cloud_storage(session)
-                self.env['ir.cron']._commit_progress(0)  # progress already recorded via ``commit_min_attachment_id``
+                self.env.cr.commit()
                 _logger.info('uploaded attachment %s (%s bytes) to cloud storage', attachment.id, file_size)
             except Exception as e:  # noqa: BLE001
                 _logger.warning('Failed to upload attachment %s (%s bytes) to cloud storage: %s', attachment.id, file_size, e)

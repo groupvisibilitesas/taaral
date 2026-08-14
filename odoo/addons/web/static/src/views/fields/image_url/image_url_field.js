@@ -29,14 +29,15 @@ export class ImageUrlField extends Component {
 
     get sizeStyle() {
         let style = "";
-        const width = this.props.width;
-        const height = this.props.height;
-        style = width ? `max-width: ${width}px;` : `width: auto;`;
-        style += height ? `max-height: ${height}px` : `height: auto`;
-        
+        if (this.props.width) {
+            style += `max-width: ${this.props.width}px;`;
+        }
+        if (this.props.height) {
+            style += `max-height: ${this.props.height}px;`;
+        }
         return style;
     }
-    
+
     onLoadFailed() {
         this.state.src = this.constructor.fallbackSrc;
     }

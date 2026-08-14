@@ -1,9 +1,10 @@
+/** @odoo-module **/
 import { App, whenReady } from "@odoo/owl";
 import { PublicReadonlySpreadsheet } from "./public_readonly";
 import { getTemplate } from "@web/core/templates";
 import { makeEnv, startServices } from "@web/env";
 import { session } from "@web/session";
-import { appTranslateFn } from "@web/core/l10n/translation";
+import { _t } from "@web/core/l10n/translation";
 
 (async function boot() {
     odoo.info = {
@@ -14,14 +15,13 @@ import { appTranslateFn } from "@web/core/l10n/translation";
     };
     odoo.isReady = false;
     const env = makeEnv();
-    env.isFrozenSpreadsheet = () => true;
     await startServices(env);
     await whenReady();
     const app = new App(PublicReadonlySpreadsheet, {
         env,
         props: session.spreadsheet_public_props,
         getTemplate,
-        translateFn: appTranslateFn,
+        translateFn: _t,
         dev: env.debug,
         warnIfNoStaticProps: env.debug,
         translatableAttributes: ["data-tooltip"],

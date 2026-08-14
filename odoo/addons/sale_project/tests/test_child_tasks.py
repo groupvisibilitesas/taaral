@@ -31,7 +31,6 @@ class TestNestedTaskUpdate(TransactionCase):
         sale_order.action_confirm()
 
         cls.project = cls.order_line.project_id
-        cls.project.reinvoiced_sale_order_id = False
         cls.project.sale_line_id = False
         cls.user = new_test_user(cls.env, login='mla')
 
@@ -230,6 +229,7 @@ class TestNestedTaskUpdate(TransactionCase):
             'child_ids': [
                 Command.create({
                     'name': 'Subtask 1',
+                    'display_in_project': True,
                     'project_id': self.project.id,
                 }),
                 Command.create({

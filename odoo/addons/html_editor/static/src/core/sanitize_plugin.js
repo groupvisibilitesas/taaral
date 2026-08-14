@@ -9,7 +9,6 @@ import { Plugin } from "../plugin";
 export class SanitizePlugin extends Plugin {
     static id = "sanitize";
     static shared = ["sanitize"];
-    /** @type {import("plugins").EditorResources} */
     resources = {
         clean_for_save_handlers: this.cleanForSave.bind(this),
         normalize_handlers: this.normalize.bind(this),
@@ -19,7 +18,7 @@ export class SanitizePlugin extends Plugin {
         if (!window.DOMPurify) {
             throw new Error("DOMPurify is not available");
         }
-        this.DOMPurify = DOMPurify(this.window);
+        this.DOMPurify = DOMPurify(this.document.defaultView);
     }
     /**
      * Sanitizes in place an html element. Current implementation uses the
@@ -35,7 +34,7 @@ export class SanitizePlugin extends Plugin {
         elem = this.DOMPurify.sanitize(elem, {
             IN_PLACE: true,
             ADD_TAGS: ["#document-fragment", "fake-el"],
-            ADD_ATTR: ["contenteditable", "t-field", "t-out", "t-esc"],
+            ADD_ATTR: ["contenteditable"],
         });
         for (const cb of this.getResource("after_sanitize_processors")) {
             elem = cb(elem);

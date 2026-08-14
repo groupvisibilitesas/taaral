@@ -3,7 +3,7 @@
 from odoo import models
 
 
-class ThemeUtils(models.AbstractModel):
+class TestThemeCustom(models.AbstractModel):
     _inherit = 'theme.utils'
 
     @property

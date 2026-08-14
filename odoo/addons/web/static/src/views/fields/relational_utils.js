@@ -1,10 +1,10 @@
+import { _t } from "@web/core/l10n/translation";
 import { AutoComplete } from "@web/core/autocomplete/autocomplete";
 import { makeContext } from "@web/core/context";
 import { Dialog } from "@web/core/dialog/dialog";
 import { Domain } from "@web/core/domain";
-import { _t } from "@web/core/l10n/translation";
 import { RPCError } from "@web/core/network/rpc";
-import { evaluateBooleanExpr } from "@web/core/py_js/py";
+import { Cache } from "@web/core/utils/cache";
 import {
     useBus,
     useChildRef,
@@ -13,10 +13,10 @@ import {
     useService,
 } from "@web/core/utils/hooks";
 import { createElement, parseXML } from "@web/core/utils/xml";
-import { extractFieldsFromArchInfo, useRecordObserver } from "@web/model/relational_model/utils";
 import { FormArchParser } from "@web/views/form/form_arch_parser";
 import { loadSubViews, useFormViewInDialog } from "@web/views/form/form_controller";
 import { FormRenderer } from "@web/views/form/form_renderer";
+import { extractFieldsFromArchInfo, useRecordObserver } from "@web/model/relational_model/utils";
 import { computeViewClassName, isNull } from "@web/views/utils";
 import { ViewButton } from "@web/views/view_button/view_button";
 import { executeButtonCallback, useViewButtons } from "@web/views/view_button/view_button_hook";
@@ -40,16 +40,12 @@ import { SelectCreateDialog } from "@web/views/view_dialogs/select_create_dialog
 import {
     Component,
     onWillUpdateProps,
-    status,
     useComponent,
     useEffect,
     useEnv,
     useState,
     useSubEnv,
 } from "@odoo/owl";
-import { KeepLast } from "@web/core/utils/concurrency";
-import { highlightText, odoomark } from "@web/core/utils/html";
-import { deepEqual } from "@web/core/utils/objects";
 
 //
 // Commons
@@ -101,13 +97,13 @@ export function useActiveActions({
         // We need to take care of tags "control" and "create" to set create stuff
         result.create = !readonly && evalAction("create");
         result.createEdit = !readonly && result.create && crudOptions.createEdit; // always a boolean
-        result.edit = crudOptions.edit; // always a boolean
+        result.edit = crudOptions.edit;
         result.delete = !readonly && evalAction("delete");
-        result.write = (isMany2Many || !readonly) && evalAction("write");
 
         if (isMany2Many) {
             result.link = !readonly && evalAction("link");
             result.unlink = !readonly && evalAction("unlink");
+            result.write = evalAction("write");
         }
 
         if (result.unlink || (!isMany2Many && result.delete)) {
@@ -123,7 +119,7 @@ export function useActiveActions({
     // Define eval functions
     const evals = {};
     for (const actionName of STANDARD_ACTIVE_ACTIONS) {
-        let evalFn = () => true;
+        let evalFn = () => actionName !== "write";
         if (!isNull(crudOptions[actionName])) {
             const action = crudOptions[actionName];
             evalFn = (evalContext) => Boolean(action && new Domain(action).contains(evalContext));
@@ -153,29 +149,17 @@ export function useActiveActions({
 export function useSpecialData(loadFn) {
     const component = useComponent();
     const record = component.props.record;
+    const key = `${record.resModel}-${component.props.name}`;
     const { specialDataCaches } = record.model;
     const orm = component.env.services.orm;
     const ormWithCache = Object.create(orm);
-    ormWithCache.call = async (...args) => {
-        const key = JSON.stringify(args);
-        if (!specialDataCaches[key]) {
-            return await orm
-                .cache({
-                    type: "disk",
-                    update: "always",
-                    callback: (res, hasChanged) => {
-                        specialDataCaches[key] = Promise.resolve(res);
-                        if (status(component) !== "destroyed" && hasChanged) {
-                            loadFn(ormWithCache, component.props).then((res) => {
-                                result.data = res;
-                            });
-                        }
-                    },
-                })
-                .call(...args);
-        }
-        return specialDataCaches[key];
-    };
+    if (!specialDataCaches[key]) {
+        specialDataCaches[key] = new Cache(
+            (...args) => orm.call(...args),
+            (...path) => JSON.stringify(path)
+        );
+    }
+    ormWithCache.call = (...args) => specialDataCaches[key].read(...args);
 
     /** @type {{ data: Record<string, T> }} */
     const result = useState({ data: {} });
@@ -199,45 +183,38 @@ export class Many2XAutocomplete extends Component {
     static template = "web.Many2XAutocomplete";
     static components = { AutoComplete };
     static props = {
-        activeActions: Object,
-        autoSelect: { type: Boolean, optional: true },
-        autocomplete_container: { type: Function, optional: true },
-        autofocus: { type: Boolean, optional: true },
-        context: { type: Object, optional: true },
-        createAction: { type: Function, optional: true },
-        dropdown: { type: Boolean, optional: true },
-        fieldString: String,
-        getDomain: Function,
-        id: { type: String, optional: true },
-        isToMany: { type: Boolean, optional: true },
-        nameCreateField: { type: String, optional: true },
-        otherSources: { type: Array, optional: true },
-        placeholder: { type: String, optional: true },
-        quickCreate: { type: [Function, { value: null }], optional: true },
-        resModel: String,
-        searchLimit: { type: Number, optional: true },
-        searchMoreLabel: { type: String, optional: true },
-        searchMoreLimit: { type: Number, optional: true },
-        searchThreshold: { type: Number, optional: true },
-        setInputFloats: { type: Function, optional: true },
-        preventMemoization: { type: Boolean, optional: true },
-        slots: { optional: true },
-        specification: { type: Object, optional: true },
-        update: Function,
         value: { type: String, optional: true },
+        activeActions: Object,
+        context: { type: Object, optional: true },
+        nameCreateField: { type: String, optional: true },
+        setInputFloats: { type: Function, optional: true },
+        update: Function,
+        resModel: String,
+        getDomain: Function,
+        searchLimit: { type: Number, optional: true },
+        quickCreate: { type: [Function, { value: null }], optional: true },
+        noSearchMore: { type: Boolean, optional: true },
+        searchMoreLimit: { type: Number, optional: true },
+        fieldString: String,
+        id: { type: String, optional: true },
+        placeholder: { type: String, optional: true },
+        autoSelect: { type: Boolean, optional: true },
+        isToMany: { type: Boolean, optional: true },
+        autocomplete_container: { type: Function, optional: true },
+        dropdown: { type: Boolean, optional: true },
+        autofocus: { type: Boolean, optional: true },
+        getOptionClassnames: { type: Function, optional: true },
     };
     static defaultProps = {
+        searchLimit: 7,
+        searchMoreLimit: 320,
+        nameCreateField: "name",
+        value: "",
+        setInputFloats: () => {},
+        quickCreate: null,
         context: {},
         dropdown: true,
-        nameCreateField: "name",
-        otherSources: [],
-        quickCreate: null,
-        searchLimit: 7,
-        searchThreshold: 0,
-        searchMoreLimit: 320,
-        setInputFloats: () => {},
-        specification: {},
-        value: "",
+        getOptionClassnames: () => "",
     };
     setup() {
         this.orm = useService("orm");
@@ -245,37 +222,33 @@ export class Many2XAutocomplete extends Component {
         this.autoCompleteContainer = useForwardRefToParent("autocomplete_container");
         const { activeActions, resModel, update, isToMany, fieldString } = this.props;
 
-        this.keepLast = new KeepLast();
+        this.openMany2X = useOpenMany2XRecord({
+            resModel,
+            activeActions,
+            isToMany,
+            onRecordSaved: (record) => {
+                return update([{ ...record.data, id: record.resId }]);
+            },
+            onRecordDiscarded: () => {
+                if (!isToMany) {
+                    this.props.update(false);
+                }
+            },
+            fieldString,
+            onClose: () => {
+                const autoCompleteInput = this.autoCompleteContainer.el.querySelector("input");
 
-        this.openMany2X =
-            this.props.createAction ??
-            useOpenMany2XRecord({
-                resModel,
-                activeActions,
-                isToMany,
-                onRecordSaved: (record) => update([{ ...record.data, id: record.resId }]),
-                onRecordDiscarded: () => {
-                    if (!isToMany) {
-                        this.props.update(false);
-                    }
-                },
-                fieldString,
-                onClose: () => {
-                    const autoCompleteInput = this.autoCompleteContainer.el.querySelector("input");
-
-                    // There are two cases:
-                    // 1. Value is the same as the input: it means the autocomplete has re-rendered with the right value
-                    //    This is in case we saved the record, triggering all the interface to update.
-                    // 2. Value is different from the input: it means the input has a manually entered value and nothing
-                    //    happened, that is, we discarded the changes
-                    if (this.props.value !== autoCompleteInput.value) {
-                        autoCompleteInput.value = "";
-                    }
-                    autoCompleteInput.focus();
-                },
-                component: this.createDialog,
-                size: this.createDialogSize,
-            });
+                // There are two cases:
+                // 1. Value is the same as the input: it means the autocomplete has re-rendered with the right value
+                //    This is in case we saved the record, triggering all the interface to update.
+                // 2. Value is different from the input: it means the input has a manually entered value and nothing
+                //    happened, that is, we discarded the changes
+                if (this.props.value !== autoCompleteInput.value) {
+                    autoCompleteInput.value = "";
+                }
+                autoCompleteInput.focus();
+            },
+        });
 
         this.selectCreate = useSelectCreate({
             resModel,
@@ -290,33 +263,13 @@ export class Many2XAutocomplete extends Component {
         });
     }
 
-    get autoCompleteProps() {
-        return {
-            autocomplete: "off",
-            autoSelect: this.props.autoSelect,
-            autofocus: this.props.autofocus,
-            dropdown: this.props.dropdown,
-            id: this.props.id,
-            onCancel: this.onCancel.bind(this),
-            onChange: this.onChange.bind(this),
-            onInput: this.onInput.bind(this),
-            placeholder: this.props.placeholder,
-            resetOnSelect: this.props.value === "",
-            sources: this.sources,
-            slots: this.props.slots,
-            value: this.props.value,
-        };
-    }
-
     get sources() {
-        return [this.optionsSource, ...this.props.otherSources];
+        return [this.optionsSource];
     }
-
     get optionsSource() {
         return {
             placeholder: _t("Loading..."),
             options: this.loadOptionsSource.bind(this),
-            optionSlot: "option",
         };
     }
 
@@ -324,18 +277,10 @@ export class Many2XAutocomplete extends Component {
         return this.props.activeActions || {};
     }
 
-    get createDialog() {
-        return FormViewDialog;
-    }
-
-    get createDialogSize() {
-        return "lg";
-    }
-
     getCreationContext(value) {
         return makeContext([
             this.props.context,
-            value && { [`default_${this.props.nameCreateField}`]: value },
+            { [`default_${this.props.nameCreateField}`]: value },
         ]);
     }
     onInput({ inputValue }) {
@@ -347,208 +292,118 @@ export class Many2XAutocomplete extends Component {
         this.props.setInputFloats(false);
     }
 
-    get searchSpecification() {
-        return {
-            display_name: {},
-            ...this.props.specification,
+    onSelect(option, params = {}) {
+        if (option.action) {
+            return option.action(params);
+        }
+        const record = {
+            id: option.value,
+            display_name: option.displayName,
         };
+        this.props.update([record], params);
     }
 
-    async search(name) {
-        const domain = this.props.getDomain();
-        const context = this.props.context;
-        if (
-            !this.props.preventMemoization &&
-            this.lastEmptySearch &&
-            deepEqual(this.lastEmptySearch.domain, domain) &&
-            deepEqual(this.lastEmptySearch.context, context) &&
-            (name.startsWith(this.lastEmptySearch.name) || name.length < this.props.searchThreshold)
-        ) {
-            return [];
-        }
-        const records = await this.orm.call(this.props.resModel, "web_name_search", [], {
-            name,
+    abortableSearch(name) {
+        const originalPromise = this.search(name);
+        return {
+            promise: originalPromise,
+            abort: originalPromise.abort ? originalPromise.abort.bind(originalPromise) : () => {},
+        };
+    }
+    search(name) {
+        return this.orm.call(this.props.resModel, "name_search", [], {
+            name: name,
             operator: "ilike",
-            domain,
+            args: this.props.getDomain(),
             limit: this.props.searchLimit + 1,
-            context,
-            specification: this.searchSpecification,
-        });
-        if (!records.length) {
-            this.lastEmptySearch = {
-                context,
-                domain,
-                name,
-            };
-        }
-        return records;
-    }
-
-    slowCreate(request) {
-        return this.openMany2X({
-            context: this.getCreationContext(request),
-            nextRecordsContext: this.props.context,
+            context: this.props.context,
         });
     }
-
-    onQuickCreateError(error, request) {
-        if (
-            error instanceof RPCError &&
-            error.exceptionName === "odoo.exceptions.ValidationError"
-        ) {
-            return this.slowCreate(request);
-        } else {
-            throw error;
-        }
+    mapRecordToOption(result) {
+        return {
+            value: result[0],
+            label: result[1] ? result[1].split("\n")[0] : _t("Unnamed"),
+            displayName: result[1],
+            classList: this.props.getOptionClassnames({ id: result[0], display_name: result[1] }),
+        };
     }
-
     async loadOptionsSource(request) {
-        await this.keepLast.add(Promise.resolve());
-        return this.suggest(request, (promise) => this.keepLast.add(promise));
-    }
+        if (this.lastProm) {
+            this.lastProm.abort(false);
+        }
+        this.lastProm = this.abortableSearch(request);
+        const records = await this.lastProm.promise;
 
-    async suggest(request, lock) {
-        const suggestions = [];
-        /** @type {Record<string, any>[] | null} */
-        let records = null;
+        const options = records.map((result) => this.mapRecordToOption(result));
 
-        if (request.length < this.props.searchThreshold) {
-            if (this.addStartTypingSuggestion({ request, records })) {
-                suggestions.push(this.buildStartTypingSuggestion());
-            }
-        } else {
-            records = await lock(this.search(request));
-            if (records.length) {
-                for (const record of records) {
-                    suggestions.push(this.buildRecordSuggestion(request, record));
-                }
-            } else if (this.addNoRecordsSuggestion({ request, records })) {
-                suggestions.push(this.buildNoRecordsSuggestion());
-            } else if (this.addStartTypingSuggestion({ request, records })) {
-                suggestions.push(this.buildStartTypingSuggestion());
-            }
+        if (this.props.quickCreate && request.length) {
+            options.push({
+                label: _t('Create "%s"', request),
+                classList: "o_m2o_dropdown_option o_m2o_dropdown_option_create",
+                action: async (params) => {
+                    try {
+                        await this.props.quickCreate(request, params);
+                    } catch (e) {
+                        if (
+                            e instanceof RPCError &&
+                            e.exceptionName === "odoo.exceptions.ValidationError"
+                        ) {
+                            return this.openMany2X({
+                                context: this.getCreationContext(request),
+                                nextRecordsContext: this.props.context,
+                            });
+                        }
+                        throw e;
+                    }
+                },
+            });
         }
 
-        for (const action of this.actionSuggestions) {
-            const enabled = action.enabled ?? (() => true);
-            if (enabled({ request, records })) {
-                suggestions.push(action.build(request));
-            }
+        if (!this.props.noSearchMore && records.length > 0) {
+            options.push({
+                label: this.SearchMoreButtonLabel,
+                action: this.onSearchMore.bind(this, request),
+                classList: "o_m2o_dropdown_option o_m2o_dropdown_option_search_more",
+            });
         }
 
-        return suggestions;
-    }
+        const canCreateEdit =
+            "createEdit" in this.activeActions
+                ? this.activeActions.createEdit
+                : this.activeActions.create;
+        if (!request.length && !this.props.value && (this.props.quickCreate || canCreateEdit)) {
+            options.push({
+                label: _t("Start typing..."),
+                classList: "o_m2o_start_typing",
+                unselectable: true,
+            });
+        }
 
-    get actionSuggestions() {
-        return [
-            {
-                // create
-                enabled: this.addCreateSuggestion.bind(this),
-                build: this.buildCreateSuggestion.bind(this),
-            },
-            {
-                // create and edit
-                enabled: this.addCreateEditSuggestion.bind(this),
-                build: this.buildCreateEditSuggestion.bind(this),
-            },
-            {
-                // search more
-                enabled: this.addSearchMoreSuggestion.bind(this),
-                build: this.buildSearchMoreSuggestion.bind(this),
-            },
-        ];
-    }
+        if (request.length && canCreateEdit) {
+            options.push({
+                label: _t("Create and edit..."),
+                classList: "o_m2o_dropdown_option o_m2o_dropdown_option_create_edit",
+                action: () =>
+                    this.openMany2X({
+                        context: this.getCreationContext(request),
+                        nextRecordsContext: this.props.context,
+                    }),
+            });
+        }
 
-    addCreateSuggestion({ request }) {
-        return !!this.props.quickCreate && request.length > 0;
-    }
+        if (!records.length && !this.activeActions.createEdit && !this.props.quickCreate) {
+            options.push({
+                label: _t("No records"),
+                classList: "o_m2o_no_result",
+                unselectable: true,
+            });
+        }
 
-    addCreateEditSuggestion({ records, request }) {
-        return (
-            (this.activeActions.createEdit ?? this.activeActions.create) &&
-            (request.length > 0 || records?.length === 0)
-        );
-    }
-
-    addNoRecordsSuggestion({ request, records }) {
-        return !this.activeActions.createEdit && !this.props.quickCreate;
-    }
-
-    addSearchMoreSuggestion({ records, request }) {
-        return request.length < this.props.searchThreshold || records?.length > 0;
-    }
-
-    addStartTypingSuggestion({ request, records }) {
-        return records !== null
-            ? request.length === 0 && !this.activeActions.createEdit
-            : !this.props.value;
-    }
-
-    buildCreateSuggestion(request) {
-        return {
-            cssClass: "o_m2o_dropdown_option o_m2o_dropdown_option_create",
-            data: { slotName: "createItem" },
-            label: _t('Create "%s"', request),
-            onSelect: async () => {
-                try {
-                    await this.props.quickCreate(request);
-                } catch (e) {
-                    this.onQuickCreateError(e, request);
-                }
-            },
-        };
-    }
-
-    buildCreateEditSuggestion(request) {
-        return {
-            cssClass: "o_m2o_dropdown_option o_m2o_dropdown_option_create_edit",
-            data: { slotName: "createEditItem" },
-            label: request.length > 0 ? _t("Create and edit...") : _t("Create..."),
-            onSelect: () => this.slowCreate(request),
-        };
-    }
-
-    buildNoRecordsSuggestion() {
-        return {
-            cssClass: "o_m2o_no_result",
-            data: { slotName: "noRecordsItem" },
-            label: _t("No records"),
-        };
-    }
-
-    buildRecordSuggestion(request, record) {
-        const label = record.__formatted_display_name || record.display_name;
-        return {
-            data: { record, slotName: "autoCompleteItem" },
-            label: label
-                ? highlightText(request, odoomark(label), "text-primary fw-bold")
-                : _t("Unnamed"),
-            onSelect: () => this.props.update([record]),
-        };
-    }
-
-    buildSearchMoreSuggestion(request) {
-        return {
-            cssClass: "o_m2o_dropdown_option o_m2o_dropdown_option_search_more",
-            data: { slotName: "searchMoreItem" },
-            label: this.SearchMoreButtonLabel,
-            onSelect: this.onSearchMore.bind(this, request),
-        };
-    }
-
-    buildStartTypingSuggestion() {
-        return {
-            cssClass: "o_m2o_start_typing",
-            data: { slotName: "startTypingItem" },
-            label:
-                this.props.searchThreshold > 1
-                    ? _t("Start typing %s characters", this.props.searchThreshold)
-                    : _t("Start typing..."),
-        };
+        return options;
     }
 
     get SearchMoreButtonLabel() {
-        return this.props.searchMoreLabel ?? _t("Search more...");
+        return _t("Search More...");
     }
 
     async onBarcodeSearch() {
@@ -564,7 +419,7 @@ export class Many2XAutocomplete extends Component {
         if (request.length) {
             const nameGets = await this.orm.call(resModel, "name_search", [], {
                 name: request,
-                domain: domain,
+                args: domain,
                 operator: "ilike",
                 limit: this.props.searchMoreLimit,
                 context,
@@ -577,10 +432,8 @@ export class Many2XAutocomplete extends Component {
                 },
             ];
         }
-        let title = _t("Search");
-        if (fieldString && fieldString.trim()) {
-            title = _t("Search: %s", fieldString);
-        }
+
+        const title = _t("Search: %s", fieldString);
         this.selectCreate({
             domain,
             context,
@@ -596,6 +449,21 @@ export class Many2XAutocomplete extends Component {
     }
 }
 
+export class AvatarMany2XAutocomplete extends Many2XAutocomplete {
+    mapRecordToOption(result) {
+        return {
+            ...super.mapRecordToOption(result),
+            resModel: this.props.resModel,
+        };
+    }
+    get optionsSource() {
+        return {
+            ...super.optionsSource,
+            optionTemplate: "web.AvatarMany2XAutocomplete",
+        };
+    }
+}
+
 export function useOpenMany2XRecord({
     resModel,
     onRecordSaved,
@@ -604,8 +472,6 @@ export function useOpenMany2XRecord({
     activeActions,
     isToMany,
     onClose = (isNew) => {},
-    component = FormViewDialog,
-    size = "lg",
 }) {
     const addDialog = useOwnedDialogs();
     const orm = useService("orm");
@@ -628,24 +494,23 @@ export function useOpenMany2XRecord({
         }
 
         const { create: canCreate, write: canWrite } = activeActions;
-        const readonly = !(resId ? canWrite : canCreate);
+        const mode = (resId ? canWrite : canCreate) ? "edit" : "readonly";
 
         addDialog(
-            component,
+            FormViewDialog,
             {
                 preventCreate: !canCreate,
                 preventEdit: !canWrite,
                 title,
                 context,
                 nextRecordsContext,
-                readonly,
+                mode,
                 resId,
                 resModel: model,
                 viewId,
                 onRecordSaved,
                 onRecordDiscarded,
                 isToMany,
-                size,
             },
             {
                 onClose: () => {
@@ -681,10 +546,6 @@ export class X2ManyFieldDialog extends Component {
         delete: { optional: true },
         deleteButtonLabel: { optional: true },
         config: Object,
-        controls: { type: Array, optional: true },
-    };
-    static defaultProps = {
-        controls: [],
     };
     setup() {
         this.actionService = useService("action");
@@ -706,7 +567,6 @@ export class X2ManyFieldDialog extends Component {
             beforeExecuteAction: this.beforeExecuteActionButton.bind(this),
         }); // maybe pass the model directly in props
 
-        this.readonly = this.record.resId && !this.archInfo.activeActions.edit;
         this.canCreate = !this.record.resId;
 
         if (this.archInfo.xmlDoc.querySelector("footer:not(field footer)")) {
@@ -719,23 +579,30 @@ export class X2ManyFieldDialog extends Component {
             this.footerArchInfo.arch = this.footerArchInfo.xmlDoc.outerHTML;
             this.archInfo.arch = this.archInfo.xmlDoc.outerHTML;
         }
-
-        const { autofocusFieldIds, disableAutofocus } = this.archInfo;
+        // autofocusFieldId is now deprecated, it's kept until saas-18.2 for retro-compatibility
+        // and is removed in saas-18.3 to let autofocusFieldIds take over.
+        const { autofocusFieldId, autofocusFieldIds = [], disableAutofocus } = this.archInfo;
         if (!disableAutofocus) {
             // to simplify
             useEffect(
                 (isInEdition) => {
                     let elementToFocus;
                     if (isInEdition) {
-                        for (const id of autofocusFieldIds) {
-                            elementToFocus = this.modalRef.el.querySelector(`#${id}`);
-                            if (elementToFocus) {
-                                break;
-                            }
+                        if (autofocusFieldIds.length) {
+                            for (const id of autofocusFieldIds) {
+                                elementToFocus = this.modalRef.el.querySelector(`#${id}`);
+                                if (elementToFocus) {
+                                    break;
+                                };
+                            };
+                        } else {
+                            elementToFocus = autofocusFieldId && this.modalRef.el.querySelector(
+                                `#${autofocusFieldId}`
+                            );
                         }
-                        elementToFocus =
-                            elementToFocus ||
-                            this.modalRef.el.querySelector(".o_field_widget input");
+                        elementToFocus = elementToFocus || this.modalRef.el.querySelector(
+                            ".o_field_widget input"
+                        );
                     } else {
                         elementToFocus = this.modalRef.el.querySelector("button.btn-primary");
                     }
@@ -770,13 +637,6 @@ export class X2ManyFieldDialog extends Component {
             };
         }
         return props;
-    }
-
-    get displayDeleteButton() {
-        const deleteControl = this.props.controls.find((control) => control.type === "delete");
-        return (
-            !deleteControl || !evaluateBooleanExpr(deleteControl.invisible, this.record.evalContext)
-        );
     }
 
     async beforeExecuteActionButton(clickParams) {
@@ -891,7 +751,7 @@ export function useOpenX2ManyRecord({
     const addDialog = useOwnedDialogs();
     const viewMode = activeField.viewMode;
 
-    async function openRecord({ record, readonly, context, title, controls, onClose }) {
+    async function openRecord({ record, mode, context, title, onClose }) {
         if (!title) {
             title = record
                 ? _t("Open: %s", activeField.string)
@@ -915,12 +775,7 @@ export function useOpenX2ManyRecord({
         let deleteButtonLabel = undefined;
         const isDuplicate = !!record;
 
-        const params = { activeFields, fields };
-        if (isMany2Many) {
-            params.mode = activeActions.write ? "edit" : "readonly";
-        } else {
-            params.mode = readonly || !activeActions.write ? "readonly" : "edit";
-        }
+        const params = { activeFields, fields, mode };
         if (record) {
             const { delete: canDelete, onDelete } = activeActions;
             deleteRecord = viewMode === "kanban" && canDelete ? () => onDelete(record) : null;
@@ -942,8 +797,9 @@ export function useOpenX2ManyRecord({
                 config: env.config,
                 archInfo,
                 record,
-                controls,
-                addNew: () => getList().extendRecord(params),
+                addNew: () => {
+                    return getList().extendRecord(params);
+                },
                 save: (rec) => {
                     if (isDuplicate && rec.id === record.id) {
                         return updateRecord(rec);
@@ -1000,7 +856,9 @@ export function useX2ManyCrud(getList, isMany2Many) {
             }
         };
     } else {
-        saveRecord = async (record) => getList().validateExtendedRecord(record);
+        saveRecord = async (record) => {
+            return getList().validateExtendedRecord(record);
+        };
     }
 
     const updateRecord = async (record) => {

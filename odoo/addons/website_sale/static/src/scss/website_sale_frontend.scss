@@ -18,10 +18,6 @@
 
         img {
             cursor: zoom-in;
-
-            &.zoomed-in {
-                cursor: zoom-out;
-            }
         }
     }
 
@@ -32,21 +28,16 @@
             list-style: none;
             transition: transform 250ms ease-out;
 
-            li > div {
-                background: $body-bg;
+            .o_wsale_image_viewer_thumbnail {
+                aspect-ratio: 1/1;
+                width: 128px;
+            }
 
-                img.o_wsale_image_viewer_thumbnail {
-                    aspect-ratio: var(--o-wsale-product-image-ratio, 1/1);
-                    border: 4px solid transparent;
-                    height: 128px;
+            li img{
+                border: 1px solid #CED4DA;
 
-                    &:not(.active, :hover) {
-                        opacity: 0.75;
-                    }
-
-                    &.active {
-                        border-color: $primary;
-                    }
+                &.active {
+                    border-color: #35979c;
                 }
             }
         }

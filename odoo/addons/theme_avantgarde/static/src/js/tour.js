@@ -13,6 +13,11 @@ const snippets = [
         groupName: "Columns",
     },
     {
+        id: 's_masonry_block',
+        name: 'Masonry',
+        groupName: "Images",
+    },
+    {
         id: 's_carousel',
         name: 'Carousel',
         groupName: "Intro",
@@ -31,11 +36,15 @@ const snippets = [
 
 wTourUtils.registerThemeHomepageTour("avantgarde_tour", () => [
     wTourUtils.assertCssVariable('--color-palettes-name', '"default-15"'),
-    ...wTourUtils.insertSnippet(snippets[0], { position: "top" }),
+    ...wTourUtils.insertSnippet(snippets[0], 'top'),
     ...wTourUtils.clickOnText(snippets[0], 'h1', 'left'),
     wTourUtils.goBackToBlocks(),
-    ...wTourUtils.insertSnippet(snippets[1], { position: "left" }),
-    ...wTourUtils.insertSnippet(snippets[2], { position: "top" }),
-    ...wTourUtils.insertSnippet(snippets[3], { position: "top" }),
-    ...wTourUtils.insertSnippet(snippets[4], { position: "top" }),
+    ...wTourUtils.insertSnippet(snippets[1], 'left'),
+    ...wTourUtils.insertSnippet(snippets[2], 'bottom'),
+    ...wTourUtils.clickOnSnippet(snippets[2], 'top'),
+    wTourUtils.changePaddingSize('top'),
+    wTourUtils.goBackToBlocks(),
+    ...wTourUtils.insertSnippet(snippets[3], 'top'),
+    ...wTourUtils.insertSnippet(snippets[4], 'top'),
+    ...wTourUtils.insertSnippet(snippets[5], 'top'),
 ]);

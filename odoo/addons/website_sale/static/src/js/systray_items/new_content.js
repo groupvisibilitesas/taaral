@@ -1,10 +1,9 @@
-import { patch } from "@web/core/utils/patch";
-import {
-    NewContentSystrayItem,
-    MODULE_STATUS,
-} from "@website/client_actions/website_preview/new_content_systray_item";
+/** @odoo-module **/
 
-patch(NewContentSystrayItem.prototype, {
+import { NewContentModal, MODULE_STATUS } from '@website/systray_items/new_content';
+import { patch } from "@web/core/utils/patch";
+
+patch(NewContentModal.prototype, {
     setup() {
         super.setup();
 

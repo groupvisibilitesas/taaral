@@ -28,11 +28,6 @@ class AccountMove(models.Model):
     )
     peppol_is_sent = fields.Boolean(compute='_compute_peppol_is_sent')
 
-    def action_send_and_print(self):
-        for move in self:
-            move.commercial_partner_id.button_account_peppol_check_partner_endpoint(company=move.company_id)
-        return super().action_send_and_print()
-
     def action_cancel_peppol_documents(self):
         # if the peppol_move_state is processing/done/has been replied to
         # then it means it has been already sent to peppol proxy and we can't cancel
@@ -41,18 +36,12 @@ class AccountMove(models.Model):
         self.peppol_move_state = False
         self.sending_data = False
 
-    def _compute_display_send_button(self):
-        # EXTENDS 'account'
-        super()._compute_display_send_button()
-        for move in self:
-            if move._is_exportable_as_self_invoice():
-                move.display_send_button = True
-
     @api.depends('state')
     def _compute_peppol_move_state(self):
+        can_send = self.env['account_edi_proxy_client.user']._get_can_send_domain()
         for move in self:
             if all([
-                move.company_id.peppol_can_send,
+                move.company_id.account_peppol_proxy_state in can_send,
                 move.commercial_partner_id.peppol_verification_state == 'valid',
                 move.state == 'posted',
                 move.is_sale_document(include_receipts=True),
@@ -74,12 +63,10 @@ class AccountMove(models.Model):
             move.peppol_is_sent = move.peppol_move_state not in {False, 'ready', 'to_send', 'error'}
 
     def _notify_by_email_prepare_rendering_context(self, message, msg_vals=False, model_description=False,
-                                                   force_email_company=False, force_email_lang=False,
-                                                   force_record_name=False):
+                                                   force_email_company=False, force_email_lang=False):
         render_context = super()._notify_by_email_prepare_rendering_context(
             message, msg_vals=msg_vals, model_description=model_description,
-            force_email_company=force_email_company, force_email_lang=force_email_lang,
-            force_record_name=force_record_name,
+            force_email_company=force_email_company, force_email_lang=force_email_lang
         )
         invoice = render_context['record']
         invoice_country = invoice.commercial_partner_id.country_code
@@ -94,13 +81,3 @@ class AccountMove(models.Model):
                 'partner_on_peppol': invoice.commercial_partner_id.peppol_verification_state in ('valid', 'not_valid_format'),
             }
         return render_context
-
-    def action_peppol_cancel_and_remove_sequence(self):
-        self.button_cancel()
-        self.write({'name': '/'})
-
-    def action_peppol_reset_documents(self, ids_to_delete=None):
-        self.filtered(lambda m: m.state == 'draft').action_peppol_cancel_and_remove_sequence()
-        self.filtered(lambda m: m.state not in ('draft', 'cancel') and not m.inalterable_hash).button_draft()
-        if ids_to_delete:
-            self.env['account.move'].browse(ids_to_delete).exists().unlink()

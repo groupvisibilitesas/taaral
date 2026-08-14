@@ -1,6 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.tests.common import PaymentCommon
 
 
@@ -20,12 +19,8 @@ class WorldlineCommon(PaymentCommon):
 
         cls.provider = cls.worldline
         cls.currency = cls.currency_euro
-        cls.notification_amount_and_currency = {
-            'amount': payment_utils.to_minor_currency_units(cls.amount, cls.currency),
-            'currencyCode': cls.currency.name,
-        }
 
-        cls.payment_data = {
+        cls.notification_data = {
             'payment': {
                 'paymentOutput': {
                     'references': {
@@ -38,14 +33,13 @@ class WorldlineCommon(PaymentCommon):
                         },
                         'token': 'whateverToken'
                     },
-                    'amountOfMoney': cls.notification_amount_and_currency,
                 },
                 'id': '1234567890_0',
                 'status': 'CAPTURED',
             },
         }
 
-        cls.payment_data_insufficient_funds = {
+        cls.notification_data_insufficient_funds = {
             'errorId': 'ffffffff-fff-fffff-ffff-ffffffffffff',
             'errors': [{
                 'category': 'IO_ERROR',
@@ -67,7 +61,7 @@ class WorldlineCommon(PaymentCommon):
                     'id': '7777777000_0',
                     'paymentOutput': {
                         'acquiredAmount': {'amount': 0, 'currencyCode': 'EUR'},
-                        'amountOfMoney': cls.notification_amount_and_currency,
+                        'amountOfMoney': {'amount': 4990, 'currencyCode': 'EUR'},
                         'cardPaymentMethodSpecificOutput': {
                             'acquirerInformation': {'name': "Test Pay"},
                             'card': {
@@ -106,7 +100,7 @@ class WorldlineCommon(PaymentCommon):
             },
         }
 
-        cls.payment_data_expired_card = {
+        cls.notification_data_expired_card = {
             'apiFullVersion': 'v1.1',
             'apiVersion': 'v1',
             'created': '2025-02-20T03:09:47.3706109+01:00',
@@ -116,7 +110,7 @@ class WorldlineCommon(PaymentCommon):
                 'id': '9999999999_0',
                 'paymentOutput': {
                     'acquiredAmount': {'amount': 0, 'currencyCode': 'EUR'},
-                    'amountOfMoney': cls.notification_amount_and_currency,
+                    'amountOfMoney': {'amount': 4980, 'currencyCode': 'EUR'},
                     'cardPaymentMethodSpecificOutput': {
                         'acquirerInformation': {'name': "Test Pay"},
                         'card': {

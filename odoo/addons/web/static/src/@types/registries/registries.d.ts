@@ -2,7 +2,6 @@ declare module "registries" {
     import { Component } from "@odoo/owl";
     import { OdooEnv } from "@web/env";
     import { NotificationOptions } from "@web/core/notifications/notification_service";
-    import { Interaction } from "@web/public/interaction";
     import { Compiler } from "@web/views/view_compiler";
     import { ActionDescription } from "@web/webclient/actions/action_service";
 
@@ -50,12 +49,13 @@ declare module "registries" {
             canArchiveGroup: boolean;
             canDeleteGroup: boolean;
             canEditGroup: boolean;
+            canQuickCreate: boolean;
         };
         props: object;
     }
-    export interface GroupConfigItemsRegistryItemShape {
+    export interface KanbanHeaderConfigItemsRegistryItemShape {
         label: String;
-        method: string | (() => {});
+        method: string;
         isVisible: boolean | ((params: KanbanHeaderConfigItemsFnParams) => boolean);
         class: string | ((params: KanbanHeaderConfigItemsFnParams) => (string | string[] | { [key: string]: boolean }));
     }
@@ -80,8 +80,6 @@ declare module "registries" {
 
     export type IrActionsReportHandlers = (action: ActionRequest, options: ActionOptions, env: OdooEnv) => (void | boolean | Promise<void | boolean>);
 
-    export type InteractionRegistryItemShape = typeof Interaction;
-
     interface GlobalRegistryCategories {
         action_handlers: ActionHandlersRegistryItemShape;
         actions: ActionsRegistryItemShape;
@@ -94,12 +92,11 @@ declare module "registries" {
         favoriteMenu: FavoriteMenuRegistryItemShape;
         formatters: FormattersRegistryItemShape;
         form_compilers: FormCompilersRegistryItemShape;
-        group_config_items: GroupConfigItemsRegistryItemShape;
+        kanban_header_config_items: KanbanHeaderConfigItemsRegistryItemShape;
         lazy_components: LazyComponentsRegistryItemShape;
         main_components: MainComponentsRegistryItemShape;
         parsers: ParsersRegistryItemShape;
         public_components: PublicComponentsRegistryItemShape;
-        "public.interactions": InteractionRegistryItemShape;
         sample_server: SampleServerRegistryItemShape;
         systray: SystrayRegistryItemShape;
         "ir.actions.report handlers": IrActionsReportHandlers;

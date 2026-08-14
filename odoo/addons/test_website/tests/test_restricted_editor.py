@@ -3,12 +3,13 @@
 import unittest
 
 import odoo.tests
+
+from odoo.tests.common import new_test_user
 from odoo.tools import mute_logger
-from odoo.addons.website.tests.common import HttpCaseWithWebsiteUser
 
 
 @odoo.tests.common.tagged('post_install', '-at_install')
-class TestRestrictedEditor(HttpCaseWithWebsiteUser):
+class TestRestrictedEditor(odoo.tests.HttpCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -30,12 +31,30 @@ class TestRestrictedEditor(HttpCaseWithWebsiteUser):
 
     @mute_logger('odoo.addons.http_routing.models.ir_http', 'odoo.http')
     def test_01_restricted_editor_only(self):
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'test_restricted_editor_only', login="website_user")
+        self.restricted_editor = self.env['res.users'].create({
+            'name': 'Restricted Editor',
+            'login': 'restricted',
+            'password': 'restricted',
+            'groups_id': [(6, 0, [
+                self.ref('base.group_user'),
+                self.ref('website.group_website_restricted_editor'),
+            ])]
+        })
+        self.start_tour(self.env['website'].get_client_action_url('/'), 'test_restricted_editor_only', login='restricted')
 
     @mute_logger('odoo.addons.http_routing.models.ir_http', 'odoo.http')
     def test_02_restricted_editor_test_admin(self):
-        self.user_website_user.group_ids += self.env.ref("test_website.group_test_website_admin")
-        self.start_tour(self.env['website'].get_client_action_url('/'), 'test_restricted_editor_test_admin', login="website_user")
+        self.restricted_editor = self.env['res.users'].create({
+            'name': 'Restricted Editor',
+            'login': 'restricted',
+            'password': 'restricted',
+            'groups_id': [(6, 0, [
+                self.ref('base.group_user'),
+                self.ref('website.group_website_restricted_editor'),
+                self.ref('test_website.group_test_website_admin'),
+            ])]
+        })
+        self.start_tour(self.env['website'].get_client_action_url('/'), 'test_restricted_editor_test_admin', login='restricted')
 
     # FIXME the logic of the commit that introduced the fix at 8c41c147a4c6a415e
     # was reverted, so this test is disabled for now. Branding *on views* as
@@ -48,5 +67,7 @@ class TestRestrictedEditor(HttpCaseWithWebsiteUser):
         Tests that restricted users cannot edit ir.ui.view records despite being
         on a page of a record (main_object) they can edit.
         """
-        self.user_website_user.group_ids += self.env.ref("test_website.group_test_website_tester")
-        self.start_tour(self.env['website'].get_client_action_url('/test_model/1'), 'test_restricted_editor_tester', login='website_user')
+        self.user_test = new_test_user(self.env, login='restricted', website_id=False)
+        self.user_test.groups_id |= self.env.ref('website.group_website_restricted_editor')
+        self.user_test.groups_id |= self.env.ref('test_website.group_test_website_tester')
+        self.start_tour(self.env['website'].get_client_action_url('/test_model/1'), 'test_restricted_editor_tester', login='restricted')

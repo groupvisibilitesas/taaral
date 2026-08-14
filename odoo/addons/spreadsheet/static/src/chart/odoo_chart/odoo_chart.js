@@ -1,11 +1,13 @@
+/** @odoo-module */
+
 import { AbstractChart, CommandResult } from "@odoo/o-spreadsheet";
-import { ChartDataSource, chartTypeToDataSourceMode } from "../data_source/chart_data_source";
+import { ChartDataSource } from "../data_source/chart_data_source";
 
 /**
  * @typedef {import("@web/search/search_model").SearchParams} SearchParams
  *
  * @typedef MetaData
- * @property {Object} domain
+ * @property {Array<Object>} domains
  * @property {Array<string>} groupBy
  * @property {string} measure
  * @property {string} mode
@@ -39,9 +41,12 @@ export class OdooChart extends AbstractChart {
         this.type = definition.type;
         this.metaData = {
             ...definition.metaData,
-            mode: chartTypeToDataSourceMode(this.type),
+            mode: this.type.replace("odoo_", ""),
             cumulated: definition.cumulative,
-            cumulatedStart: definition.cumulatedStart,
+            cumulatedStart:
+                "cumulatedStart" in definition
+                    ? definition.cumulatedStart
+                    : definition.cumulative,
         };
         this.searchParams = definition.searchParams;
         this.legendPosition = definition.legendPosition;
@@ -49,8 +54,6 @@ export class OdooChart extends AbstractChart {
         this.dataSource = undefined;
         this.actionXmlId = definition.actionXmlId;
         this.showValues = definition.showValues;
-        this._dataSets = definition.dataSets || [];
-        this.humanize = definition.humanize ?? true;
     }
 
     static transformDefinition(definition) {
@@ -89,9 +92,6 @@ export class OdooChart extends AbstractChart {
             type: this.type,
             actionXmlId: this.actionXmlId,
             showValues: this.showValues,
-            dataSets: this.dataSets,
-            datasetsConfig: this.datasetsConfig,
-            humanize: this.humanize,
         };
     }
 
@@ -111,7 +111,7 @@ export class OdooChart extends AbstractChart {
     /**
      * @returns {OdooChart}
      */
-    duplicateInDuplicatedSheet() {
+    copyForSheetId() {
         return this;
     }
 
@@ -136,16 +136,5 @@ export class OdooChart extends AbstractChart {
         } else {
             throw new Error("Only ChartDataSources can be added.");
         }
-    }
-
-    get dataSets() {
-        if (!this.dataSource) {
-            return this.datasetsConfig || [];
-        }
-        if (!this.dataSource.isReady()) {
-            return [];
-        }
-        const data = this.dataSource.getData();
-        return data.datasets.map((ds, index) => this._dataSets?.[index] || {});
     }
 }

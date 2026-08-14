@@ -1,7 +1,7 @@
 import { Message } from "@mail/core/common/message";
 import { useVisible } from "@mail/utils/common/hooks";
 
-import { Component, useSubEnv } from "@odoo/owl";
+import { Component, useState, useSubEnv } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
 
@@ -35,8 +35,8 @@ export class MessageCardList extends Component {
 
     setup() {
         super.setup();
-        this.ui = useService("ui");
-        this.store = useService("mail.store");
+        this.store = useState(useService("mail.store"));
+        this.ui = useState(useService("ui"));
         useSubEnv({ messageCard: true });
         useVisible("load-more", (isVisible) => {
             if (isVisible) {
@@ -53,10 +53,9 @@ export class MessageCardList extends Component {
      */
     async onClickJump(message) {
         this.props.onClickJump?.();
-        if (this.ui.isSmall || this.env.inChatWindow || this.env.inMeetingView) {
+        if (this.ui.isSmall || this.env.inChatWindow) {
             this.env.pinMenu?.close();
             this.env.searchMenu?.close();
-            this.env.inMeetingView?.openChat();
         }
         // Give the time for menus to close before scrolling to the message.
         await new Promise((resolve) => setTimeout(() => requestAnimationFrame(resolve)));

@@ -11,7 +11,6 @@ export class EmojiPlugin extends Plugin {
     static id = "emoji";
     static dependencies = ["history", "overlay", "dom", "selection"];
     static shared = ["showEmojiPicker"];
-    /** @type {import("plugins").EditorResources} */
     resources = {
         user_commands: [
             {

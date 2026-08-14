@@ -1,6 +1,7 @@
+import { floatCompare } from "@point_of_sale/utils";
 import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
-import { roundDecimals, formatFloat } from "@web/core/utils/numbers";
+import { roundPrecision, formatFloat } from "@web/core/utils/numbers";
 import { Reactive } from "@web/core/utils/reactive";
 
 const MEASURING_DELAY_MS = 500;
@@ -58,7 +59,6 @@ export class PosScaleService extends Reactive {
     async readWeight() {
         this.loading = true;
         try {
-            this._checkScaleIsConnected();
             this.weight = await this._getWeightFromScale();
             this._clearLastWeightIfValid();
         } catch (error) {
@@ -69,11 +69,11 @@ export class PosScaleService extends Reactive {
         this._setTareIfRequested();
     }
 
-    setProduct(product, decimalAccuracy, unitPrice) {
+    setProduct(product, unitPrice) {
         this.product = {
             name: product.display_name || _t("Unnamed Product"),
-            unitOfMeasure: product.product_tmpl_id?.uom_id?.name || "kg",
-            decimalAccuracy,
+            unitOfMeasure: product.uom_id?.name || "kg",
+            rounding: product.uom_id?.rounding || 0.001,
             unitPrice,
         };
     }
@@ -105,8 +105,9 @@ export class PosScaleService extends Reactive {
         // added value before another product is allowed to be added.
         return (
             !this.lastWeight ||
-            roundDecimals(this.weight, this.product.decimalAccuracy) !==
-                roundDecimals(this.lastWeight, this.product.decimalAccuracy)
+            floatCompare(this.weight, this.lastWeight, {
+                decimals: this._roundingDecimalPlaces,
+            }) !== 0
         );
     }
 
@@ -117,27 +118,25 @@ export class PosScaleService extends Reactive {
     }
 
     get netWeight() {
-        return roundDecimals(this.weight - (this.tare || 0), this.product.decimalAccuracy);
+        return roundPrecision(this.weight - (this.tare || 0), this.product.rounding);
     }
 
     get netWeightString() {
         const weightString = formatFloat(this.netWeight, {
-            digits: [0, this.product.decimalAccuracy],
+            digits: [0, this._roundingDecimalPlaces],
         });
         return `${weightString} ${this.product.unitOfMeasure}`;
     }
 
     get tareWeightString() {
         const weightString = formatFloat(this.tare || 0, {
-            digits: [0, this.product.decimalAccuracy],
+            digits: [0, this._roundingDecimalPlaces],
         });
         return `${weightString} ${this.product.unitOfMeasure}`;
     }
 
     get grossWeightString() {
-        const weightString = formatFloat(this.weight, {
-            digits: [0, this.product.decimalAccuracy],
-        });
+        const weightString = formatFloat(this.weight, { digits: [0, this._roundingDecimalPlaces] });
         return `${weightString} ${this.product.unitOfMeasure}`;
     }
 
@@ -151,17 +150,12 @@ export class PosScaleService extends Reactive {
         return priceString;
     }
 
-    _checkScaleIsConnected() {
-        if (this.hardwareProxy.connectionInfo.status !== "connected") {
-            throw new Error(_t("Cannot weigh product - IoT Box is disconnected"));
-        }
-        if (this.hardwareProxy.connectionInfo.drivers.scale?.status !== "connected") {
-            throw new Error(_t("Cannot weigh product - Scale is not connected to IoT Box"));
-        }
+    get _roundingDecimalPlaces() {
+        return Math.ceil(Math.log(1.0 / this.product.rounding) / Math.log(10));
     }
 }
 
-export const posScaleService = {
+const posScaleService = {
     dependencies: ["hardware_proxy"],
     start(env, deps) {
         return new PosScaleService(env, deps);

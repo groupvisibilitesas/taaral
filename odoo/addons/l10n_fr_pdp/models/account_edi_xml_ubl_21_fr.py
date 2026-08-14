@@ -19,9 +19,13 @@ class AccountEdiXmlUbl21Fr(models.AbstractModel):
     def _export_invoice_filename(self, invoice):
         return f"{invoice.name.replace('/', '_')}_ubl_21_fr.xml"
 
-    def _export_invoice_constraints(self, invoice, vals):
+    def _export_invoice(self, invoice, convert_fixed_taxes=True):
+        # Use new helpers
+        return self._export_invoice_new(invoice)
+
+    def _export_invoice_constraints_new(self, invoice, vals):
         # EXTENDS account.edi.xml.ubl_bis3
-        constraints = super()._export_invoice_constraints(invoice, vals)
+        constraints = super()._export_invoice_constraints_new(invoice, vals)
 
         for partner_type in ('supplier', 'customer'):
             partner = vals[partner_type]

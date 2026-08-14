@@ -1,29 +1,42 @@
-import { CW_LIVECHAT_STEP } from "@im_livechat/core/common/chat_window_model_patch";
-import { registerThreadAction, threadActionsRegistry } from "@mail/core/common/thread_actions";
+import { SESSION_STATE } from "@im_livechat/embed/common/livechat_service";
+
+import { threadActionsRegistry } from "@mail/core/common/thread_actions";
 import "@mail/discuss/call/common/thread_actions";
+import { useComponent } from "@odoo/owl";
 
 import { _t } from "@web/core/l10n/translation";
+import { useService } from "@web/core/utils/hooks";
 import { patch } from "@web/core/utils/patch";
 
-registerThreadAction("restart", {
-    condition: ({ owner, thread }) =>
-        thread?.chatbot?.canRestart && !owner.isDiscussSidebarChannelActions,
+threadActionsRegistry.add("restart", {
+    condition(component) {
+        return component.chatbotService.canRestart;
+    },
     icon: "fa fa-fw fa-refresh",
     name: _t("Restart Conversation"),
-    open: ({ owner, thread }) => {
-        owner.props.chatWindow.livechatStep = CW_LIVECHAT_STEP.NONE;
-        thread.chatbot.restart();
-        owner.props.chatWindow.open({ focus: true });
+    open(component) {
+        component.chatbotService.restart();
+        component.props.chatWindow.open();
     },
     sequence: 99,
     sequenceQuick: 15,
 });
 
-const callSettingsAction = threadActionsRegistry.get("call-settings");
+const callSettingsAction = threadActionsRegistry.get("settings");
 patch(callSettingsAction, {
-    condition({ store, thread }) {
-        return thread?.channel_type === "livechat"
-            ? store.rtc.state.channel?.eq(thread)
-            : super.condition(...arguments);
+    condition(component) {
+        if (component.thread?.channel_type !== "livechat") {
+            return super.condition(...arguments);
+        }
+        return (
+            component.livechatService.state === SESSION_STATE.PERSISTED &&
+            component.rtcService.state.channel?.eq(component.thread)
+        );
+    },
+    setup() {
+        super.setup(...arguments);
+        const component = useComponent();
+        component.livechatService = useService("im_livechat.livechat");
+        component.rtcService = useService("discuss.rtc");
     },
 });

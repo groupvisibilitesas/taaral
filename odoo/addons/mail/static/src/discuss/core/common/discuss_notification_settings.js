@@ -1,6 +1,4 @@
-import { MESSAGE_SOUND } from "@mail/core/common/settings_model";
 import { Component, useState } from "@odoo/owl";
-import { browser } from "@web/core/browser/browser";
 import { useService } from "@web/core/utils/hooks";
 
 export class DiscussNotificationSettings extends Component {
@@ -8,27 +6,28 @@ export class DiscussNotificationSettings extends Component {
     static template = "mail.DiscussNotificationSettings";
 
     setup() {
-        this.store = useService("mail.store");
+        this.store = useState(useService("mail.store"));
         this.state = useState({
             selectedDuration: false,
         });
     }
 
-    onChangeMessageSound() {
-        if (this.store.settings.messageSound) {
-            this.disableMessageSound();
+    onChangeDisplayMuteDetails() {
+        // set the default mute duration to forever when opens the mute details
+        if (!this.store.settings.mute_until_dt) {
+            const FOREVER = this.store.settings.MUTES.find((m) => m.label === "forever").value;
+            this.store.settings.setMuteDuration(FOREVER);
+            this.state.selectedDuration = FOREVER;
         } else {
-            this.enableMessageSound();
+            this.store.settings.setMuteDuration(false);
         }
     }
 
-    enableMessageSound() {
-        browser.localStorage.removeItem(MESSAGE_SOUND);
-        this.store.settings._recomputeMessageSound++;
-    }
-
-    disableMessageSound() {
-        browser.localStorage.setItem(MESSAGE_SOUND, false);
-        this.store.settings._recomputeMessageSound++;
+    onChangeMuteDuration(ev) {
+        if (ev.target.value === "default") {
+            return;
+        }
+        this.store.settings.setMuteDuration(parseInt(ev.target.value));
+        this.state.selectedDuration = parseInt(ev.target.value);
     }
 }

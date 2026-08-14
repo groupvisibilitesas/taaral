@@ -1,17 +1,14 @@
-import { registry } from "@web/core/registry";
+/** @odoo-module */
 
-import { rottingKanbanView } from "@mail/js/rotting_mixin/rotting_kanban_view";
-import { ProjectTaskKanbanController } from "./project_task_kanban_controller";
+import { registry } from "@web/core/registry";
+import { kanbanView } from '@web/views/kanban/kanban_view';
 import { ProjectTaskKanbanModel } from "./project_task_kanban_model";
 import { ProjectTaskKanbanRenderer } from './project_task_kanban_renderer';
-import { ProjectTaskControlPanel } from "../project_task_control_panel/project_task_control_panel";
 
 export const projectTaskKanbanView = {
-    ...rottingKanbanView,
-    ControlPanel: ProjectTaskControlPanel,
+    ...kanbanView,
     Model: ProjectTaskKanbanModel,
     Renderer: ProjectTaskKanbanRenderer,
-    Controller: ProjectTaskKanbanController,
 };
 
 registry.category('views').add('project_task_kanban', projectTaskKanbanView);

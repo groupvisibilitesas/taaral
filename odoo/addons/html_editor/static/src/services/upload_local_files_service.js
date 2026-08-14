@@ -17,7 +17,6 @@ export const uploadLocalFileService = {
         async function selectLocalFiles({ multiple, accept }) {
             input.multiple = multiple;
             input.accept = accept;
-            input.value = ""; // clear previously selected files
 
             // Open system's file selector
             input.click();
@@ -40,19 +39,13 @@ export const uploadLocalFileService = {
         /**
          * @param {FileList} files
          * @param {Object} recordInfo
-         * @param {Function} setAbortCallback
          * @returns {Promise<Object[]>} attachments
          */
-        async function filesToAttachments(files, { resModel, resId }, setAbortCallback) {
+        async function filesToAttachments(files, { resModel, resId }) {
             const attachments = [];
-            await uploadService.uploadFiles(
-                files,
-                { resModel, resId },
-                (attachment) => {
-                    attachments.push(attachment);
-                },
-                setAbortCallback
-            );
+            await uploadService.uploadFiles(files, { resModel, resId }, (attachment) => {
+                attachments.push(attachment);
+            });
             return attachments;
         }
 
@@ -64,25 +57,15 @@ export const uploadLocalFileService = {
          * @param {string} [options.accept] Accepted file types
          * @param {boolean} [options.multiple=false] Allow multiple files to be selected
          * @param {boolean} [options.accessToken=false] Add access token to uploaded files
-         * @param {Function} [options.setAbortCallback=()=>{}] Set abort function to cancel ongoing upload
          * @returns {Promise<Object[]>} attachments
          */
         async function upload(
             { resId, resModel },
-            {
-                accept = "*/*",
-                multiple = false,
-                accessToken = false,
-                setAbortCallback = () => {},
-            } = {}
+            { accept = "*/*", multiple = false, accessToken = false } = {}
         ) {
             try {
                 const files = await selectLocalFiles({ multiple, accept });
-                const attachments = await filesToAttachments(
-                    files,
-                    { resModel, resId },
-                    setAbortCallback
-                );
+                const attachments = await filesToAttachments(files, { resModel, resId });
                 if (accessToken && attachments.length && !attachments[0].public) {
                     await addAccessToken(attachments);
                 }

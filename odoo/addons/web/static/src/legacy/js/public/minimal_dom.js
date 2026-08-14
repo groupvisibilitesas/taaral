@@ -1,3 +1,5 @@
+/** @odoo-module **/
+
 import { addLoadingEffect } from '@web/core/utils/ui';
 
 export const DEBOUNCE = 400;
@@ -80,11 +82,11 @@ export function makeButtonHandler(fct, preventDefault, stopPropagation, stopImme
     fct = makeAsyncHandler(fct, preventDefault, stopPropagation, stopImmediatePropagation);
 
     return function (ev) {
-        const handlerResult = fct.apply(this, arguments);
+        const result = fct.apply(this, arguments);
 
         const buttonEl = ev.target.closest(BUTTON_HANDLER_SELECTOR);
         if (!(buttonEl instanceof HTMLElement)) {
-            return handlerResult;
+            return result;
         }
 
         // Disable the button for the duration of the handler's action
@@ -92,21 +94,12 @@ export function makeButtonHandler(fct, preventDefault, stopPropagation, stopImme
         // a 'real' debounce creation useless. Also, during the debouncing
         // part, the button is disabled without any visual effect.
         buttonEl.classList.add("pe-none");
-        let showDebouncedLoading = false;
-        const addLoadingIfPending = () => {
+        new Promise(resolve => setTimeout(resolve, DEBOUNCE)).then(() => {
             buttonEl.classList.remove("pe-none");
-            if (showDebouncedLoading) {
-                const restore = addLoadingEffect(buttonEl);
-                Promise.resolve(handlerResult).then(restore, restore);
-            }
-        };
-        Promise.race([
-            handlerResult,
-            new Promise((resolve) => setTimeout(resolve, DEBOUNCE)).then(() => {
-                showDebouncedLoading = true;
-            }),
-        ]).then(addLoadingIfPending, addLoadingIfPending);
+            const restore = addLoadingEffect(buttonEl);
+            return Promise.resolve(result).then(restore, restore);
+        });
 
-        return handlerResult;
+        return result;
     };
 }

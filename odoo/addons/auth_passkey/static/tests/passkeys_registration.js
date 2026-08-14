@@ -13,11 +13,11 @@ registry.category("web_tour.tours").add('passkeys_tour_registration', {
             run: 'click',
         }, {
             content: "Open preferences / profile screen",
-            trigger: '[data-menu=preferences]',
+            trigger: '[data-menu=settings]',
             run: 'click',
         }, {
             content: "Switch to security tab",
-            trigger: 'a[role=tab]:contains("Security")',
+            trigger: 'a[role=tab]:contains("Account Security")',
             run: 'click',
         }, {
             content: "Ensure there are no passkeys already",
@@ -34,7 +34,7 @@ registry.category("web_tour.tours").add('passkeys_tour_registration', {
             run: 'click',
         }, {
             content: "Check that we have to enter enhanced security mode",
-            trigger: ".modal div:contains(Enter your current password)",
+            trigger: ".modal div:contains(entering your password)",
         }, {
             content: "Input password",
             trigger: '.modal [name=password] input',
@@ -94,7 +94,7 @@ registry.category("web_tour.tours").add('passkeys_tour_registration', {
             },
         }, {
             content: "Open preferences / profile screen",
-            trigger: '[data-menu=preferences]',
+            trigger: '[data-menu=settings]',
             run: 'click',
         }, {
             // The HR module causes the switch to security tab to trigger on the old DOM, before the new one is loaded
@@ -102,7 +102,7 @@ registry.category("web_tour.tours").add('passkeys_tour_registration', {
             trigger: 'label:contains("Email Signature")',
         }, {
             content: "Switch to security tab",
-            trigger: 'a[role=tab]:contains("Security")',
+            trigger: 'a[role=tab]:contains("Account Security")',
             run: 'click',
         }, {
             content: "Ensure there is one passkey",

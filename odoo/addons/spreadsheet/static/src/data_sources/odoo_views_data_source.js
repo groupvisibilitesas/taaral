@@ -1,3 +1,4 @@
+/** @odoo-module */
 // @ts-check
 
 import { LoadingDataError } from "@spreadsheet/o_spreadsheet/errors";
@@ -57,10 +58,7 @@ export class OdooViewsDataSource extends LoadableDataSource {
 
     async loadMetadata() {
         if (!this._metaData.fields) {
-            this._metaData.fields = await getFields(
-                this.odooDataProvider.fieldService,
-                this._metaData.resModel
-            );
+            this._metaData.fields = await getFields(this.serverData, this._metaData.resModel);
         }
         this._metaDataLoaded = true;
     }
@@ -155,10 +153,9 @@ export class OdooViewsDataSource extends LoadableDataSource {
      * @returns {Promise<string>} Display name of the model
      */
     async getModelLabel() {
-        const result = await this._orm
-            .cache({ type: "disk" })
-            .call("ir.model", "display_name_for", [[this._metaData.resModel]]);
-        return result[0]?.display_name || "";
+        const model = this._metaData.resModel;
+        const result = await this.serverData.fetch("ir.model", "display_name_for", [[model]]);
+        return (result[0] && result[0].display_name) || "";
     }
 
     get source() {

@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import datetime
-
-from odoo import Command
+from odoo import Command, fields
 from odoo.addons.survey.tests import common
 from odoo.tests.common import HttpCase
 
@@ -120,7 +118,7 @@ class TestSurveyController(common.TestSurveyCommon, HttpCase):
             'title': 'Live Session Survey',
             'access_mode': 'token',
             'users_login_required': False,
-            'session_question_start_time': datetime.datetime(2023, 7, 7, 12, 0, 0),
+            'session_question_start_time': fields.datetime(2023, 7, 7, 12, 0, 0),
         })
 
         self.authenticate(self.survey_manager.login, self.survey_manager.login)

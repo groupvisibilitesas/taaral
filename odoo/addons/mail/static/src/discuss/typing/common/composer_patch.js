@@ -46,16 +46,8 @@ patch(Composer.prototype, {
             );
         }
     },
-    /** @override */
-    onInput(ev) {
-        super.onInput(ev);
-        this.detectTyping(ev);
-    },
     detectTyping() {
-        if (this.props.composer.message) {
-            return;
-        }
-        const value = this.props.composer.composerText;
+        const value = this.props.composer.text;
         if (this.thread?.model === "discuss.channel" && value.startsWith("/")) {
             const [firstWord] = value.substring(1).split(/\s/);
             const command = commandRegistry.get(firstWord, false);
@@ -63,8 +55,6 @@ patch(Composer.prototype, {
                 value === "/" || // suggestions not yet started
                 this.hasSuggestions ||
                 (command &&
-                    (!command.condition ||
-                        command.condition({ store: this.store, thread: this.thread })) &&
                     (!command.channel_types ||
                         command.channel_types.includes(this.thread.channel_type)))
             ) {
@@ -93,8 +83,7 @@ patch(Composer.prototype, {
         }
     },
     addEmoji(str) {
-        const res = super.addEmoji(str);
+        super.addEmoji(str);
         this.detectTyping();
-        return res;
     },
 });

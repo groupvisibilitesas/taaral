@@ -3,21 +3,20 @@
 # * sale_mrp
 #
 # Translators:
-# Nikola Iliev, 2023
-# aleksandar ivanov, 2023
-# Martin Trigaux, 2023
-# Igor Sheludko <igor.sheludko@gmail.com>, 2023
-# Maria Boyadjieva <marabo2000@gmail.com>, 2023
-# Ivaylo Malinov <iv.malinov@gmail.com>, 2025, 2026.
-# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2026.
+# Elena Varbanova, 2024
+# aleksandar ivanov, 2024
+# Petko Karamotchev, 2024
+# Maria Boyadjieva <marabo2000@gmail.com>, 2024
+# Igor Sheludko <igor.sheludko@gmail.com>, 2024
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~15.4\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-17 17:38+0000\n"
-"PO-Revision-Date: 2026-08-02 14:15+0000\n"
-"Last-Translator: Ivaylo Malinov <iv.malinov@gmail.com>\n"
-"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-19/"
+"POT-Creation-Date: 2025-12-29 18:37+0000\n"
+"PO-Revision-Date: 2026-06-22 17:16+0000\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-18/"
 "sale_mrp/bg/>\n"
 "Language: bg\n"
 "MIME-Version: 1.0\n"
@@ -34,17 +33,22 @@ msgstr "<i class=\"fa fa-fw fa-check\"/> <b>Произведено</b>"
 #. module: sale_mrp
 #: model_terms:ir.ui.view,arch_db:sale_mrp.sale_order_portal_content_inherit_sale_mrp
 msgid "<i class=\"fa fa-fw fa-clock-o\"/> <b>Confirmed</b>"
-msgstr "<i class=\"fa fa-fw fa-clock-o\"/> <b>Потвърдена</b>"
+msgstr ""
 
 #. module: sale_mrp
 #: model_terms:ir.ui.view,arch_db:sale_mrp.sale_order_portal_content_inherit_sale_mrp
 msgid "<i class=\"fa fa-fw fa-clock-o\"/> <b>In progress</b>"
-msgstr "<i class=\"fa fa-fw fa-clock-o\"/> <b>В процес</b>"
+msgstr ""
 
 #. module: sale_mrp
 #: model_terms:ir.ui.view,arch_db:sale_mrp.sale_order_portal_content_inherit_sale_mrp
 msgid "<i class=\"fa fa-fw fa-times\"/> <b>Cancelled</b>"
-msgstr "<i class=\"fa fa-fw fa-times\"/> <b>Отменена</b>"
+msgstr ""
+
+#. module: sale_mrp
+#: model_terms:ir.ui.view,arch_db:sale_mrp.sale_order_form_mrp
+msgid "<span class=\"o_stat_text\">Manufacturing</span>"
+msgstr "<span class=\"o_stat_text\">В производство</span>"
 
 #. module: sale_mrp
 #: model_terms:ir.ui.view,arch_db:sale_mrp.mrp_production_form_view_sale
@@ -54,7 +58,7 @@ msgstr "<span class=\"o_stat_text\">Продажба</span>"
 #. module: sale_mrp
 #: model_terms:ir.ui.view,arch_db:sale_mrp.sale_order_portal_content_inherit_sale_mrp
 msgid "<strong>Manufacturing Orders</strong>"
-msgstr "<strong>Производствени поръчки</strong>"
+msgstr ""
 
 #. module: sale_mrp
 #. odoo-python
@@ -64,25 +68,21 @@ msgid ""
 "and are related to these bills of materials, you can not remove them.\n"
 "The error concerns these products: %s"
 msgstr ""
-"Докато има редове на поръчки за продажба, които трябва да бъдат доставени/"
-"фактурирани и са свързани с тези спецификации на материалите, не можете да "
-"ги премахнете.\n"
-"Грешката се отнася за тези продукти: %s"
 
 #. module: sale_mrp
 #: model:ir.model,name:sale_mrp.model_mrp_bom
 msgid "Bill of Material"
-msgstr "Списък на материалите"
+msgstr "Фактура за покупка на материали"
 
 #. module: sale_mrp
 #: model:ir.model.fields,field_description:sale_mrp.field_sale_order__mrp_production_count
 msgid "Count of MO generated"
-msgstr "Брой генерирани производствени поръчки"
+msgstr ""
 
 #. module: sale_mrp
 #: model:ir.model.fields,field_description:sale_mrp.field_mrp_production__sale_order_count
 msgid "Count of Source SO"
-msgstr "Брой източникови поръчки за продажба"
+msgstr ""
 
 #. module: sale_mrp
 #: model_terms:ir.ui.view,arch_db:sale_mrp.sale_order_portal_content_inherit_sale_mrp
@@ -90,71 +90,35 @@ msgid "Date:"
 msgstr "Дата:"
 
 #. module: sale_mrp
-#: model:ir.model.fields,field_description:sale_mrp.field_account_move_line__display_name
-#: model:ir.model.fields,field_description:sale_mrp.field_mrp_bom__display_name
-#: model:ir.model.fields,field_description:sale_mrp.field_mrp_production__display_name
-#: model:ir.model.fields,field_description:sale_mrp.field_sale_order__display_name
-#: model:ir.model.fields,field_description:sale_mrp.field_sale_order_line__display_name
-#: model:ir.model.fields,field_description:sale_mrp.field_stock_move__display_name
-#: model:ir.model.fields,field_description:sale_mrp.field_stock_move_line__display_name
-#: model:ir.model.fields,field_description:sale_mrp.field_stock_rule__display_name
-#: model:ir.model.fields,field_description:sale_mrp.field_stock_warehouse_orderpoint__display_name
-msgid "Display Name"
-msgstr "Име за показване"
-
-#. module: sale_mrp
-#: model:ir.model.fields,field_description:sale_mrp.field_account_move_line__id
-#: model:ir.model.fields,field_description:sale_mrp.field_mrp_bom__id
-#: model:ir.model.fields,field_description:sale_mrp.field_mrp_production__id
-#: model:ir.model.fields,field_description:sale_mrp.field_sale_order__id
-#: model:ir.model.fields,field_description:sale_mrp.field_sale_order_line__id
-#: model:ir.model.fields,field_description:sale_mrp.field_stock_move__id
-#: model:ir.model.fields,field_description:sale_mrp.field_stock_move_line__id
-#: model:ir.model.fields,field_description:sale_mrp.field_stock_rule__id
-#: model:ir.model.fields,field_description:sale_mrp.field_stock_warehouse_orderpoint__id
-msgid "ID"
-msgstr "Номер (ID)"
-
-#. module: sale_mrp
 #: model:ir.model,name:sale_mrp.model_account_move_line
 msgid "Journal Item"
-msgstr "Счетоводна Операция"
-
-#. module: sale_mrp
-#: model_terms:ir.ui.view,arch_db:sale_mrp.sale_order_form_mrp
-msgid "Manufacturing"
-msgstr "Производство"
+msgstr "Счетоводна операция"
 
 #. module: sale_mrp
 #: model:ir.model,name:sale_mrp.model_mrp_production
 msgid "Manufacturing Order"
-msgstr "Производствена поръчка"
+msgstr "Производствена поръчка "
 
 #. module: sale_mrp
 #. odoo-python
 #: code:addons/sale_mrp/models/sale_order.py:0
 msgid "Manufacturing Orders Generated by %s"
-msgstr "Производствени нареждания, генерирани от %s"
+msgstr ""
 
 #. module: sale_mrp
 #: model:ir.model.fields,field_description:sale_mrp.field_sale_order__mrp_production_ids
 msgid "Manufacturing orders associated with this sales order."
-msgstr "Производствени поръчки, свързани с тази поръчка за продажба."
-
-#. module: sale_mrp
-#: model:ir.model,name:sale_mrp.model_stock_warehouse_orderpoint
-msgid "Minimum Inventory Rule"
-msgstr "Правило за минимална наличност"
+msgstr ""
 
 #. module: sale_mrp
 #: model:ir.model.fields,field_description:sale_mrp.field_mrp_production__sale_line_id
 msgid "Origin sale order line"
-msgstr "Изходен ред на поръчка за продажба"
+msgstr ""
 
 #. module: sale_mrp
 #: model:ir.model,name:sale_mrp.model_stock_move_line
 msgid "Product Moves (Stock Move Line)"
-msgstr "Движения на продукти (ред за преместване на запаси)"
+msgstr "Движения на продукт (Ред от стоково движение)"
 
 #. module: sale_mrp
 #: model:ir.model,name:sale_mrp.model_sale_order
@@ -170,17 +134,9 @@ msgstr "Ред на поръчка за продажби"
 #. odoo-python
 #: code:addons/sale_mrp/models/mrp_production.py:0
 msgid "Sources Sale Orders of %s"
-msgstr "Източва поръчки за продажба на %s"
-
-#. module: sale_mrp
-#: model:ir.model,name:sale_mrp.model_stock_move
-msgid "Stock Move"
-msgstr "Движение в склада"
+msgstr ""
 
 #. module: sale_mrp
 #: model:ir.model,name:sale_mrp.model_stock_rule
 msgid "Stock Rule"
-msgstr "Правило за наличност"
-
-#~ msgid "Production Order"
-#~ msgstr "Производствена поръчка"
+msgstr "Правило зс наличност"

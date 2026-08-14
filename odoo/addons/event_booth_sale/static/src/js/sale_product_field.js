@@ -1,49 +1,47 @@
-import { SaleOrderLineProductField } from "@sale/js/sale_product_field";
+/** @odoo-module **/
+
+import { SaleOrderLineProductField } from '@sale/js/sale_product_field';
 import { x2ManyCommands } from "@web/core/orm_service";
-import { useService } from "@web/core/utils/hooks";
 import { patch } from "@web/core/utils/patch";
 
 
 patch(SaleOrderLineProductField.prototype, {
-    setup() {
-        super.setup();
-        this.action = useService("action");
-    },
-    get isEventBooth() {
-        return this.props.record.data.service_tracking === "event_booth";
-    },
-    get hasConfigurationButton() {
-        return super.hasConfigurationButton || this.isEventBooth;
-    },
-    onEditConfiguration() {
-        if (this.isEventBooth) {
-            this._openEventBoothConfigurator(true);
-        } else {
-            super.onEditConfiguration();
-        }
-    },
-    _onProductUpdate() {
-        if (this.isEventBooth) {
+
+    async _onProductUpdate() {
+        super._onProductUpdate(...arguments);
+        if (this.props.record.data.service_tracking === 'event_booth') {
             this._openEventBoothConfigurator(false);
-        } else {
-            super._onProductUpdate();
         }
     },
+
+    _editLineConfiguration() {
+        super._editLineConfiguration(...arguments);
+        if (this.props.record.data.service_tracking === 'event_booth') {
+            this._openEventBoothConfigurator(true);
+        }
+    },
+
+    get isConfigurableLine() {
+        return super.isConfigurableLine || this.props.record.data.service_tracking === 'event_booth';
+    },
+
     async _openEventBoothConfigurator(edit) {
-        const actionContext = {
-            default_product_id: this.props.record.data.product_id.id,
+        let actionContext = {
+            default_product_id: this.props.record.data.product_id[0],
         };
         if (edit) {
             const recordData = this.props.record.data;
             if (recordData.event_id) {
-                actionContext.default_event_id = recordData.event_id.id;
+                actionContext.default_event_id = recordData.event_id[0];
             }
             if (recordData.event_booth_category_id) {
-                actionContext.default_event_booth_category_id = recordData.event_booth_category_id.id;
+                actionContext.default_event_booth_category_id = recordData.event_booth_category_id[0];
             }
             if (recordData.event_booth_pending_ids) {
-                actionContext.default_event_booth_ids = recordData.event_booth_pending_ids.currentIds.map(
-                    (resId) => [4, resId]
+                actionContext.default_event_booth_ids = recordData.event_booth_pending_ids.records.map(
+                    record => {
+                        return [4, record.resId];
+                    }
                 );
             }
         }
@@ -52,7 +50,7 @@ patch(SaleOrderLineProductField.prototype, {
             {
                 additionalContext: actionContext,
                 onClose: async (closeInfo) => {
-                    if (!closeInfo?.eventBoothConfiguration || closeInfo.special || closeInfo.dismiss) {
+                    if (!closeInfo || closeInfo.special) {
                         // wizard popup closed or 'Cancel' button triggered
                         if (!this.props.record.data.event_ticket_id) {
                             // remove product if event configuration was cancelled.

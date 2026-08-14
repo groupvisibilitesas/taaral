@@ -8,18 +8,11 @@ import { EvaluationError, PivotRuntimeDefinition, registries, helpers } from "@o
 import { LOADING_ERROR } from "@spreadsheet/data_sources/data_source";
 import { omit } from "@web/core/utils/objects";
 import { OdooPivotLoader } from "./odoo_pivot_loader";
-import { getRelationalFieldDefinition } from "./pivot_helpers";
 
 const { pivotRegistry, supportedPivotPositionalFormulaRegistry, pivotNormalizationValueRegistry } =
     registries;
-const {
-    pivotTimeAdapter,
-    toString,
-    areDomainArgsFieldsValid,
-    toNormalizedPivotValue,
-    deepEquals,
-    createCustomFields,
-} = helpers;
+const { pivotTimeAdapter, toString, areDomainArgsFieldsValid, toNormalizedPivotValue, deepEquals } =
+    helpers;
 
 /**
  * @typedef {import("@odoo/o-spreadsheet").FunctionResultObject} FunctionResultObject
@@ -31,6 +24,7 @@ const {
  * @typedef {import("@spreadsheet").OdooPivot<OdooPivotRuntimeDefinition>} IPivot
  * @typedef {import("@spreadsheet").OdooFields} OdooFields
  * @typedef {import("@spreadsheet").OdooPivotCoreDefinition} OdooPivotCoreDefinition
+ * @typedef {import("@spreadsheet").SortedColumn} SortedColumn
  * @typedef {import("@spreadsheet").OdooGetters} OdooGetters
  * @typedef {import("@spreadsheet/data_sources/odoo_data_provider").OdooDataProvider} OdooDataProvider
  */
@@ -94,20 +88,14 @@ export class OdooPivot {
         this.context = omit(nextDefinition.context, ...Object.keys(user.context));
         const actualDefinition = this.coreDefinition;
         this.coreDefinition = nextDefinition;
-        if (!deepEquals(actualDefinition.sortedColumn, nextDefinition.sortedColumn)) {
-            this.model.updateSortColumn(nextDefinition.sortedColumn);
-        }
-        if (!deepEquals(actualDefinition.collapsedDomains, nextDefinition.collapsedDomains)) {
-            this.model.updateCollapsedDomains(nextDefinition.collapsedDomains);
-        }
         if (
             deepEquals(actualDefinition.columns, nextDefinition.columns) &&
             deepEquals(actualDefinition.rows, nextDefinition.rows) &&
+            deepEquals(actualDefinition.sortedColumn, nextDefinition.sortedColumn) &&
             deepEquals(actualDefinition.domain, nextDefinition.domain) &&
             deepEquals(actualDefinition.context, nextDefinition.context) &&
             deepEquals(actualDefinition.actionXmlId, nextDefinition.actionXmlId) &&
-            deepEquals(actualDefinition.model, nextDefinition.model) &&
-            deepEquals(actualDefinition.customFields, nextDefinition.customFields)
+            deepEquals(actualDefinition.model, nextDefinition.model)
         ) {
             if (deepEquals(actualDefinition.measures, nextDefinition.measures)) {
                 // Nothing change for the table structure, no need to reload the data
@@ -164,7 +152,6 @@ export class OdooPivot {
 
     async loadMetadata() {
         this._fields = await this.loader.getFields(this.coreDefinition.model);
-        await this._loadRelationalFieldsDefinitions();
         await this._loadPropertiesDefinitions();
     }
 
@@ -173,7 +160,7 @@ export class OdooPivot {
     }
 
     getFields() {
-        return { ...this._fields, ...createCustomFields(this.coreDefinition, this._fields) };
+        return this._fields || {};
     }
 
     /**
@@ -247,10 +234,6 @@ export class OdooPivot {
             const { dimensionWithGranularity, isPositional, field } =
                 this.parseGroupField(nameWithGranularity);
             if (isPositional) {
-                const table = this.getExpandedTableStructure();
-                // @ts-ignore: That's a VERY ugly hack to make sure the table is computed and sorted (which is needed for
-                // positional arguments), calling a method from the CHILD class PivotPresentationLayer...
-                this.sortTableStructure(table);
                 const previousDomain = [
                     ...domain,
                     // Need to keep the "#"
@@ -354,14 +337,9 @@ export class OdooPivot {
         return this.model.getLastPivotGroupValue(domain);
     }
 
-    getCollapsedTableStructure() {
+    getTableStructure() {
         this.assertIsValid();
-        return this.model.getCollapsedTableStructure();
-    }
-
-    getExpandedTableStructure() {
-        this.assertIsValid();
-        return this.model.getExpandedTableStructure();
+        return this.model.getTableStructure();
     }
 
     /**
@@ -379,11 +357,7 @@ export class OdooPivot {
             case "float":
                 return "#,##0.00";
             case "monetary":
-                try {
-                    return this.getters.getCompanyCurrencyFormat() || "#,##0.00";
-                } catch {
-                    return "#,##0.00";
-                }
+                return this.getters.getCompanyCurrencyFormat() || "#,##0.00";
             case "date":
             case "datetime": {
                 const timeAdapter = pivotTimeAdapter(granularity);
@@ -446,9 +420,7 @@ export class OdooPivot {
      * @returns {{ value: string | number | boolean, label: string }[]}
      */
     getPossibleFieldValues(dimension) {
-        if (this.assertIsValid({ throwOnError: false })) {
-            return [];
-        }
+        this.assertIsValid();
         return this.model.getPossibleFieldValues(dimension);
     }
 
@@ -485,25 +457,6 @@ export class OdooPivot {
         return this.loader.assertIsValid({ throwOnError });
     }
 
-    async _loadRelationalFieldsDefinitions() {
-        // Relational dimensions are fields with a relation to another model
-        const related = this.coreDefinition.rows
-            .concat(this.coreDefinition.columns)
-            .filter(
-                (dimension) =>
-                    dimension.fieldName.includes(".") && !(dimension.fieldName in this._fields)
-            );
-        await Promise.all(
-            related.map((dimension) =>
-                getRelationalFieldDefinition(
-                    this.coreDefinition.model,
-                    dimension.fieldName,
-                    this.odooDataProvider.fieldService
-                ).then((definition) => (this._fields[dimension.fieldName] = definition))
-            )
-        );
-    }
-
     /**
      * @private
      */
@@ -512,11 +465,7 @@ export class OdooPivot {
         const orm = this.odooDataProvider.orm;
         const properties = this.coreDefinition.rows
             .concat(this.coreDefinition.columns)
-            .filter(
-                (dimension) =>
-                    dimension.fieldName.includes(".") &&
-                    this._fields[dimension.fieldName.split(".")[0]].type === "property"
-            );
+            .filter((dimension) => dimension.fieldName.includes("."));
         await Promise.all(
             properties.map((dimension) =>
                 orm
@@ -591,6 +540,17 @@ export class OdooPivotRuntimeDefinition extends PivotRuntimeDefinition {
         this._context = definition.context;
         /** @type {string} */
         this._model = definition.model;
+        /** @type {SortedColumn} */
+        this._sortedColumn = definition.sortedColumn;
+
+        // Ensure that the sorted column is a measure
+        // and if not, drop it.
+        // This situation can happen because of a bug in a previous version
+        const measureNames = definition.measures.map((field) => field.fieldName);
+        if (definition.sortedColumn && !measureNames.includes(definition.sortedColumn.measure)) {
+            this._sortedColumn = undefined;
+        }
+
         for (const dimension of this.columns.concat(this.rows)) {
             if (
                 (dimension.type === "date" || dimension.type === "datetime") &&
@@ -600,6 +560,10 @@ export class OdooPivotRuntimeDefinition extends PivotRuntimeDefinition {
                 dimension.nameWithGranularity = `${dimension.fieldName}:month`;
             }
         }
+    }
+
+    get sortedColumn() {
+        return this._sortedColumn;
     }
 
     createPivotDimension(fields, dimension) {
@@ -639,6 +603,7 @@ export class OdooPivotRuntimeDefinition extends PivotRuntimeDefinition {
                 orderBy: [],
             },
             metaData: {
+                sortedColumn: this.sortedColumn,
                 activeMeasures: this.measures.filter((m) => !m.computedBy).map((m) => m.fieldName),
                 resModel: this.model,
                 colGroupBys: this.columns.map((c) => c.nameWithGranularity),
@@ -647,10 +612,6 @@ export class OdooPivotRuntimeDefinition extends PivotRuntimeDefinition {
                 fields,
             },
         };
-    }
-
-    get invalidAggregatorsForCustomField() {
-        return ["count_distinct"];
     }
 }
 
@@ -679,12 +640,7 @@ pivotRegistry.add("ODOO", {
     isMeasureCandidate: (field) =>
         ((MEASURES_TYPES.includes(field.type) && field.aggregator) || field.type === "many2one") &&
         field.name !== "id" &&
-        !field.name.includes(".") && // relational field path are not supported as measures (e.g. 'company_id.partner_id')
         field.store,
-    canHaveCustomGroup: (field) =>
-        field.groupable &&
-        !field.isCustomField &&
-        ["many2one", "char", "one2many", "many2many", "selection"].includes(field.type),
     isGroupable: (field) => field.groupable && pivotNormalizationValueRegistry.contains(field.type),
 });
 

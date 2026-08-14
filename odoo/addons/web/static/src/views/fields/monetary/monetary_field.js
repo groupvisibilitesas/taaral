@@ -18,12 +18,11 @@ export class MonetaryField extends Component {
         inputType: { type: String, optional: true },
         useFieldDigits: { type: Boolean, optional: true },
         hideSymbol: { type: Boolean, optional: true },
-        trailingZeros: { type: Boolean, optional: true },
+        placeholder: { type: String, optional: true },
     };
     static defaultProps = {
         hideSymbol: false,
         inputType: "text",
-        trailingZeros: true,
     };
 
     setup() {
@@ -42,7 +41,7 @@ export class MonetaryField extends Component {
         return {
             getValue: () => this.formattedValue,
             refName: "numpadDecimal",
-            parse: (v) => parseMonetary(v, { allowOperation: true }),
+            parse: parseMonetary,
         };
     }
 
@@ -52,7 +51,7 @@ export class MonetaryField extends Component {
             this.props.record.fields[this.props.name].currency_field ||
             "currency_id";
         const currency = this.props.record.data[currencyField];
-        return currency && currency.id;
+        return currency && currency[0];
     }
     get currency() {
         if (!isNaN(this.currencyId)) {
@@ -88,7 +87,6 @@ export class MonetaryField extends Component {
             minDigits: this.props.useFieldDigits && this.props.record.fields[this.props.name].min_display_digits,
             currencyId: this.currencyId,
             noSymbol: !this.props.readonly || this.props.hideSymbol,
-            trailingZeros: this.props.trailingZeros,
         });
     }
 
@@ -111,22 +109,15 @@ export const monetaryField = {
             type: "field",
             availableTypes: ["many2one"],
         },
-        {
-            label: _t("Hide trailing zeros"),
-            name: "hide_trailing_zeros",
-            type: "boolean",
-            help: _t("Hide zeros to the right of the last non-zero digit, e.g. 1.20 becomes 1.2"),
-        },
     ],
-    supportedTypes: ["monetary", "float", "integer"],
+    supportedTypes: ["monetary", "float"],
     displayName: _t("Monetary"),
-    isEmpty: (record, fieldName) => record.data[fieldName] === false,
     extractProps: ({ attrs, options }) => ({
         currencyField: options.currency_field,
         inputType: attrs.type,
         useFieldDigits: options.field_digits,
         hideSymbol: options.no_symbol,
-        trailingZeros: !options.hide_trailing_zeros,
+        placeholder: attrs.placeholder,
     }),
 };
 

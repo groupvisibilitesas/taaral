@@ -48,6 +48,5 @@
             'test_themes/static/src/systray_items/*',
         ],
     },
-    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 }

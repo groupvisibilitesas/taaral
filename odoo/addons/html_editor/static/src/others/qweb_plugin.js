@@ -3,7 +3,7 @@ import { closestElement, selectElements } from "@html_editor/utils/dom_traversal
 import { leftPos, rightPos } from "@html_editor/utils/position";
 import { QWebPicker } from "./qweb_picker";
 import { isElement, PROTECTED_QWEB_SELECTOR } from "@html_editor/utils/dom_info";
-import { withSequence } from "@html_editor/utils/resource";
+import { normalizeCursorPosition } from "@html_editor/utils/selection";
 
 const isUnsplittableQWebElement = (node) =>
     isElement(node) &&
@@ -20,24 +20,13 @@ const isUnsplittableQWebElement = (node) =>
             "t-raw",
         ].some((attr) => node.getAttribute(attr)));
 
-const QWEB_DATA_ATTRIBUTES = [
-    "data-oe-t-group",
-    "data-oe-t-inline",
-    "data-oe-t-selectable",
-    "data-oe-t-group-active",
-];
-const dataAttributesSelector = QWEB_DATA_ATTRIBUTES.map((attr) => `[${attr}]`).join(", ");
-
-export const isUnremovableQWebElement = (node) =>
-    node.getAttribute?.("t-set") || node.getAttribute?.("t-call");
-
 export class QWebPlugin extends Plugin {
     static id = "qweb";
     static dependencies = ["overlay", "protectedNode", "selection"];
-    /** @type {import("plugins").EditorResources} */
     resources = {
         /** Handlers */
-        selectionchange_handlers: withSequence(8, this.onSelectionChange.bind(this)),
+        selectionchange_handlers: this.onSelectionChange.bind(this),
+        clean_handlers: this.clearDataAttributes.bind(this),
         clean_for_save_handlers: ({ root }) => {
             this.clearDataAttributes(root);
             for (const element of root.querySelectorAll(PROTECTED_QWEB_SELECTOR)) {
@@ -45,14 +34,12 @@ export class QWebPlugin extends Plugin {
                 delete element.dataset.oeProtected;
             }
         },
-        normalize_handlers: withSequence(0, this.normalize.bind(this)),
+        normalize_handlers: this.normalize.bind(this),
 
-        system_attributes: QWEB_DATA_ATTRIBUTES,
-        unremovable_node_predicates: isUnremovableQWebElement,
+        savable_mutation_record_predicates: this.isMutationRecordSavable.bind(this),
+        unremovable_node_predicates: (node) =>
+            node.getAttribute?.("t-set") || node.getAttribute?.("t-call"),
         unsplittable_node_predicates: isUnsplittableQWebElement,
-        clipboard_content_processors: this.clearDataAttributes.bind(this),
-        legit_empty_link_predicates: (linkEl) =>
-            linkEl.getAttributeNames().some((name) => name.startsWith("t-")),
     };
 
     setup() {
@@ -62,6 +49,21 @@ export class QWebPlugin extends Plugin {
         });
         this.addDomListener(this.editable, "click", this.onClick);
         this.groupIndex = 0;
+    }
+    isMutationRecordSavable(mutationRecord) {
+        if (mutationRecord.type === "attributes") {
+            if (
+                [
+                    "data-oe-t-group",
+                    "data-oe-t-inline",
+                    "data-oe-t-selectable",
+                    "data-oe-t-group-active",
+                ].includes(mutationRecord.attributeName)
+            ) {
+                return false;
+            }
+        }
+        return true;
     }
 
     isValidTargetForDomListener(ev) {
@@ -101,19 +103,17 @@ export class QWebPlugin extends Plugin {
             } else {
                 return (
                     child.nodeType !== Node.ELEMENT_NODE ||
-                    this.window.getComputedStyle(child).display === "inline"
+                    this.document.defaultView.getComputedStyle(child).display === "inline"
                 );
             }
         });
     }
 
     normalizeInline(root) {
-        const targets = [...root.querySelectorAll("t")];
-        if (root.matches("t")) {
-            targets.unshift(root);
-        }
-        for (const el of targets.filter((el) => this.checkAllInline(el))) {
-            el.setAttribute("data-oe-t-inline", "true");
+        for (const el of selectElements(root, "t")) {
+            if (this.checkAllInline(el)) {
+                el.setAttribute("data-oe-t-inline", "true");
+            }
         }
     }
 
@@ -158,14 +158,20 @@ export class QWebPlugin extends Plugin {
                 closestElement(selection.anchorNode, PROTECTED_QWEB_SELECTOR);
             if (qwebNode && this.editable.contains(qwebNode)) {
                 // select the whole qweb node
-                const [anchorNode, anchorOffset] = leftPos(qwebNode);
-                const [focusNode, focusOffset] = rightPos(qwebNode);
-                this.dependencies.selection.setSelection({
-                    anchorNode,
-                    anchorOffset,
-                    focusNode,
-                    focusOffset,
-                });
+                const [anchorNode, anchorOffset] = normalizeCursorPosition(
+                    ...leftPos(qwebNode),
+                    "left"
+                );
+                const [focusNode, focusOffset] = normalizeCursorPosition(...rightPos(qwebNode));
+                this.dependencies.selection.setSelection(
+                    {
+                        anchorNode,
+                        anchorOffset,
+                        focusNode,
+                        focusOffset,
+                    },
+                    { normalize: false }
+                );
             }
         }
         const targetNode = ev.target;
@@ -237,16 +243,16 @@ export class QWebPlugin extends Plugin {
         this.selectedNode = node;
         this.picker.close();
         this.selectNode(node);
-        // Force Chrome to clear the selection.
-        // Without this, Chrome's optimization may skip the 'selectionchange' event
-        // if the new node is structurally identical to the previous one
-        const selection = this.document.getSelection();
-        selection.removeAllRanges();
     }
 
     clearDataAttributes(root) {
-        for (const node of root.querySelectorAll(dataAttributesSelector)) {
-            QWEB_DATA_ATTRIBUTES.forEach((attr) => node.removeAttribute(attr));
+        for (const node of root.querySelectorAll(
+            "[data-oe-t-group], [data-oe-t-inline], [data-oe-t-selectable], [data-oe-t-group-active]"
+        )) {
+            node.removeAttribute("data-oe-t-group-active");
+            node.removeAttribute("data-oe-t-group");
+            node.removeAttribute("data-oe-t-inline");
+            node.removeAttribute("data-oe-t-selectable");
         }
     }
 }

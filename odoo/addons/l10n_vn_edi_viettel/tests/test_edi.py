@@ -535,7 +535,6 @@ class TestVNEDI(AccountTestInvoicingCommon):
         Requires the 'point_of_sale' module to be installed.
         """
         self.ensure_installed('pos_discount')
-        self.env.user.group_ids += self.env.ref('point_of_sale.group_pos_manager')
         discount_product = self.env['product.product'].create({
             'name': 'POS Discount Product',
             'type': 'service',
@@ -591,7 +590,6 @@ class TestVNEDI(AccountTestInvoicingCommon):
         Requires the 'sale' module to be installed.
         """
         self.ensure_installed('sale')
-        self.env.user.group_ids += self.env.ref('sales_team.group_sale_salesman')
         sale_order = self.env['sale.order'].create({
             'partner_id': self.partner_a.id,
             'order_line': [Command.create({
@@ -635,7 +633,6 @@ class TestVNEDI(AccountTestInvoicingCommon):
         Requires the 'sale_loyalty' module.
         """
         self.ensure_installed('sale_loyalty')
-        self.env.user.group_ids += self.env.ref('sales_team.group_sale_manager')
         program = self.env['loyalty.program'].create({
             'name': '10% Discount',
             'program_type': 'coupons',
@@ -656,7 +653,7 @@ class TestVNEDI(AccountTestInvoicingCommon):
                 'product_id': self.product_a.id,
                 'product_uom_qty': 1,
                 'price_unit': 1000.0,
-                'tax_ids': [Command.set(self.tax_sale_a.ids)],
+                'tax_id': [Command.set(self.tax_sale_a.ids)],
             })],
         })
 

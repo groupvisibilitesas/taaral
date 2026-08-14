@@ -1,6 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import SUPERUSER_ID, _, api, fields, models
+from odoo import api, fields, models, SUPERUSER_ID, _
 
 
 class PaymentTransaction(models.Model):
@@ -66,7 +66,7 @@ class PaymentTransaction(models.Model):
     #=== BUSINESS METHODS - PAYMENT FLOW ===#
 
     @api.model
-    def _compute_reference_prefix(self, separator, **values):
+    def _compute_reference_prefix(self, provider_code, separator, **values):
         """ Compute the reference prefix from the transaction values.
 
         If the `values` parameter has an entry with 'invoice_ids' as key and a list of (4, id, O) or
@@ -75,6 +75,7 @@ class PaymentTransaction(models.Model):
 
         Note: This method should be called in sudo mode to give access to documents (INV, SO, ...).
 
+        :param str provider_code: The code of the provider handling the transaction
         :param str separator: The custom separator used to separate data references
         :param dict values: The transaction values used to compute the reference prefix. It should
                             have the structure {'invoice_ids': [(X2M command), ...], ...}.
@@ -91,7 +92,7 @@ class PaymentTransaction(models.Model):
                 if name := values.get('name_next_installment'):
                     prefix = name
                 return prefix
-        return super()._compute_reference_prefix(separator, **values)
+        return super()._compute_reference_prefix(provider_code, separator, **values)
 
     #=== BUSINESS METHODS - POST-PROCESSING ===#
 
@@ -122,8 +123,9 @@ class PaymentTransaction(models.Model):
 
             if tx.payment_id:
                 message = _(
-                    "The payment related to transaction %(ref)s has been posted: %(link)s",
-                    ref=tx._get_html_link(),
+                    "The payment related to the transaction with reference %(ref)s has been"
+                    " posted: %(link)s",
+                    ref=tx.reference,
                     link=tx.payment_id._get_html_link(),
                 )
                 tx._log_message_on_linked_documents(message)
@@ -143,7 +145,10 @@ class PaymentTransaction(models.Model):
         """
         self.ensure_one()
 
-        reference = f'{self.reference} - {self.provider_reference or ""}'
+        reference = (f'{self.reference} - '
+                     f'{self.partner_id.display_name or ""} - '
+                     f'{self.provider_reference or ""}'
+                    )
 
         payment_method_line = self.provider_id.journal_id.inbound_payment_method_line_ids\
             .filtered(lambda l: l.payment_provider_id == self.provider_id)

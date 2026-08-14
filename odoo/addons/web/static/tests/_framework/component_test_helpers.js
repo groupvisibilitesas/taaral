@@ -1,15 +1,11 @@
 import { after, destroy, getFixture, queryFirst, queryOne } from "@odoo/hoot";
 import { App, Component, xml } from "@odoo/owl";
-import { appTranslateFn } from "@web/core/l10n/translation";
+import { _t } from "@web/core/l10n/translation";
 import { MainComponentsContainer } from "@web/core/main_components_container";
 import { getPopoverForTarget } from "@web/core/popover/popover";
-import { getTemplate as defaultGetTemplate } from "@web/core/templates";
+import { getTemplate as getTemplateFn } from "@web/core/templates";
 import { isIterable } from "@web/core/utils/arrays";
 import { patch } from "@web/core/utils/patch";
-import {
-    customDirectives as defaultCustomDirectives,
-    globalValues as defaultGlobalValues,
-} from "@web/env";
 import { getMockEnv, makeMockEnv } from "./env_test_helpers";
 
 /**
@@ -77,9 +73,6 @@ export function findComponent(parent, predicate) {
  * @returns {HTMLElement | undefined}
  */
 export function getDropdownMenu(togglerSelector) {
-    if (getMockEnv().isSmall) {
-        return queryFirst(".o-dropdown--menu", { eq: -1 });
-    }
     let el = queryFirst(togglerSelector);
     if (el && !el.classList.contains("o-dropdown")) {
         el = el.querySelector(".o-dropdown");
@@ -115,17 +108,17 @@ export async function mountWithCleanup(ComponentClass, options) {
     const {
         componentEnv,
         containerEnv,
-        customDirectives = defaultCustomDirectives,
+        customDirectives,
         env,
         fixtureClassName = "o_web_client",
-        getTemplate = defaultGetTemplate,
-        globalValues = defaultGlobalValues,
+        getTemplate = getTemplateFn,
+        globalValues,
         noMainContainer,
         props,
         target,
         templates,
         translatableAttributes,
-        translateFn = appTranslateFn,
+        translateFn = _t,
     } = options || {};
 
     // Common component configuration
@@ -181,33 +174,4 @@ export async function mountWithCleanup(ComponentClass, options) {
     }
 
     return component;
-}
-
-export async function waitUntilIdle(apps = [...App.apps]) {
-    const isOwlIdle = () => apps.every((app) => app.scheduler.tasks.size === 0);
-
-    if (isOwlIdle()) {
-        return Promise.resolve();
-    }
-
-    return new Promise((resolve) => {
-        function cleanup() {
-            for (const cb of unpatch) {
-                cb();
-            }
-            unpatch = [];
-        }
-        after(cleanup);
-        let unpatch = apps.map((app) =>
-            patch(app.scheduler, {
-                processTasks() {
-                    super.processTasks();
-                    if (isOwlIdle()) {
-                        cleanup();
-                        resolve();
-                    }
-                },
-            })
-        );
-    });
 }
