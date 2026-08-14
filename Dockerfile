@@ -20,8 +20,8 @@ COPY --chown=odoo:odoo odoo.conf /etc/odoo/odoo.conf
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-EXPOSE 8401
-EXPOSE 8402
+EXPOSE 9001
+EXPOSE 9002
 
 VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
 
