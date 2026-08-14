@@ -33,7 +33,7 @@ EXPOSE 8402
 
 VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
 
-USER taaral
+USER odoo
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["odoo", "--config=/etc/odoo/odoo.conf"]
