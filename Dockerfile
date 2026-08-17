@@ -24,20 +24,21 @@ RUN rm -rf /mnt/extra-addons/Dockerfile \
 # Configuration Odoo
 COPY --chown=odoo:odoo odoo.conf /etc/odoo/odoo.conf
 
-# Entrypoint corrigé (fait la substitution des env vars dans le .conf)
+# Entrypoint corrigé
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # Créer le répertoire de logs (absent dans certaines images Odoo 19)
 RUN mkdir -p /var/log/odoo && chown odoo:odoo /var/log/odoo
-RUN chown odoo:odoo /etc/odoo
 
 EXPOSE 8601
 EXPOSE 8602
 
 VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
 
-USER odoo
+# ✅ IMPORTANT : Rester en root pour que l'entrypoint puisse exécuter les commandes
+# L'entrypoint basculera vers 'odoo' après les opérations admin
+# (pas de USER odoo ici)
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["odoo", "--config=/etc/odoo/odoo.conf"]
