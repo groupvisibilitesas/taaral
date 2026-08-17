@@ -30,6 +30,7 @@ RUN chmod +x /entrypoint.sh
 
 # Créer le répertoire de logs (absent dans certaines images Odoo 19)
 RUN mkdir -p /var/log/odoo && chown odoo:odoo /var/log/odoo
+RUN chown odoo:odoo /etc/odoo
 
 EXPOSE 8601
 EXPOSE 8602

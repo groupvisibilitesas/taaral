@@ -1,8 +1,4 @@
 #!/bin/bash
-# ============================================================
-# Entrypoint — Projet taaral / Odoo 19
-# Fix: résout les variables d'env dans odoo.conf avant démarrage
-# ============================================================
 set -e
 
 DB_HOST="${HOST:-${DB_HOST:-localhost}}"
@@ -17,13 +13,13 @@ until pg_isready -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -q 2>/dev/null;
 done
 echo "✅ PostgreSQL prêt."
 
-# ── FIX CRITIQUE : substituer les variables dans odoo.conf ──
-# Les fichiers .conf ne font PAS d'interpolation shell.
-# On remplace les placeholders ${...} par les vraies valeurs.
-echo "🔧 Configuration de odoo.conf..."
-sed -i "s|\${DB_HOST}|${DB_HOST}|g"         /etc/odoo/odoo.conf
-sed -i "s|\${DB_USER}|${DB_USER}|g"         /etc/odoo/odoo.conf
-sed -i "s|\${DB_PASSWORD}|${DB_PASSWORD}|g" /etc/odoo/odoo.conf
+echo "🔧 Génération de odoo.conf..."
+CONF_FILE="/var/lib/odoo/odoo.conf"
+sed \
+  -e "s|\${DB_HOST}|${DB_HOST}|g" \
+  -e "s|\${DB_USER}|${DB_USER}|g" \
+  -e "s|\${DB_PASSWORD}|${DB_PASSWORD}|g" \
+  /etc/odoo/odoo.conf > "${CONF_FILE}"
 
 echo "🚀 Démarrage d'Odoo taaral..."
-exec "$@"
+exec odoo --config="${CONF_FILE}"
