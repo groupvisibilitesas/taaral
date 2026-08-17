@@ -1,13 +1,13 @@
 # ============================================================
 # Projet : taaral — Odoo 19 Community
-# Ports internes : 8401 (web) / 8402 (longpolling)
+# Ports internes : 8601 (web) / 8602 (longpolling)
 # ============================================================
 
 FROM odoo:19.0
 
 USER root
 
-# Copier les addons custom du repo vers le conteneur
+# Copier les addons custom du repo
 COPY --chown=odoo:odoo . /mnt/extra-addons/
 
 # Supprimer les fichiers de déploiement du dossier addons
@@ -24,9 +24,12 @@ RUN rm -rf /mnt/extra-addons/Dockerfile \
 # Configuration Odoo
 COPY --chown=odoo:odoo odoo.conf /etc/odoo/odoo.conf
 
-# Entrypoint personnalisé
+# Entrypoint corrigé (fait la substitution des env vars dans le .conf)
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+# Créer le répertoire de logs (absent dans certaines images Odoo 19)
+RUN mkdir -p /var/log/odoo && chown odoo:odoo /var/log/odoo
 
 EXPOSE 8601
 EXPOSE 8602
