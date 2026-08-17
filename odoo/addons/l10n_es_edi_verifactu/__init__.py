@@ -8,15 +8,9 @@ def _l10n_es_edi_verifactu_post_init_hook(env):
     for company in env['res.company'].search([('chart_template', 'like', r'es\_%'), ('parent_id', '=', False)]):
         Template = env['account.chart.template'].with_company(company)
         if company.chart_template.startswith("es_canary"):
-            tax_data = {
-                **Template._get_es_verifactu_account_tax_es_common(),
-                **Template._get_es_verifactu_account_tax_es_canary_common(),
-            }
+            tax_data = Template._get_es_verifactu_account_tax_es_canary_common()
         else:
-            tax_data = {
-                **Template._get_es_verifactu_account_tax_es_common(),
-                **Template._get_es_verifactu_account_tax_es_common_mainland(),
-            }
+            tax_data = Template._get_es_verifactu_account_tax_es_common_mainland()
         # Filter out data for non-exsting taxes; else this function will raise.
         # In case of data for a non-existing tax we would try to create that tax.
         # This would fail because we don't supply enough information in this module (just `l10n_es_applicability`).

@@ -21,5 +21,5 @@ class NemhandelResponse(models.Model):
         ],
         string='Nemhandel status',
     )
-    move_id = fields.Many2one('account.move', ondelete='cascade')
+    move_id = fields.Many2one('account.move', ondelete='cascade', index='btree_not_null')
     company_id = fields.Many2one(related='move_id.company_id')

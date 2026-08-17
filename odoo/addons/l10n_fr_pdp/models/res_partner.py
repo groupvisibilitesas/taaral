@@ -38,7 +38,7 @@ class ResPartner(models.Model):
         # Extend to rename the `peppol` option in the `invoice_sending_method` selection
         fields = super().fields_get(allfields, attributes)
         company = self.env.company
-        if not self._context.get("studio") and (company.country_code == 'FR' or company.pdp_identifier) and 'invoice_sending_method' in fields:
+        if not self.env.context.get("studio") and (company.country_code == 'FR' or company.sudo().pdp_identifier) and 'invoice_sending_method' in fields:
             field = fields['invoice_sending_method']
             if 'selection' in field:
                 field['selection'] = [('peppol', self.env._('by Approved Platform')) if option[0] == 'peppol' else option for option in field['selection']]
@@ -88,7 +88,7 @@ class ResPartner(models.Model):
 
     def _l10n_fr_pdp_get_base_identifier(self):
         self.ensure_one()
-        siret = self.siret or (self.company_registry if self.company_registry and siren_siret_re.match(self.company_registry) else '')
+        siret = self.company_registry if self.company_registry and siren_siret_re.match(self.company_registry) else ''
         siren = siret[:9]
         if len(siret) == 9:
             return 'siren', siren
@@ -102,11 +102,11 @@ class ResPartner(models.Model):
         # "Everyone" will probably have registered the SIREN on annuaire. (Even if they have a SIRET.)
         return self._l10n_fr_pdp_get_siren()
 
-    def _get_peppol_endpoint_value(self, country_code, field):
+    def _get_peppol_endpoint_value(self, country_code, field, eas):
         self.ensure_one()
-        if country_code == 'FR' and field == 'peppol_endpoint':
+        if country_code == 'FR' and field == 'peppol_endpoint' and eas == '0225':
             return self._get_suggested_pdp_identifier()
-        return super()._get_peppol_endpoint_value(country_code, field)
+        return super()._get_peppol_endpoint_value(country_code, field, eas)
 
     def _build_error_peppol_endpoint(self, eas, endpoint):
         # Extend 'account_edi_ubl_cii' for '0225' endpoint
@@ -189,10 +189,10 @@ class ResPartner(models.Model):
 
     @api.model
     @handle_demo
-    def _get_peppol_verification_state(self, peppol_endpoint, peppol_eas, invoice_edi_format):
+    def _get_peppol_verification_state(self, peppol_endpoint, peppol_eas, invoice_edi_format, process_type='billing'):
         proxy_type, edi_identification = self._get_peppol_proxy_identification_info(peppol_eas, peppol_endpoint)
         if proxy_type != 'pdp' or self.env.company._get_peppol_proxy_type() != 'pdp':
-            return super()._get_peppol_verification_state(peppol_endpoint, peppol_eas, invoice_edi_format)
+            return super()._get_peppol_verification_state(peppol_endpoint, peppol_eas, invoice_edi_format, process_type=process_type)
         return self._get_pdp_annuaire_verification_state(edi_identification, invoice_edi_format)
 
     @api.model

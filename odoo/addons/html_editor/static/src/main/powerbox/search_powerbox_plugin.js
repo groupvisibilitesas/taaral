@@ -12,6 +12,7 @@ import { closestElement } from "@html_editor/utils/dom_traversal";
 export class SearchPowerboxPlugin extends Plugin {
     static id = "searchPowerbox";
     static dependencies = ["powerbox", "selection", "history", "input"];
+    /** @type {import("plugins").EditorResources} */
     resources = {
         beforeinput_handlers: this.onBeforeInput.bind(this),
         input_handlers: this.onInput.bind(this),
@@ -30,8 +31,8 @@ export class SearchPowerboxPlugin extends Plugin {
         },
         power_buttons: withSequence(100, {
             commandId: "openSearchPowerbox",
-            title: _t("More options"),
-            icon: "fa-ellipsis-v",
+            description: _t("More options"),
+            icon: "oi-ellipsis-v",
         }),
     };
     setup() {
@@ -56,6 +57,7 @@ export class SearchPowerboxPlugin extends Plugin {
         }
     }
     onInput(ev) {
+        this.searchTerm = undefined;
         if (ev.data === "/") {
             this.openSearchPowerbox();
         } else {
@@ -87,6 +89,7 @@ export class SearchPowerboxPlugin extends Plugin {
             this.shouldUpdate = true;
             return;
         }
+        this.searchTerm = searchTerm;
         this.dependencies.powerbox.updatePowerbox(commands);
     }
     /**
@@ -127,7 +130,10 @@ export class SearchPowerboxPlugin extends Plugin {
         this.dependencies.powerbox.openPowerbox({
             commands: this.enabledCommands,
             categories: this.categories,
-            onApplyCommand: this.historySavePointRestore,
+            onApplyCommand: (command, context) => {
+                context.searchTerm = this.searchTerm;
+                this.historySavePointRestore?.();
+            },
             onClose: () => {
                 this.shouldUpdate = false;
                 this.powerButtonAnchorEl = false;
@@ -145,7 +151,10 @@ export class SearchPowerboxPlugin extends Plugin {
         this.dependencies.powerbox.openPowerbox({
             commands: this.enabledCommands,
             categories: this.categories,
-            onApplyCommand: this.historySavePointRestore,
+            onApplyCommand: (command, context) => {
+                context.searchTerm = this.searchTerm;
+                this.historySavePointRestore?.();
+            },
             onClose: () => {
                 this.shouldUpdate = false;
             },

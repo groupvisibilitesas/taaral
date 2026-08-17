@@ -27,11 +27,15 @@ class TestSelfOrderSettings(SelfOrderCommonTest):
             'pos_config_id': self.pos_config.id,
             'pos_self_ordering_mode': 'mobile',
         })
+
+        def get_long_url_from_short_url(url):
+            return self.env['link.tracker'].get_url_from_code(url.rstrip('/').split('/')[-1])
+
         for mode, has_table in (('table', True), ('counter', False)):
             settings.pos_self_ordering_service_mode = mode
             qr_data = settings.generate_qr_codes_page()['context']['report_action']['data']
             first_qr_url = qr_data['floors'][0]['table_rows'][0][0]['url']
             example_url = qr_data['table_example']['decoded_url']
-            validate_url(first_qr_url, has_table)
-            validate_url(example_url, has_table)
+            validate_url(get_long_url_from_short_url(first_qr_url), has_table)
+            validate_url(get_long_url_from_short_url(example_url), has_table)
             validate_qr_data(qr_data, has_table)

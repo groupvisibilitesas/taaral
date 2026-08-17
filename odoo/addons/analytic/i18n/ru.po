@@ -3,29 +3,26 @@
 # * analytic
 #
 # Translators:
-# Wil Odoo, 2024
-# Ilya Rozhkov, 2025
-# Anastasiia Koroleva, 2025
-#
-# "Anastasiia Koroleva (koan)" <koan@odoo.com>, 2025, 2026.
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# "Anastasiia Koroleva (koan)" <koan@odoo.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 17.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-29 18:36+0000\n"
-"PO-Revision-Date: 2026-02-14 09:04+0000\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-07 15:37+0000\n"
 "Last-Translator: \"Anastasiia Koroleva (koan)\" <koan@odoo.com>\n"
-"Language-Team: Russian <https://translate.odoo.com/projects/odoo-18/analytic/"
+"Language-Team: Russian <https://translate.odoo.com/projects/odoo-19/analytic/"
 "ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=4; plural="
-"(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 "
-": n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
-"X-Generator: Weblate 5.14.3\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: analytic
 #. odoo-python
@@ -379,16 +376,6 @@ msgid "Config Settings"
 msgstr "Параметры конфигурации"
 
 #. module: analytic
-#: model:ir.model.fields,help:analytic.field_account_analytic_line__product_uom_category_id
-msgid ""
-"Conversion between Units of Measure can only occur if they belong to the "
-"same category. The conversion will be made based on the ratios."
-msgstr ""
-"Пересчет между единицами измерения может произойти только в том случае, если "
-"они принадлежат к одной и той же категории. Пересчет будет осуществляться на "
-"основе коэффициентов."
-
-#. module: analytic
 #: model_terms:ir.actions.act_window,help:analytic.account_analytic_line_action
 #: model_terms:ir.actions.act_window,help:analytic.account_analytic_line_action_entries
 msgid ""
@@ -488,6 +475,10 @@ msgstr "Отключить сохранение"
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__display_name
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__display_name
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__display_name
+#: model:ir.model.fields,field_description:analytic.field_analytic_mixin__display_name
+#: model:ir.model.fields,field_description:analytic.field_analytic_plan_fields_mixin__display_name
+#: model:ir.model.fields,field_description:analytic.field_ir_config_parameter__display_name
+#: model:ir.model.fields,field_description:analytic.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr "Отображаемое имя"
 
@@ -512,6 +503,12 @@ msgstr "Домен"
 #: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
 msgid "Don't update"
 msgstr "Не обновлять"
+
+#. module: analytic
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+msgid "Dynamic Placeholder"
+msgstr "Динамический держатель"
 
 #. module: analytic
 #: model:account.analytic.account,name:analytic.analytic_rd_finance
@@ -540,12 +537,6 @@ msgid "Gross Margin"
 msgstr "Валовая маржа"
 
 #. module: analytic
-#: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_account_search
-#: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_line_filter
-msgid "Group By..."
-msgstr "Группировать По…"
-
-#. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__has_message
 msgid "Has Message"
 msgstr "Есть сообщение"
@@ -561,6 +552,10 @@ msgstr "HR"
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__id
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__id
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__id
+#: model:ir.model.fields,field_description:analytic.field_analytic_mixin__id
+#: model:ir.model.fields,field_description:analytic.field_analytic_plan_fields_mixin__id
+#: model:ir.model.fields,field_description:analytic.field_ir_config_parameter__id
+#: model:ir.model.fields,field_description:analytic.field_res_config_settings__id
 msgid "ID"
 msgstr "ID"
 
@@ -774,6 +769,7 @@ msgstr "Категория партнеров"
 #. module: analytic
 #. odoo-javascript
 #: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
 msgid "Percentage"
 msgstr "Процент"
 
@@ -925,7 +921,7 @@ msgstr "Подпланы"
 #. module: analytic
 #: model:ir.model,name:analytic.model_ir_config_parameter
 msgid "System Parameter"
-msgstr "Параметр Системы"
+msgstr "Системный параметр"
 
 #. module: analytic
 #. odoo-python
@@ -934,7 +930,7 @@ msgid ""
 "The value for %s must be the ID to a valid analytic plan that is not a "
 "subplan"
 msgstr ""
-"Значение для %s должно быть ID существующего аналитического плана, который "
+"Значением для %s должен быть ID действующего аналитического плана, который "
 "не является подпланом"
 
 #. module: analytic
@@ -955,13 +951,8 @@ msgstr "Недоступно"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__product_uom_id
-msgid "Unit of Measure"
-msgstr "Ед. изм"
-
-#. module: analytic
-#: model:ir.model.fields,field_description:analytic.field_account_analytic_line__product_uom_category_id
-msgid "UoM Category"
-msgstr "Категория UoM"
+msgid "Unit"
+msgstr "Единица"
 
 #. module: analytic
 #. odoo-javascript
@@ -973,6 +964,14 @@ msgstr "Обновить"
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__user_id
 msgid "User"
 msgstr "Пользователь"
+
+#. module: analytic
+#: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_form_view
+#: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_tree_view
+#: model_terms:ir.ui.view,arch_db:analytic.account_analytic_plan_form_view
+#: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_account_form
+msgid "Visible to all"
+msgstr "Видно всем"
 
 #. module: analytic
 #. odoo-python
@@ -988,11 +987,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/analytic/models/analytic_account.py:0
 msgid ""
-"You can't set a different company on your analytic account since there are "
-"some analytic items linked to it."
+"You can't change the company of an analytic account that already has "
+"analytic items! It's a recipe for an analytical disaster!"
 msgstr ""
-"Вы не можете установить другую компанию на свой аналитический аккаунт, "
-"поскольку с ним связаны некоторые аналитические элементы."
+"Нельзя изменить компанию для аналитического счета, по которому уже есть "
+"аналитические проводки! Это приведет к полному хаосу в аналитике!"
 
 #. module: analytic
 #. odoo-python
@@ -1018,3 +1017,33 @@ msgstr "например, проект XYZ"
 
 #~ msgid "Deco Addict"
 #~ msgstr "Deco Addict"
+
+#~ msgid ""
+#~ "Conversion between Units of Measure can only occur if they belong to the "
+#~ "same category. The conversion will be made based on the ratios."
+#~ msgstr ""
+#~ "Пересчет между единицами измерения может произойти только в том случае, "
+#~ "если они принадлежат к одной и той же категории. Пересчет будет "
+#~ "осуществляться на основе коэффициентов."
+
+#~ msgid "Group By..."
+#~ msgstr "Группировать По…"
+
+#~ msgid "Projects"
+#~ msgstr "Проекты"
+
+#~ msgid "Unit of Measure"
+#~ msgstr "Ед. изм"
+
+#~ msgid "UoM Category"
+#~ msgstr "Категория UoM"
+
+#~ msgid "View"
+#~ msgstr "Просмотр"
+
+#~ msgid ""
+#~ "You can't set a different company on your analytic account since there "
+#~ "are some analytic items linked to it."
+#~ msgstr ""
+#~ "Вы не можете установить другую компанию на свой аналитический аккаунт, "
+#~ "поскольку с ним связаны некоторые аналитические элементы."

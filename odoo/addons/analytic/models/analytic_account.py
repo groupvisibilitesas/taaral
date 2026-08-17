@@ -39,6 +39,7 @@ class AccountAnalyticAccount(models.Model):
         'account.analytic.plan',
         string='Plan',
         required=True,
+        index=True,
     )
     root_plan_id = fields.Many2one(
         'account.analytic.plan',
@@ -63,13 +64,14 @@ class AccountAnalyticAccount(models.Model):
         default=lambda self: self.env.company,
     )
 
-    # use auto_join to speed up name_search call
     partner_id = fields.Many2one(
         'res.partner',
         string='Customer',
-        auto_join=True,
+        # use bypass_access to speed up name_search call
+        bypass_search_access=True,
         tracking=True,
         check_company=True,
+        index='btree_not_null',
     )
 
     balance = fields.Monetary(
@@ -97,7 +99,7 @@ class AccountAnalyticAccount(models.Model):
                 ('auto_account_id', 'in', [account.id for account in accounts]),
                 '!', ('company_id', 'child_of', company.id),
             ], limit=1):
-                raise UserError(_("You can't set a different company on your analytic account since there are some analytic items linked to it."))
+                raise UserError(_("You can't change the company of an analytic account that already has analytic items! It's a recipe for an analytical disaster!"))
 
     @api.depends('code', 'partner_id')
     def _compute_display_name(self):
@@ -126,15 +128,35 @@ class AccountAnalyticAccount(models.Model):
     def _read_group_select(self, aggregate_spec, query):
         # flag balance/debit/credit as aggregatable, and manually sum the values
         # from the records in the group
-        if aggregate_spec in ('balance:sum', 'debit:sum', 'credit:sum'):
+        if aggregate_spec in (
+            'balance:sum',
+            'balance:sum_currency',
+            'debit:sum',
+            'debit:sum_currency',
+            'credit:sum',
+            'credit:sum_currency',
+        ):
             return super()._read_group_select('id:recordset', query)
         return super()._read_group_select(aggregate_spec, query)
 
     def _read_group_postprocess_aggregate(self, aggregate_spec, raw_values):
-        if aggregate_spec in ('balance:sum', 'debit:sum', 'credit:sum'):
-            field_name = aggregate_spec.split(':')[0]
+        if aggregate_spec in (
+            'balance:sum',
+            'balance:sum_currency',
+            'debit:sum',
+            'debit:sum_currency',
+            'credit:sum',
+            'credit:sum_currency',
+        ):
+            field_name, op = aggregate_spec.split(':')
             column = super()._read_group_postprocess_aggregate('id:recordset', raw_values)
-            return (sum(records.mapped(field_name)) for records in column)
+            if op == 'sum':
+                return (sum(records.mapped(field_name)) for records in column)
+            if op == 'sum_currency':
+                return (sum(record.currency_id._convert(
+                    from_amount=record[field_name],
+                    to_currency=self.env.company.currency_id,
+                ) for record in records) for records in column)
         return super()._read_group_postprocess_aggregate(aggregate_spec, raw_values)
 
     @api.depends('line_ids.amount')
@@ -148,12 +170,15 @@ class AccountAnalyticAccount(models.Model):
             )
 
         domain = [('company_id', 'in', [False] + self.env.companies.ids)]
-        if self._context.get('from_date', False):
-            domain.append(('date', '>=', self._context['from_date']))
-        if self._context.get('to_date', False):
-            domain.append(('date', '<=', self._context['to_date']))
+        if self.env.context.get('from_date', False):
+            domain.append(('date', '>=', self.env.context['from_date']))
+        if self.env.context.get('to_date', False):
+            domain.append(('date', '<=', self.env.context['to_date']))
 
         for plan, accounts in self.grouped('plan_id').items():
+            if not plan:
+                accounts.debit = accounts.credit = accounts.balance = 0
+                continue
             credit_groups = self.env['account.analytic.line']._read_group(
                 domain=domain + [(plan._column_name(), 'in', self.ids), ('amount', '>=', 0.0)],
                 groupby=[plan._column_name(), 'currency_id'],

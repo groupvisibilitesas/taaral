@@ -43,7 +43,6 @@ class TestItEdi(AccountTestInvoicingCommon):
             name='company_2_data',
             vat='IT01234560157',
             phone='0266766700',
-            mobile='+393288088988',
             email='test@test.it',
             street="1234 Test Street",
             zip="12345",
@@ -135,7 +134,7 @@ class TestItEdi(AccountTestInvoicingCommon):
             'amount_type': 'percent',
             'type_tax_use': 'purchase',
             'l10n_it_exempt_reason': 'N1',
-            'l10n_it_law_reference': 'test',
+            'invoice_legal_notes': 'Test',
         })
 
         cls.vat_0_N2_1_purchase = cls.env['account.tax'].with_company(cls.company).create({
@@ -144,7 +143,7 @@ class TestItEdi(AccountTestInvoicingCommon):
             'amount_type': 'percent',
             'type_tax_use': 'purchase',
             'l10n_it_exempt_reason': 'N2.1',
-            'l10n_it_law_reference': 'test',
+            'invoice_legal_notes': 'Test',
         })
 
         cls.module = 'l10n_it_edi'

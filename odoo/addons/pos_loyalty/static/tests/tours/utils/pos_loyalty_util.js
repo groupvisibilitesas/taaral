@@ -1,9 +1,11 @@
-import * as Order from "@point_of_sale/../tests/tours/utils/generic_components/order_widget_util";
-import * as ProductScreen from "@point_of_sale/../tests/tours/utils/product_screen_util";
-import * as TextInputPopup from "@point_of_sale/../tests/tours/utils/text_input_popup_util";
-import * as PaymentScreen from "@point_of_sale/../tests/tours/utils/payment_screen_util";
-import * as ReceiptScreen from "@point_of_sale/../tests/tours/utils/receipt_screen_util";
-import * as Dialog from "@point_of_sale/../tests/tours/utils/dialog_util";
+import * as Order from "@point_of_sale/../tests/generic_helpers/order_widget_util";
+import * as ProductScreen from "@point_of_sale/../tests/pos/tours/utils/product_screen_util";
+import * as TextInputPopup from "@point_of_sale/../tests/generic_helpers/text_input_popup_util";
+import * as PaymentScreen from "@point_of_sale/../tests/pos/tours/utils/payment_screen_util";
+import * as ReceiptScreen from "@point_of_sale/../tests/pos/tours/utils/receipt_screen_util";
+import * as Dialog from "@point_of_sale/../tests/generic_helpers/dialog_util";
+import { negate } from "@point_of_sale/../tests/generic_helpers/utils";
+import * as Chrome from "@point_of_sale/../tests/pos/tours/utils/chrome_util";
 
 export function selectRewardLine(rewardName) {
     return [
@@ -157,6 +159,38 @@ export function checkAddedLoyaltyPoints(points) {
     ];
 }
 
+export function useExistingLoyaltyCard(code, valid = true) {
+    const steps = [
+        {
+            trigger: `a:contains("Sell physical gift card?")`,
+            run: "click",
+        },
+        {
+            content: `Input code '${code}'`,
+            trigger: `input[id="code"]`,
+            run: `edit ${code}`,
+        },
+        {
+            content: "Not loading",
+            trigger: negate(".gift-card-loading"),
+        },
+    ];
+
+    if (!valid) {
+        steps.push(Dialog.confirm("Ok"));
+        steps.push(Dialog.cancel());
+        steps.push({
+            trigger: `a:contains("Sell physical gift card?")`,
+            run: () => {},
+        });
+    } else {
+        steps.push(...Chrome.waitRequest());
+        steps.push(Dialog.confirm());
+    }
+
+    return steps;
+}
+
 export function createManualGiftCard(code, amount, date = false) {
     const steps = [
         {
@@ -215,4 +249,19 @@ export function checkPartnerPoints(name, points) {
             trigger: `.partner-list .partner-line:contains(${name}) .partner-line-balance:contains(${points} Loyalty Point(s))`,
         },
     ];
+}
+
+export function isMoreControlButtonActive(active) {
+    return {
+        content: "More control button is " + (active ? "active" : "not active"),
+        trigger: active
+            ? ".control-buttons .more-btn.active"
+            : ".control-buttons:not(:has(.more-btn.active))",
+    };
+}
+export function isLoyaltyPointsAvailable() {
+    return {
+        content: "Loyalty Points are visible on the receipt",
+        trigger: ".pos-receipt .loyalty",
+    };
 }

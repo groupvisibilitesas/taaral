@@ -3,17 +3,23 @@
 # * base_import
 #
 # Translators:
-# Bole <bole@dajmi5.com>, 2024
-# Ivica Dimjašević, 2025
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Đurđica Žarković <durdica.zarkovic@storm.hr>, 2022
+# Igor Krizanovic <krizanovic.igor@gmail.com>, 2022
+# Tina Milas, 2022
+# Vojislav Opačić <vojislav.opacic@gmail.com>, 2022
+# Vladimir Olujić <olujic.vladimir@storm.hr>, 2022
+# Martin Trigaux, 2022
+# Bole <bole@dajmi5.com>, 2023
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Boris Peko <boris.peko@ecodica.eu>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-05-02 09:17+0000\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-02 12:14+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Croatian <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Croatian <https://translate.odoo.com/projects/odoo-19/"
 "base_import/hr/>\n"
 "Language: hr\n"
 "MIME-Version: 1.0\n"
@@ -21,7 +27,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.17\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: base_import
 #. odoo-javascript
@@ -153,8 +159,7 @@ msgstr "Kliknite \"Nastavi\" za nastavak uvoza od retka %s."
 #. odoo-python
 #: code:addons/base_import/models/base_import.py:0
 msgid "Column %(column)s contains incorrect values (value: %(value)s)"
-msgstr ""
-"Kolona %(column)s sadrži neispravne vrijednosti (vrijednost: %(value)s) "
+msgstr "Kolona %(column)s sadrži neispravne vrijednosti (vrijednost: %(value)s)"
 
 #. module: base_import
 #. odoo-python
@@ -255,6 +260,7 @@ msgstr "Odgoda nakon svake skupine"
 #. module: base_import
 #: model:ir.model.fields,field_description:base_import.field_base_import_import__display_name
 #: model:ir.model.fields,field_description:base_import.field_base_import_mapping__display_name
+#: model:ir.model.fields,field_description:base_import.field_res_users__display_name
 msgid "Display Name"
 msgstr "Naziv za prikaz"
 
@@ -269,7 +275,7 @@ msgstr "Točka"
 #: code:addons/base_import/static/src/import_action/import_action.xml:0
 #: code:addons/base_import/static/src/import_data_sidepanel/import_data_sidepanel.xml:0
 msgid "Download"
-msgstr "Preuzimanje"
+msgstr "Preuzmi"
 
 #. module: base_import
 #. odoo-javascript
@@ -337,6 +343,12 @@ msgstr "Excel datoteke su preporučene jer je formatiranje automatsko."
 #: code:addons/base_import/models/base_import.py:0
 msgid "External ID"
 msgstr "Vanjski ID"
+
+#. module: base_import
+#. odoo-python
+#: code:addons/base_import/models/base_import.py:0
+msgid "Field '%(field)s' does not accept date/time values."
+msgstr "Polje '%(field)s' ne prihvaća datum/vremenske vrijednosti."
 
 #. module: base_import
 #: model:ir.model.fields,field_description:base_import.field_base_import_mapping__field_name
@@ -430,6 +442,7 @@ msgstr "Ovo je početni dio datoteke koju nismo uspjeli uvesti:"
 #. module: base_import
 #: model:ir.model.fields,field_description:base_import.field_base_import_import__id
 #: model:ir.model.fields,field_description:base_import.field_base_import_mapping__id
+#: model:ir.model.fields,field_description:base_import.field_res_users__id
 msgid "ID"
 msgstr "ID"
 
@@ -482,7 +495,7 @@ msgstr "Uvoz FAQ"
 #. odoo-javascript
 #: code:addons/base_import/static/src/import_action/import_action.js:0
 msgid "Import a File"
-msgstr "Uvezi datoteku"
+msgstr "Import datoteke"
 
 #. module: base_import
 #. odoo-python
@@ -501,6 +514,12 @@ msgstr "Predpregled uvoza nije uspio zbog:"
 #: code:addons/base_import/static/src/import_records/import_records.xml:0
 msgid "Import records"
 msgstr "Uvezi zapise"
+
+#. module: base_import
+#. odoo-javascript
+#: code:addons/base_import/static/src/import_action/import_action.js:0
+msgid "Imported records"
+msgstr "Uvezeni zapisi"
 
 #. module: base_import
 #. odoo-javascript
@@ -529,13 +548,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:base_import.field_base_import_import__write_uid
 #: model:ir.model.fields,field_description:base_import.field_base_import_mapping__write_uid
 msgid "Last Updated by"
-msgstr "Promijenio"
+msgstr "Posljednju izmjenu izvršio"
 
 #. module: base_import
 #: model:ir.model.fields,field_description:base_import.field_base_import_import__write_date
 #: model:ir.model.fields,field_description:base_import.field_base_import_mapping__write_date
 msgid "Last Updated on"
-msgstr "Promijenjeno"
+msgstr "Posljednja izmjena"
 
 #. module: base_import
 #. odoo-javascript
@@ -606,7 +625,7 @@ msgstr "Nije pronađen odgovarajući zapis za"
 #. odoo-javascript
 #: code:addons/base_import/static/src/import_data_content/import_data_content.xml:0
 msgid "Odoo Field"
-msgstr "Odoo polje"
+msgstr "Polje"
 
 #. module: base_import
 #. odoo-javascript
@@ -659,7 +678,7 @@ msgstr "Model"
 #. odoo-javascript
 #: code:addons/base_import/static/src/import_action/import_action.xml:0
 msgid "Resume"
-msgstr "Nastavi"
+msgstr "Životopis"
 
 #. module: base_import
 #. odoo-javascript
@@ -936,9 +955,11 @@ msgstr "Kada vrijednost ne može biti usklađena:"
 #. odoo-python
 #: code:addons/base_import/models/base_import.py:0
 msgid ""
-"You can not import images via URL, check with your administrator or support "
+"You can not import file via URL, check with your administrator or support "
 "for the reason."
 msgstr ""
+"Ne možete uvesti datoteku putem URL-a, provjerite s administratorom ili "
+"podrškom razlog."
 
 #. module: base_import
 #. odoo-javascript
@@ -1000,3 +1021,18 @@ msgstr "sekundi"
 #: code:addons/base_import/models/base_import.py:0
 msgid "unknown error code %s"
 msgstr "nepoznat kod pogreške %s"
+
+#~ msgid "Column %s contains incorrect values (value: %s)"
+#~ msgstr "Kolona %s sadrži neispravne vrijednosti (vrijednost: %s)"
+
+#~ msgid "Column %s contains incorrect values. Error in line %d: %s"
+#~ msgstr "Kolona %s sadrži neispravne vrijednosti. Pogreška u redu %d: %s"
+
+#~ msgid "Error Parsing Date [%s:L%d]: %s"
+#~ msgstr "Greška pri čitanju datuma [%s:L%d]: %s"
+
+#~ msgid "Imported file"
+#~ msgstr "Uvežena datoteka"
+
+#~ msgid "Load File"
+#~ msgstr "Učitaj datoteku"

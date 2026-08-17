@@ -3,17 +3,14 @@ import re
 
 from stdnum.eu.vat import check_vies
 
-from odoo import api, fields, models, _
+from odoo import api, models, _
+from odoo.fields import Domain
 
 _logger = logging.getLogger(__name__)
 
 
 class ResPartner(models.Model):
-    _name = 'res.partner'
     _inherit = 'res.partner'
-
-    partner_gid = fields.Integer('Company database ID')
-    additional_info = fields.Char('Additional info')
 
     @api.model
     def _iap_replace_location_codes(self, iap_data):
@@ -41,6 +38,23 @@ class ResPartner(models.Model):
         if state:
             iap_data['state_id'] = {'id': state.id, 'display_name': state.display_name}
 
+        # Handle base_address_extended
+        if self.env['ir.module.module']._get('base_address_extended').state == 'installed':
+            city_zip, city_name = iap_data.get('zip'), iap_data.get('city')
+            if (city_zip or city_name) and country and country.enforce_cities:
+                domain = Domain('country_id', '=', country.id)
+                if state:
+                    domain &= Domain('state_id', '=', state.id)
+                city = self.env['res.city']
+                if city_zip:
+                    city = self.env['res.city'].search(domain & Domain('zipcode', '=', city_zip), limit=1)
+                if not city and city_name:
+                    city = self.env['res.city'].search(domain & Domain('name', '=ilike', city_name), limit=1)
+                if city:
+                    iap_data['city_id'] = {'id': city.id, 'display_name': city.display_name}
+                    iap_data['state_id'] = {'id': city.state_id.id, 'display_name': city.state_id.display_name}
+                    iap_data.pop('city', False)
+
         return iap_data
 
     @api.model
@@ -67,25 +81,6 @@ class ResPartner(models.Model):
         self._iap_replace_industry_code(iap_data)
         self._iap_replace_language_codes(iap_data)
         return iap_data
-
-    # Deprecated since DnB
-    @api.model
-    def autocomplete(self, query, timeout=15):
-        return []
-
-    # Deprecated since DnB
-    @api.model
-    def enrich_company(self, company_domain, partner_gid, vat, timeout=15):
-        return {}
-
-    # Deprecated since DnB
-    @api.model
-    def read_by_vat(self, vat, timeout=15):
-        return []
-
-    # Deprecated since DnB
-    def check_gst_in(self, vat):
-        return False
 
     @api.model
     def autocomplete_by_name(self, query, query_country_id, timeout=15):
@@ -120,7 +115,6 @@ class ResPartner(models.Model):
         else:
             vies_result = None
             try:
-                _logger.info('Calling VIES service to check VAT for autocomplete: %s', vat)
                 vies_result = check_vies(vat, timeout=timeout)
             except Exception:
                 _logger.warning("Failed VIES VAT check.", exc_info=True)
@@ -165,7 +159,18 @@ class ResPartner(models.Model):
                 'error': True,
                 'error_message': error
             })
-        return result
+        return self._validate_partner_autocomplete_response(result)
+
+    @api.model
+    def _validate_partner_autocomplete_response(self, autocomplete_response):
+        if (
+            self.env['ir.module.module']._get('base_vat').state == 'installed'
+            and (vat_number := autocomplete_response.get('vat'))
+            and (enriched_company := self.env.context.get('enriched_company_data'))
+            ):
+            country = self.env['res.country'].browse(enriched_company['country_id']['id']).exists()
+            autocomplete_response['vat'] = self._run_vat_checks(country, vat_number, validation='setnull')[0]
+        return autocomplete_response
 
     @api.model
     def enrich_by_duns(self, duns, timeout=15):
@@ -189,7 +194,7 @@ class ResPartner(models.Model):
         return self._process_enriched_response(response, error)
 
     # TODO remove in master
-    def iap_partner_autocomplete_add_tags(self, unspsc_codes):
+    def iap_partner_autocomplete_get_tag_ids(self, unspsc_codes):
         """Called by JS to create the activity tags from the UNSPSC codes"""
         # If the UNSPSC module is installed, we might have a translation, so let's use it
         if self.env['ir.module.module']._get('product_unspsc').state == 'installed':
@@ -214,7 +219,7 @@ class ResPartner(models.Model):
         arch, view = super()._get_view(view_id, view_type, **options)
 
         if view_type == 'form':
-            for node in arch.xpath("//field[@name='name' or @name='vat']"):
+            for node in arch.xpath("//field[@name='name' or @name='vat' or @name='duns']"):
                 node.set('widget', 'field_partner_autocomplete')
 
         return arch, view

@@ -2,27 +2,23 @@
 # This file contains the translation of the following modules:
 # * delivery_mondialrelay
 #
-# Translators:
-# Daniel Reis, 2025
-# Wil Odoo, 2025
-# Peter Lawrence Romão <peterromao@yahoo.co.uk>, 2025
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# "Tiffany Chang (tic)" <tic@odoo.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2025-11-21 02:26+0000\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-02 12:07+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Portuguese <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Portuguese <https://translate.odoo.com/projects/odoo-19/"
 "delivery_mondialrelay/pt/>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : ((n != 0 && n % "
-"1000000 == 0) ? 1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: delivery_mondialrelay
 #: model:ir.model.fields,field_description:delivery_mondialrelay.field_choose_delivery_carrier__mondialrelay_brand
@@ -33,17 +29,38 @@ msgstr "Código da marca"
 #. module: delivery_mondialrelay
 #: model:ir.model,name:delivery_mondialrelay.model_res_partner
 msgid "Contact"
-msgstr "Contacto"
+msgstr "Contato"
 
 #. module: delivery_mondialrelay
 #: model:ir.model.fields,field_description:delivery_mondialrelay.field_choose_delivery_carrier__shipping_country_code
 msgid "Country Code"
-msgstr "Código do País"
+msgstr "Código do país"
+
+#. module: delivery_mondialrelay
+#: model:ir.model,website_form_label:delivery_mondialrelay.model_res_partner
+msgid "Create a Customer"
+msgstr "Criar um cliente"
 
 #. module: delivery_mondialrelay
 #: model:ir.model,name:delivery_mondialrelay.model_choose_delivery_carrier
 msgid "Delivery Carrier Selection Wizard"
 msgstr "Assistente de seleção de transportadora de entrega"
+
+#. module: delivery_mondialrelay
+#: model:ir.model.fields,field_description:delivery_mondialrelay.field_choose_delivery_carrier__display_name
+#: model:ir.model.fields,field_description:delivery_mondialrelay.field_delivery_carrier__display_name
+#: model:ir.model.fields,field_description:delivery_mondialrelay.field_res_partner__display_name
+#: model:ir.model.fields,field_description:delivery_mondialrelay.field_sale_order__display_name
+msgid "Display Name"
+msgstr "Nome"
+
+#. module: delivery_mondialrelay
+#: model:ir.model.fields,field_description:delivery_mondialrelay.field_choose_delivery_carrier__id
+#: model:ir.model.fields,field_description:delivery_mondialrelay.field_delivery_carrier__id
+#: model:ir.model.fields,field_description:delivery_mondialrelay.field_res_partner__id
+#: model:ir.model.fields,field_description:delivery_mondialrelay.field_sale_order__id
+msgid "ID"
+msgstr "ID"
 
 #. module: delivery_mondialrelay
 #: model:ir.model.fields,field_description:delivery_mondialrelay.field_choose_delivery_carrier__is_mondialrelay
@@ -63,6 +80,7 @@ msgstr "Último relay selecionado"
 #: model:delivery.carrier,name:delivery_mondialrelay.delivery_carrier_mondialrelay_es
 #: model:delivery.carrier,name:delivery_mondialrelay.delivery_carrier_mondialrelay_fr_nl
 #: model:product.template,name:delivery_mondialrelay.product_product_delivery_mondialrelay_product_template
+#: model_terms:ir.ui.view,arch_db:delivery_mondialrelay.address_card
 msgid "Mondial Relay"
 msgstr "Mondial Relay"
 
@@ -92,12 +110,6 @@ msgstr "Tipo de pacote da Mondialrelay"
 
 #. module: delivery_mondialrelay
 #. odoo-python
-#: code:addons/delivery_mondialrelay/models/delivery_carrier.py:0
-msgid "Operation not supported"
-msgstr "Operação não suportada"
-
-#. module: delivery_mondialrelay
-#. odoo-python
 #: code:addons/delivery_mondialrelay/wizard/choose_delivery_carrier.py:0
 msgid "Please, choose a Parcel Point"
 msgstr "Escolha um ponto postal"
@@ -105,12 +117,12 @@ msgstr "Escolha um ponto postal"
 #. module: delivery_mondialrelay
 #: model:ir.model,name:delivery_mondialrelay.model_sale_order
 msgid "Sales Order"
-msgstr "Ordem de Venda"
+msgstr "Pedido de venda"
 
 #. module: delivery_mondialrelay
 #: model:ir.model,name:delivery_mondialrelay.model_delivery_carrier
 msgid "Shipping Methods"
-msgstr "Métodos de Envio"
+msgstr "Métodos de envio"
 
 #. module: delivery_mondialrelay
 #: model:ir.model.fields,help:delivery_mondialrelay.field_choose_delivery_carrier__shipping_country_code
@@ -118,10 +130,10 @@ msgid ""
 "The ISO country code in two chars. \n"
 "You can use this field for quick search."
 msgstr ""
-"O código ISO do país em dois caracteres.\n"
-"Pode utilizar este campo para procura rápida."
+"O código ISO do país de dois caracteres. \n"
+"Use este campo para fazer uma busca."
 
 #. module: delivery_mondialrelay
 #: model:ir.model.fields,field_description:delivery_mondialrelay.field_choose_delivery_carrier__shipping_zip
 msgid "Zip"
-msgstr "Código Postal"
+msgstr "CEP"

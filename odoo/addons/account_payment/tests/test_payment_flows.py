@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from odoo import Command
+from odoo import Command, fields
 from odoo.exceptions import AccessError
 from odoo.tests import tagged, JsonRpcException
 from odoo.tools import mute_logger
@@ -151,7 +151,7 @@ class TestFlows(AccountPaymentCommon, PaymentHttpCommon):
         account_user = self.env['res.users'].create({
             'login': 'TestUser',
             'password': 'Odoo@123',
-            'groups_id': [Command.set(self.env.ref('account.group_account_manager').ids)],
+            'group_ids': [Command.set(self.env.ref('account.group_account_manager').ids)],
             'partner_id': partner.id
         })
         # Create an invoice with invoice due date must be in past with payment status to be not paid
@@ -228,81 +228,36 @@ class TestFlows(AccountPaymentCommon, PaymentHttpCommon):
         self.assertEqual(values['payment_state'], 'not_paid')
         self.assertTrue(values['payment'])
 
-    def test_partially_paid_invoice_overdue_payment_flow(self):
+    def test_payment_link_wizard_defaults_from_invoice(self):
         """
-        Test partially paid overdue payment of an invoice is correctly processed
-        with invoice residual amount.
+        Test that the payment link wizard opened from the QR code
+        correctly uses default values from the invoice.
         """
-        partner = self.env['res.partner'].create({'name': 'Qung'})
-        self.env['res.users'].create({
-            'login': 'TestUser',
-            'password': 'Odoo@123',
-            'groups_id': [Command.set(self.env.ref('account.group_account_manager').ids)],
-            'partner_id': partner.id
+        payment_term = self.env['account.payment.term'].create({
+            'name': '30% now, rest in 60 days',
+            'line_ids': [
+                Command.create({
+                    'value': 'percent',
+                    'value_amount': 30.00,
+                    'delay_type': 'days_after',
+                    'nb_days': 0,
+                }),
+                Command.create({
+                    'value': 'percent',
+                    'value_amount': 70.00,
+                    'delay_type': 'days_after',
+                    'nb_days': 60,
+                }),
+            ],
         })
-        # Create an invoice with invoice due date must be in past with payment status to be not paid
+        invoice_date = fields.Date.today() - timedelta(days=1)
         invoice = self.init_invoice(
-            "out_invoice", partner, amounts=[1000.0], currency=self.currency,
+            'out_invoice', partner=self.partner, invoice_date=invoice_date, amounts=[1000.0]
         )
-        invoice.invoice_date_due = invoice.invoice_date - timedelta(days=10)
-
+        invoice.invoice_payment_term_id = payment_term
         invoice.action_post()
-        self.assertEqual(invoice.payment_state, 'not_paid')
 
-        # Create a payment to partially pay the overdue invoice
-        payment = self.env['account.payment'].create({
-            'amount': invoice.amount_residual / 2,
-            'payment_type': 'inbound',
-            'partner_id': partner.id,
-            'partner_type': 'customer',
-            'invoice_ids': [invoice.id],
-        })
-        payment.action_post()
-        (payment.move_id.line_ids + invoice.line_ids).filtered(
-                lambda line: line.account_id == payment.destination_account_id
-                and not line.reconciled
-            ).reconcile()
-
-        self.assertEqual(invoice.payment_state, 'partial')
-
-        # Must be authenticated before making an http resqest
-        self.authenticate('TestUser', 'Odoo@123')
-        overdue_url = self._build_url('/my/invoices/overdue')
-        resp = self._make_http_get_request(overdue_url, {})
-
-        # Validate the response status code
-        self.assertEqual(resp.status_code, 200)
-
-        tx_context = self._get_payment_context(resp)
-
-        # Validate the transaction context amount and payment_reference
-        self.assertEqual(tx_context.get('amount'), invoice.amount_residual)
-        self.assertEqual(tx_context['payment_reference'], invoice.payment_reference)
-
-        # Prepare the transaction route values
-        tx_route_values = {
-            'provider_id': self.provider.id,
-            'payment_method_id': self.payment_method_id,
-            'token_id': None,
-            'amount': tx_context.get('amount'),
-            'flow': 'direct',
-            'tokenization_requested': False,
-            'landing_route': tx_context['landing_route'],
-            'payment_reference': tx_context['payment_reference'],
-        }
-        with mute_logger('odoo.addons.payment.models.payment_transaction'):
-            processing_values = self._get_processing_values(
-                tx_route=tx_context['transaction_route'], **tx_route_values
-            )
-        tx_sudo = self._get_tx(processing_values['reference'])
-        tx_sudo._set_done()
-
-        # Validate the transaction amount is equal to the invoice amount
-        self.assertEqual(tx_sudo.amount, invoice.amount_residual)
-
-        url = self._build_url('/payment/status/poll')
-        resp = self.make_jsonrpc_request(url, {})
-        self.assertTrue(tx_sudo.is_post_processed)
-
-        self.assertEqual(resp['state'], 'done')
-        self.assertTrue(invoice.payment_state == invoice._get_invoice_in_payment_state())
+        # Simulate the opening of the payment link wizard from the invoice QR code.
+        link = invoice._get_portal_payment_link()
+        self.assertIsNotNone(link, "A payment link should be generated for the invoice.")
+        self.assertIn('amount=300.0', link)  # 30% of 1000 first installment

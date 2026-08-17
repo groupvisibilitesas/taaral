@@ -2,24 +2,15 @@
 # This file contains the translation of the following modules:
 # * http_routing
 #
-# Translators:
-# aleksandar ivanov, 2024
-# Radina <radis.choice@gmail.com>, 2024
-# Kaloyan Naumov <kaloyan@lumnus.net>, 2024
-# Maria Boyadjieva <marabo2000@gmail.com>, 2024
-# Albena Mincheva <albena_vicheva@abv.bg>, 2024
-# Petko Karamotchev, 2024
-# Martin Dinovski, 2025
-# Veselina Slavkova, 2025
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:38+0000\n"
-"PO-Revision-Date: 2026-08-08 17:11+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-02 18:38+0000\n"
+"Last-Translator: Rosen Vladimirov <vladimirov.rosen@gmail.com>\n"
+"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-19/"
 "http_routing/bg/>\n"
 "Language: bg\n"
 "MIME-Version: 1.0\n"
@@ -29,9 +20,19 @@ msgstr ""
 "X-Generator: Weblate 2026.6.1\n"
 
 #. module: http_routing
+#: model_terms:ir.ui.view,arch_db:http_routing.400
+msgid "400: Bad Request"
+msgstr "400: Невалидна заявка"
+
+#. module: http_routing
 #: model_terms:ir.ui.view,arch_db:http_routing.403
 msgid "403: Forbidden"
 msgstr "403: Забранено"
+
+#. module: http_routing
+#: model_terms:ir.ui.view,arch_db:http_routing.415
+msgid "415: Unsupported Media Type"
+msgstr "415: Неподдържан тип медия"
 
 #. module: http_routing
 #: model_terms:ir.ui.view,arch_db:http_routing.404
@@ -44,7 +45,6 @@ msgstr ""
 
 #. module: http_routing
 #: model_terms:ir.ui.view,arch_db:http_routing.error_message
-#: model_terms:ir.ui.view,arch_db:http_routing.http_error_debug
 msgid "<strong>Error message:</strong>"
 msgstr "<strong>Съобщение за грешка:</strong>"
 
@@ -52,6 +52,13 @@ msgstr "<strong>Съобщение за грешка:</strong>"
 #: model_terms:ir.ui.view,arch_db:http_routing.500
 msgid "Back"
 msgstr "Назад"
+
+#. module: http_routing
+#: model:ir.model.fields,field_description:http_routing.field_ir_http__display_name
+#: model:ir.model.fields,field_description:http_routing.field_ir_qweb__display_name
+#: model:ir.model.fields,field_description:http_routing.field_res_lang__display_name
+msgid "Display Name"
+msgstr "Име за показване"
 
 #. module: http_routing
 #: model_terms:ir.ui.view,arch_db:http_routing.http_error_debug
@@ -75,6 +82,22 @@ msgid "Home"
 msgstr "Начало"
 
 #. module: http_routing
+#: model:ir.model.fields,field_description:http_routing.field_ir_http__id
+#: model:ir.model.fields,field_description:http_routing.field_ir_qweb__id
+#: model:ir.model.fields,field_description:http_routing.field_res_lang__id
+msgid "ID"
+msgstr "Номер (ID)"
+
+#. module: http_routing
+#: model_terms:ir.ui.view,arch_db:http_routing.415
+msgid ""
+"It looks like the URL you are accessing doesn't support the format of the "
+"request. Take a look at the error message below."
+msgstr ""
+"Изглежда, че URL адресът, до който осъществявате достъп, не поддържа формата "
+"на заявката. Разгледайте съобщението за грешка по-долу."
+
+#. module: http_routing
 #: model:ir.model,name:http_routing.model_res_lang
 msgid "Languages"
 msgstr "Езици"
@@ -85,7 +108,8 @@ msgid "Maybe you were looking for one of these <b>popular pages?</b>"
 msgstr "Може би търсите някоя от тези <b>популярни страници?</b>"
 
 #. module: http_routing
-#: model_terms:ir.ui.view,arch_db:http_routing.400
+#: model_terms:ir.ui.view,arch_db:http_routing.422
+#: model_terms:ir.ui.view,arch_db:http_routing.4xx
 msgid "Oops! Something went wrong."
 msgstr "Опа! Нещо се обърка."
 
@@ -100,7 +124,8 @@ msgid "Qweb"
 msgstr "Qweb"
 
 #. module: http_routing
-#: model_terms:ir.ui.view,arch_db:http_routing.400
+#: model_terms:ir.ui.view,arch_db:http_routing.422
+#: model_terms:ir.ui.view,arch_db:http_routing.4xx
 msgid "Take a look at the error message below."
 msgstr "Разгледайте съобщението за грешка по-долу."
 
@@ -115,9 +140,18 @@ msgid "The page you were looking for could not be authorized."
 msgstr "Страницата, която търсите, не е разрешена за достъп."
 
 #. module: http_routing
+#: model_terms:ir.ui.view,arch_db:http_routing.400
+msgid ""
+"The server couldn't understand the request. Take a look at the error message "
+"below."
+msgstr ""
+"Сървърът не можа да разбере заявката. Разгледайте съобщението за грешка по-"
+"долу."
+
+#. module: http_routing
 #: model_terms:ir.ui.view,arch_db:http_routing.http_error_debug
 msgid "Traceback"
-msgstr "Проследете назад"
+msgstr "Traceback"
 
 #. module: http_routing
 #: model_terms:ir.ui.view,arch_db:http_routing.404

@@ -5,7 +5,7 @@
 {
     'name': 'pos_mrp',
     'version': '1.0',
-    'category': 'Hidden',
+    'category': 'Sales/Point of Sale',
     'sequence': 6,
     'summary': 'Link module between Point of Sale and Mrp',
     'description': """
@@ -22,5 +22,6 @@ This is a link module between Point of Sale and Mrp.
     },
     'installable': True,
     'auto_install': True,
+    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 }

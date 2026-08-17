@@ -12,7 +12,7 @@ class TestJoEdiPosTypes(JoEdiPosCommon):
         order_vals = {
             'name': 'EIN/998833/0',
             'date_order': '2022-09-27',
-            'general_note': 'ملاحظات 2',
+            'general_customer_note': 'ملاحظات 2',
             'lines': [
                 {
                     'product_id': self.product_a.id,
@@ -49,7 +49,7 @@ class TestJoEdiPosTypes(JoEdiPosCommon):
         refund_vals = {
             'name': 'EIN998833',
             'date_order': '2022-09-27',
-            'general_note': 'ملاحظات 2',
+            'general_customer_note': 'ملاحظات 2',
             'l10n_jo_edi_pos_return_reason': 'Reversal of: EIN00017, change price',
             'lines': [
                 {
@@ -75,7 +75,7 @@ class TestJoEdiPosTypes(JoEdiPosCommon):
         order_vals = {
             'name': 'TestEIN022',
             'date_order': '2023-11-10',
-            'general_note': 'Test General for Documentation',
+            'general_customer_note': 'Test General for Documentation',
             'lines': [
                 {
                     'product_id': self.product_a.id,
@@ -190,7 +190,7 @@ class TestJoEdiPosTypes(JoEdiPosCommon):
         order_vals = {
             'name': 'EIN/998833/0',
             'date_order': '2022-09-27',
-            'general_note': 'ملاحظات 2',
+            'general_customer_note': 'ملاحظات 2',
             'lines': [
                 {
                     'product_id': self.product_a.id,
@@ -218,7 +218,7 @@ class TestJoEdiPosTypes(JoEdiPosCommon):
         order_vals = {
             'name': 'EIN/998833/0',
             'date_order': '2022-09-27',
-            'general_note': 'ملاحظات 2',
+            'general_customer_note': 'ملاحظات 2',
             'lines': [
                 {
                     'product_id': self.product_a.id,
@@ -273,7 +273,7 @@ class TestJoEdiPosTypes(JoEdiPosCommon):
         refund_vals = {
             'name': 'EIN998833',
             'date_order': '2022-09-27',
-            'general_note': 'ملاحظات 2',
+            'general_customer_note': 'ملاحظات 2',
             'l10n_jo_edi_pos_return_reason': 'change price',
             'lines': [
                 {  # id should be 4
@@ -411,7 +411,7 @@ class TestJoEdiPosTypes(JoEdiPosCommon):
             order_vals = {
                 'name': 'EIN/998833/0',
                 'date_order': '2022-09-27',
-                'general_note': 'ملاحظات 2',
+                'general_customer_note': 'ملاحظات 2',
                 'lines': [
                     {
                         'product_id': self.product_a.id,
@@ -469,7 +469,7 @@ class TestJoEdiPosTypes(JoEdiPosCommon):
                 'partner_id': self.partner_jo.id if has_partner else False,
                 'currency_id': currency_id,
                 'date_order': '2022-09-27',
-                'general_note': 'ملاحظات 2',
+                'general_customer_note': 'ملاحظات 2',
                 'lines': [
                     {
                         'product_id': self.product_a.id,

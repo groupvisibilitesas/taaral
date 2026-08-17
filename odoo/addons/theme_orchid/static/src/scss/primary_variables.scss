@@ -67,6 +67,10 @@ $o-website-values-palettes: (
     ),
 );
 
+$default-light-9: map-get($o-color-palettes, 'default-light-9');
+$default-light-9: map-merge($default-light-9, ('footer': 5));
+$o-color-palettes: map-merge($o-color-palettes, ('default-light-9': $default-light-9));
+
 $o-color-palettes-compatibility-indexes: (
     1: 'orchid-1',
     2: 'orchid-2',
@@ -97,10 +101,10 @@ $o-color-palettes-compatibility-indexes: (
 // Shapes
 //------------------------------------------------------------------------------
 
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Wavy/05', (1: 4, 5: 4));
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Wavy/04', (5: 4));
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Wavy/07', (3: 4));
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Wavy/22', (3: 3));
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Wavy/23', (3: 1));
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Wavy/01_001', (3: 2));
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Floats/12', (2: 2, 5: 4));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Wavy/05', (1: 4, 5: 4));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Wavy/04', (5: 4));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Wavy/07', (3: 4));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Wavy/22', (3: 3));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Wavy/23', (3: 1));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Wavy/01_001', (3: 2));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Floats/12', (2: 2, 5: 4));

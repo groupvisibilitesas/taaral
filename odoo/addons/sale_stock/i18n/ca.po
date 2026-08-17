@@ -3,40 +3,37 @@
 # * sale_stock
 #
 # Translators:
-# Marc Tormo i Bochaca <mtbochaca@gmail.com>, 2024
-# jabiri7, 2024
-# Iván Infantes Castarnado, 2024
-# M Palau <mpalau@tda.ad>, 2024
-# Carles Antoli <carlesantoli@hotmail.com>, 2024
-# Martin Trigaux, 2024
-# Jonatan Gk, 2024
-# Manel Fernandez Ramirez <manelfera@outlook.com>, 2024
-# Óscar Fonseca <tecnico@pyming.com>, 2024
-# RGB Consulting <odoo@rgbconsulting.com>, 2024
-# Ivan Espinola, 2024
-# marcescu, 2024
-# Arnau Ros, 2024
-# Quim - coopdevs <quim.rebull@coopdevs.org>, 2024
-# Harcogourmet, 2024
-# Josep Anton Belchi, 2025
-# Noemi Pla, 2025
-# "Noemi Pla Garcia (nopl)" <nopl@odoo.com>, 2025.
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Carles Antoli <carlesantoli@hotmail.com>, 2022
+# Martin Trigaux, 2022
+# Marc Tormo i Bochaca <mtbochaca@gmail.com>, 2022
+# M Palau <mpalau@tda.ad>, 2022
+# Quim - eccit <quim@eccit.com>, 2022
+# Manel Fernandez Ramirez <manelfera@outlook.com>, 2022
+# Jonatan Gk, 2022
+# Arnau Ros, 2022
+# jabelchi, 2022
+# RGB Consulting <odoo@rgbconsulting.com>, 2022
+# marcescu, 2022
+# Ivan Espinola, 2022
+# jabiri7, 2022
+# Óscar Fonseca <tecnico@extreme-micro.com>, 2023
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2025-11-21 02:35+0000\n"
+"POT-Creation-Date: 2026-02-13 18:36+0000\n"
+"PO-Revision-Date: 2026-08-07 00:24+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Catalan <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Catalan <https://translate.odoo.com/projects/odoo-19/"
 "sale_stock/ca/>\n"
 "Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.exception_on_picking
@@ -46,6 +43,12 @@ msgid ""
 msgstr ""
 ".\n"
 "                Accions manuals poden ser necessàries."
+
+#. module: sale_stock
+#. odoo-javascript
+#: code:addons/sale_stock/static/src/sale_stock_forecasted/forecasted_details.xml:0
+msgid "1 Quotation"
+msgstr ""
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_portal_content_inherit_sale_stock
@@ -93,15 +96,6 @@ msgstr ""
 "                                    </span>"
 
 #. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.sale_order_cancel_view_form_inherit
-msgid ""
-"<span invisible=\"not display_delivery_alert\">\n"
-"                    Some deliveries are already done. Returns can be created "
-"from the Delivery Orders.\n"
-"                </span>"
-msgstr ""
-
-#. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.report_delivery_document_inherit_sale_stock
 msgid "<strong>Customer Reference</strong>"
 msgstr "<strong>Referència del client</strong>"
@@ -140,6 +134,11 @@ msgstr ""
 "  - Moviments d'estoc: la quantitat ve de les entregues confirmades\n"
 
 #. module: sale_stock
+#: model:ir.model,name:sale_stock.model_account_accrued_orders_wizard
+msgid "Accrued Orders Wizard"
+msgstr "Assistent de comandes acumulades"
+
+#. module: sale_stock
 #. odoo-javascript
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
 msgid "All planned operations included"
@@ -163,7 +162,7 @@ msgstr "Disponibilitat"
 
 #. module: sale_stock
 #. odoo-javascript
-#: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.js:0
 msgid "Available"
 msgstr "Disponible"
 
@@ -217,14 +216,14 @@ msgid "Default Warehouse"
 msgstr "Magatzem per defecte"
 
 #. module: sale_stock
+#: model_terms:ir.ui.view,arch_db:sale_stock.portal_my_orders
+msgid "Delivered"
+msgstr "Lliurat"
+
+#. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.view_order_form_inherit_sale_stock
 msgid "Delivery"
 msgstr "Lliurament"
-
-#. module: sale_stock
-#: model:ir.model.fields,field_description:sale_stock.field_sale_order_cancel__display_delivery_alert
-msgid "Delivery Alert"
-msgstr "Avís de lliurament"
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order__delivery_count
@@ -248,6 +247,31 @@ msgstr ""
 "\"lead time\" de les línies de la comanda en el cas de serveis. En cas de "
 "tramesa, es té en compte la política de tramesa de la comanda per a fer "
 "servir el mínim o el màxim \"lead time\" de les línies de comanda."
+
+#. module: sale_stock
+#: model:ir.model.fields,field_description:sale_stock.field_account_accrued_orders_wizard__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_account_move__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_account_move_line__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_product_template__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_report_stock_report_stock_rule__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_res_company__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_res_users__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_sale_order__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_sale_report__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_stock_forecasted_product_product__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_stock_lot__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_stock_move__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_stock_move_line__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_stock_picking__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_stock_reference__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_stock_return_picking__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_stock_route__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_stock_rule__display_name
+#: model:ir.model.fields,field_description:sale_stock.field_stock_rules_report__display_name
+msgid "Display Name"
+msgstr "Nom mostrat"
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__display_qty_widget
@@ -305,7 +329,7 @@ msgstr "Previsió Data prevista"
 
 #. module: sale_stock
 #. odoo-javascript
-#: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
+#: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.js:0
 msgid "Forecasted Stock"
 msgstr "Pila de pagament"
 
@@ -320,9 +344,40 @@ msgid "Fully Delivered"
 msgstr "S'ha lliurat completament"
 
 #. module: sale_stock
+#. odoo-javascript
+#: code:addons/sale_stock/static/src/stock_valuation/stock_valuation_report.js:0
+msgid "Goods Delivered Not Invoiced"
+msgstr ""
+
+#. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order__show_json_popover
 msgid "Has late picking"
 msgstr "Té una recollida tardana"
+
+#. module: sale_stock
+#: model:ir.model.fields,field_description:sale_stock.field_account_accrued_orders_wizard__id
+#: model:ir.model.fields,field_description:sale_stock.field_account_move__id
+#: model:ir.model.fields,field_description:sale_stock.field_account_move_line__id
+#: model:ir.model.fields,field_description:sale_stock.field_product_template__id
+#: model:ir.model.fields,field_description:sale_stock.field_report_stock_report_stock_rule__id
+#: model:ir.model.fields,field_description:sale_stock.field_res_company__id
+#: model:ir.model.fields,field_description:sale_stock.field_res_config_settings__id
+#: model:ir.model.fields,field_description:sale_stock.field_res_users__id
+#: model:ir.model.fields,field_description:sale_stock.field_sale_order__id
+#: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__id
+#: model:ir.model.fields,field_description:sale_stock.field_sale_report__id
+#: model:ir.model.fields,field_description:sale_stock.field_stock_forecasted_product_product__id
+#: model:ir.model.fields,field_description:sale_stock.field_stock_lot__id
+#: model:ir.model.fields,field_description:sale_stock.field_stock_move__id
+#: model:ir.model.fields,field_description:sale_stock.field_stock_move_line__id
+#: model:ir.model.fields,field_description:sale_stock.field_stock_picking__id
+#: model:ir.model.fields,field_description:sale_stock.field_stock_reference__id
+#: model:ir.model.fields,field_description:sale_stock.field_stock_return_picking__id
+#: model:ir.model.fields,field_description:sale_stock.field_stock_route__id
+#: model:ir.model.fields,field_description:sale_stock.field_stock_rule__id
+#: model:ir.model.fields,field_description:sale_stock.field_stock_rules_report__id
+msgid "ID"
+msgstr "ID"
 
 #. module: sale_stock
 #: model:ir.model.fields,help:sale_stock.field_sale_order__picking_policy
@@ -333,7 +388,7 @@ msgid ""
 msgstr ""
 "Si s'entreguen tots els productes alhora, la comanda d'entrega serà "
 "programada en base a l'entrega del termini més gran d'un dels productes. En "
-"cas contrari, es basarà en el més curt. "
+"cas contrari, es basarà en el més curt."
 
 #. module: sale_stock
 #: model_terms:ir.ui.view,arch_db:sale_stock.exception_on_so
@@ -370,11 +425,6 @@ msgstr ""
 "utilitzades en les transaccions internacionals."
 
 #. module: sale_stock
-#: model_terms:ir.ui.view,arch_db:sale_stock.res_users_view_form
-msgid "Inventory"
-msgstr "Inventari"
-
-#. module: sale_stock
 #: model:ir.model,name:sale_stock.model_stock_route
 msgid "Inventory Routes"
 msgstr "Rutes d'inventari"
@@ -405,6 +455,12 @@ msgid "Last Delivery Orders"
 msgstr ""
 
 #. module: sale_stock
+#: model:ir.model.fields,field_description:sale_stock.field_sale_order__late_availability
+#: model_terms:ir.ui.view,arch_db:sale_stock.sale_stock_sale_order_view_search_inherit
+msgid "Late Availability"
+msgstr "Disponibilitat tardana"
+
+#. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__customer_lead
 msgid "Lead Time"
 msgstr "Termini d'entrega"
@@ -428,7 +484,7 @@ msgid ""
 msgstr ""
 "El marge d'error per les dates promeses als clients. L'entrega dels "
 "productes serà programada per dies abans de la data promesa, per fer front a "
-"retards inesperats en la cadena de subministrament. "
+"retards inesperats en la cadena de subministrament."
 
 #. module: sale_stock
 #: model:ir.model.fields,help:sale_stock.field_res_company__security_lead
@@ -465,7 +521,13 @@ msgid "No future availability"
 msgstr "Sense disponibilitat futura"
 
 #. module: sale_stock
+#: model_terms:ir.ui.view,arch_db:sale_stock.portal_my_orders
+msgid "Not Available"
+msgstr "No disponible"
+
+#. module: sale_stock
 #: model:ir.model.fields.selection,name:sale_stock.selection__sale_order__delivery_status__pending
+#: model_terms:ir.ui.view,arch_db:sale_stock.portal_my_orders
 msgid "Not Delivered"
 msgstr "No lliurat"
 
@@ -492,6 +554,7 @@ msgstr "On"
 
 #. module: sale_stock
 #: model:ir.model.fields.selection,name:sale_stock.selection__sale_order__delivery_status__partial
+#: model_terms:ir.ui.view,arch_db:sale_stock.portal_my_orders
 msgid "Partially Delivered"
 msgstr "Lliurat parcialment"
 
@@ -499,12 +562,6 @@ msgstr "Lliurat parcialment"
 #: model:ir.model.fields,field_description:sale_stock.field_res_config_settings__default_picking_policy
 msgid "Picking Policy"
 msgstr "Política de recollida"
-
-#. module: sale_stock
-#: model:ir.model,name:sale_stock.model_procurement_group
-#: model:ir.model.fields,field_description:sale_stock.field_sale_order__procurement_group_id
-msgid "Procurement Group"
-msgstr "Grup de proveïment "
 
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_product_template
@@ -546,6 +603,16 @@ msgid ""
 msgstr ""
 
 #. module: sale_stock
+#: model:ir.model,name:sale_stock.model_stock_reference
+msgid "Reference between stock documents"
+msgstr ""
+
+#. module: sale_stock
+#: model:ir.model.fields,field_description:sale_stock.field_sale_order__stock_reference_ids
+msgid "References"
+msgstr "Referències"
+
+#. module: sale_stock
 #. odoo-javascript
 #: code:addons/sale_stock/static/src/widgets/qty_at_date_widget.xml:0
 msgid "Remaining demand available at"
@@ -574,9 +641,9 @@ msgid "Returns"
 msgstr "Retorna"
 
 #. module: sale_stock
-#: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__route_id
-msgid "Route"
-msgstr "Ruta"
+#: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__route_ids
+msgid "Routes"
+msgstr "Rutes"
 
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_stock_move__sale_line_id
@@ -584,11 +651,8 @@ msgid "Sale Line"
 msgstr "Línia de venda"
 
 #. module: sale_stock
-#: model:ir.model.fields,field_description:sale_stock.field_procurement_group__sale_id
-msgid "Sale Order"
-msgstr "Comanda de venda"
-
-#. module: sale_stock
+#. odoo-javascript
+#: code:addons/sale_stock/static/src/stock_valuation/stock_valuation_report.js:0
 #: model_terms:ir.ui.view,arch_db:sale_stock.stock_production_lot_view_form
 msgid "Sale Orders"
 msgstr "Comandes de venda"
@@ -596,7 +660,12 @@ msgstr "Comandes de venda"
 #. module: sale_stock
 #: model:ir.model.fields,field_description:sale_stock.field_stock_lot__sale_order_count
 msgid "Sale order count"
-msgstr "Nombre de comandes de venda "
+msgstr "Nombre de comandes de venda"
+
+#. module: sale_stock
+#: model:ir.model.fields,field_description:sale_stock.field_stock_reference__sale_ids
+msgid "Sales"
+msgstr "Vendes"
 
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_sale_report
@@ -608,11 +677,6 @@ msgstr "Informe d'anàlisi de vendes"
 #: model:ir.model.fields,field_description:sale_stock.field_stock_picking__sale_id
 msgid "Sales Order"
 msgstr "Comanda"
-
-#. module: sale_stock
-#: model:ir.model,name:sale_stock.model_sale_order_cancel
-msgid "Sales Order Cancel"
-msgstr "Cancel·lació de la comanda de venda"
 
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_sale_order_line
@@ -676,7 +740,13 @@ msgid "Shipping Policy"
 msgstr "Política de lliurament"
 
 #. module: sale_stock
+#: model_terms:ir.ui.view,arch_db:sale_stock.portal_my_orders
+msgid "Shipping Status"
+msgstr ""
+
+#. module: sale_stock
 #: model:ir.model.fields.selection,name:sale_stock.selection__sale_order__delivery_status__started
+#: model_terms:ir.ui.view,arch_db:sale_stock.portal_my_orders
 msgid "Started"
 msgstr ""
 
@@ -705,11 +775,6 @@ msgstr "Regla d'estoc"
 #: model:ir.model,name:sale_stock.model_stock_rules_report
 msgid "Stock Rules report"
 msgstr "Informe de norma d'estoc"
-
-#. module: sale_stock
-#: model:ir.model,name:sale_stock.model_stock_valuation_layer
-msgid "Stock Valuation Layer"
-msgstr "Capa de valoració d'estoc"
 
 #. module: sale_stock
 #: model:ir.model,name:sale_stock.model_report_stock_report_stock_rule
@@ -773,6 +838,11 @@ msgid "Transfers"
 msgstr "Transferències"
 
 #. module: sale_stock
+#: model:ir.model.fields,help:sale_stock.field_sale_order__late_availability
+msgid "True if any related picking has late availability"
+msgstr ""
+
+#. module: sale_stock
 #: model:ir.model,name:sale_stock.model_res_users
 msgid "User"
 msgstr "Usuari"
@@ -789,7 +859,6 @@ msgid "Virtual Available At Date"
 msgstr "Virtual disponible a la data"
 
 #. module: sale_stock
-#: model:ir.model,name:sale_stock.model_stock_warehouse
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order__warehouse_id
 #: model:ir.model.fields,field_description:sale_stock.field_sale_order_line__warehouse_id
 #: model:ir.model.fields,field_description:sale_stock.field_sale_report__warehouse_id
@@ -800,7 +869,7 @@ msgstr "Magatzem"
 #. odoo-python
 #: code:addons/sale_stock/models/sale_order.py:0
 msgid "Warning!"
-msgstr "Avís. "
+msgstr "Avís."
 
 #. module: sale_stock
 #: model:ir.model.fields.selection,name:sale_stock.selection__sale_order__picking_policy__one
@@ -856,3 +925,75 @@ msgstr "Processar en lloc de"
 #: code:addons/sale_stock/static/src/xml/delay_alert.xml:0
 msgid "will be late."
 msgstr "arribarà tard."
+
+#~ msgid "Stock Valuation"
+#~ msgstr "Valoració d'estoc"
+
+#~ msgid "<i class=\"fa fa-fw fa-clock-o\"/> <b>Preparation</b>"
+#~ msgstr "<i class=\"fa fa-fw fa-clock-o\"/> <b>Preparació</b>"
+
+#~ msgid "<i class=\"fa fa-fw fa-times\"/> <b>Cancelled</b>"
+#~ msgstr "<i class=\"fa fa-fw fa-times\"/> <b>Cancel·lat</b>"
+
+#~ msgid "<i class=\"fa fa-fw fa-truck\"/> <b>Shipped</b>"
+#~ msgstr "<i class=\"fa fa-fw fa-truck\"/> <b>Enviat</b>"
+
+#~ msgid ""
+#~ "<span attrs=\"{'invisible': [('display_delivery_alert', '=', False)]}\">\n"
+#~ "                    Some deliveries are already done. Returns can be "
+#~ "created from the Delivery Orders.\n"
+#~ "                </span>"
+#~ msgstr ""
+#~ "<span attrs=\"{'invisible': [('display_delivery_alert', '=', False)]}\">\n"
+#~ "                    Ja s'han realitzat alguns lliuraments. Es poden crear "
+#~ "retorns a partir de les ordres de lliurament.\n"
+#~ "                </span>"
+
+#~ msgid "<strong>Customer Reference:</strong>"
+#~ msgstr "<strong>Referència del client:</strong>"
+
+#~ msgid "<strong>Delivery Orders</strong>"
+#~ msgstr "<strong>Comandes d'entrega</strong>"
+
+#~ msgid "<strong>Incoterm: </strong>"
+#~ msgstr "<strong>Incoterm: </strong>"
+
+#~ msgid "<strong>Incoterm:</strong>"
+#~ msgstr "<strong>termes internacionals de comerç:</strong>"
+
+#~ msgid "Delivery Alert"
+#~ msgstr "Avís de lliurament"
+
+#~ msgid "Display incoterms on Sales Order and related invoices"
+#~ msgstr "Mostrar Incoterms en comades de venda i factures relacionades"
+
+#~ msgid "Incoterms"
+#~ msgstr "Incoterms"
+
+#~ msgid "Inventory"
+#~ msgstr "Inventari"
+
+#~ msgid "Procurement Group"
+#~ msgstr "Grup de proveïment "
+
+#~ msgid "Route"
+#~ msgstr "Ruta"
+
+#~ msgid "Sale Order"
+#~ msgstr "Comanda de venda"
+
+#~ msgid "Sales Order Cancel"
+#~ msgstr "Cancel·lació de la comanda de venda"
+
+#~ msgid ""
+#~ "The delivery address has been changed on the Sales Order<br/>\n"
+#~ "                        From <strong>\"%s\"</strong> To <strong>\"%s\"</"
+#~ "strong>,\n"
+#~ "                        You should probably update the partner on this "
+#~ "document."
+#~ msgstr ""
+#~ "L'adreça d'entrega s'ha canviat a la comanda de venda<br/>\n"
+#~ "                        De <strong>\"%s\"</strong> a <strong>\"%s\"</"
+#~ "strong>,\n"
+#~ "                        Probablement hauríeu d'actualitzar el contacte en "
+#~ "aquest document."

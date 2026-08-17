@@ -3,25 +3,26 @@
 # * payment_adyen
 #
 # Translators:
-# Wil Odoo, 2024
-# Junko Augias, 2024
-#
-# "Junko Augias (juau)" <juau@odoo.com>, 2025.
+# Yoshi Tashiro <tashiro@roomsfor.hk>, 2018
+# 高木正勝 <masakatsu.takagi@pro-spire.co.jp>, 2018
+# Norimichi Sugimoto <norimichi.sugimoto@tls-ltd.co.jp>, 2018
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# "Junko Augias (juau)" <juau@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~11.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:38+0000\n"
-"PO-Revision-Date: 2025-10-15 05:31+0000\n"
-"Last-Translator: \"Junko Augias (juau)\" <juau@odoo.com>\n"
-"Language-Team: Japanese <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-02 23:53+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Japanese <https://translate.odoo.com/projects/odoo-19/"
 "payment_adyen/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: payment_adyen
 #: model_terms:ir.ui.view,arch_db:payment_adyen.payment_provider_form
@@ -31,18 +32,14 @@ msgid ""
 "                    the Capture Delay to manual on your Adyen account "
 "settings."
 msgstr ""
-"<strong>警告:</strong>金額を手動でキャプチャするには、\n"
-"                    アカウント設定で遅延キャプチャも設定する必要があります。"
+"<strong>警告:</strong>金額を手動で確定するには、\n"
+"                    アカウント設定で遅延確定も設定する必要があります。"
 
 #. module: payment_adyen
 #. odoo-python
 #: code:addons/payment_adyen/models/payment_transaction.py:0
-msgid ""
-"A request was sent to void the transaction with reference %(reference)s (%"
-"(provider)s)."
-msgstr ""
-" %(reference)s (%(provider)s)を参照して取引を無効にするよう要求が送信されまし"
-"た。"
+msgid "A request was sent to void the transaction %(reference)s."
+msgstr "取引 %(reference)s の取り消しリクエストが送信されました。"
 
 #. module: payment_adyen
 #: model:ir.model.fields,field_description:payment_adyen.field_payment_provider__adyen_api_key
@@ -68,7 +65,7 @@ msgstr "支払処理中にエラーが発生しました。再度試して下さ
 
 #. module: payment_adyen
 #. odoo-javascript
-#: code:addons/payment_adyen/static/src/js/payment_form.js:0
+#: code:addons/payment_adyen/static/src/interactions/payment_form.js:0
 msgid "Cannot display the payment form"
 msgstr "支払フォームを表示できません"
 
@@ -83,10 +80,12 @@ msgid "Code"
 msgstr "コード"
 
 #. module: payment_adyen
-#. odoo-python
-#: code:addons/payment_adyen/models/payment_provider.py:0
-msgid "Could not establish the connection to the API."
-msgstr "APIへの接続を確立できませんでした。"
+#: model:ir.model.fields,field_description:payment_adyen.field_payment_capture_wizard__display_name
+#: model:ir.model.fields,field_description:payment_adyen.field_payment_provider__display_name
+#: model:ir.model.fields,field_description:payment_adyen.field_payment_token__display_name
+#: model:ir.model.fields,field_description:payment_adyen.field_payment_transaction__display_name
+msgid "Display Name"
+msgstr "表示名"
 
 #. module: payment_adyen
 #: model:ir.model.fields,field_description:payment_adyen.field_payment_provider__adyen_hmac_key
@@ -99,8 +98,16 @@ msgid "Has Adyen Tx"
 msgstr "Adyen Txあり"
 
 #. module: payment_adyen
+#: model:ir.model.fields,field_description:payment_adyen.field_payment_capture_wizard__id
+#: model:ir.model.fields,field_description:payment_adyen.field_payment_provider__id
+#: model:ir.model.fields,field_description:payment_adyen.field_payment_token__id
+#: model:ir.model.fields,field_description:payment_adyen.field_payment_transaction__id
+msgid "ID"
+msgstr "ID"
+
+#. module: payment_adyen
 #. odoo-javascript
-#: code:addons/payment_adyen/static/src/js/payment_form.js:0
+#: code:addons/payment_adyen/static/src/interactions/payment_form.js:0
 msgid "Incorrect payment details"
 msgstr "不正な支払詳細"
 
@@ -112,18 +119,12 @@ msgstr "もっと知る"
 #. module: payment_adyen
 #: model:ir.model.fields,field_description:payment_adyen.field_payment_provider__adyen_merchant_account
 msgid "Merchant Account"
-msgstr "マーチャントアカウント"
-
-#. module: payment_adyen
-#. odoo-python
-#: code:addons/payment_adyen/models/payment_transaction.py:0
-msgid "No transaction found matching reference %s."
-msgstr "参照に一致する取引が見つかりません%s。"
+msgstr "加盟店アカウント"
 
 #. module: payment_adyen
 #: model:ir.model,name:payment_adyen.model_payment_capture_wizard
 msgid "Payment Capture Wizard"
-msgstr "支払キャプチャウィザード"
+msgstr "支払確定ウィザード"
 
 #. module: payment_adyen
 #: model:ir.model,name:payment_adyen.model_payment_provider
@@ -142,27 +143,15 @@ msgstr "支払取引"
 
 #. module: payment_adyen
 #. odoo-javascript
-#: code:addons/payment_adyen/static/src/js/payment_form.js:0
+#: code:addons/payment_adyen/static/src/interactions/payment_form.js:0
 msgid "Payment processing failed"
 msgstr "支払処理に失敗しました"
 
 #. module: payment_adyen
 #. odoo-python
 #: code:addons/payment_adyen/models/payment_transaction.py:0
-msgid "Received data for child transaction with missing transaction values"
-msgstr "取引値が欠落している子取引のデータを受信しました。"
-
-#. module: payment_adyen
-#. odoo-python
-#: code:addons/payment_adyen/models/payment_transaction.py:0
 msgid "Received data with invalid payment state: %s"
 msgstr "無効な支払ステイタス: %sのデータを受信しました。"
-
-#. module: payment_adyen
-#. odoo-python
-#: code:addons/payment_adyen/models/payment_transaction.py:0
-msgid "Received data with missing merchant reference"
-msgstr "マーチャント参照が欠落しているデータを受信しました。"
 
 #. module: payment_adyen
 #. odoo-python
@@ -209,8 +198,8 @@ msgstr "APIエンドポイント用ベースURL"
 #. module: payment_adyen
 #. odoo-python
 #: code:addons/payment_adyen/models/payment_transaction.py:0
-msgid "The capture of the transaction with reference %s failed."
-msgstr "参照%sの取引のキャプチャに失敗しました。"
+msgid "The capture of the transaction %s failed."
+msgstr "取引 %s の売上確定処理に失敗しました。"
 
 #. module: payment_adyen
 #: model_terms:ir.ui.view,arch_db:payment_adyen.payment_capture_wizard_view_form
@@ -218,18 +207,15 @@ msgid ""
 "The capture or void of the transaction might take a few minutes to be\n"
 "                    processed by Adyen and reflected in Odoo."
 msgstr ""
-"取引のキャプチャまたはボイドがAdyenで処理され、Odooに反映されるまでに\n"
+"取引の確定またはボイドがAdyenで処理され、Odooに反映されるまでに\n"
 "数分かかる場合があります。"
 
 #. module: payment_adyen
 #. odoo-python
 #: code:addons/payment_adyen/models/payment_transaction.py:0
 msgid ""
-"The capture request of %(amount)s for the transaction with reference %(ref)s "
-"has been requested (%(provider_name)s)."
-msgstr ""
-" %(amount)sのキャプチャ要求(参照%(ref)sの取引用)が要求されました(%"
-"(provider_name)s)"
+"The capture request of %(amount)s for transaction %(ref)s has been sent."
+msgstr "取引 %(ref)s に対する金額 %(amount)s のキャプチャリクエストが送信されました。"
 
 #. module: payment_adyen
 #: model:ir.model.fields,help:payment_adyen.field_payment_provider__adyen_client_key
@@ -239,24 +225,12 @@ msgstr "ウェブサービスユーザのクライアントキー"
 #. module: payment_adyen
 #: model:ir.model.fields,help:payment_adyen.field_payment_provider__adyen_merchant_account
 msgid "The code of the merchant account to use with this provider"
-msgstr "このプロバイダを使用するために使われるマーチャントアカウントのコード"
-
-#. module: payment_adyen
-#. odoo-python
-#: code:addons/payment_adyen/models/payment_provider.py:0
-msgid "The communication with the API failed. Details: %s"
-msgstr "APIとの連絡に失敗しました。詳細: %s"
+msgstr "このプロバイダを使用するために使われる加盟店アカウントのコード"
 
 #. module: payment_adyen
 #: model:ir.model.fields,help:payment_adyen.field_payment_provider__code
 msgid "The technical code of this payment provider."
 msgstr "この決済プロバイダーのテクニカルコード。"
-
-#. module: payment_adyen
-#. odoo-python
-#: code:addons/payment_adyen/models/payment_transaction.py:0
-msgid "The transaction is not linked to a token."
-msgstr "取引はトークンにリンクしていません。"
 
 #. module: payment_adyen
 #: model:ir.model.fields,help:payment_adyen.field_payment_token__adyen_shopper_reference
@@ -266,8 +240,8 @@ msgstr "このトークンを所有している取引先の一意参照"
 #. module: payment_adyen
 #. odoo-python
 #: code:addons/payment_adyen/models/payment_transaction.py:0
-msgid "The void of the transaction with reference %s failed."
-msgstr "参照%sの取引の無効化に失敗しました。"
+msgid "The void of the transaction %s failed."
+msgstr "取引%sの無効化に失敗しました。"
 
 #. module: payment_adyen
 #. odoo-python

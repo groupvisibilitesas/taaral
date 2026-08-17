@@ -1,6 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import contextlib
 import logging
 import requests
 from lxml import etree
@@ -126,7 +125,8 @@ class ResPartner(models.Model):
         return etree.fromstring(response.content)
 
     @api.model
-    def _check_peppol_participant_exists(self, participant_info, edi_identification, check_company=False):
+    @handle_demo
+    def _check_peppol_participant_exists(self, participant_info, edi_identification):
         service_href = ''
         if isinstance(participant_info, dict):
             participant_identifier = participant_info.get('identifier', '')
@@ -140,26 +140,10 @@ class ResPartner(models.Model):
             if service_metadata is not None:
                 service_href = service_metadata.attrib.get('href', '')
 
-        # peppol identifier must be case insensitive
-        if edi_identification.lower() != participant_identifier.lower() or 'hermes-belgium' in service_href:
-            # all Belgian companies are pre-registered on hermes-belgium, so they will
-            # technically have an existing SMP url but they are not real Peppol participants
-            return False
-
-        if check_company:
-            # if we are only checking company's existence on the network, we don't care about what documents they can receive
-            if not service_href:
-                return True
-
-            access_point_description = True
-            with contextlib.suppress(requests.exceptions.RequestException, etree.XMLSyntaxError):
-                response = requests.get(service_href, timeout=TIMEOUT)
-                if response.status_code == 200:
-                    access_point_info = etree.fromstring(response.content)
-                    access_point_description = access_point_info.findtext('.//{*}ServiceDescription')
-            return access_point_description
-
-        return True
+        # all Belgian companies are pre-registered on hermes-belgium, so they will
+        # technically have an existing SMP url but they are not real Peppol participants
+        # NOTE: peppol identifier must be case insensitive
+        return edi_identification.lower() == participant_identifier.lower() and 'hermes-belgium' not in service_href
 
     @api.model
     def _peppol_lookup_participant(self, edi_identification):
@@ -197,12 +181,9 @@ class ResPartner(models.Model):
 
         return decoded_response.get('result')
 
-    def _check_document_type_support(self, participant_info, ubl_cii_format):
-        if self.env.context.get('check_self_billing_support'):
-            # This context key can be `True` only if the `account_peppol_selfbilling` module is installed.
-            expected_customization_id = self.env['account.edi.xml.ubl_bis3']._get_selfbilling_customization_ids()[ubl_cii_format]
-        else:
-            expected_customization_id = self.env['account.edi.xml.ubl_21']._get_customization_ids()[ubl_cii_format]
+    def _check_document_type_support(self, participant_info, ubl_cii_format, process_type='billing'):
+        edi_builder = self._get_edi_builder(ubl_cii_format)
+        expected_customization_id = edi_builder._get_customization_id(process_type=process_type)
         if isinstance(participant_info, dict):
             return any(expected_customization_id in (service.get('document_id') or '') for service in participant_info.get('services', []))
 
@@ -229,7 +210,11 @@ class ResPartner(models.Model):
                 continue
 
             if all_companies is None:
-                all_companies = self.env['res.company'].sudo().search([])
+                # We only check it for companies that are actually using Peppol.
+                can_send = self.env['account_edi_proxy_client.user']._get_can_send_domain()
+                all_companies = self.env['res.company'].sudo().search([
+                    ('account_peppol_proxy_state', 'in', can_send),
+                ])
 
             for company in all_companies:
                 partner.button_account_peppol_check_partner_endpoint(company=company)
@@ -237,11 +222,6 @@ class ResPartner(models.Model):
     # -------------------------------------------------------------------------
     # LOW-LEVEL METHODS
     # -------------------------------------------------------------------------
-
-    def write(self, vals):
-        res = super().write(vals)
-        self._update_peppol_state_per_company(vals=vals)
-        return res
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -266,7 +246,6 @@ class ResPartner(models.Model):
     # BUSINESS ACTIONS
     # -------------------------------------------------------------------------
 
-    @handle_demo
     def button_account_peppol_check_partner_endpoint(self, company=None):
         """ A basic check for whether a participant is reachable at the given
         Peppol participant ID - peppol_eas:peppol_endpoint (ex: '9999:test')
@@ -290,15 +269,14 @@ class ResPartner(models.Model):
             self_partner.peppol_eas,
             self_partner._get_peppol_edi_format(),
         )
-
-        if new_value != old_value:
+        if old_value != new_value:
             self_partner.peppol_verification_state = new_value
             self._log_verification_state_update(company, old_value, self_partner.peppol_verification_state)
         return False
 
     @api.model
     @handle_demo
-    def _get_peppol_verification_state(self, peppol_endpoint, peppol_eas, invoice_edi_format):
+    def _get_peppol_verification_state(self, peppol_endpoint, peppol_eas, invoice_edi_format, process_type='billing'):
         if not (peppol_eas and peppol_endpoint) or invoice_edi_format not in self._get_peppol_formats():
             return 'not_verified'
 
@@ -309,13 +287,19 @@ class ResPartner(models.Model):
         else:
             is_participant_on_network = self._check_peppol_participant_exists(participant_info, edi_identification)
             if is_participant_on_network:
-                is_valid_format = self._check_document_type_support(participant_info, invoice_edi_format)
+                is_valid_format = self._check_document_type_support(participant_info, invoice_edi_format, process_type=process_type)
                 if is_valid_format:
                     return 'valid'
                 else:
                     return 'not_valid_format'
             else:
                 return 'not_valid'
+
+    def _get_frontend_writable_fields(self):
+        frontend_writable_fields = super()._get_frontend_writable_fields()
+        frontend_writable_fields.update({'peppol_eas', 'peppol_endpoint'})
+
+        return frontend_writable_fields
 
     def _get_partners_to_skip_peppol_computation(self):
         return self.env['res.company'].search([

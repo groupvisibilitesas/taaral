@@ -1,6 +1,6 @@
 import { describe, test, tick } from "@odoo/hoot";
-import { deleteBackward, simulateArrowKeyPress, undo } from "../_helpers/user_actions";
-import { testEditor } from "../_helpers/editor";
+import { base64Img, testEditor } from "../_helpers/editor";
+import { deleteBackward, deleteImage, simulateArrowKeyPress, undo } from "../_helpers/user_actions";
 
 describe("delete selection involving links", () => {
     test("should remove link", async () => {
@@ -30,6 +30,23 @@ describe("delete selection involving links", () => {
             contentAfterEdit:
                 '<p>\ufeff<a href="#" class="o_link_in_selection">\ufeff[]\ufeff</a>\ufeffdef</p>',
             contentAfter: "<p>[]def</p>",
+        });
+    });
+});
+
+describe("delete images in a link", () => {
+    test("should remove link", async () => {
+        await testEditor({
+            contentBefore: `<p>x<a href="http://test.test/">[<img src="${base64Img}">]</a></p>`,
+            stepFunction: deleteImage,
+            contentAfter: `<p>x[]</p>`,
+        });
+    });
+    test("should not remove unremovable link", async () => {
+        await testEditor({
+            contentBefore: `<p>x<a class="oe_unremovable" href="http://test.test/">[<img src="${base64Img}">]</a></p>`,
+            stepFunction: deleteImage,
+            contentAfter: `<p>x<a class="oe_unremovable" href="http://test.test/">[]</a></p>`,
         });
     });
 });
@@ -74,7 +91,7 @@ describe("empty list items, starting and ending with links", () => {
                 contentBefore,
                 stepFunction: deleteBackward,
                 contentAfterEdit:
-                    '<ul><li>ab</li><li placeholder="List" class="o-we-hint">[]<br></li><li>ij</li></ul>',
+                    '<ul><li>ab</li><li o-we-hint-text="List" class="o-we-hint">[]<br></li><li>ij</li></ul>',
                 contentAfter: "<ul><li>ab</li><li>[]<br></li><li>ij</li></ul>",
             });
         });

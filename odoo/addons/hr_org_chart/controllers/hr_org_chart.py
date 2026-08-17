@@ -9,7 +9,7 @@ from odoo.http import request
 class HrOrgChartController(http.Controller):
     _managers_level = 5  # FP request
 
-    def _check_employee(self, employee_id, **kw):
+    def _get_employee(self, employee_id, **kw):
         employee_id = int(employee_id) if employee_id else False
 
         context = kw.get('context', request.env.context)
@@ -17,6 +17,7 @@ class HrOrgChartController(http.Controller):
             cids = context['allowed_company_ids']
         else:
             cids = [request.env.company.id]
+
         Employee = request.env['hr.employee.public'].with_context(allowed_company_ids=cids)
         employee = Employee.browse(employee_id)
         return employee if employee.has_access('read') else Employee.browse()
@@ -29,22 +30,21 @@ class HrOrgChartController(http.Controller):
             link='/mail/view?model=%s&res_id=%s' % ('hr.employee.public', employee.id,),
             job_id=job.id,
             job_name=job.name or '',
-            job_title=employee.job_title or '',
             direct_sub_count=len(employee.child_ids - employee),
             indirect_sub_count=employee.child_all_count,
+            write_date=int(employee.write_date.timestamp() * 1000) if employee.write_date else 0,  # ms for js; 0 when missing
         )
 
-    @http.route('/hr/get_redirect_model', type='json', auth='user')
+    @http.route('/hr/get_redirect_model', type='jsonrpc', auth='user')
     def get_redirect_model(self):
         if request.env['hr.employee'].has_access('read'):
             return 'hr.employee'
         return 'hr.employee.public'
 
-    @http.route('/hr/get_org_chart', type='json', auth='user')
-    def get_org_chart(self, employee_id, **kw):
-        employee = self._check_employee(employee_id, **kw)
-        new_parent_id = kw.get('context')['new_parent_id']
-        new_parent = self._check_employee(new_parent_id, **kw)
+    @http.route('/hr/get_org_chart', type='jsonrpc', auth='user')
+    def get_org_chart(self, employee_id, new_parent_id=None, **kw):
+        employee = self._get_employee(employee_id, **kw)
+        new_parent = self._get_employee(new_parent_id, **kw).sudo()
         if not employee:  # to check
             return {
                 'managers': [],
@@ -57,9 +57,7 @@ class HrOrgChartController(http.Controller):
         max_level = (kw.get('context')['max_level'] or self._managers_level) + 1
         while current_parent and current != current_parent and employee.sudo() != current_parent and len(ancestors) < max_level:
             current = current_parent
-            current_parent = self._check_employee(
-                current.parent_id if current != employee or not new_parent else new_parent
-            )
+            current_parent = current.parent_id if current != employee or not new_parent else new_parent
             if current_parent in ancestors:
                 break
             ancestors += current
@@ -77,7 +75,7 @@ class HrOrgChartController(http.Controller):
         values['managers'].reverse()
         return values
 
-    @http.route('/hr/get_subordinates', type='json', auth='user')
+    @http.route('/hr/get_subordinates', type='jsonrpc', auth='user')
     def get_subordinates(self, employee_id, subordinates_type=None, **kw):
         """
         Get employee subordinates.
@@ -85,14 +83,14 @@ class HrOrgChartController(http.Controller):
             - 'indirect'
             - 'direct'
         """
-        employee = self._check_employee(employee_id, **kw)
+        employee = self._get_employee(employee_id, **kw)
         if not employee:  # to check
             return {}
 
         if subordinates_type == 'direct':
             res = (employee.child_ids - employee).ids
         elif subordinates_type == 'indirect':
-            res = (employee.subordinate_ids - employee.child_ids).ids
+            res = (employee.subordinate_ids - employee.child_ids.employee_id).ids
         else:
             res = employee.subordinate_ids.ids
 

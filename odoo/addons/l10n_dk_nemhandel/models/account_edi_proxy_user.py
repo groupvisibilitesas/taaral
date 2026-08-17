@@ -73,7 +73,7 @@ class AccountEdiProxyClientUser(models.Model):
 
     def _cron_nemhandel_get_new_documents(self):
         edi_users = self.search([('proxy_type', '=', 'nemhandel'), ('company_id.l10n_dk_nemhandel_proxy_state', '=', 'receiver')])
-        edi_users._nemhandel_get_new_documents()
+        edi_users._nemhandel_get_new_documents(skip_no_journal=True)
 
     def _cron_nemhandel_get_message_status(self):
         edi_users = self.search([('proxy_type', '=', 'nemhandel'), ('company_id.l10n_dk_nemhandel_proxy_state', '=', 'receiver')])
@@ -133,7 +133,7 @@ class AccountEdiProxyClientUser(models.Model):
             'refresh_token': response['refresh_token'],
         })
 
-    def _nemhandel_import_invoice(self, attachment, nemhandel_state, uuid):
+    def _nemhandel_import_invoice(self, attachment, nemhandel_state, uuid, journal=None):
         """Save new documents in an accounting journal, when one is specified on the company.
 
         :param attachment: the new document
@@ -142,7 +142,7 @@ class AccountEdiProxyClientUser(models.Model):
         :return: the created invoice if the document was saved, `False` if it was not
         """
         self.ensure_one()
-        journal = self.company_id.nemhandel_purchase_journal_id
+        journal = journal or self.company_id.nemhandel_purchase_journal_id
         if not journal:
             return False
 
@@ -155,7 +155,7 @@ class AccountEdiProxyClientUser(models.Model):
         if 'is_in_extractable_state' in move._fields:
             move.is_in_extractable_state = False
 
-        move._extend_with_attachments(attachment, new=True)
+        move._extend_with_attachments(move._to_files_data(attachment), new=True)
         move._message_log(
             body=_(
                 "Nemhandel document (UUID: %(uuid)s) has been received successfully.",
@@ -164,9 +164,9 @@ class AccountEdiProxyClientUser(models.Model):
             attachment_ids=attachment.ids,
         )
         attachment.write({'res_model': 'account.move', 'res_id': move.id})
-        return move
+        return {'uuid': uuid, 'move': move}
 
-    def _nemhandel_get_new_documents(self, batch_size=None):
+    def _nemhandel_get_new_documents(self, skip_no_journal=True, batch_size=None):
         job_count = batch_size or BATCH_SIZE
         need_retrigger = False
         params = {
@@ -177,6 +177,14 @@ class AccountEdiProxyClientUser(models.Model):
         }
         for edi_user in self:
             edi_user = edi_user.with_company(edi_user.company_id)
+            journal = edi_user.company_id.nemhandel_purchase_journal_id
+            if not journal:
+                msg = _('Please set a journal for Nemhandel invoices on %s before receiving documents.', edi_user.company_id.display_name)
+                if skip_no_journal:
+                    _logger.warning(msg)
+                else:
+                    raise UserError(msg)
+
             params['domain']['receiver_identifier'] = edi_user.edi_identification
             try:
                 # request all messages that haven't been acknowledged
@@ -208,7 +216,7 @@ class AccountEdiProxyClientUser(models.Model):
 
             processed_uuids, moves = edi_user._nemhandel_process_new_messages(all_messages)
 
-            if not tools.config['test_enable']:
+            if not (modules.module.current_test or tools.config['test_enable']):
                 self.env.cr.commit()
             if processed_uuids:
                 edi_user._call_nemhandel_proxy(
@@ -242,14 +250,15 @@ class AccountEdiProxyClientUser(models.Model):
                     "mimetype": "application/xml",
                 }
             )
-            if move := self._nemhandel_import_invoice(attachment, content["state"], uuid):
+            if uuid_move := self._nemhandel_import_invoice(attachment, content["state"], uuid, journal=self.company_id.nemhandel_purchase_journal_id):
                 # Only acknowledge when we saved the document somewhere
                 processed_uuids.append(uuid)
-                moves += move
+                moves += uuid_move.get('move', self.env['account.move'])
         return processed_uuids, moves
 
     def _nemhandel_post_process_new_messages(self, moves):
         self.ensure_one()
+        self.company_id.nemhandel_purchase_journal_id._notify_einvoices_received(moves)
         for partner in moves.partner_id.filtered(lambda partner: partner.nemhandel_verification_state in ('not_verified', False)):
             partner.button_nemhandel_check_partner_endpoint()
 
@@ -323,6 +332,7 @@ class AccountEdiProxyClientUser(models.Model):
 
     def _nemhandel_get_participant_status(self):
         for edi_user in self:
+            edi_user = edi_user.with_company(edi_user.company_id)
             try:
                 proxy_user = edi_user._call_nemhandel_proxy("/api/nemhandel/1/participant_status")
             except AccountEdiProxyError as e:
@@ -351,7 +361,7 @@ class AccountEdiProxyClientUser(models.Model):
 
         if company.l10n_dk_nemhandel_proxy_state != 'in_verification':
             # a participant can only try registering as a receiver if they are not registered
-            nemhandel_state_translated = dict(company._fields['l10n_dk_nemhandel_proxy_state'].selection)[company.l10n_dk_nemhandel_proxy_state]
+            nemhandel_state_translated = dict(company._fields['l10n_dk_nemhandel_proxy_state']._description_selection(self.env))[company.l10n_dk_nemhandel_proxy_state]
             raise UserError(_('Cannot register a user with a %s application', nemhandel_state_translated))
 
         company_vat = company.vat[2:] if company.vat and company.vat[:2].isalpha() else company.vat

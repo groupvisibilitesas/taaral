@@ -128,7 +128,8 @@
                                 </td>
                                 <td colspan="2">
                                     <ul class="list-inline">
-                                        <li t-if="company.vat"><t t-out="company.account_fiscal_country_id.vat_label or 'Tax ID'"/>:
+                                        <t t-set="default_vat_label">Tax ID</t>
+                                        <li t-if="company.vat"><t t-out="company.account_fiscal_country_id.vat_label or default_vat_label"/>:
                                             <span t-if="forced_vat" t-out="forced_vat"/>
                                             <span t-else="" t-field="company.vat"/>
                                         </li>
@@ -273,6 +274,44 @@
                         <t t-if="o.move_type == 'in_invoice'">Vendor Bill</t>
                     </span>
                 </t>
+            </xpath>
+            <!-- Insert Position Column as the First Column in the Table Header -->
+            <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[1]" position="before">
+                <t t-if="o.company_id.has_position_column">
+                    <th name="th_position" class="text-start">Position</th>
+                </t>
+            </xpath>
+            <!-- Insert Empty Column for Position Numbers to Handle Section Misalignment -->
+            <xpath expr="//td[@name='line_name_td']" position="after">
+                <t t-if="o.company_id.has_position_column">
+                    <td/>
+                </t>
+            </xpath>
+
+            <td name="account_invoice_line_name_grouped_desktop" position="after">
+                <td t-if="o.company_id.has_position_column"/>
+            </td>
+
+            <xpath expr="//table[@name='invoice_line_table']/tbody//t[1]" position="before">
+                <t t-if="o.company_id.has_position_column">
+                    <t t-set="line_number" t-value="1"/>
+                 </t>
+            </xpath>
+            <xpath expr="//table[@name='invoice_line_table']/tbody//tr[1]//td[1]" position="before">
+                <t t-if="o.company_id.has_position_column">
+                    <td class="text-start" t-esc="line_number"/>
+                    <t t-set="line_number" t-value="line_number+1"/>
+                 </t>
+            </xpath>
+
+            <!--adding currency to unit price-->
+            <xpath expr="//td[@name='td_price_unit']/span" position="attributes">
+                <attribute name="t-options">{"widget": "monetary", "display_currency": o.currency_id}</attribute>
+            </xpath>
+
+            <!-- Insert the payments terms under the total line-->
+            <xpath expr="//div[@id='payment_term']" position="before">
+                <hr class="w-100 border-0"/>
             </xpath>
         </template>
     </data>

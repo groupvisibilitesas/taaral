@@ -2,50 +2,47 @@
 # This file contains the translation of the following modules:
 # * auth_passkey
 #
-# Translators:
-# NumerSpiral HBG, 2025
-# Peter Lawrence Romão <peterromao@yahoo.co.uk>, 2025
-# Maitê Dietze, 2025
-# Wil Odoo, 2025
-# Daniel Reis, 2025
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
-# "Pedro Silva (Exo)" <pedrocs@exo.pt>, 2026.
+# "Tiffany Chang (tic)" <tic@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~18.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-01-27 23:14+0000\n"
-"Last-Translator: \"Pedro Silva (Exo)\" <pedrocs@exo.pt>\n"
-"Language-Team: Portuguese <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-02 14:23+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Portuguese <https://translate.odoo.com/projects/odoo-19/"
 "auth_passkey/pt/>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : "
-"((n != 0 && n % 1000000 == 0) ? 1 : 2);\n"
-"X-Generator: Weblate 5.14.3\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: auth_passkey
-#: model_terms:ir.ui.view,arch_db:auth_passkey.auth_passkey_login
-msgid "- or -"
-msgstr "- ou -"
+#: model_terms:ir.ui.view,arch_db:auth_passkey.auth_passkey_users_form
+#: model_terms:ir.ui.view,arch_db:auth_passkey.auth_passkey_users_preferences
+msgid ""
+"<span class=\"text-muted\">\n"
+"                            Recommended for extra security.\n"
+"                        </span>"
+msgstr ""
 
 #. module: auth_passkey
 #: model_terms:ir.ui.view,arch_db:auth_passkey.res_users_identitycheck_view_form_passkey
 msgid "<strong>Use your passkey to authenticate</strong>"
-msgstr "<strong>Use a sua chave de acesso para autenticar</strong>"
+msgstr "<strong>Use sua chave de acesso para autenticação</strong>"
 
 #. module: auth_passkey
+#: model_terms:ir.ui.view,arch_db:auth_passkey.auth_passkey_users_form
 #: model_terms:ir.ui.view,arch_db:auth_passkey.auth_passkey_users_preferences
 msgid "Add Passkey"
-msgstr "Adicionar Chave de Acesso"
+msgstr "Adicionar chave de acesso"
 
 #. module: auth_passkey
 #: model:ir.model.fields,field_description:auth_passkey.field_res_users_identitycheck__auth_method
 msgid "Auth Method"
-msgstr "Método de Autenticação"
+msgstr "Método de autenticação"
 
 #. module: auth_passkey
 #: model:ir.model.fields,field_description:auth_passkey.field_res_users__auth_passkey_key_ids
@@ -75,12 +72,16 @@ msgid "Create Passkey Wizard"
 msgstr "Assistente de criação de chave de acesso"
 
 #. module: auth_passkey
+#: model:ir.model.fields,field_description:auth_passkey.field_auth_passkey_key__create_uid
+msgid "Create Uid"
+msgstr "Criar UID"
+
+#. module: auth_passkey
 #: model:ir.model,name:auth_passkey.model_auth_passkey_key_create
 msgid "Create a Passkey"
 msgstr "Criar chave de acesso"
 
 #. module: auth_passkey
-#: model:ir.model.fields,field_description:auth_passkey.field_auth_passkey_key__create_uid
 #: model:ir.model.fields,field_description:auth_passkey.field_auth_passkey_key_create__create_uid
 msgid "Created by"
 msgstr "Criado por"
@@ -92,33 +93,30 @@ msgid "Created on"
 msgstr "Criado em"
 
 #. module: auth_passkey
-#: model_terms:ir.ui.view,arch_db:auth_passkey.auth_passkey_users_form
-#: model_terms:ir.ui.view,arch_db:auth_passkey.auth_passkey_users_preferences
-msgid "Created:"
-msgstr "Criado:"
-
-#. module: auth_passkey
 #: model:ir.model.fields,field_description:auth_passkey.field_auth_passkey_key__credential_identifier
 msgid "Credential Identifier"
 msgstr "Identificador de credenciais"
 
 #. module: auth_passkey
-#: model_terms:ir.ui.view,arch_db:auth_passkey.auth_passkey_users_form
-#: model_terms:ir.ui.view,arch_db:auth_passkey.auth_passkey_users_preferences
+#: model_terms:ir.ui.view,arch_db:auth_passkey.auth_passkey_key_view_kanban
 msgid "Delete"
-msgstr "Eliminar"
+msgstr "Excluir"
 
 #. module: auth_passkey
 #: model:ir.model.fields,field_description:auth_passkey.field_auth_passkey_key__display_name
 #: model:ir.model.fields,field_description:auth_passkey.field_auth_passkey_key_create__display_name
+#: model:ir.model.fields,field_description:auth_passkey.field_res_users__display_name
+#: model:ir.model.fields,field_description:auth_passkey.field_res_users_identitycheck__display_name
 msgid "Display Name"
-msgstr "Nome a Exibir"
+msgstr "Nome exibido"
 
 #. module: auth_passkey
 #: model:ir.model.fields,field_description:auth_passkey.field_auth_passkey_key__id
 #: model:ir.model.fields,field_description:auth_passkey.field_auth_passkey_key_create__id
+#: model:ir.model.fields,field_description:auth_passkey.field_res_users__id
+#: model:ir.model.fields,field_description:auth_passkey.field_res_users_identitycheck__id
 msgid "ID"
-msgstr "Id."
+msgstr "ID"
 
 #. module: auth_passkey
 #. odoo-python
@@ -134,24 +132,18 @@ msgstr ""
 #: model:ir.model.fields,field_description:auth_passkey.field_auth_passkey_key__write_uid
 #: model:ir.model.fields,field_description:auth_passkey.field_auth_passkey_key_create__write_uid
 msgid "Last Updated by"
-msgstr "Última Atualização por"
+msgstr "Última atualização por"
 
 #. module: auth_passkey
 #: model:ir.model.fields,field_description:auth_passkey.field_auth_passkey_key__write_date
 #: model:ir.model.fields,field_description:auth_passkey.field_auth_passkey_key_create__write_date
 msgid "Last Updated on"
-msgstr "Última Atualização em"
+msgstr "Última atualização em"
 
 #. module: auth_passkey
-#: model_terms:ir.ui.view,arch_db:auth_passkey.auth_passkey_users_form
-#: model_terms:ir.ui.view,arch_db:auth_passkey.auth_passkey_users_preferences
+#: model_terms:ir.ui.view,arch_db:auth_passkey.auth_passkey_key_view_kanban
 msgid "Last used:"
 msgstr "Usado recentemente:"
-
-#. module: auth_passkey
-#: model_terms:ir.ui.view,arch_db:auth_passkey.auth_passkey_login
-msgid "Log in with Passkey"
-msgstr "Entrar com Chave de Acesso"
 
 #. module: auth_passkey
 #: model:ir.model.fields,field_description:auth_passkey.field_auth_passkey_key__name
@@ -177,15 +169,6 @@ msgid "Passkeys"
 msgstr "Chaves de acesso"
 
 #. module: auth_passkey
-#: model_terms:ir.ui.view,arch_db:auth_passkey.auth_passkey_users_preferences
-msgid ""
-"Passkeys are a replacement for your username and password, offering a more "
-"secure way of logging in."
-msgstr ""
-"As chaves de acesso substituem o nome de usuário e a senha, oferecendo uma "
-"maneira mais segura de fazer login."
-
-#. module: auth_passkey
 #: model:ir.model,name:auth_passkey.model_res_users_identitycheck
 msgid "Password Check Wizard"
 msgstr "Assistente de verificação de senha"
@@ -196,7 +179,7 @@ msgid "Public Key"
 msgstr "Chave pública"
 
 #. module: auth_passkey
-#: model_terms:ir.ui.view,arch_db:auth_passkey.auth_passkey_users_preferences
+#: model_terms:ir.ui.view,arch_db:auth_passkey.auth_passkey_key_view_kanban
 msgid "Rename"
 msgstr "Renomear"
 
@@ -209,13 +192,13 @@ msgstr "Renomear chave de acesso"
 #. module: auth_passkey
 #: model_terms:ir.ui.view,arch_db:auth_passkey.auth_passkey_key_rename
 msgid "Save"
-msgstr "Guardar"
+msgstr "Salvar"
 
 #. module: auth_passkey
 #. odoo-python
 #: code:addons/auth_passkey/models/res_users_identitycheck.py:0
 msgid "Security Control"
-msgstr "Controlo de Segurança"
+msgstr "Controle de segurança"
 
 #. module: auth_passkey
 #: model:ir.model.fields,field_description:auth_passkey.field_auth_passkey_key__sign_count
@@ -239,6 +222,11 @@ msgid "Use Passkey"
 msgstr "Usar chave de acesso"
 
 #. module: auth_passkey
+#: model_terms:ir.ui.view,arch_db:auth_passkey.auth_passkey_login_oauth
+msgid "Use a Passkey"
+msgstr "Usar chave de acesso"
+
+#. module: auth_passkey
 #: model_terms:ir.ui.view,arch_db:auth_passkey.res_users_identitycheck_view_form_passkey
 msgid "Use password"
 msgstr "Usar senha"
@@ -246,4 +234,14 @@ msgstr "Usar senha"
 #. module: auth_passkey
 #: model:ir.model,name:auth_passkey.model_res_users
 msgid "User"
-msgstr "Utilizador"
+msgstr "Usuário"
+
+#~ msgid "Created:"
+#~ msgstr "Criado:"
+
+#~ msgid ""
+#~ "Passkeys are a replacement for your username and password, offering a "
+#~ "more secure way of logging in."
+#~ msgstr ""
+#~ "As chaves de acesso substituem o nome de usuário e a senha, oferecendo "
+#~ "uma maneira mais segura de fazer login."

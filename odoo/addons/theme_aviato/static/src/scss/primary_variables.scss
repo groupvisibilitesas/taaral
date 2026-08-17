@@ -47,6 +47,10 @@ $o-website-values-palettes: (
     ),
 );
 
+$default-16: map-get($o-color-palettes, 'default-16');
+$default-16: map-merge($default-16, ('footer': 5));
+$o-color-palettes: map-merge($o-color-palettes, ('default-16': $default-16));
+
 //------------------------------------------------------------------------------
 // Fonts
 //------------------------------------------------------------------------------
@@ -96,5 +100,5 @@ $o-theme-font-configs: (
 // Background Shapes
 //------------------------------------------------------------------------------
 
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Wavy/21', (2: 1));
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Bold/07_001', (2: 3));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Wavy/21', (2: 1));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Bold/07_001', (2: 3));

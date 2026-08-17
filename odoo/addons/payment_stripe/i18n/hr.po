@@ -3,17 +3,19 @@
 # * payment_stripe
 #
 # Translators:
-# Tina Milas, 2024
-# Bole <bole@dajmi5.com>, 2024
+# Martin Trigaux, 2019
+# Bole <bole@dajmi5.com>, 2019
+# Karolina Tonković <karolina.tonkovic@storm.hr>, 2019
+# Tina Milas, 2019
 # Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~12.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:38+0000\n"
-"PO-Revision-Date: 2026-05-09 09:03+0000\n"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-05 22:17+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Croatian <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Croatian <https://translate.odoo.com/projects/odoo-19/"
 "payment_stripe/hr/>\n"
 "Language: hr\n"
 "MIME-Version: 1.0\n"
@@ -21,18 +23,18 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.17\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: payment_stripe
 #. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/payment_form.js:0
+#: code:addons/payment_stripe/static/src/interactions/payment_form.js:0
 msgid "Cannot display the payment form"
 msgstr ""
 
 #. module: payment_stripe
 #: model:ir.model.fields,field_description:payment_stripe.field_payment_provider__code
 msgid "Code"
-msgstr "Šifra"
+msgstr "Kod"
 
 #. module: payment_stripe
 #: model_terms:ir.ui.view,arch_db:payment_stripe.payment_provider_form
@@ -40,16 +42,17 @@ msgid "Connect Stripe"
 msgstr ""
 
 #. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_provider.py:0
-msgid "Could not establish the connection to the API."
-msgstr ""
+#. odoo-javascript
+#: code:addons/payment_stripe/static/src/interactions/express_checkout.js:0
+msgid "Delivery"
+msgstr "Otprema"
 
 #. module: payment_stripe
-#. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/express_checkout_form.js:0
-msgid "Delivery"
-msgstr "Dostava"
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_provider__display_name
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_token__display_name
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_transaction__display_name
+msgid "Display Name"
+msgstr "Naziv"
 
 #. module: payment_stripe
 #: model_terms:ir.ui.view,arch_db:payment_stripe.payment_provider_form
@@ -58,7 +61,7 @@ msgstr ""
 
 #. module: payment_stripe
 #. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/express_checkout_form.js:0
+#: code:addons/payment_stripe/static/src/interactions/express_checkout.js:0
 msgid "Free Shipping"
 msgstr "Besplatna dostava"
 
@@ -73,6 +76,13 @@ msgid "Get your Secret and Publishable keys"
 msgstr ""
 
 #. module: payment_stripe
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_provider__id
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_token__id
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_transaction__id
+msgid "ID"
+msgstr "ID"
+
+#. module: payment_stripe
 #: model:ir.model.fields,help:payment_stripe.field_payment_provider__stripe_webhook_secret
 msgid ""
 "If a webhook is enabled on your Stripe account, this signing secret must be "
@@ -81,14 +91,8 @@ msgstr ""
 
 #. module: payment_stripe
 #. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/payment_form.js:0
+#: code:addons/payment_stripe/static/src/interactions/payment_form.js:0
 msgid "Incorrect payment details"
-msgstr ""
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_transaction.py:0
-msgid "No transaction found matching reference %s."
 msgstr ""
 
 #. module: payment_stripe
@@ -100,12 +104,12 @@ msgstr ""
 #. module: payment_stripe
 #: model:ir.model,name:payment_stripe.model_payment_provider
 msgid "Payment Provider"
-msgstr "Pružatelj usluge naplate"
+msgstr "Pružatelj plaćanja"
 
 #. module: payment_stripe
 #: model:ir.actions.act_window,name:payment_stripe.action_payment_provider_onboarding
 msgid "Payment Providers"
-msgstr "Pružatelji usluge naplate"
+msgstr "Pružatelj usluge naplate"
 
 #. module: payment_stripe
 #: model:ir.model,name:payment_stripe.model_payment_token
@@ -119,9 +123,9 @@ msgstr "Transakcija plaćanja"
 
 #. module: payment_stripe
 #. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/payment_form.js:0
+#: code:addons/payment_stripe/static/src/interactions/payment_form.js:0
 msgid "Payment processing failed"
-msgstr "Obrada plaćanja nije uspjela"
+msgstr ""
 
 #. module: payment_stripe
 #. odoo-python
@@ -137,19 +141,13 @@ msgstr ""
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
-msgid "Received data with invalid intent status: %s"
+msgid "Received data with invalid intent status: %s."
 msgstr ""
 
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
 msgid "Received data with missing intent status."
-msgstr ""
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_transaction.py:0
-msgid "Received data with missing merchant reference"
 msgstr ""
 
 #. module: payment_stripe
@@ -184,34 +182,6 @@ msgstr ""
 
 #. module: payment_stripe
 #. odoo-python
-#: code:addons/payment_stripe/models/payment_provider.py:0
-msgid "Stripe Proxy error: %(error)s"
-msgstr ""
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_provider.py:0
-msgid "Stripe Proxy: An error occurred when communicating with the proxy."
-msgstr ""
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_provider.py:0
-msgid "Stripe Proxy: Could not establish the connection."
-msgstr ""
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_provider.py:0
-#: code:addons/payment_stripe/models/payment_transaction.py:0
-msgid ""
-"The communication with the API failed.\n"
-"Stripe gave us the following info about the problem:\n"
-"'%s'"
-msgstr ""
-
-#. module: payment_stripe
-#. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
 msgid "The customer left the payment page."
 msgstr ""
@@ -233,12 +203,6 @@ msgstr ""
 #: model:ir.model.fields,help:payment_stripe.field_payment_provider__code
 msgid "The technical code of this payment provider."
 msgstr "Tehnički kod ovog pružatelja usluga plaćanja."
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_transaction.py:0
-msgid "The transaction is not linked to a token."
-msgstr ""
 
 #. module: payment_stripe
 #. odoo-python
@@ -288,7 +252,7 @@ msgstr ""
 
 #. module: payment_stripe
 #. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/express_checkout_form.js:0
+#: code:addons/payment_stripe/static/src/interactions/express_checkout.js:0
 msgid "Your order"
 msgstr ""
 
@@ -297,3 +261,9 @@ msgstr ""
 #: code:addons/payment_stripe/models/payment_provider.py:0
 msgid "Your web domain was successfully verified."
 msgstr ""
+
+#~ msgid "Payment Acquirer"
+#~ msgstr "Stjecatelj plaćanja"
+
+#~ msgid "Provider"
+#~ msgstr "Davatelj "

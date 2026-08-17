@@ -3,17 +3,19 @@
 # * payment_paypal
 #
 # Translators:
-# Wil Odoo, 2024
-#
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Pavol Krnáč <pavol.krnac@ekoenergo.sk>, 2018
+# Jaroslav Bosansky <jaro.bosansky@ekoenergo.sk>, 2018
+# Miroslav Fic <mirko.fic@gmail.com>, 2018
+# gebri <gebri@inmail.sk>, 2018
+# Tomáš Píšek <Tomas.Pisek@seznam.cz>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~11.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:38+0000\n"
-"PO-Revision-Date: 2026-04-01 16:54+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Slovak <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-07 01:16+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Slovak <https://translate.odoo.com/projects/odoo-19/"
 "payment_paypal/sk/>\n"
 "Language: sk\n"
 "MIME-Version: 1.0\n"
@@ -21,7 +23,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && "
 "n >= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: payment_paypal
 #: model_terms:ir.ui.view,arch_db:payment_paypal.payment_provider_form
@@ -41,29 +43,35 @@ msgstr "Kód"
 #. module: payment_paypal
 #. odoo-python
 #: code:addons/payment_paypal/models/payment_provider.py:0
-msgid "Could not establish the connection to the API."
-msgstr "Nepodarilo sa nadviazať spojenie s API."
-
-#. module: payment_paypal
-#. odoo-python
-#: code:addons/payment_paypal/models/payment_provider.py:0
 msgid "Could not generate a new access token."
 msgstr "Nepodarilo sa vygenerovať nový prístupový token."
 
 #. module: payment_paypal
+#: model:ir.model.fields,field_description:payment_paypal.field_payment_provider__display_name
+#: model:ir.model.fields,field_description:payment_paypal.field_payment_transaction__display_name
+msgid "Display Name"
+msgstr "Zobrazovaný názov"
+
+#. module: payment_paypal
 #: model:ir.model.fields,field_description:payment_paypal.field_payment_provider__paypal_email_account
 msgid "Email"
-msgstr "Email"
+msgstr "E-mail"
 
 #. module: payment_paypal
 #: model_terms:ir.ui.view,arch_db:payment_paypal.payment_provider_form
 msgid "Generate your webhook"
-msgstr "Vytvorte svoj webhook"
+msgstr "Vytvorte si webhook"
 
 #. module: payment_paypal
 #: model_terms:ir.ui.view,arch_db:payment_paypal.payment_provider_form
 msgid "How to configure your paypal account?"
 msgstr "Ako konfigurovať váš Paypal účet?"
+
+#. module: payment_paypal
+#: model:ir.model.fields,field_description:payment_paypal.field_payment_provider__id
+#: model:ir.model.fields,field_description:payment_paypal.field_payment_transaction__id
+msgid "ID"
+msgstr "ID"
 
 #. module: payment_paypal
 #. odoo-python
@@ -76,12 +84,6 @@ msgstr "Neplatný formát odpovede, nemožno normalizovať."
 #: code:addons/payment_paypal/models/payment_transaction.py:0
 msgid "Missing value for txn_id (%(txn_id)s) or txn_type (%(txn_type)s)."
 msgstr "Chýba hodnota pre txn_id (%(txn_id)s) alebo txn_type (%(txn_type)s)."
-
-#. module: payment_paypal
-#. odoo-python
-#: code:addons/payment_paypal/models/payment_transaction.py:0
-msgid "No transaction found matching reference %s."
-msgstr ""
 
 #. module: payment_paypal
 #: model:ir.model.fields.selection,name:payment_paypal.selection__payment_provider__code__paypal
@@ -130,7 +132,7 @@ msgstr "Platobná transakcia"
 
 #. module: payment_paypal
 #. odoo-javascript
-#: code:addons/payment_paypal/static/src/js/payment_form.js:0
+#: code:addons/payment_paypal/static/src/interactions/payment_form.js:0
 msgid "Payment processing failed"
 msgstr "Spracovanie platby zlyhalo"
 
@@ -139,12 +141,6 @@ msgstr "Spracovanie platby zlyhalo"
 #: code:addons/payment_paypal/models/payment_transaction.py:0
 msgid "Received data with invalid payment status: %s"
 msgstr "Prijaté údaje s neplatným stavom platby: %s"
-
-#. module: payment_paypal
-#. odoo-python
-#: code:addons/payment_paypal/models/payment_provider.py:0
-msgid "The communication with the API failed. Details: %s"
-msgstr ""
 
 #. module: payment_paypal
 #. odoo-python
@@ -176,6 +172,12 @@ msgid "The technical code of this payment provider."
 msgstr "Technický kód tohto poskytovateľa platieb."
 
 #. module: payment_paypal
+#. odoo-python
+#: code:addons/payment_paypal/controllers/main.py:0
+msgid "Unable to verify the payment data"
+msgstr "Nie je možné overiť platobné údaje"
+
+#. module: payment_paypal
 #: model_terms:ir.ui.view,arch_db:payment_paypal.payment_provider_form
 msgid "Webhook ID"
 msgstr "Webhook ID"
@@ -185,3 +187,12 @@ msgstr "Webhook ID"
 #: code:addons/payment_paypal/models/payment_provider.py:0
 msgid "You must have an HTTPS connection to generate a webhook."
 msgstr "Na vytvorenie webhooku musíte mať pripojenie HTTPS."
+
+#~ msgid "Paypal"
+#~ msgstr "Paypal"
+
+#~ msgid "Paypal Instant Payment Notification"
+#~ msgstr "Paypal okamžiá platobná notifikácia"
+
+#~ msgid "Use IPN"
+#~ msgstr "IPN používateľa"

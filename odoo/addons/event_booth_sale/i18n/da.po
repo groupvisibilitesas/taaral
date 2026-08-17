@@ -2,21 +2,17 @@
 # This file contains the translation of the following modules:
 # * event_booth_sale
 #
-# Translators:
-# Sanne Kristensen <sanne@vkdata.dk>, 2024
-# lhmflexerp <lhm@flexerp.dk>, 2024
-# Ejner Sønniksen <ejner@vkdata.dk>, 2024
-# Martin Trigaux, 2024
-# Kira Petersen, 2025
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025.
 # "Kira Petersen François (peti)" <peti@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-06-23 17:36+0000\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-06 22:11+0000\n"
 "Last-Translator: \"Kira Petersen François (peti)\" <peti@odoo.com>\n"
-"Language-Team: Danish <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Danish <https://translate.odoo.com/projects/odoo-19/"
 "event_booth_sale/da/>\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
@@ -144,8 +140,16 @@ msgid "Details"
 msgstr "Detaljer"
 
 #. module: event_booth_sale
+#: model:ir.model.fields,field_description:event_booth_sale.field_account_move__display_name
+#: model:ir.model.fields,field_description:event_booth_sale.field_event_booth__display_name
+#: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_category__display_name
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_configurator__display_name
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_registration__display_name
+#: model:ir.model.fields,field_description:event_booth_sale.field_event_type_booth__display_name
+#: model:ir.model.fields,field_description:event_booth_sale.field_product_product__display_name
+#: model:ir.model.fields,field_description:event_booth_sale.field_product_template__display_name
+#: model:ir.model.fields,field_description:event_booth_sale.field_sale_order__display_name
+#: model:ir.model.fields,field_description:event_booth_sale.field_sale_order_line__display_name
 msgid "Display Name"
 msgstr "Visningsnavn"
 
@@ -192,8 +196,16 @@ msgid "Final Sale Order Line"
 msgstr "Sidste salgsordrelinje"
 
 #. module: event_booth_sale
+#: model:ir.model.fields,field_description:event_booth_sale.field_account_move__id
+#: model:ir.model.fields,field_description:event_booth_sale.field_event_booth__id
+#: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_category__id
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_configurator__id
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_registration__id
+#: model:ir.model.fields,field_description:event_booth_sale.field_event_type_booth__id
+#: model:ir.model.fields,field_description:event_booth_sale.field_product_product__id
+#: model:ir.model.fields,field_description:event_booth_sale.field_product_template__id
+#: model:ir.model.fields,field_description:event_booth_sale.field_sale_order__id
+#: model:ir.model.fields,field_description:event_booth_sale.field_sale_order_line__id
 msgid "ID"
 msgstr "ID"
 
@@ -201,11 +213,6 @@ msgstr "ID"
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth_category__image_1920
 msgid "Image"
 msgstr "Billede"
-
-#. module: event_booth_sale
-#: model:ir.model.fields,field_description:event_booth_sale.field_sale_order_line__is_event_booth
-msgid "Is Event Booth"
-msgstr "Er eventstand"
 
 #. module: event_booth_sale
 #: model:ir.model.fields,field_description:event_booth_sale.field_event_booth__is_paid
@@ -340,6 +347,20 @@ msgstr "Vælg en eventstand"
 
 #. module: event_booth_sale
 #. odoo-python
+#: code:addons/event_booth_sale/models/product_template.py:0
+msgid ""
+"The \"service_tracking\" for the product template, %(product_template_name)s "
+"cannot be changed because one of its variants is assigned to the Event Booth "
+"Category, %(event_booth_category_name)s. The service_tracking must remain "
+"\"Event Booth\"."
+msgstr ""
+"\"service_tracking\" for produktskabelonen %(product_template_name)s kan "
+"ikke ændres, da en af dens varianter er knyttet til eventstandskategorien %"
+"(event_booth_category_name)s. \"service_tracking\" skal derfor forblive "
+"\"Eventstand\"."
+
+#. module: event_booth_sale
+#. odoo-python
 #: code:addons/event_booth_sale/models/sale_order_line.py:0
 msgid ""
 "The following booths are unavailable, please remove them to continue : %"
@@ -347,6 +368,16 @@ msgid ""
 msgstr ""
 "Følgende stande er ikke ledige, fjern dem venligst for at fortsætte: %"
 "(booth_names)s"
+
+#. module: event_booth_sale
+#. odoo-python
+#: code:addons/event_booth_sale/models/event_booth_category.py:0
+msgid ""
+"The product, %(product_name)s , is used for Event Booth, it must have "
+"service_tracking set to \"Event Booth\"."
+msgstr ""
+"Produktet %(product_name)s bruges til \"Eventstand\", og service_tracking "
+"skal derfor være indstillet til \"Eventstand\"."
 
 #. module: event_booth_sale
 #: model:ir.model.constraint,message:event_booth_sale.constraint_event_booth_registration_unique_registration
@@ -373,6 +404,18 @@ msgid ""
 msgstr ""
 "Følgende stande kan ikke slettes, fordi de er knyttet til salgsordrer: %"
 "(booths)s"
+
+#. module: event_booth_sale
+#. odoo-python
+#: code:addons/event_booth_sale/models/product_product.py:0
+msgid ""
+"You cannot change the service_tracking of the product %(product_name)s "
+"because it is already assigned to %(booth_category_name)s. The "
+"service_tracking must remain 'event_booth'."
+msgstr ""
+"Du kan ikke ændre service_tracking for produktet %(product_name)s, da det "
+"allerede er knyttet til %(booth_category_name)s. Service_tracking skal "
+"derfor forblive 'event_booth'."
 
 #. module: event_booth_sale
 #. odoo-python

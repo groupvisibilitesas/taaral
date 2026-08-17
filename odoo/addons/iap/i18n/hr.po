@@ -3,21 +3,19 @@
 # * iap
 #
 # Translators:
-# Vladimir Vrgoč, 2024
-# Karolina Tonković <karolina.tonkovic@storm.hr>, 2024
-# Martin Trigaux, 2024
-# Bole <bole@dajmi5.com>, 2024
-# Luka Carević <luka@uvid.hr>, 2025
-# Vladimir Vrgoč <vladimir@uvid.hr>, 2025.
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Jasmina Otročak <jasmina@uvid.hr>, 2022
+# Martin Trigaux, 2022
+# Bole <bole@dajmi5.com>, 2022
+# Zvonimir Galić <zvonimir.galic@viavista.ba>, 2026.
+# Boris Peko <boris.peko@ecodica.eu>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~15.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-05-09 18:00+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Croatian <https://translate.odoo.com/projects/odoo-18/iap/hr/>"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-02 17:57+0000\n"
+"Last-Translator: Zvonimir Galić <zvonimir.galic@viavista.ba>\n"
+"Language-Team: Croatian <https://translate.odoo.com/projects/odoo-19/iap/hr/>"
 "\n"
 "Language: hr\n"
 "MIME-Version: 1.0\n"
@@ -25,7 +23,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.17\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: iap
 #: model_terms:ir.ui.view,arch_db:iap.iap_account_view_form
@@ -66,24 +64,12 @@ msgstr ""
 #. module: iap
 #: model:ir.model.fields,field_description:iap.field_iap_account__balance
 msgid "Balance"
-msgstr "Saldo"
+msgstr "Stanje"
 
 #. module: iap
 #: model:ir.model.fields.selection,name:iap.selection__iap_account__state__banned
 msgid "Banned"
 msgstr "Zabranjeno"
-
-#. module: iap
-#. odoo-javascript
-#: code:addons/iap/static/src/js/insufficient_credit_error_handler.js:0
-msgid "Buy credits"
-msgstr "Kupi kredite"
-
-#. module: iap
-#. odoo-javascript
-#: code:addons/iap/static/src/xml/iap_templates.xml:0
-msgid "Cancel"
-msgstr "Otkaži"
 
 #. module: iap
 #: model:ir.model.fields,field_description:iap.field_iap_account__company_ids
@@ -115,6 +101,7 @@ msgstr "Opis"
 
 #. module: iap
 #: model:ir.model.fields,field_description:iap.field_iap_account__display_name
+#: model:ir.model.fields,field_description:iap.field_iap_enrich_api__display_name
 #: model:ir.model.fields,field_description:iap.field_iap_service__display_name
 msgid "Display Name"
 msgstr "Naziv za prikaz"
@@ -170,15 +157,10 @@ msgstr "IAP usluga"
 
 #. module: iap
 #: model:ir.model.fields,field_description:iap.field_iap_account__id
+#: model:ir.model.fields,field_description:iap.field_iap_enrich_api__id
 #: model:ir.model.fields,field_description:iap.field_iap_service__id
 msgid "ID"
 msgstr "ID"
-
-#. module: iap
-#. odoo-javascript
-#: code:addons/iap/static/src/xml/iap_templates.xml:0
-msgid "Insufficient credit to perform this service."
-msgstr "Nedovoljno kredita za izvršavanje ove usluge"
 
 #. module: iap
 #: model:ir.model.fields,field_description:iap.field_iap_service__integer_balance
@@ -189,25 +171,31 @@ msgstr "Cjelobrojno stanje"
 #: model:ir.model.fields,field_description:iap.field_iap_account__write_uid
 #: model:ir.model.fields,field_description:iap.field_iap_service__write_uid
 msgid "Last Updated by"
-msgstr "Promijenio"
+msgstr "Posljednju izmjenu izvršio"
 
 #. module: iap
 #: model:ir.model.fields,field_description:iap.field_iap_account__write_date
 #: model:ir.model.fields,field_description:iap.field_iap_service__write_date
 msgid "Last Updated on"
-msgstr "Promijenjeno"
+msgstr "Posljednja izmjena"
 
 #. module: iap
 #. odoo-javascript
 #: code:addons/iap/static/src/action_buttons_widget/action_buttons_widget.xml:0
 msgid "Manage Service & Buy Credits"
-msgstr "Upravljanje uslugom i kupnjom kredita"
+msgstr "Upravljanje uslugom i kupnja kredita"
 
 #. module: iap
 #: model:ir.model.fields,field_description:iap.field_iap_account__name
 #: model:ir.model.fields,field_description:iap.field_iap_service__name
 msgid "Name"
 msgstr "Naziv"
+
+#. module: iap
+#. odoo-python
+#: code:addons/iap/models/iap_account.py:0
+msgid "No service exists with the provided technical name"
+msgstr "Ne postoji usluga s navedenim tehničkim nazivom"
 
 #. module: iap
 #: model_terms:ir.ui.view,arch_db:iap.res_config_settings_view_form
@@ -238,7 +226,7 @@ msgstr "Postavite pozitivan prag e-mail upozorenja."
 #. module: iap
 #: model:ir.model.fields.selection,name:iap.selection__iap_account__state__registered
 msgid "Registered"
-msgstr "Registriran"
+msgstr "Registrirano"
 
 #. module: iap
 #: model:ir.model.fields,field_description:iap.field_iap_account__service_id
@@ -251,12 +239,6 @@ msgid "Service Locked"
 msgstr "Usluga zaključana"
 
 #. module: iap
-#. odoo-javascript
-#: code:addons/iap/static/src/js/insufficient_credit_error_handler.js:0
-msgid "Start a Trial at Odoo"
-msgstr ""
-
-#. module: iap
 #: model:ir.model.fields,field_description:iap.field_iap_account__state
 msgid "State"
 msgstr "Status"
@@ -266,6 +248,12 @@ msgstr "Status"
 #: model:ir.model.fields,field_description:iap.field_iap_service__technical_name
 msgid "Technical Name"
 msgstr "Tehnički naziv"
+
+#. module: iap
+#. odoo-python
+#: code:addons/iap/models/iap_account.py:0
+msgid "The IAP token provided is invalid or empty."
+msgstr "Navedeni IAP token nije valjan ili je prazan."
 
 #. module: iap
 #. odoo-python
@@ -285,16 +273,31 @@ msgstr "Naziv jedinice"
 #. module: iap
 #: model:ir.model.fields.selection,name:iap.selection__iap_account__state__unregistered
 msgid "Unregistered"
-msgstr "Neregistriran"
+msgstr "Neregistrirano"
 
 #. module: iap
 #. odoo-javascript
 #: code:addons/iap/static/src/action_buttons_widget/action_buttons_widget.xml:0
 #: model_terms:ir.ui.view,arch_db:iap.res_config_settings_view_form
 msgid "View My Services"
-msgstr "Pogledaj moje usluge"
+msgstr "Pregled mojih usluga"
 
 #. module: iap
 #: model_terms:ir.ui.view,arch_db:iap.res_config_settings_view_form
 msgid "View your IAP Services and recharge your credits"
-msgstr "Pregledajte svoje IAP usluge i nadopunite svoje kredite."
+msgstr "Pogledajte svoje IAP usluge i nadopunite kredite"
+
+#~ msgid "Buy credits"
+#~ msgstr "Kupi kredite"
+
+#~ msgid "Cancel"
+#~ msgstr "Odustani"
+
+#~ msgid "Config Settings"
+#~ msgstr "Postavke"
+
+#~ msgid "Insufficient credit to perform this service."
+#~ msgstr "Nedovoljno kredita za izvršavanje ove usluge"
+
+#~ msgid "Service Name"
+#~ msgstr "Naziv usluge"

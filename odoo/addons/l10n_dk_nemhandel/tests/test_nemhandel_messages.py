@@ -142,10 +142,10 @@ class TestNemhandelMessage(TestAccountMoveSendCommon):
 
     @contextmanager
     def _set_context(self, other_context):
-        previous_context = self.env.context
-        self.env.context = dict(previous_context, **other_context)
-        yield self
-        self.env.context = previous_context
+        cls = self.__class__
+        env = cls.env(context=dict(cls.env.context, **other_context))
+        with patch.object(cls, "env", env):
+            yield
 
     @classmethod
     def _request_handler(cls, s: Session, r: PreparedRequest, /, **kw):
@@ -258,7 +258,7 @@ class TestNemhandelMessage(TestAccountMoveSendCommon):
             'move_id': move.id,
         })
         self.assertEqual(self.invalid_partner.nemhandel_verification_state, 'not_valid')  # not on nemhandel at all
-        self.assertFalse('nemhandel' in wizard.sending_methods)  # nemhandel is not there at all
+        self.assertFalse(wizard.sending_methods)  # nemhandel is not there at all
         self.assertFalse(wizard.alerts)  # there is no alerts
 
     def test_resend_error_nemhandel_message(self):
@@ -266,9 +266,9 @@ class TestNemhandelMessage(TestAccountMoveSendCommon):
         move = self.create_move(self.valid_partner)
         move.action_post()
 
-        wizard = self.create_send_and_print(move)
+        wizard = self.create_send_and_print(move, default=True)
         self.assertEqual(wizard.invoice_edi_format, 'oioubl_21')
-        self.assertTrue('nemhandel' in wizard.sending_methods)
+        self.assertTrue(wizard.sending_methods and 'nemhandel' in wizard.sending_methods)
         with self._set_context({'error': True}):
             wizard.action_send_and_print()
 
@@ -277,9 +277,9 @@ class TestNemhandelMessage(TestAccountMoveSendCommon):
 
         # we can't send the ubl document again unless we regenerate the pdf
         move.invoice_pdf_report_id.unlink()
-        wizard = self.create_send_and_print(move)
+        wizard = self.create_send_and_print(move, default=True)
         self.assertEqual(wizard.invoice_edi_format, 'oioubl_21')
-        self.assertTrue('nemhandel' in wizard.sending_methods)
+        self.assertTrue(wizard.sending_methods and 'nemhandel' in wizard.sending_methods)
 
         wizard.action_send_and_print()
 
@@ -293,9 +293,9 @@ class TestNemhandelMessage(TestAccountMoveSendCommon):
         move = self.create_move(self.valid_partner)
         move.action_post()
 
-        wizard = self.create_send_and_print(move)
+        wizard = self.create_send_and_print(move, default=True)
         self.assertEqual(wizard.invoice_edi_format, 'oioubl_21')
-        self.assertTrue('nemhandel' in wizard.sending_methods)
+        self.assertTrue(wizard.sending_methods and 'nemhandel' in wizard.sending_methods)
 
         wizard.action_send_and_print()
 
@@ -316,7 +316,7 @@ class TestNemhandelMessage(TestAccountMoveSendCommon):
         move = self.create_move(self.valid_partner)
         move.action_post()
 
-        wizard = self.create_send_and_print(move)
+        wizard = self.create_send_and_print(move, default=True)
         self.assertTrue('nemhandel' not in wizard.sending_method_checkboxes)
 
     def test_receive_error_nemhandel(self):
@@ -371,7 +371,7 @@ class TestNemhandelMessage(TestAccountMoveSendCommon):
         self.valid_partner.invoice_sending_method = 'email'
         self.valid_partner.invoice_edi_format = 'ubl_bis3'
 
-    def test_nemhandelsilent_error_while_creating_xml(self):
+    def test_nemhandel_silent_error_while_creating_xml(self):
         """When in multi/async mode, the generation of XML can fail silently (without raising).
         This needs to be reflected as an error and put the move in Nemhandel Error state.
         """
@@ -387,7 +387,7 @@ class TestNemhandelMessage(TestAccountMoveSendCommon):
         with patch(
             'odoo.addons.account_edi_ubl_cii.models.account_edi_xml_ubl_20.AccountEdiXmlUBL20._export_invoice_constraints',
             mocked_export_invoice_constraints
-        ):
+        ), self.enter_registry_test_mode():
             wizard.action_send_and_print()
             self.env.ref('account.ir_cron_account_move_send').method_direct_trigger()
         self.assertEqual(move_1.nemhandel_move_state, 'error')

@@ -1,47 +1,54 @@
-import {clickOnSnippet, insertSnippet, registerWebsitePreviewTour } from "@website/js/tours/tour_utils";
+import {
+    clickOnSnippet,
+    insertSnippet,
+    registerWebsitePreviewTour,
+} from "@website/js/tours/tour_utils";
 
-registerWebsitePreviewTour("website_powerbox_snippet",{
-    edition: true,
-},
-() => [
-...insertSnippet({
-    id: "s_text_block",
-    name: "Text",
-    groupName: "Text",
-}),
-...clickOnSnippet({
-    id: "s_text_block",
-    name: "Text",
-}),
-{
-    content: "Select the last paragraph",
-    trigger: ":iframe .s_text_block p:last-child",
-    run: "click",
-},
-{
-    content: "Show the powerbox",
-    trigger: ":iframe .s_text_block p:last-child",
-    async run(actions) {
-        await actions.editor(`/`);
-        const wrapwrap = this.anchor.closest("#wrapwrap");
-        wrapwrap.dispatchEvent(
-            new InputEvent("input", {
-                inputType: "insertText",
-                data: "/",
-            })
-        );
+registerWebsitePreviewTour(
+    "website_powerbox_snippet",
+    {
+        edition: true,
     },
-},
-{
-    content: "Click on the alert snippet",
-    trigger: ".oe-powerbox-wrapper .oe-powerbox-commandWrapper:contains('Alert')",
-    run: "click",
-},
-{
-    content: "Check if s_alert snipept is inserted",
-    trigger: ":iframe .s_alert",
-}
-]);
+    () => [
+        ...insertSnippet({
+            id: "s_text_block",
+            name: "Text",
+            groupName: "Text",
+        }),
+        ...clickOnSnippet({
+            id: "s_text_block",
+            name: "Text",
+        }),
+        {
+            content: "Select the last paragraph",
+            trigger: ":iframe .s_text_block p:last-child",
+            run: "click",
+        },
+        {
+            content: "Show the powerbox",
+            trigger: ":iframe .s_text_block p:last-child",
+            async run(actions) {
+                await actions.editor(`/`);
+                const wrapwrap = this.anchor.closest("#wrapwrap");
+                wrapwrap.dispatchEvent(
+                    new InputEvent("input", {
+                        inputType: "insertText",
+                        data: "/",
+                    })
+                );
+            },
+        },
+        {
+            content: "Click on the alert snippet",
+            trigger: ".o-we-powerbox .o-we-command:contains('Alert')",
+            run: "click",
+        },
+        {
+            content: "Check if s_alert snipept is inserted",
+            trigger: ":iframe .s_alert",
+        },
+    ]
+);
 
 registerWebsitePreviewTour(
     "website_powerbox_keyword",
@@ -79,10 +86,11 @@ registerWebsitePreviewTour(
         },
         {
             content: "Initially alert snippet should be present in the powerbox",
-            trigger: ".oe-powerbox-wrapper .oe-powerbox-commandName:contains('Alert')",
+            trigger: ".o-we-powerbox .o-we-command:contains('Alert')",
         },
         {
-            content: "Change the content to '/table' so that alert snippet should not be present in the powerbox",
+            content:
+                "Change the content to '/table' so that alert snippet should not be present in the powerbox",
             trigger: ":iframe .s_text_block p:last-child",
             run() {
                 const wrapwrapEl = this.anchor.closest("#wrapwrap");
@@ -98,7 +106,7 @@ registerWebsitePreviewTour(
         },
         {
             content: "Alert snippet should not be present in the powerbox",
-            trigger: ".oe-powerbox-wrapper .oe-powerbox-commandName:not(:contains('Alert'))",
+            trigger: ".o-we-powerbox .o-we-command:not(:contains('Alert'))",
         },
         {
             content: "Change the content to '/banner'",
@@ -117,11 +125,11 @@ registerWebsitePreviewTour(
         },
         {
             content: "Alert snippet should be present in the powerbox",
-            trigger: ".oe-powerbox-wrapper .oe-powerbox-commandName:contains('Alert')",
+            trigger: ".o-we-powerbox .o-we-command:contains('Alert')",
         },
         {
             content: "Click on the alert snippet",
-            trigger: ".oe-powerbox-wrapper .oe-powerbox-commandName:contains('Alert')",
+            trigger: ".o-we-powerbox .o-we-command:contains('Alert')",
             run: "click",
         },
         {

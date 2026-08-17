@@ -3,19 +3,20 @@
 # * analytic
 #
 # Translators:
-# Wil Odoo, 2024
-# Rasareeyar Lappiam, 2025
-#
+# Khwunchai Jaengsawang <khwunchai.j@ku.th>, 2022
+# Martin Trigaux, 2023
+# Wichanon Jamwutthipreecha, 2023
+# "Tiffany Chang (tic)" <tic@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 # Nusara Boonma <nuboo@odoo.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-29 18:36+0000\n"
-"PO-Revision-Date: 2026-06-08 16:48+0000\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-08 01:31+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Thai <https://translate.odoo.com/projects/odoo-18/analytic/"
+"Language-Team: Thai <https://translate.odoo.com/projects/odoo-19/analytic/"
 "th/>\n"
 "Language: th\n"
 "MIME-Version: 1.0\n"
@@ -34,7 +35,7 @@ msgstr "%s (สำเนา)"
 #. odoo-python
 #: code:addons/analytic/models/analytic_line.py:0
 msgid "%s analytic lines created"
-msgstr "%s รายการวิเคราะห์ที่สร้างขึ้น"
+msgstr ""
 
 #. module: analytic
 #: model_terms:ir.ui.view,arch_db:analytic.account_analytic_plan_form_view
@@ -53,8 +54,8 @@ msgid ""
 "A 'Project' plan needs to exist and its id needs to be set as "
 "`analytic.project_plan` in the system variables"
 msgstr ""
-"จำเป็นต้องมีแผน 'โปรเจ็กต์' และต้องตั้งค่ารหัสเป็น `analytic.project_plan` "
-"ในตัวแปรของระบบ"
+"จำเป็นต้องมีแผน 'โปรเจ็กต์' และต้องตั้งค่ารหัสเป็น `analytic.project_plan` ในตัวแปรของระบ"
+"บ"
 
 #. module: analytic
 #. odoo-javascript
@@ -191,12 +192,12 @@ msgstr "รายการวิเคราะห์"
 #. module: analytic
 #: model:ir.model,name:analytic.model_account_analytic_line
 msgid "Analytic Line"
-msgstr "รายการการวิเคราะห์"
+msgstr "บรรทัดการวิเคราะห์"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__line_ids
 msgid "Analytic Lines"
-msgstr "รายการการวิเคราะห์"
+msgstr "บรรทัดการวิเคราะห์"
 
 #. module: analytic
 #: model:ir.model,name:analytic.model_analytic_mixin
@@ -376,14 +377,6 @@ msgid "Config Settings"
 msgstr "ตั้งค่าการกำหนดค่า"
 
 #. module: analytic
-#: model:ir.model.fields,help:analytic.field_account_analytic_line__product_uom_category_id
-msgid ""
-"Conversion between Units of Measure can only occur if they belong to the "
-"same category. The conversion will be made based on the ratios."
-msgstr ""
-"การแปลงระหว่างหน่วยวัดจะเกิดขึ้นได้ก็ต่อเมื่ออยู่ในหมวดหมู่เดียวกัน การแปลงจะอิงตามอัตราส่วน"
-
-#. module: analytic
 #: model_terms:ir.actions.act_window,help:analytic.account_analytic_line_action
 #: model_terms:ir.actions.act_window,help:analytic.account_analytic_line_action_entries
 msgid ""
@@ -483,6 +476,10 @@ msgstr "ปิดการใช้งานการบันทึก"
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__display_name
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__display_name
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__display_name
+#: model:ir.model.fields,field_description:analytic.field_analytic_mixin__display_name
+#: model:ir.model.fields,field_description:analytic.field_analytic_plan_fields_mixin__display_name
+#: model:ir.model.fields,field_description:analytic.field_ir_config_parameter__display_name
+#: model:ir.model.fields,field_description:analytic.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr "แสดงชื่อ"
 
@@ -507,6 +504,12 @@ msgstr "โดเมน"
 #: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
 msgid "Don't update"
 msgstr "ไม่ต้องอัปเดต"
+
+#. module: analytic
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+msgid "Dynamic Placeholder"
+msgstr "ตัวยึดตำแหน่งแบบไดนามิก"
 
 #. module: analytic
 #: model:account.analytic.account,name:analytic.analytic_rd_finance
@@ -535,12 +538,6 @@ msgid "Gross Margin"
 msgstr "อัตรากำไรขั้นต้น"
 
 #. module: analytic
-#: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_account_search
-#: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_line_filter
-msgid "Group By..."
-msgstr "จัดกลุ่มตาม..."
-
-#. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__has_message
 msgid "Has Message"
 msgstr "มีข้อความ"
@@ -556,6 +553,10 @@ msgstr "ทรัพยากรบุคคล"
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__id
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__id
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__id
+#: model:ir.model.fields,field_description:analytic.field_analytic_mixin__id
+#: model:ir.model.fields,field_description:analytic.field_analytic_plan_fields_mixin__id
+#: model:ir.model.fields,field_description:analytic.field_ir_config_parameter__id
+#: model:ir.model.fields,field_description:analytic.field_res_config_settings__id
 msgid "ID"
 msgstr "ไอดี"
 
@@ -767,6 +768,7 @@ msgstr "หมวดหมู่พาร์ทเนอร์"
 #. module: analytic
 #. odoo-javascript
 #: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
 msgid "Percentage"
 msgstr "เปอร์เซ็นต์"
 
@@ -795,7 +797,7 @@ msgstr "โปรเจกต์"
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__account_id
 #: model:ir.model.fields,field_description:analytic.field_analytic_plan_fields_mixin__account_id
 msgid "Project Account"
-msgstr "บัญชีโปรเจกต์"
+msgstr "บัญชีโปรเจ็กต์"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__unit_amount
@@ -868,8 +870,8 @@ msgid ""
 "create new customer invoice or Sales order if we select this company, it "
 "will automatically take this as an analytic account)"
 msgstr ""
-"เลือกบริษัทที่จะใช้การกระจายการวิเคราะห์ (เช่น สร้างใบแจ้งหนี้ลูกค้าใหม่หรือใบสั่งขาย "
-"ถ้าเราเลือกบริษัทนี้ ระบบจะใช้สิ่งนี้เป็นบัญชีวิเคราะห์โดยอัตโนมัติ)"
+"เลือกบริษัทที่จะใช้การกระจายการวิเคราะห์ (เช่น สร้างใบแจ้งหนี้ลูกค้าใหม่หรือใบสั่งขาย ถ้าเราเลือกบ"
+"ริษัทนี้ ระบบจะใช้สิ่งนี้เป็นบัญชีวิเคราะห์โดยอัตโนมัติ)"
 
 #. module: analytic
 #: model:ir.model.fields,help:analytic.field_account_analytic_distribution_model__partner_category_id
@@ -888,8 +890,8 @@ msgid ""
 "create new customer invoice or Sales order if we select this partner, it "
 "will automatically take this as an analytic account)"
 msgstr ""
-"เลือกพาร์ทเนอร์ที่จะใช้การกระจายการวิเคราะห์ (เช่น สร้างใบแจ้งหนี้ของลูกค้าใหม่หรือใบสั่งขาย "
-"หากเราเลือกพาร์ทเนอร์รายนี้ ระบบจะใช้สิ่งนี้เป็นบัญชีการวิเคราะห์โดยอัตโนมัติ)"
+"เลือกพาร์ทเนอร์ที่จะใช้การกระจายการวิเคราะห์ (เช่น สร้างใบแจ้งหนี้ของลูกค้าใหม่หรือใบสั่งขาย หาก"
+"เราเลือกพาร์ทเนอร์รายนี้ ระบบจะใช้สิ่งนี้เป็นบัญชีการวิเคราะห์โดยอัตโนมัติ)"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__sequence
@@ -910,7 +912,7 @@ msgstr "แผนย่อย"
 #. module: analytic
 #: model:ir.model,name:analytic.model_ir_config_parameter
 msgid "System Parameter"
-msgstr "พารามิเตอร์ของระบบ"
+msgstr ""
 
 #. module: analytic
 #. odoo-python
@@ -938,13 +940,8 @@ msgstr "ไม่พร้อม"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__product_uom_id
-msgid "Unit of Measure"
-msgstr "หน่วยวัด"
-
-#. module: analytic
-#: model:ir.model.fields,field_description:analytic.field_account_analytic_line__product_uom_category_id
-msgid "UoM Category"
-msgstr "หมวดหมู่ UoM"
+msgid "Unit"
+msgstr "หน่วย"
 
 #. module: analytic
 #. odoo-javascript
@@ -958,6 +955,14 @@ msgid "User"
 msgstr "ผู้ใช้"
 
 #. module: analytic
+#: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_form_view
+#: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_tree_view
+#: model_terms:ir.ui.view,arch_db:analytic.account_analytic_plan_form_view
+#: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_account_form
+msgid "Visible to all"
+msgstr "มองเห็นได้ทุกคน"
+
+#. module: analytic
 #. odoo-python
 #: code:addons/analytic/models/analytic_account.py:0
 msgid ""
@@ -969,11 +974,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/analytic/models/analytic_account.py:0
 msgid ""
-"You can't set a different company on your analytic account since there are "
-"some analytic items linked to it."
+"You can't change the company of an analytic account that already has "
+"analytic items! It's a recipe for an analytical disaster!"
 msgstr ""
-"คุณไม่สามารถตั้งค่าบริษัทอื่นในบัญชีการวิเคราะห์ของคุณได้ "
-"เนื่องจากมีรายการการวิเคราะห์บางรายการเชื่อมโยงอยู่"
+"คุณไม่สามารถเปลี่ยนบริษัทของบัญชีวิเคราะห์ที่มีรายการวิเคราะห์อยู่แล้วได้! นี่เป็นสูตรสำเร็จของความผิด"
+"พลาดในการวิเคราะห์เลย"
 
 #. module: analytic
 #. odoo-python
@@ -988,8 +993,8 @@ msgid ""
 "You defined a distribution with analytic account(s) belonging to a specific "
 "company but a model shared between companies or with a different company"
 msgstr ""
-"คุณกำหนดการกระจายด้วยบัญชีวิเคราะห์ที่เป็นของบริษัทใดบริษัทหนึ่ง "
-"แต่เป็นแบบจำลองที่ใช้ร่วมกันระหว่างบริษัทหรือกับบริษัทอื่น"
+"คุณกำหนดการกระจายด้วยบัญชีวิเคราะห์ที่เป็นของบริษัทใดบริษัทหนึ่ง แต่เป็นแบบจำลองที่ใช้ร่วมกันระหว่าง"
+"บริษัทหรือกับบริษัทอื่น"
 
 #. module: analytic
 #: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_account_form
@@ -998,3 +1003,38 @@ msgstr "เช่น โปรเจ็กต์ XYZ"
 
 #~ msgid "Deco Addict"
 #~ msgstr "Deco Addict"
+
+#~ msgid "Add a line"
+#~ msgstr "เพิ่มไลน์"
+
+#~ msgid ""
+#~ "Conversion between Units of Measure can only occur if they belong to the "
+#~ "same category. The conversion will be made based on the ratios."
+#~ msgstr ""
+#~ "การแปลงระหว่างหน่วยวัดจะเกิดขึ้นได้ก็ต่อเมื่ออยู่ในหมวดหมู่เดียวกัน การแปลงจะอิงตามอัตราส่วน"
+
+#~ msgid "Group By..."
+#~ msgstr "จัดกลุ่มตาม..."
+
+#~ msgid "Loading..."
+#~ msgstr "กำลังโหลด..."
+
+#~ msgid "Number of messages which requires an action"
+#~ msgstr "จํานวนข้อความที่ต้องดําเนินการ"
+
+#~ msgid "OK"
+#~ msgstr "โอเค"
+
+#~ msgid ""
+#~ "The selected account belongs to another company than the one you're "
+#~ "trying to create an analytic item for"
+#~ msgstr "บัญชีที่เลือกเป็นของ บริษัท อื่นที่ไม่ใช่บัญชีที่คุณกำลังพยายามสร้างรายการวิเคราะห์สำหรับ"
+
+#~ msgid "Unit of Measure"
+#~ msgstr "หน่วยวัด"
+
+#~ msgid "UoM Category"
+#~ msgstr "หมวดหมู่ UoM"
+
+#~ msgid "View"
+#~ msgstr "ดู"

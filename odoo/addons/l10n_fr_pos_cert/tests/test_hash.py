@@ -1,11 +1,11 @@
-from odoo.addons.point_of_sale.tests.common import TestPointOfSaleCommon
+from odoo.addons.point_of_sale.tests.common import CommonPosTest
 from odoo.addons.account_edi.tests.common import AccountTestInvoicingCommon
 from odoo.tests import tagged
 from odoo import fields
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
-class TestHash(TestPointOfSaleCommon):
+class TestHash(CommonPosTest):
 
     @classmethod
     @AccountTestInvoicingCommon.setup_country('fr')
@@ -17,8 +17,8 @@ class TestHash(TestPointOfSaleCommon):
             'name': 'product1',
         })
 
-        self.pos_config.open_ui()
-        pos_session = self.pos_config.current_session_id
+        self.pos_config_usd.open_ui()
+        pos_session = self.pos_config_usd.current_session_id
         draft_order = {
             'access_token': False,
             'amount_paid': 0,
@@ -38,13 +38,13 @@ class TestHash(TestPointOfSaleCommon):
             'state': 'draft',
         }
 
-        self.PosOrder.sync_from_ui([draft_order])
+        self.env['pos.order'].sync_from_ui([draft_order])
         self.env.invalidate_all()
 
         paid_order = {
             'access_token': False,
             'amount_paid': 20,
-            'amount_return': 5.0,
+            'amount_return': -5.0,
             'amount_tax': 0,
             'amount_total': 15.0,
             'date_order': fields.Datetime.to_string(fields.Datetime.now()),
@@ -73,12 +73,12 @@ class TestHash(TestPointOfSaleCommon):
             'state': 'paid',
         }
 
-        self.PosOrder.sync_from_ui([paid_order])
+        self.env['pos.order'].sync_from_ui([paid_order])
         self.env.invalidate_all()
 
         posted_order = self.env['pos.order'].search([('uuid', '=', '12345-123-1234')])
         self.assertEqual(posted_order.state, 'paid')
 
-        self.pos_config.current_session_id.action_pos_session_closing_control()
+        self.pos_config_usd.current_session_id.action_pos_session_closing_control()
 
         self.assertEqual(posted_order.l10n_fr_hash, posted_order._compute_hash(''))

@@ -1,26 +1,26 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* delivery_mondialrelay
+# * delivery_mondialrelay
 #
-# Translators:
-# Lyall Kindmurr, 2024
-# Wil Odoo, 2024
-# Larisa_nexterp, 2025
-#
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Dorin Hongu <dhongu@gmail.com>, 2025.
+# Alin Ilie <alin.ilie@logit-solutions.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Larisa_nexterp, 2025\n"
-"Language-Team: Romanian (https://app.transifex.com/odoo/teams/41243/ro/)\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-06 04:31+0000\n"
+"Last-Translator: Alin Ilie <alin.ilie@logit-solutions.com>\n"
+"Language-Team: Romanian <https://translate.odoo.com/projects/odoo-19/"
+"delivery_mondialrelay/ro/>\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
-"2:1));\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2;\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: delivery_mondialrelay
 #: model:ir.model.fields,field_description:delivery_mondialrelay.field_choose_delivery_carrier__mondialrelay_brand
@@ -36,12 +36,33 @@ msgstr "Contact"
 #. module: delivery_mondialrelay
 #: model:ir.model.fields,field_description:delivery_mondialrelay.field_choose_delivery_carrier__shipping_country_code
 msgid "Country Code"
-msgstr "Cod țară"
+msgstr "Codul tarii"
+
+#. module: delivery_mondialrelay
+#: model:ir.model,website_form_label:delivery_mondialrelay.model_res_partner
+msgid "Create a Customer"
+msgstr "Creează un client"
 
 #. module: delivery_mondialrelay
 #: model:ir.model,name:delivery_mondialrelay.model_choose_delivery_carrier
 msgid "Delivery Carrier Selection Wizard"
 msgstr "Expert de selecție a operatorului de livrare"
+
+#. module: delivery_mondialrelay
+#: model:ir.model.fields,field_description:delivery_mondialrelay.field_choose_delivery_carrier__display_name
+#: model:ir.model.fields,field_description:delivery_mondialrelay.field_delivery_carrier__display_name
+#: model:ir.model.fields,field_description:delivery_mondialrelay.field_res_partner__display_name
+#: model:ir.model.fields,field_description:delivery_mondialrelay.field_sale_order__display_name
+msgid "Display Name"
+msgstr "Nume afișat"
+
+#. module: delivery_mondialrelay
+#: model:ir.model.fields,field_description:delivery_mondialrelay.field_choose_delivery_carrier__id
+#: model:ir.model.fields,field_description:delivery_mondialrelay.field_delivery_carrier__id
+#: model:ir.model.fields,field_description:delivery_mondialrelay.field_res_partner__id
+#: model:ir.model.fields,field_description:delivery_mondialrelay.field_sale_order__id
+msgid "ID"
+msgstr "ID"
 
 #. module: delivery_mondialrelay
 #: model:ir.model.fields,field_description:delivery_mondialrelay.field_choose_delivery_carrier__is_mondialrelay
@@ -61,6 +82,7 @@ msgstr "Ultimul punct Relay selectat"
 #: model:delivery.carrier,name:delivery_mondialrelay.delivery_carrier_mondialrelay_es
 #: model:delivery.carrier,name:delivery_mondialrelay.delivery_carrier_mondialrelay_fr_nl
 #: model:product.template,name:delivery_mondialrelay.product_product_delivery_mondialrelay_product_template
+#: model_terms:ir.ui.view,arch_db:delivery_mondialrelay.address_card
 msgid "Mondial Relay"
 msgstr "Mondial Relay"
 
@@ -68,13 +90,12 @@ msgstr "Mondial Relay"
 #. odoo-python
 #: code:addons/delivery_mondialrelay/models/sale_order.py:0
 msgid "Mondial Relay mismatching between delivery method and shipping address."
-msgstr ""
-"Neconcordanță Mondial Relay între metoda de livrare și adresa de expediere."
+msgstr "Discrepanță Mondial Relay între metoda de livrare și adresa de livrare"
 
 #. module: delivery_mondialrelay
 #: model:ir.model.fields,field_description:delivery_mondialrelay.field_choose_delivery_carrier__mondialrelay_allowed_countries
 msgid "Mondialrelay Allowed Countries"
-msgstr "Țări permise Mondial Relay"
+msgstr "Țări disponibile Mondial Relay"
 
 #. module: delivery_mondialrelay
 #: model:ir.model.fields,field_description:delivery_mondialrelay.field_choose_delivery_carrier__mondialrelay_last_selected_id
@@ -86,12 +107,6 @@ msgstr "Ultimul Mondial Relay selectat"
 #: model:ir.model.fields,field_description:delivery_mondialrelay.field_delivery_carrier__mondialrelay_packagetype
 msgid "Mondialrelay Packagetype"
 msgstr "Tip pachet Mondial Relay"
-
-#. module: delivery_mondialrelay
-#. odoo-python
-#: code:addons/delivery_mondialrelay/models/delivery_carrier.py:0
-msgid "Operation not supported"
-msgstr "Operațiune neacceptată"
 
 #. module: delivery_mondialrelay
 #. odoo-python
@@ -107,7 +122,7 @@ msgstr "Comandă de vânzare"
 #. module: delivery_mondialrelay
 #: model:ir.model,name:delivery_mondialrelay.model_delivery_carrier
 msgid "Shipping Methods"
-msgstr "Metode de livrare"
+msgstr "Metode de expediere"
 
 #. module: delivery_mondialrelay
 #: model:ir.model.fields,help:delivery_mondialrelay.field_choose_delivery_carrier__shipping_country_code
@@ -116,9 +131,9 @@ msgid ""
 "You can use this field for quick search."
 msgstr ""
 "Codul ISO al țării din două caractere.\n"
-"Puteți folosi acest câmp pentru căutare rapidă."
+"Puteți utiliza acest câmp pentru căutări rapide."
 
 #. module: delivery_mondialrelay
 #: model:ir.model.fields,field_description:delivery_mondialrelay.field_choose_delivery_carrier__shipping_zip
 msgid "Zip"
-msgstr "Cod poștal"
+msgstr "Cod postal"

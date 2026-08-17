@@ -1,5 +1,3 @@
-/** @odoo-module **/
-
 import { registry } from "@web/core/registry";
 
 registry.category("web_tour.tours").add('subcontracting_portal_tour', {
@@ -14,7 +12,7 @@ registry.category("web_tour.tours").add('subcontracting_portal_tour', {
             trigger: ':iframe .o_subcontracting_portal',
             content: 'Wait the subcontracting portal to be loaded.',
         }, {
-            trigger: ':iframe button[name="action_show_details"]',
+            trigger: ':iframe button[name="action_show_subcontract_details"]',
             run: 'click',
         }
     ],

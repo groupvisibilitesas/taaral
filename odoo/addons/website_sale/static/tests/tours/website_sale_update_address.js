@@ -1,5 +1,3 @@
-/** @odoo-module **/
-
 import { registry } from "@web/core/registry";
 import * as tourUtils from "@website_sale/js/tours/tour_utils";
 
@@ -29,7 +27,7 @@ registry.category("web_tour.tours").add('update_billing_shipping_address', {
         },
         {
             content: "Save address",
-            trigger: 'button#save_address',
+            trigger: "a[name='website_sale_main_button']",
             run: "click",
         },
         {

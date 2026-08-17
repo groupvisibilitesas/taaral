@@ -13,11 +13,12 @@ tests independently to functional aspects of other models. """,
         'mail',
         'sms',
         'sms_twilio',
-        'test_performance',
+        'test_orm',
     ],
     'data': [
         'security/ir.model.access.csv',
     ],
     'installable': True,
+    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 }

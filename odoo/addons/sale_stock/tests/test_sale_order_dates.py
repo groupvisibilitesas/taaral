@@ -1,12 +1,16 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+
+from datetime import timedelta
 
 from freezegun import freeze_time
 
-from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import ValuationReconciliationTestCommon
-from datetime import timedelta
-from odoo import Command, fields
-from odoo.tests import common, tagged
+from odoo import fields
+from odoo.fields import Command
+from odoo.tests import tagged
+
+from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import (
+    ValuationReconciliationTestCommon,
+)
 
 
 @tagged('post_install', '-at_install')
@@ -39,13 +43,13 @@ class TestSaleExpectedDate(ValuationReconciliationTestCommon):
         self.env['stock.quant']._update_available_quantity(product_B, self.company_data['default_warehouse'].lot_stock_id, 10)
         self.env['stock.quant']._update_available_quantity(product_C, self.company_data['default_warehouse'].lot_stock_id, 10)
 
-        sale_order = self.env['sale.order'].create({
+        sale_order = self.env['sale.order'].sudo().create({
             'partner_id': self.env['res.partner'].create({'name': 'A Customer'}).id,
             'picking_policy': 'direct',
             'order_line': [
-                (0, 0, {'name': product_A.name, 'product_id': product_A.id, 'customer_lead': product_A.sale_delay, 'product_uom_qty': 5}),
-                (0, 0, {'name': product_B.name, 'product_id': product_B.id, 'customer_lead': product_B.sale_delay, 'product_uom_qty': 5}),
-                (0, 0, {'name': product_C.name, 'product_id': product_C.id, 'customer_lead': product_C.sale_delay, 'product_uom_qty': 5})
+                Command.create({'product_id': product_A.id, 'product_uom_qty': 5}),
+                Command.create({'product_id': product_B.id, 'product_uom_qty': 5}),
+                Command.create({'product_id': product_C.id, 'product_uom_qty': 5})
             ],
         })
 
@@ -93,17 +97,17 @@ class TestSaleExpectedDate(ValuationReconciliationTestCommon):
 
         # In order to test the Commitment Date feature in Sales Orders in Odoo,
         # I copy a demo Sales Order with committed Date on 2010-07-12
-        new_order = self.env['sale.order'].create({
+        new_order = self.env['sale.order'].sudo().create({
             'partner_id': self.env['res.partner'].create({'name': 'A Partner'}).id,
-            'order_line': [(0, 0, {
-                'name': "A product",
-                'product_id': self.env['product.product'].create({
-                    'name': 'A product',
-                    'is_storable': True,
-                }).id,
-                'product_uom_qty': 1,
-                'price_unit': 750,
-            })],
+            'order_line': [
+                Command.create({
+                    'product_id': self.env['product.product'].create({
+                        'name': 'A product',
+                        'is_storable': True,
+                    }).id,
+                    'price_unit': 750,
+                })
+            ],
             'commitment_date': '2010-07-12',
         })
         # I confirm the Sales Order.
@@ -115,13 +119,42 @@ class TestSaleExpectedDate(ValuationReconciliationTestCommon):
         for line in new_order.order_line:
             self.assertEqual(line.move_ids[0].date, right_date, "The expected date for the Stock Move is wrong")
 
+    @freeze_time('2025-10-10')
+    def test_expected_date_with_storable_product(self):
+        ''' This test ensures the expected date is computed based on only goods(consu) products.
+        It's avoiding computation for non-goods products.
+        '''
+        sale_delay = 10.0
+        self.product.sale_delay = sale_delay
+
+        # Create a sale order with a consu product.
+        sale_order = self.env['sale.order'].sudo().create({
+            'partner_id': self.partner.id,
+            'order_line': [Command.create({
+                'product_id': self.product.id,
+                'product_uom_qty': 1000,
+            })],
+        })
+
+        # Ensure that expected date is correctly computed based on the consu product's sale delay.
+        self.assertEqual(sale_order.expected_date, fields.Datetime.now() + timedelta(days=sale_delay))
+
+        # Add a service product and ensure the expected date remains unchanged.
+        sale_order.write({
+            'order_line': [Command.create({
+                'product_id': self.service_product.id,
+                'product_uom_qty': 1000,
+            })],
+        })
+        self.assertEqual(sale_order.expected_date, fields.Datetime.now() + timedelta(days=sale_delay))
+
     def test_invoice_delivery_date(self):
         self.env['stock.quant']._update_available_quantity(
             self.test_product_order,
             self.company_data['default_warehouse'].lot_stock_id,
             75.0,
         )
-        order = self.env['sale.order'].create({
+        order = self.env['sale.order'].sudo().create({
             'partner_id': self.partner_a.id,
             'picking_policy': 'one',
             'order_line': [Command.create({
@@ -176,3 +209,42 @@ class TestSaleExpectedDate(ValuationReconciliationTestCommon):
                 invoice.delivery_date, custom_delivery_date,
                 "Custom invoice delivery shouldn't change resetting to draft invoice",
             )
+
+    @freeze_time('2025-3-02 23:30:00')
+    def test_so_invoice_delivery_date(self):
+        """
+        Testing that the delivery date is set correctly on the invoice
+        for different user timezones.
+
+        For example:
+        2025-03-02 23:30:00 UTC corresponds to
+        2025-03-03 05:00:00 IST.
+
+        Without proper timezone handling, the delivery date is incorrectly assigned
+        as 2025-03-02 on the UI instead of 2025-03-03.
+        """
+        self.env.user.tz = 'Asia/Kolkata'
+        self.env['stock.quant']._update_available_quantity(
+            self.test_product_delivery,
+            self.company_data['default_warehouse'].lot_stock_id,
+            100,
+        )
+        so = self.env['sale.order'].sudo().create({
+            'partner_id': self.partner_a.id,
+            'order_line': [Command.create({
+                'product_id': self.test_product_delivery.id,
+            })],
+        })
+        so.action_confirm()
+        so.picking_ids.button_validate()
+        invoice = so._create_invoices()
+        expected_date = fields.Date.context_today(so)
+        self.assertEqual(
+            invoice.delivery_date, expected_date,
+            "Delivery date should use the client's timezone at invoice creation.",
+        )
+        so.picking_ids.date_done = so.picking_ids.date_done - timedelta(hours=1)
+        self.assertEqual(
+            invoice.delivery_date, expected_date,
+            "Delivery date should use the client's timezone after effective date change.",
+        )

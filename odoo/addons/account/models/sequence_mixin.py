@@ -4,7 +4,7 @@ from datetime import date
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.tools.misc import format_date
-from odoo.tools import frozendict, date_utils, SQL
+from odoo.tools import frozendict, date_utils, index_exists, SQL
 
 import logging
 import re
@@ -51,8 +51,7 @@ class SequenceMixin(models.AbstractModel):
         # Add an index to optimise the query searching for the highest sequence number
         if not self._abstract and self._sequence_index:
             index_name = self._table + '_sequence_index'
-            self.env.cr.execute(SQL('SELECT indexname FROM pg_indexes WHERE indexname = %s', index_name))
-            if not self.env.cr.fetchone():
+            if not index_exists(self.env.cr, index_name):
                 self.env.cr.execute(SQL("""
                     CREATE INDEX %(index_name)s ON %(table)s (%(sequence_index)s, sequence_prefix desc, sequence_number desc, %(field)s);
                     CREATE INDEX %(index2_name)s ON %(table)s (%(sequence_index)s, id desc, sequence_prefix);
@@ -72,6 +71,7 @@ class SequenceMixin(models.AbstractModel):
                                      AND a.attnum = ANY(ix.indkey)
                  WHERE t.relkind = 'r'
                    AND t.relname = %(table)s
+                   AND t.relnamespace = current_schema::regnamespace
                    AND a.attname = %(column)s
                    AND ix.indisunique
                 """,
@@ -89,9 +89,11 @@ class SequenceMixin(models.AbstractModel):
         # To avoid requiring multiple savepoints when generating successive
         # sequence numbers within a single transaction, we cache the sequence value
         # for the duration of the in-flight transaction.
-        # The `precommit.data` container is used instead of `cr.cache` to
-        # reduce the need for manual invalidation and ensure that the
-        # cache does not survive a commit or rollback.
+        #
+        # We use `cr.cache` and expects any savepoint rollback or commit to clear the cache.
+        # This is important because as soon as the lock is released, there might be a record
+        # consumming the next sequence in a concurent transaction for which the cache can't be
+        # aware.
         #
         # Before adding an entry for a sequence to this `sequence.mixin` cache,
         # the transaction must have locked the corresponding unique constraint,
@@ -107,7 +109,7 @@ class SequenceMixin(models.AbstractModel):
         # See also:
         # - https://postgres.ai/blog/20210831-postgresql-subtransactions-considered-harmful
         # - the documentation in _locked_increment()
-        return self.env.cr.precommit.data.setdefault('sequence.mixin', {})
+        return self.env.cr.cache.setdefault('sequence.mixin', {})
 
     def write(self, vals):
         if self._sequence_field in vals and self.env.context.get('clear_sequence_mixin_cache', True):
@@ -277,7 +279,6 @@ class SequenceMixin(models.AbstractModel):
         would only work when the numbering makes a new start (domain returns by
         _get_last_sequence_domain is [], i.e: a new year).
 
-        :param field_name: the field that contains the sequence.
         :param relaxed: this should be set to True when a previous request didn't find
             something without. This allows to find a pattern from a previous period, and
             try to adapt it for the new period.
@@ -312,10 +313,12 @@ class SequenceMixin(models.AbstractModel):
         """Get the python format and format values for the sequence.
 
         :param previous: the sequence we want to extract the format from
-        :return tuple(format, format_values):
-            format is the format string on which we should call .format()
-            format_values is the dict of values to format the `format` string
-            ``format.format(**format_values)`` should be equal to ``previous``
+         tuple(format, format_values)
+        :returns: a 2-elements tuple with:
+
+            - format is the format string on which we should call .format()
+            - format_values is the dict of values to format the `format` string
+              ``format.format(**format_values)`` should be equal to ``previous``
         """
         sequence_number_reset = self._deduce_sequence_number_reset(previous)
         regex = self._sequence_fixed_regex
@@ -425,8 +428,6 @@ class SequenceMixin(models.AbstractModel):
         This method ensures that the field is set both in the ORM and in the database.
         This is necessary because we use a database query to get the previous sequence,
         and we need that query to always be executed on the latest data.
-
-        :param field_name: the field that contains the sequence.
         """
         self.ensure_one()
         format_string, format_values = self._get_next_sequence_format()
@@ -451,9 +452,10 @@ class SequenceMixin(models.AbstractModel):
         This method retrieves the last used sequence and determines the next sequence format based on it.
         If there is no previous sequence, it initializes a new sequence using the starting sequence format.
 
-        :return tuple(format_string, format_values):
+        :returns: a 2-element tuple with:
+
             - format_string (str): the string on which we should call .format()
-            - format_values (dict): the dict of values to format `format_string`
+            - format_values (dict): the dict of values to format ``format_string``
         """
         last_sequence = self._get_last_sequence()
         new = not last_sequence
@@ -461,8 +463,8 @@ class SequenceMixin(models.AbstractModel):
             last_sequence = self._get_last_sequence(relaxed=True) or self._get_starting_sequence()
 
         format_string, format_values = self._get_sequence_format_param(last_sequence)
-        sequence_number_reset = self._deduce_sequence_number_reset(last_sequence)
         if new:
+            sequence_number_reset = self._deduce_sequence_number_reset(last_sequence)
             date_start, date_end, forced_year_start, forced_year_end = self._get_sequence_date_range(sequence_number_reset)
             format_values['seq'] = 0
             format_values['year'] = self._truncate_year_to_length(forced_year_start or date_start.year, format_values['year_length'])

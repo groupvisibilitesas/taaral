@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from freezegun import freeze_time
 
-from odoo.addons.point_of_sale.tests.common import TestPointOfSaleCommon
+from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
 from odoo.addons.l10n_vn_edi_viettel.tests.test_edi import TestVNEDI
 from odoo.exceptions import UserError
 from odoo.tests import tagged
@@ -12,7 +12,7 @@ from odoo import Command
 
 
 @tagged("post_install_l10n", "post_install", "-at_install")
-class TestVNEDIPOS(TestVNEDI, TestPointOfSaleCommon):
+class TestVNEDIPOS(TestVNEDI, TestPointOfSaleHttpCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -30,11 +30,11 @@ class TestVNEDIPOS(TestVNEDI, TestPointOfSaleCommon):
         })
         cls.walk_in_customer = cls.env.ref('l10n_vn_edi_viettel_pos.partner_walk_in_customer')
 
-        cls.pos_config.open_ui()
-        cls.session = cls.pos_config.current_session_id
+        cls.main_pos_config.open_ui()
+        cls.session = cls.main_pos_config.current_session_id
 
     def _create_simple_order(self):
-        return self.PosOrder.create(
+        return self.env['pos.order'].create(
             {
                 "name": "Order/0001",
                 "session_id": self.session.id,
@@ -69,7 +69,7 @@ class TestVNEDIPOS(TestVNEDI, TestPointOfSaleCommon):
 
     def test_pos_specific_symbol(self):
         """Test POS specific symbol on POS order invoice."""
-        self.pos_config.l10n_vn_pos_symbol = self.symbol_2.id
+        self.main_pos_config.l10n_vn_pos_symbol = self.symbol_2.id
         pos_order = self._create_simple_order()
         invoice_vals = pos_order._prepare_invoice_vals()
         self.assertEqual(
@@ -82,9 +82,9 @@ class TestVNEDIPOS(TestVNEDI, TestPointOfSaleCommon):
         """ Test that a pos users is able to register an invoice from the PoS without being blocked. """
         self.pos_user = self.env['res.users'].create({
             'name': 'A simple PoS man!',
-            'login': 'pos_user',
+            'login': 'test_pos_user',
             'password': 'pos_user',
-            'groups_id': [
+            'group_ids': [
                 (4, self.env.ref('base.group_user').id),
                 (4, self.env.ref('point_of_sale.group_pos_user').id),
                 (4, self.env.ref('stock.group_stock_user').id),

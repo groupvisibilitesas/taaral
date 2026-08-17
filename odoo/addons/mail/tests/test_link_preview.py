@@ -17,6 +17,7 @@ class TestLinkPreview(MailCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.maxDiff = None
         cls.test_partner = cls.env['res.partner'].create({'name': 'a partner'})
         cls.existing_message = cls.test_partner.message_post(body='Test')
         cls.title = 'Test title'
@@ -137,15 +138,9 @@ class TestLinkPreview(MailCommon):
 
     def test_link_preview(self):
         with patch.object(requests.Session, 'get', self._patch_with_og_properties), patch.object(requests.Session, 'head', self._patch_head_html):
-            throttle = int(self.env['ir.config_parameter'].sudo().get_param('mail.link_preview_throttle', 99))
-            self.env['mail.link.preview'].create([
-                {'source_url': self.source_url, 'message_id': self.existing_message.id}
-                for _ in range(throttle)
-            ])
             message = self.test_partner.message_post(
                 body=Markup(f'<a href={self.source_url}>Nothing link</a>'),
             )
-            self._reset_bus()
 
             def get_bus_params():
                 return (
@@ -156,9 +151,8 @@ class TestLinkPreview(MailCommon):
                             "payload": {
                                 "mail.link.preview": [
                                     {
-                                        "id": message.link_preview_ids.id,
+                                        "id": message.message_link_preview_ids.link_preview_id.id,
                                         "image_mimetype": False,
-                                        "message": message.id,
                                         "og_description": self.og_description,
                                         "og_image": self.og_image,
                                         "og_mimetype": False,
@@ -171,9 +165,16 @@ class TestLinkPreview(MailCommon):
                                 "mail.message": self._filter_messages_fields(
                                     {
                                         "id": message.id,
-                                        "linkPreviews": [message.link_preview_ids.id],
+                                        "message_link_preview_ids": message.message_link_preview_ids.ids,
                                     },
                                 ),
+                                "mail.message.link.preview": [
+                                    {
+                                        "id": message.message_link_preview_ids.id,
+                                        "link_preview_id": message.message_link_preview_ids.link_preview_id.id,
+                                        "message_id": message.id,
+                                    }
+                                ],
                             },
                         }
                     ],
@@ -181,10 +182,6 @@ class TestLinkPreview(MailCommon):
 
             with self.assertBus(get_params=get_bus_params):
                 self.env["mail.link.preview"]._create_from_message_and_notify(message)
-            link_preview_count = self.env["mail.link.preview"].search_count(
-                [("source_url", "=", self.source_url)]
-            )
-            self.assertEqual(link_preview_count, throttle + 1)
 
     def test_link_preview_no_content_type(self):
         with patch.object(requests.Session, 'request', self._patch_with_no_content_type):
@@ -227,7 +224,72 @@ class TestLinkPreview(MailCommon):
                     self.env["mail.link.preview"]._create_from_message_and_notify(
                         message, request_url
                     )
-                    link_preview_count = self.env["mail.link.preview"].search_count(
+                    link_preview_count = self.env["mail.message.link.preview"].search_count(
                         [("message_id", "=", message.id)]
                     )
                     self.assertEqual(link_preview_count, counter)
+
+    def test_remove_unused_link_preview(self):
+        with (
+            patch.object(requests.Session, "get", self._patch_with_og_properties),
+            patch.object(requests.Session, "head", self._patch_head_html),
+        ):
+            message = self.test_partner.message_post(
+                body=Markup(
+                    '<a href="https://www.odoo.com/odoo-experience">Nothing link</a> <a href="https://www.odoo.com/odoo-experience-2025">Other Nothing link</a>'
+                ),
+                message_type="comment",
+            )
+            self.env["mail.link.preview"]._create_from_message_and_notify(message)
+            link_preview_count = self.env["mail.message.link.preview"].search_count(
+                [("message_id", "=", message.id)]
+            )
+            self.assertEqual(link_preview_count, 2)
+            self.test_partner._message_update_content(
+                message,
+                body=Markup('<a href="https://www.odoo.com/odoo-experience">Nothing link</a>'),
+            )
+            self.env["mail.link.preview"]._create_from_message_and_notify(message)
+            link_preview_count = self.env["mail.message.link.preview"].search_count(
+                [("message_id", "=", message.id)]
+            )
+            self.assertEqual(link_preview_count, 1)
+
+    def test_link_preview_throttle(self):
+        self.env["ir.config_parameter"].sudo().set_param("mail.link_preview_throttle", 1)
+        with (
+            patch.object(requests.Session, "get", self._patch_with_og_properties),
+            patch.object(requests.Session, "head", self._patch_head_html),
+        ):
+            message = self.test_partner.message_post(
+                body=Markup('<a href="%s">Nothing link</a>') % self.source_url,
+            )
+            self.env["mail.link.preview"]._create_from_message_and_notify(message)
+            link_preview = (
+                self.env["mail.message.link.preview"]
+                .search([("message_id", "=", message.id)])
+                .link_preview_id
+            )
+            message = self.test_partner.message_post(
+                body=Markup(f'<a href="%s/test">Nothing link</a>') % self.source_url
+            )
+            self.env["mail.link.preview"]._create_from_message_and_notify(message)
+            link_preview_count = self.env["mail.message.link.preview"].search_count(
+                [("link_preview_id", "=", link_preview.id)]
+            )
+            self.assertEqual(link_preview_count, 1)
+
+    def test_link_preview_delete_with_message(self):
+        with patch.object(requests.Session, "get", self._patch_with_og_properties), patch.object(
+            requests.Session, "head", self._patch_head_html
+        ):
+            message = self.test_partner.message_post(
+                body=Markup('<a href="%s">Test link</a>') % self.source_url,
+                message_type="comment"
+            )
+            self.env["mail.link.preview"]._create_from_message_and_notify(message)
+            preview = message.message_link_preview_ids
+            self.assertTrue(preview)
+            self.assertEqual(preview.link_preview_id.source_url, self.source_url)
+            self.test_partner._message_update_content(message, body="")
+            self.assertFalse(message.message_link_preview_ids)

@@ -12,6 +12,7 @@
     ],
     'data': [
         'views/pos_order_line_views.xml',
+        'views/product_view.xml',
         'views/res_config_settings_views.xml',
         'data/pos_bill_data.xml',
     ],
@@ -28,5 +29,6 @@
             'l10n_in_pos/static/tests/tours/**/*',
         ],
     },
+    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 }

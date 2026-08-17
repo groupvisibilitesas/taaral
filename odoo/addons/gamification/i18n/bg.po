@@ -3,28 +3,25 @@
 # * gamification
 #
 # Translators:
-# Petko Karamotchev, 2024
-# Kaloyan Naumov <kaloyan@lumnus.net>, 2024
-# Rumena Georgieva <rumena.georgieva@gmail.com>, 2024
-# kalatchev, 2024
-# Elena Varbanova, 2024
-# KeyVillage, 2024
-# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2024
-# Martin Trigaux, 2024
-# Ивайло Малинов <iv.malinov@gmail.com>, 2024
-# aleksandar ivanov, 2024
-# Albena Mincheva <albena_vicheva@abv.bg>, 2024
-# Maria Boyadjieva <marabo2000@gmail.com>, 2025
-# "v.kanev" <v.kanev@tutanota.com>, 2026.
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Nikola Iliev, 2023
+# Ivan Goychev <igoychev.projects@gmail.com>, 2023
+# Kaloyan Naumov <kaloyan@lumnus.net>, 2023
+# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2023, 2026.
+# Albena Mincheva <albena_vicheva@abv.bg>, 2023
+# Martin Trigaux, 2023
+# Ивайло Малинов <iv.malinov@gmail.com>, 2023
+# aleksandar ivanov, 2023
+# Maria Boyadjieva <marabo2000@gmail.com>, 2023
+# "Tiffany Chang (tic)" <tic@odoo.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:38+0000\n"
-"PO-Revision-Date: 2026-08-03 16:34+0000\n"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-07 13:48+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-19/"
 "gamification/bg/>\n"
 "Language: bg\n"
 "MIME-Version: 1.0\n"
@@ -32,23 +29,6 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2026.6.1\n"
-
-#. module: gamification
-#: model:mail.template,body_html:gamification.email_template_goal_reminder
-msgid ""
-"\n"
-"    <strong>Reminder</strong><br/>\n"
-"    You have not updated your progress for the goal <t t-"
-"out=\"object.definition_id.name or ''\"/> (currently reached at <t t-"
-"out=\"object.completeness or ''\"/>%) for at least <t t-"
-"out=\"object.remind_update_delay or ''\"/> days. Do not forget to do it.\n"
-"    <br/><br/>\n"
-"    Thank you,\n"
-"    <t t-if=\"object.challenge_id.manager_id.signature\">\n"
-"        <br/>\n"
-"        <t t-out=\"object.challenge_id.manager_id.signature or ''\"/>\n"
-"    </t>\n"
-msgstr ""
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__user_count
@@ -97,9 +77,12 @@ msgid ""
 "as=\"data\">\n"
 "                        <t t-set=\"url\" t-value=\"data['url']\"/>\n"
 "                        <t t-set=\"label\" t-value=\"data['label']\"/>\n"
-"                        <a t-att-href=\"url\" style=\"background-color: "
-"#875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; "
-"border-radius: 5px; font-size:13px;\" t-out=\"label or ''\">LABEL</a>\n"
+"                        <a t-att-href=\"url\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or '#875A7B'}}; padding: "
+"8px 16px 8px 16px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
+"font-size:13px; display: flex; max-width: fit-content; margin-bottom: 8px;\" "
+"t-out=\"label or ''\">LABEL</a>\n"
 "                    </t>\n"
 "                </div>\n"
 "            </td>\n"
@@ -113,8 +96,9 @@ msgid ""
 "        <tr>\n"
 "            <td t-if=\"not user.share and user.active\" style=\"padding:15px "
 "20px 10px 20px;\" data-o-mail-quote-container=\"1\">\n"
-"                <t t-out=\"user.signature or ''\" data-o-mail-quote=\"1\">--"
-"<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"                <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/"
+"><t t-out=\"user.signature or ''\" data-o-mail-quote=\"1\">Mitchell Admin</"
+"t></div>\n"
 "            </td>\n"
 "            <td t-else=\"\" style=\"padding:15px 20px 10px 20px;\">\n"
 "                <t t-out=\"user.company_id.name or ''\"/>\n"
@@ -124,13 +108,103 @@ msgid ""
 " </table>\n"
 "</div>"
 msgstr ""
+"<div style=\"color:#515166;padding:10px 0px;font-family:Arial,Helvetica,sans-"
+"serif;font-size:14px;\">\n"
+"<table style=\"width:600px;margin:0px auto;background:white;border:1px solid "
+"#e1e1e1;\">\n"
+"    <tbody>\n"
+"        <tr>\n"
+"            <td style=\"padding:15px 20px 10px 20px;\">\n"
+"                <p>\n"
+"                    Поздравления,\n"
+"                    <span t-out=\"object.name or ''\">Joel Willis</span>!\n"
+"                </p>\n"
+"                <p>\n"
+"                    Току-що достигнахте нов ранг: <strong t-"
+"out=\"object.rank_id.name or ''\">Новак</strong>\n"
+"                </p>\n"
+"                <t t-if=\"object.next_rank_id.name\">\n"
+"                    <p>Продължете работата си, за да станете <strong t-"
+"out=\"object.next_rank_id.name or ''\">Курсист</strong>!</p>\n"
+"                </t>\n"
+"                <div style=\"margin: 16px 0px 16px 0px;\">\n"
+"                    <t t-set=\"gamification_redirection_data\" t-"
+"value=\"object.get_gamification_redirection_data()\"/>\n"
+"                    <t t-foreach=\"gamification_redirection_data\" t-"
+"as=\"data\">\n"
+"                        <t t-set=\"url\" t-value=\"data['url']\"/>\n"
+"                        <t t-set=\"label\" t-value=\"data['label']\"/>\n"
+"                        <a t-att-href=\"url\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or '#875A7B'}}; padding: "
+"8px 16px 8px 16px; text-decoration: none; color: {"
+"{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
+"font-size:13px; display: flex; max-width: fit-content; margin-bottom: 8px;\" "
+"t-out=\"label or ''\">LABEL</a>\n"
+"                    </t>\n"
+"                </div>\n"
+"            </td>\n"
+"            <td style=\"padding:15px 20px 10px 20px;\">\n"
+"                <p style=\"text-align: center;\">\n"
+"                    <img t-attf-src=\"/web/image/gamification.karma.rank/{{ "
+"object.rank_id.id }}/image_128\"/>\n"
+"                </p>\n"
+"            </td>\n"
+"        </tr>\n"
+"        <tr>\n"
+"            <td t-if=\"not user.share and user.active\" style=\"padding:15px "
+"20px 10px 20px;\" data-o-mail-quote-container=\"1\">\n"
+"                <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/>"
+"<t t-out=\"user.signature or ''\" data-o-mail-quote=\"1\">Mitchell Admin</t>"
+"</div>\n"
+"            </td>\n"
+"            <td t-else=\"\" style=\"padding:15px 20px 10px 20px;\">\n"
+"                <t t-out=\"user.company_id.name or ''\"/>\n"
+"            </td>\n"
+"        </tr>\n"
+"    </tbody>\n"
+" </table>\n"
+"</div>"
+
+#. module: gamification
+#: model:mail.template,body_html:gamification.email_template_goal_reminder
+msgid ""
+"<div>\n"
+"    <strong>Reminder</strong><br/>\n"
+"    You have not updated your progress for the goal <t t-"
+"out=\"object.definition_id.name or ''\"/> (currently reached at <t t-"
+"out=\"object.completeness or ''\"/>%) for at least <t t-"
+"out=\"object.remind_update_delay or ''\"/> days. Do not forget to do it.\n"
+"    <br/><br/>\n"
+"    Thank you,\n"
+"    <t t-if=\"object.challenge_id.manager_id.signature\">\n"
+"        <br/>\n"
+"        <t t-out=\"object.challenge_id.manager_id.signature or ''\"/>\n"
+"    </t>\n"
+"</div>"
+msgstr ""
+"<div>\n"
+"    <strong>Напомняне</strong><br/>\n"
+"    Не сте обновявали напредъка си по целта <t t-"
+"out=\"object.definition_id.name or ''\"/> (в момента постигната на <t t-"
+"out=\"object.completeness or ''\"/>%) от поне <t t-"
+"out=\"object.remind_update_delay or ''\"/> дни. Не забравяйте да го "
+"направите.\n"
+"    <br/><br/>\n"
+"    Благодарим ви,\n"
+"    <t t-if=\"object.challenge_id.manager_id.signature\">\n"
+"        <br/>\n"
+"        <t t-out=\"object.challenge_id.manager_id.signature or ''\"/>\n"
+"    </t>\n"
+"</div>"
 
 #. module: gamification
 #: model_terms:ir.ui.view,arch_db:gamification.goal_kanban_view
 msgid ""
-"<i role=\"img\" class=\"text-700 fa fa-clock-o fa-3x\" title=\"Goal in "
+"<i role=\"img\" class=\"text-body fa fa-clock-o fa-3x\" title=\"Goal in "
 "Progress\" aria-label=\"Goal in Progress\"/>"
 msgstr ""
+"<i role=\"img\" class=\"text-body fa fa-clock-o fa-3x\" title=\"Goal in "
+"Progress\" aria-label=\"Goal in Progress\"/>"
 
 #. module: gamification
 #: model_terms:ir.ui.view,arch_db:gamification.goal_kanban_view
@@ -177,66 +251,43 @@ msgid ""
 "width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-"
 "collapse:separate;\">\n"
 "                <tr><td valign=\"middle\">\n"
-"                    <span style=\"font-size: 10px;\">Your Badge</span><br/>\n"
-"                    <span style=\"font-size: 20px; font-weight: bold;\" t-"
-"out=\"object.badge_id.name or ''\"/>\n"
-"                </td><td valign=\"middle\" align=\"right\" t-if=\"not "
-"object.user_id.company_id.uses_default_logo\">\n"
-"                    <img t-attf-src=\"/logo.png?"
-"company={{ object.user_id.company_id.id }}\" style=\"padding: 0px; margin: "
-"0px; height: auto; width: 80px;\" t-att-"
-"alt=\"object.user_id.company_id.name\"/>\n"
-"                </td></tr>\n"
-"                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-"
-"color:rgb(204,204,204);border:medium none;clear:both;display:block;font-"
-"size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
-"                </td></tr>\n"
-"            </table>\n"
-"        </td>\n"
-"    </tr>\n"
-"    <!-- CONTENT -->\n"
-"    <tr>\n"
-"        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"            <table width=\"590\" border=\"0\" cellpadding=\"0\" style=\"min-"
-"width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-"
-"collapse:separate;\">\n"
-"                <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
-"                    <div>\n"
-"                        Congratulations <t t-out=\"object.user_id.name or "
-"''\"/>!<br/>\n"
-"                        You just received badge <strong t-"
-"out=\"object.badge_id.name or ''\"/>!<br/>\n"
-"                        <table t-if=\"not "
+"                    <div>Hi <strong><t t-out=\"object.user_id.name or ''\"/"
+"></strong>,</div><br/>\n"
+"                    <div>You've just been awarded the <strong><t t-"
+"out=\"object.badge_id.name or ''\"/></strong> badge\n"
+"                        <t t-if=\"object.sender_id\"> by <strong><t t-"
+"out=\"object.sender_id.name or ''\"/></strong>.</t>\n"
+"                    </div>\n"
+"                    <table t-if=\"not "
 "is_html_empty(object.badge_id.description)\" cellspacing=\"0\" "
 "cellpadding=\"0\" border=\"0\" style=\"width: 560px; margin-top: 5px;\">\n"
-"                            <tbody><tr>\n"
-"                                <td valign=\"center\">\n"
-"                                    <img t-attf-src=\"/web/image/"
+"                        <tbody><tr>\n"
+"                            <td valign=\"center\">\n"
+"                                <img t-attf-src=\"/web/image/"
 "gamification.badge/{{ object.badge_id.id }}/image_128/80x80\" "
 "style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-"
 "alt=\"user.company_id.name\"/>\n"
-"                                </td>\n"
-"                                <td valign=\"center\">\n"
-"                                    <cite t-"
-"out=\"object.badge_id.description or ''\"/>\n"
-"                                </td>\n"
-"                            </tr></tbody>\n"
-"                        </table>\n"
-"                        <br/>\n"
-"                        <t t-if=\"object.sender_id\">\n"
-"                            This badge was granted by <strong t-"
-"out=\"object.sender_id.name or ''\"/>.\n"
-"                        </t>\n"
-"                        <br/>\n"
-"                        <t t-if=\"object.comment\" t-out=\"object.comment or "
+"                            </td>\n"
+"                            <td valign=\"center\">\n"
+"                                <cite t-out=\"object.badge_id.description or "
 "''\"/>\n"
-"                        <br/><br/>\n"
-"                        Thank you,\n"
-"                        <t t-if=\"object.sender_id.signature\">\n"
-"                            <br/>\n"
-"                            <t t-out=\"object.sender_id.signature or ''\"/>\n"
-"                        </t>\n"
+"                            </td>\n"
+"                        </tr></tbody>\n"
+"                    </table>\n"
+"                    <t t-if=\"object.comment\">\n"
+"                        <div style=\"margin-top: 20px; margin-bottom: 20px; "
+"padding: 15px; border-radius: 5px; background-color: #fff3cd; border-left: "
+"3px solid #ffe69c;\">\n"
+"                            💬 <strong><t t-out=\"object.sender_id.name or "
+"''\"/> says:</strong>\n"
+"                            <div style=\"margin-top: 10px;\">\n"
+"                                \"<i><t t-out=\"object.comment or ''\"/></"
+"i>\"\n"
+"                            </div>\n"
+"                        </div>\n"
+"                    </t>\n"
+"                    <div>\n"
+"                        Thank you for your contributions, and keep shining!\n"
 "                    </div>\n"
 "                </td></tr>\n"
 "                <tr><td style=\"text-align:center;\">\n"
@@ -287,13 +338,123 @@ msgid ""
 "collapse:separate;\">\n"
 "      <tr><td style=\"text-align: center; font-size: 14px;\">\n"
 "        Powered by <a target=\"_blank\" href=\"https://www.odoo.com?"
-"utm_source=db&amp;utm_medium=gamification\" style=\"color: #875A7B;\">Odoo</"
+"utm_source=db&amp;utm_medium=gamification\" t-attf-style=\"color: "
+"{{object.user_id.company_id.email_secondary_color or '#875A7B'}};\">Odoo</"
 "a>\n"
 "      </td></tr>\n"
 "    </table>\n"
 "</td></tr>\n"
 "</table>"
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" style=\"padding-top: 16px; background-"
+"color: #F1F1F1; color: #454748; width: 100%; border-collapse:separate;\"><tr>"
+"<td align=\"center\">\n"
+"<table border=\"0\" width=\"590\" cellpadding=\"0\" style=\"padding: 16px; "
+"background-color: white; color: #454748; border-collapse:separate;\" "
+"summary=\"o_mail_notification\">\n"
+"<tbody>\n"
+"    <!-- HEADER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table width=\"590\" border=\"0\" cellpadding=\"0\" style=\"min-"
+"width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-"
+"collapse:separate;\">\n"
+"                <tr><td valign=\"middle\">\n"
+"                    <div>Здравейте, <strong><t t-out=\"object.user_id.name "
+"or ''\"/></strong>,</div><br/>\n"
+"                    <div>Току-що бяхте отличени със значката <strong><t t-"
+"out=\"object.badge_id.name or ''\"/></strong>\n"
+"                        <t t-if=\"object.sender_id\"> от <strong><t t-"
+"out=\"object.sender_id.name or ''\"/></strong>.</t>\n"
+"                    </div>\n"
+"                    <table t-if=\"not is_html_empty"
+"(object.badge_id.description)\" cellspacing=\"0\" cellpadding=\"0\" "
+"border=\"0\" style=\"width: 560px; margin-top: 5px;\">\n"
+"                        <tbody><tr>\n"
+"                            <td valign=\"center\">\n"
+"                                <img t-attf-src=\"/web/image/"
+"gamification.badge/{{ object.badge_id.id }}/image_128/80x80\" "
+"style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-"
+"alt=\"user.company_id.name\"/>\n"
+"                            </td>\n"
+"                            <td valign=\"center\">\n"
+"                                <cite t-out=\"object.badge_id.description or "
+"''\"/>\n"
+"                            </td>\n"
+"                        </tr></tbody>\n"
+"                    </table>\n"
+"                    <t t-if=\"object.comment\">\n"
+"                        <div style=\"margin-top: 20px; margin-bottom: 20px; "
+"padding: 15px; border-radius: 5px; background-color: #fff3cd; border-left: "
+"3px solid #ffe69c;\">\n"
+"                            💬 <strong><t t-out=\"object.sender_id.name or "
+"''\"/> казва:</strong>\n"
+"                            <div style=\"margin-top: 10px;\">\n"
+"                                \"<i><t t-out=\"object.comment or ''\"/></i>"
+"\"\n"
+"                            </div>\n"
+"                        </div>\n"
+"                    </t>\n"
+"                    <div>\n"
+"                        Благодарим за приноса ви и продължавайте да "
+"блестите!\n"
+"                    </div>\n"
+"                </td></tr>\n"
+"                <tr><td style=\"text-align:center;\">\n"
+"                  <hr width=\"100%\" style=\"background-color:rgb"
+"(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-"
+"height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- FOOTER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table width=\"590\" border=\"0\" cellpadding=\"0\" style=\"min-"
+"width: 590px; background-color: white; font-size: 12px; padding: 0px 8px 0px "
+"8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\" align=\"left\">\n"
+"                    <t t-out=\"object.user_id.company_id.name or ''\">"
+"YourCompany</t>\n"
+"                </td></tr>\n"
+"                <tr><td valign=\"middle\" align=\"left\" style=\"opacity: "
+"0.7;\">\n"
+"                    <t t-out=\"object.user_id.company_id.phone or ''\">+1 "
+"650-123-4567</t>\n"
+"                    <t t-if=\"object.user_id.company_id.email\">\n"
+"                        | <a t-attf-href=\"'mailto:%s' % {{ "
+"object.user_id.company_id.email }}\" style=\"text-decoration:none; color: "
+"#454748;\" t-out=\"object.user_id.company_id.email or ''\">"
+"info@yourcompany.com</a>\n"
+"                    </t>\n"
+"                    <t t-if=\"object.user_id.company_id.website\">\n"
+"                        | <a t-attf-href=\"'%s' % {{ "
+"object.user_id.company_id.website }}\" style=\"text-decoration:none; color: "
+"#454748;\" t-out=\"object.user_id.company_id.website or ''\">http://"
+"www.example.com</a>\n"
+"                    </t>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"</tbody>\n"
+"</table>\n"
+"</td></tr>\n"
+"<!-- POWERED BY -->\n"
+"<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"    <table width=\"590\" border=\"0\" cellpadding=\"0\" style=\"min-width: "
+"590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-"
+"collapse:separate;\">\n"
+"      <tr><td style=\"text-align: center; font-size: 14px;\">\n"
+"        Създадено с <a target=\"_blank\" href=\"https://"
+"www.odoo.com?utm_source=db&amp;utm_medium=gamification\" t-attf-"
+"style=\"color: {{object.user_id.company_id.email_secondary_color or "
+"'#875A7B'}};\">Odoo</a>\n"
+"      </td></tr>\n"
+"    </table>\n"
+"</td></tr>\n"
+"</table>"
 
 #. module: gamification
 #: model:mail.template,body_html:gamification.simple_report_template
@@ -976,9 +1137,10 @@ msgstr "Действие"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__message_needaction
+#: model:ir.model.fields,field_description:gamification.field_gamification_badge_user__message_needaction
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__message_needaction
 msgid "Action Needed"
-msgstr "Необходимо действие"
+msgstr "Необходимо Действие"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__active
@@ -1012,7 +1174,7 @@ msgstr "Появява се в"
 #: model_terms:ir.ui.view,arch_db:gamification.badge_form_view
 #: model_terms:ir.ui.view,arch_db:gamification.gamification_badge_view_search
 msgid "Archived"
-msgstr "Архивиран"
+msgstr "Архивирано"
 
 #. module: gamification
 #: model_terms:ir.ui.view,arch_db:gamification.challenge_form_view
@@ -1036,9 +1198,10 @@ msgstr ""
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__message_attachment_count
+#: model:ir.model.fields,field_description:gamification.field_gamification_badge_user__message_attachment_count
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__message_attachment_count
 msgid "Attachment Count"
-msgstr "Брой прикачени файлове"
+msgstr "Брой Прикачени Файлове"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__rule_auth_user_ids
@@ -1135,6 +1298,11 @@ msgid "Bronze badges count"
 msgstr "Брой бронзови значки"
 
 #. module: gamification
+#: model_terms:ir.ui.view,arch_db:gamification.badge_user_kanban_view
+msgid "By"
+msgstr "By"
+
+#. module: gamification
 #: model_terms:ir.ui.view,arch_db:gamification.badge_kanban_view
 msgid "Can not grant"
 msgstr "Не може да се връчи"
@@ -1154,7 +1322,7 @@ msgstr "Отказ"
 #. module: gamification
 #: model:ir.model.fields.selection,name:gamification.selection__gamification_goal__state__canceled
 msgid "Cancelled"
-msgstr "Отказан"
+msgstr "Отменен"
 
 #. module: gamification
 #: model_terms:ir.ui.view,arch_db:gamification.challenge_form_view
@@ -1204,8 +1372,7 @@ msgstr "Предизвикателства"
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_badge__rule_max
 msgid "Check to set a monthly limit per person of sending this badge"
-msgstr ""
-"Отметнете, за да настроите месечен лимит за лице, изпращащо тази значка"
+msgstr "Отметнете, за да настроите месечен лимит за лице, изпращащо тази значка"
 
 #. module: gamification
 #: model_terms:ir.ui.view,arch_db:gamification.goal_definition_form_view
@@ -1220,7 +1387,7 @@ msgstr "Изпълнена цел"
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal__color
 msgid "Color Index"
-msgstr "Цветови индекс"
+msgstr "Цветен индекс"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge_user__comment
@@ -1317,7 +1484,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:gamification.field_gamification_karma_rank__create_uid
 #: model:ir.model.fields,field_description:gamification.field_gamification_karma_tracking__create_uid
 msgid "Created by"
-msgstr "Създаден от"
+msgstr "Създадено от"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__create_date
@@ -1394,7 +1561,7 @@ msgstr "Описание на определение"
 msgid "Depending on the Display mode, reports will be individual or shared."
 msgstr ""
 "Отчетите ще бъдат индивидуални или споделени в зависимост от режима на "
-"показване "
+"показване"
 
 #. module: gamification
 #: model_terms:ir.ui.view,arch_db:gamification.challenge_form_view
@@ -1434,6 +1601,7 @@ msgstr "Режим на показване"
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal_wizard__display_name
 #: model:ir.model.fields,field_description:gamification.field_gamification_karma_rank__display_name
 #: model:ir.model.fields,field_description:gamification.field_gamification_karma_tracking__display_name
+#: model:ir.model.fields,field_description:gamification.field_res_users__display_name
 msgid "Display Name"
 msgstr "Име за показване"
 
@@ -1475,7 +1643,7 @@ msgstr "Извършен"
 #: model:ir.model.fields.selection,name:gamification.selection__gamification_goal__state__draft
 #: model_terms:ir.ui.view,arch_db:gamification.goal_search_view
 msgid "Draft"
-msgstr "Чернова "
+msgstr "Чернова"
 
 #. module: gamification
 #: model_terms:gamification.karma.rank,description_motivational:gamification.rank_newbie
@@ -1487,7 +1655,7 @@ msgstr "Спечелете първите си точки и се включет
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal__end_date
 #: model_terms:ir.ui.view,arch_db:gamification.goal_search_view
 msgid "End Date"
-msgstr "Крайна дата"
+msgstr "Крайна Дата"
 
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_goal_definition__batch_mode
@@ -1526,12 +1694,14 @@ msgstr "Домейн на филтър"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__message_follower_ids
+#: model:ir.model.fields,field_description:gamification.field_gamification_badge_user__message_follower_ids
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__message_follower_ids
 msgid "Followers"
 msgstr "Последователи"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__message_partner_ids
+#: model:ir.model.fields,field_description:gamification.field_gamification_badge_user__message_partner_ids
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__message_partner_ids
 msgid "Followers (Partners)"
 msgstr "Последователи (партньори)"
@@ -1579,7 +1749,7 @@ msgstr "Пълен суфикс"
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_karma_tracking__gain
 msgid "Gain"
-msgstr "Печалба"
+msgstr "Прираст"
 
 #. module: gamification
 #: model:ir.model,name:gamification.model_gamification_badge
@@ -1619,12 +1789,12 @@ msgstr "Потребителска значка за геймификация"
 #. module: gamification
 #: model:ir.model,name:gamification.model_gamification_badge_user_wizard
 msgid "Gamification User Badge Wizard"
-msgstr "Помощник за потребителска значка за геймификация"
+msgstr "Помощник за потребителски значки за геймификация"
 
 #. module: gamification
 #: model:ir.model,name:gamification.model_gamification_challenge_line
 msgid "Gamification generic goal for challenge"
-msgstr "Универсална цел на предизвикателство за игровизация "
+msgstr "Универсална цел на предизвикателство за игровизация"
 
 #. module: gamification
 #: model:mail.template,name:gamification.email_template_badge_received
@@ -1759,21 +1929,13 @@ msgstr "Връчена от"
 
 #. module: gamification
 #: model_terms:ir.ui.view,arch_db:gamification.badge_user_kanban_view
-msgid "Granted by"
-msgstr "Връчена от"
+msgid "Granted on"
+msgstr "Връчена на"
 
 #. module: gamification
 #: model_terms:ir.ui.view,arch_db:gamification.badge_form_view
 msgid "Granting"
 msgstr "Връчване"
-
-#. module: gamification
-#: model_terms:ir.ui.view,arch_db:gamification.challenge_search_view
-#: model_terms:ir.ui.view,arch_db:gamification.gamification_karma_tracking_view_search
-#: model_terms:ir.ui.view,arch_db:gamification.goal_definition_search_view
-#: model_terms:ir.ui.view,arch_db:gamification.goal_search_view
-msgid "Group By"
-msgstr "Групиране по"
 
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_challenge__report_message_group_id
@@ -1787,6 +1949,7 @@ msgstr "Предизвикателства на 'Човешки ресурси'"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__has_message
+#: model:ir.model.fields,field_description:gamification.field_gamification_badge_user__has_message
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__has_message
 msgid "Has Message"
 msgstr "има съобщение"
@@ -1817,6 +1980,7 @@ msgstr "Човешки ресурси / ангажираност"
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal_wizard__id
 #: model:ir.model.fields,field_description:gamification.field_gamification_karma_rank__id
 #: model:ir.model.fields,field_description:gamification.field_gamification_karma_tracking__id
+#: model:ir.model.fields,field_description:gamification.field_res_users__id
 msgid "ID"
 msgstr "ID"
 
@@ -1832,12 +1996,14 @@ msgstr "Ако е настроен максимум"
 
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_badge__message_needaction
+#: model:ir.model.fields,help:gamification.field_gamification_badge_user__message_needaction
 #: model:ir.model.fields,help:gamification.field_gamification_challenge__message_needaction
 msgid "If checked, new messages require your attention."
 msgstr "Ако е отметнато, новите съобщения ще изискват внимание."
 
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_badge__message_has_error
+#: model:ir.model.fields,help:gamification.field_gamification_badge_user__message_has_error
 #: model:ir.model.fields,help:gamification.field_gamification_challenge__message_has_error
 msgid "If checked, some messages have a delivery error."
 msgstr "Ако е отметнато, някои съобщения имат грешка при доставката."
@@ -1875,7 +2041,7 @@ msgstr "Изображение 512"
 #. module: gamification
 #: model:ir.model.fields.selection,name:gamification.selection__gamification_challenge__state__inprogress
 msgid "In Progress"
-msgstr "В процес на изпълнение"
+msgstr "В процес"
 
 #. module: gamification
 #: model_terms:ir.ui.view,arch_db:gamification.goal_definition_form_view
@@ -1929,6 +2095,7 @@ msgstr "Поканете нови потребители"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__message_is_follower
+#: model:ir.model.fields,field_description:gamification.field_gamification_badge_user__message_is_follower
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__message_is_follower
 msgid "Is Follower"
 msgstr "е последовател"
@@ -2038,12 +2205,14 @@ msgstr "Главен"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__message_has_error
+#: model:ir.model.fields,field_description:gamification.field_gamification_badge_user__message_has_error
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__message_has_error
 msgid "Message Delivery error"
-msgstr "Грешка при доставяне на съобщението"
+msgstr "Грешка при доставката на съобщение"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__message_ids
+#: model:ir.model.fields,field_description:gamification.field_gamification_badge_user__message_ids
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__message_ids
 msgid "Messages"
 msgstr "Съобщения"
@@ -2078,7 +2247,7 @@ msgstr "Изпращане, ограничено в рамките на един
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__stat_this_month
 msgid "Monthly total"
-msgstr "Общо месечно "
+msgstr "Общо месечно"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_karma_rank__description_motivational
@@ -2211,7 +2380,7 @@ msgstr "Непериодично"
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__remind_update_delay
 msgid "Non-updated manual goals will be reminded after"
-msgstr "Неподлежащите на актуализация механични цели ще бъдат напомняни след "
+msgstr "Неподлежащите на актуализация механични цели ще бъдат напомняни след"
 
 #. module: gamification
 #: model_terms:ir.ui.view,arch_db:gamification.challenge_form_view
@@ -2220,24 +2389,28 @@ msgstr "Съобщения за известяване"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__message_needaction_counter
+#: model:ir.model.fields,field_description:gamification.field_gamification_badge_user__message_needaction_counter
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__message_needaction_counter
 msgid "Number of Actions"
 msgstr "Брой действия"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__message_has_error_counter
+#: model:ir.model.fields,field_description:gamification.field_gamification_badge_user__message_has_error_counter
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__message_has_error_counter
 msgid "Number of errors"
 msgstr "Брой грешки"
 
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_badge__message_needaction_counter
+#: model:ir.model.fields,help:gamification.field_gamification_badge_user__message_needaction_counter
 #: model:ir.model.fields,help:gamification.field_gamification_challenge__message_needaction_counter
 msgid "Number of messages requiring action"
 msgstr "Брой съобщения изискващи действие"
 
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_badge__message_has_error_counter
+#: model:ir.model.fields,help:gamification.field_gamification_badge_user__message_has_error_counter
 #: model:ir.model.fields,help:gamification.field_gamification_challenge__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr "Брой съобщения с грешка при доставка"
@@ -2284,6 +2457,12 @@ msgstr "Собственици"
 #: model_terms:ir.ui.view,arch_db:gamification.view_challenge_kanban
 msgid "Participants"
 msgstr "Участници"
+
+#. module: gamification
+#: model:ir.model.fields,help:gamification.field_gamification_badge_user__user_partner_id
+#: model:ir.model.fields,help:gamification.field_gamification_goal__user_partner_id
+msgid "Partner-related data of the user"
+msgstr "Свързани с контрагента данни на потребителя"
 
 #. module: gamification
 #: model:ir.model.fields.selection,name:gamification.selection__gamification_badge__rule_auth__having
@@ -2438,9 +2617,15 @@ msgid "Related Goals"
 msgstr "Свързани цели"
 
 #. module: gamification
+#: model:ir.model.fields,field_description:gamification.field_gamification_badge_user__user_partner_id
+#: model:ir.model.fields,field_description:gamification.field_gamification_goal__user_partner_id
+msgid "Related Partner"
+msgstr "Свързан партньор"
+
+#. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__remaining_sending
 msgid "Remaining Sending Allowed"
-msgstr "Разрешено оставащо изпращане  "
+msgstr "Разрешено оставащо изпращане"
 
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_goal__remind_update_delay
@@ -2480,7 +2665,7 @@ msgstr "Пренастройте завършване"
 #. module: gamification
 #: model:ir.model.fields,field_description:gamification.field_gamification_challenge__manager_id
 msgid "Responsible"
-msgstr "Отговорен"
+msgstr "Отговорно лице"
 
 #. module: gamification
 #. odoo-python
@@ -2636,7 +2821,7 @@ msgstr "Настройте данните на Вашата компания"
 #. module: gamification
 #: model:gamification.goal.definition,name:gamification.definition_base_company_logo
 msgid "Set your Company Logo"
-msgstr "Настройте търговската марка на Вашата компания "
+msgstr "Настройте търговската марка на Вашата компания"
 
 #. module: gamification
 #: model:gamification.goal.definition,name:gamification.definition_base_timezone
@@ -2901,8 +3086,7 @@ msgstr ""
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_badge__stat_my
 msgid "The number of time the current user has received this badge."
-msgstr ""
-"Броят на пътите, в които настоящият потребител е получавал тази значка."
+msgstr "Броят на пътите, в които настоящият потребител е получавал тази значка."
 
 #. module: gamification
 #: model:ir.model.fields,help:gamification.field_gamification_badge__stat_my_monthly_sending
@@ -3003,7 +3187,7 @@ msgstr "За актуализиране"
 #: model:ir.model.fields,field_description:gamification.field_gamification_badge__granted_count
 #: model_terms:ir.ui.view,arch_db:gamification.gamification_karma_tracking_view_tree
 msgid "Total"
-msgstr "Обща стойност"
+msgstr "Общ"
 
 #. module: gamification
 #: model:ir.model,name:gamification.model_gamification_karma_tracking
@@ -3262,11 +3446,42 @@ msgid "than the target."
 msgstr "отколкото целта."
 
 #. module: gamification
-#: model_terms:ir.ui.view,arch_db:gamification.badge_user_kanban_view
-msgid "the"
-msgstr "-"
-
-#. module: gamification
 #: model_terms:ir.ui.view,arch_db:gamification.badge_kanban_view
 msgid "this month"
 msgstr "този месец"
+
+#. module: gamification
+#. odoo-python
+#: code:addons/gamification/models/gamification_badge_user.py:0
+msgid "🎉 You've earned the %(badge)s badge!"
+msgstr "🎉 Спечелихте значката %(badge)s!"
+
+#~ msgid "Canceled"
+#~ msgstr "Отменен"
+
+#~ msgid "Granted by"
+#~ msgstr "Връчена от"
+
+#~ msgid "Group By"
+#~ msgstr "Групиране по"
+
+#~ msgid "Number of messages which requires an action"
+#~ msgstr "Брой съобщения, които изискват внимание"
+
+#~ msgid "Owner"
+#~ msgstr "Собственик"
+
+#~ msgid "Related user name for the resource to manage its access."
+#~ msgstr "Име на свързан потребител, който управлява достъпа до този ресурс."
+
+#~ msgid ""
+#~ "The domain for the definition %s seems incorrect, please check it.\n"
+#~ "\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Домейнът на определението %s изглежда не е правилен, моля, проверете го.\n"
+#~ "\n"
+#~ "%s"
+
+#~ msgid "the"
+#~ msgstr "-"

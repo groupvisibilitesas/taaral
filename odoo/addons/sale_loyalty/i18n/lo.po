@@ -2,23 +2,22 @@
 # This file contains the translation of the following modules:
 # * sale_loyalty
 #
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
 # Bone NI <bounkirdni@gmail.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-20 18:37+0000\n"
-"PO-Revision-Date: 2026-05-26 04:55+0000\n"
+"POT-Creation-Date: 2026-06-12 17:37+0000\n"
+"PO-Revision-Date: 2026-08-02 13:14+0000\n"
 "Last-Translator: Bone NI <bounkirdni@gmail.com>\n"
-"Language-Team: Lao <https://translate.odoo.com/projects/odoo-18/sale_loyalty/"
+"Language-Team: Lao <https://translate.odoo.com/projects/odoo-19/sale_loyalty/"
 "lo/>\n"
 "Language: lo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.17\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: sale_loyalty
 #. odoo-python
@@ -34,20 +33,13 @@ msgstr "<span class=\"fa fa-clipboard\"/> ຄັດລອກ"
 #. module: sale_loyalty
 #: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_order_portal_loyalty_content
 msgid "<strong>Loyalty Card</strong>"
-msgstr "<strong>ບັດສະມາຊິກ</strong>"
+msgstr "<strong>ບັດສະສົມຄະແນນ</strong>"
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
 msgid "A better global discount is already applied."
 msgstr "ມີສ່ວນຫຼຸດລວມທີ່ດີກວ່ານີ້ຖືກນຳໃຊ້ແລ້ວ."
-
-#. module: sale_loyalty
-#. odoo-python
-#: code:addons/sale_loyalty/models/sale_order.py:0
-msgid ""
-"A minimum of %(amount)s %(currency)s should be purchased to get the reward"
-msgstr "ຕ້ອງຊື້ຢ່າງໜ້ອຍ %(amount)s %(currency)s ເພື່ອຮັບລາງວັນ"
 
 #. module: sale_loyalty
 #: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_loyalty_coupon_wizard_view_form
@@ -101,7 +93,7 @@ msgstr "ບໍ່ພົບຄູປອງໃນຂະນະທີ່ພະຍາ
 #. module: sale_loyalty
 #: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_loyalty_reward_wizard_view_form
 msgid "Coupons & Loyalty"
-msgstr "ຄູປອງ & ລະບົບສະມາຊິກ"
+msgstr "ຄູປອງ ແລະ ການສະສົມຄະແນນ"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_coupon_wizard__create_uid
@@ -121,7 +113,7 @@ msgstr "ສ້າງເມື່ອ"
 #: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_loyalty_coupon_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_loyalty_reward_wizard_view_form
 msgid "Discard"
-msgstr "ຖິ້ມ"
+msgstr "ຍົກເລີກ"
 
 #. module: sale_loyalty
 #. odoo-python
@@ -132,12 +124,19 @@ msgstr "ສ່ວນຫຼຸດ %(desc)s%(tax_str)s"
 #. module: sale_loyalty
 #: model:ir.ui.menu,name:sale_loyalty.menu_discount_loyalty_type_config
 msgid "Discount & Loyalty"
-msgstr "ສ່ວນຫຼຸດ & ລະບົບສະມາຊິກ"
+msgstr "ສ່ວນຫຼຸດ ແລະ ການສະສົມຄະແນນ"
 
 #. module: sale_loyalty
+#: model:ir.model.fields,field_description:sale_loyalty.field_account_move_line__display_name
+#: model:ir.model.fields,field_description:sale_loyalty.field_loyalty_card__display_name
+#: model:ir.model.fields,field_description:sale_loyalty.field_loyalty_history__display_name
+#: model:ir.model.fields,field_description:sale_loyalty.field_loyalty_program__display_name
+#: model:ir.model.fields,field_description:sale_loyalty.field_loyalty_reward__display_name
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_coupon_wizard__display_name
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard__display_name
+#: model:ir.model.fields,field_description:sale_loyalty.field_sale_order__display_name
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_coupon_points__display_name
+#: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_line__display_name
 msgid "Display Name"
 msgstr "ຊື່ທີ່ສະແດງ"
 
@@ -154,7 +153,7 @@ msgstr "ວັນໝົດອາຍຸ:"
 #. module: sale_loyalty
 #: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_purchased_gift_card
 msgid "Gift #"
-msgstr "ຂອງຂວັນ #"
+msgstr "ບັດຂອງຂວັນ #"
 
 #. module: sale_loyalty
 #: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_purchased_gift_card
@@ -162,32 +161,51 @@ msgid "Gift Card Code"
 msgstr "ລະຫັດບັດຂອງຂວັນ"
 
 #. module: sale_loyalty
+#: model:ir.model.fields,field_description:sale_loyalty.field_sale_order__gift_card_count
+msgid "Gift Card Count"
+msgstr "ຈຳນວນບັດຂອງຂວັນ"
+
+#. module: sale_loyalty
+#. odoo-python
+#: code:addons/sale_loyalty/models/sale_order.py:0
+#: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_order_view_form_inherit_sale_loyalty
+msgid "Gift Cards"
+msgstr "ບັດຂອງຂວັນ"
+
+#. module: sale_loyalty
 #: model:ir.ui.menu,name:sale_loyalty.menu_gift_ewallet_type_config
 msgid "Gift cards & eWallet"
-msgstr "ບັດຂອງຂວັນ & ກະເປົ໋າເງິນອິເລັກໂຕຣນິກ"
+msgstr "ບັດຂອງຂວັນ ແລະ ກະເປົາເງິນອີເລັກໂຕຣນິກ"
 
 #. module: sale_loyalty
 #: model:ir.model,name:sale_loyalty.model_loyalty_history
 msgid "History for Loyalty cards and Ewallets"
-msgstr "ປະຫວັດສຳລັບບັດສະມາຊິກ ແລະ ກະເປົ໋າເງິນອິເລັກໂຕຣນິກ"
+msgstr "ປະຫວັດບັດສະສົມຄະແນນ ແລະ ກະເປົາເງິນອີເລັກໂຕຣນິກ"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,help:sale_loyalty.field_sale_order_line__points_cost
 msgid "How much point this reward costs on the loyalty card."
-msgstr "ຈຳນວນຄະແນນທີ່ລາງວັນນີ້ຕ້ອງໃຊ້ໃນບັດສະມາຊິກ."
+msgstr "ລາງວັນນີ້ຕ້ອງໃຊ້ຄະແນນເທົ່າໃດໃນບັດສະສົມຄະແນນ."
 
 #. module: sale_loyalty
+#: model:ir.model.fields,field_description:sale_loyalty.field_account_move_line__id
+#: model:ir.model.fields,field_description:sale_loyalty.field_loyalty_card__id
+#: model:ir.model.fields,field_description:sale_loyalty.field_loyalty_history__id
+#: model:ir.model.fields,field_description:sale_loyalty.field_loyalty_program__id
+#: model:ir.model.fields,field_description:sale_loyalty.field_loyalty_reward__id
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_coupon_wizard__id
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard__id
+#: model:ir.model.fields,field_description:sale_loyalty.field_sale_order__id
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_coupon_points__id
+#: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_line__id
 msgid "ID"
-msgstr "ID"
+msgstr "ໄອດີ"
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
 msgid "Invalid product to claim."
-msgstr "ສິນຄ້າບໍ່ຖືກຕ້ອງໃນການແລກຮັບ."
+msgstr "ສິນຄ້າທີ່ແລກບໍ່ຖືກຕ້ອງ."
 
 #. module: sale_loyalty
 #. odoo-python
@@ -214,47 +232,47 @@ msgstr "ອອກໃຫ້ແລ້ວ :"
 #. module: sale_loyalty
 #: model:ir.model,name:sale_loyalty.model_account_move_line
 msgid "Journal Item"
-msgstr "ລາຍການບັນຊີ"
+msgstr "ລາຍການບັນຊີປະຈຳວັນ"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_coupon_wizard__write_uid
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard__write_uid
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_coupon_points__write_uid
 msgid "Last Updated by"
-msgstr "ອັບເດດລ້າສຸດໂດຍ"
+msgstr "ແກ້ໄຂຫຼ້າສຸດໂດຍ"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_coupon_wizard__write_date
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard__write_date
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_coupon_points__write_date
 msgid "Last Updated on"
-msgstr "ອັບເດດລ້າສຸດເມື່ອ"
+msgstr "ແກ້ໄຂຫຼ້າສຸດເມື່ອ"
 
 #. module: sale_loyalty
 #. odoo-javascript
 #: code:addons/sale_loyalty/static/src/views/fields/loyalty_total/loyalty_data_field.xml:0
 msgid "Loyalty Card :"
-msgstr "ບັດສະມາຊິກ :"
+msgstr "ບັດສະສົມຄະແນນ :"
 
 #. module: sale_loyalty
 #: model:ir.model,name:sale_loyalty.model_loyalty_card
 msgid "Loyalty Coupon"
-msgstr "ຄູປອງສະມາຊິກ"
+msgstr "ຄູປອງສະສົມຄະແນນ"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order__loyalty_data
 msgid "Loyalty Data"
-msgstr "ຂໍ້ມູນສະມາຊິກ"
+msgstr "ຂໍ້ມູນການສະສົມຄະແນນ"
 
 #. module: sale_loyalty
 #: model:ir.model,name:sale_loyalty.model_loyalty_program
 msgid "Loyalty Program"
-msgstr "ໂຄງການສະມາຊິກ"
+msgstr "ໂຄງການສະສົມຄະແນນ"
 
 #. module: sale_loyalty
 #: model:ir.model,name:sale_loyalty.model_loyalty_reward
 msgid "Loyalty Reward"
-msgstr "ລາງວັນສະມາຊິກ"
+msgstr "ລາງວັນສະສົມຄະແນນ"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order__applied_coupon_ids
@@ -264,7 +282,7 @@ msgstr "ຄູປອງທີ່ນຳໃຊ້ດ້ວຍຕົນເອງ"
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order__code_enabled_rule_ids
 msgid "Manually Triggered Rules"
-msgstr "ກົດເກນທີ່ເປີດໃຊ້ດ້ວຍຕົນເອງ"
+msgstr "ກົດລະບຽບທີ່ເປີດໃຊ້ດ້ວຍຕົນເອງ"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard__multi_product_reward
@@ -275,21 +293,21 @@ msgstr "ຫຼາຍສິນຄ້າ"
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
 msgid ""
-"No card found for this loyalty program and no points will be given with this"
-" order."
+"No card found for this loyalty program and no points will be given with this "
+"order."
 msgstr ""
-"ບໍ່ພົບບັດສຳລັບໂຄງການສະມາຊິກນີ້ ແລະ ຈະບໍ່ມີການໃຫ້ຄະແນນກັບໃບສັ່ງຊື້ສິນຄ້ານີ້."
+"ບໍ່ພົບບັດສຳລັບໂຄງການສະສົມຄະແນນນີ້ ແລະ ຈະບໍ່ມີການໃຫ້ຄະແນນກັບໃບສັ່ງຊື້ນີ້."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/wizard/sale_loyalty_reward_wizard.py:0
 msgid "No reward selected."
-msgstr "ບໍ່ມີລາງວັນທີ່ຖືກເລືອກ."
+msgstr "ບໍ່ໄດ້ເລືອກລາງວັນ."
 
 #. module: sale_loyalty
 #: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_loyalty_reward_wizard_view_form
 msgid "No rewards available for this customer!"
-msgstr "ບໍ່ມີລາງວັນສຳລັບລູກຄ້າຜູ້ນີ້!"
+msgstr "ບໍ່ມີລາງວັນສຳລັບລູກຄ້ານີ້!"
 
 #. module: sale_loyalty
 #. odoo-python
@@ -302,7 +320,7 @@ msgstr "ມີໜຶ່ງລາງວັນ ຫຼື ຫຼາຍກວ່າ�
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard__order_id
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_order_coupon_points__order_id
 msgid "Order"
-msgstr "ລຳດັບ"
+msgstr "ໃບສັ່ງຊື້"
 
 #. module: sale_loyalty
 #. odoo-python
@@ -318,7 +336,7 @@ msgstr "ຈຳນວນໃບສັ່ງຊື້"
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_loyalty_card__order_id
 msgid "Order Reference"
-msgstr "ອ້າງອີງໃບສັ່ງຊື້"
+msgstr "ການອ້າງອີງໃບສັ່ງຊື້"
 
 #. module: sale_loyalty
 #. odoo-python
@@ -355,20 +373,31 @@ msgid "Reward Products"
 msgstr "ສິນຄ້າລາງວັນ"
 
 #. module: sale_loyalty
+#. odoo-python
+#: code:addons/sale_loyalty/models/sale_order.py:0
+msgid "Rewards Available"
+msgstr "ລາງວັນທີ່ມີໃຫ້"
+
+#. module: sale_loyalty
 #: model:ir.model,name:sale_loyalty.model_sale_loyalty_coupon_wizard
 msgid "Sale Loyalty - Apply Coupon Wizard"
-msgstr "ລະບົບສະມາຊິກການຂາຍ - ຕົວຊ່ວຍນຳໃຊ້ຄູປອງ"
+msgstr "ການສະສົມຄະແນນການຂາຍ - ຕົວຊ່ວຍນຳໃຊ້ຄູປອງ"
 
 #. module: sale_loyalty
 #: model:ir.model,name:sale_loyalty.model_sale_loyalty_reward_wizard
 msgid "Sale Loyalty - Reward Selection Wizard"
-msgstr "ລະບົບສະມາຊິກການຂາຍ - ຕົວຊ່ວຍເລືອກລາງວັນ"
+msgstr "ການສະສົມຄະແນນການຂາຍ - ຕົວຊ່ວຍເລືອກລາງວັນ"
 
 #. module: sale_loyalty
 #: model:ir.model,name:sale_loyalty.model_sale_order_coupon_points
 msgid ""
 "Sale Order Coupon Points - Keeps track of how a sale order impacts a coupon"
 msgstr "ຄະແນນຄູປອງໃບສັ່ງຊື້ - ຕິດຕາມຜົນກະທົບຂອງໃບສັ່ງຊື້ທີ່ມີຕໍ່ຄູປອງ"
+
+#. module: sale_loyalty
+#: model:ir.model.fields,field_description:sale_loyalty.field_loyalty_card__order_id_partner_id
+msgid "Sale Order Customer"
+msgstr "ລູກຄ້າໃບສັ່ງຊື້"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_loyalty_program__sale_ok
@@ -383,7 +412,7 @@ msgstr "ໃບສັ່ງຊື້"
 #. module: sale_loyalty
 #: model:ir.model,name:sale_loyalty.model_sale_order_line
 msgid "Sales Order Line"
-msgstr "ລາຍການສິນຄ້າທີ່ສັ່ງຊື້"
+msgstr "ລາຍການໃບສັ່ງຊື້"
 
 #. module: sale_loyalty
 #: model:ir.model.fields,field_description:sale_loyalty.field_sale_loyalty_reward_wizard__selected_product_id
@@ -407,35 +436,41 @@ msgid ""
 "Technical field used to link multiple reward lines from the same reward "
 "together."
 msgstr ""
-"ຟິວທາງເຕັກນິກທີ່ໃຊ້ເພື່ອເຊື່ອມຕໍ່ຫຼາຍລາຍການລາງວັນຈາກລາງວັນດຽວກັນເຂົ້າກັນ."
+"ຟິວທາງເຕັກນິກທີ່ໃຊ້ເພື່ອເຊື່ອມຕໍ່ລາຍການລາງວັນຫຼາຍລາຍການຈາກລາງວັນດຽວກັນເຂົ້າກັນ."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
 msgid "The coupon can only be claimed on future orders."
-msgstr "ຄູປອງນີ້ສາມາດແລກໄດ້ໃນໃບສັ່ງຊື້ຄັ້ງຕໍ່ໄປເທົ່ານັ້ນ."
+msgstr "ຄູປອງນີ້ສາມາດໃຊ້ແລກໄດ້ໃນໃບສັ່ງຊື້ຄັ້ງຕໍ່ໄປເທົ່ານັ້ນ."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
 msgid "The coupon does not have enough points for the selected reward."
-msgstr "ຄູປອງມີຄະແນນບໍ່ພຽງພໍສຳລັບລາງວັນທີ່ເລືອກ."
+msgstr "ຄູປອງນີ້ມີຄະແນນບໍ່ພໍສຳລັບລາງວັນທີ່ເລືອກ."
 
 #. module: sale_loyalty
 #: model:ir.model.constraint,message:sale_loyalty.constraint_sale_order_coupon_points_order_coupon_unique
 msgid "The coupon points entry already exists."
-msgstr "ມີລາຍການຄະແນນຄູປອງນີ້ຢູ່ແລ້ວ."
+msgstr "ມີການບັນທຶກຄະແນນຄູປອງນີ້ແລ້ວ."
 
 #. module: sale_loyalty
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
 msgid "The program is not available for this order."
-msgstr "ໂຄງການນີ້ບໍ່ມີໃຫ້ສຳລັບໃບສັ່ງຊື້ນີ້."
+msgstr "ໂໂຄງການນີ້ບໍ່ມີໃຫ້ສຳລັບໃບສັ່ງຊື້ນີ້."
 
 #. module: sale_loyalty
 #: model:ir.model.fields,help:sale_loyalty.field_loyalty_card__order_id
 msgid "The sales order from which coupon is generated"
-msgstr "ໃບສັ່ງຊື້ທີ່ຄູປອງຖືກສ້າງຂຶ້ນ"
+msgstr "ໃບສັ່ງຊື້ທີ່ເປັນບ່ອນສ້າງຄູປອງ"
+
+#. module: sale_loyalty
+#. odoo-python
+#: code:addons/sale_loyalty/models/sale_order.py:0
+msgid "There are available rewards not added to this order."
+msgstr "ມີລາງວັນທີ່ສາມາດໃຊ້ໄດ້ແຕ່ຍັງບໍ່ທັນໄດ້ເພີ່ມເຂົ້າໃນໃບສັ່ງຊື້ນີ້."
 
 #. module: sale_loyalty
 #. odoo-python
@@ -446,7 +481,7 @@ msgstr "ບໍ່ມີລາຍການທີ່ຈະໃຫ້ສ່ວນຫ
 #. module: sale_loyalty
 #: model:ir.model.fields,help:sale_loyalty.field_sale_loyalty_reward_wizard__reward_product_ids
 msgid "These are the products that can be claimed with this rule."
-msgstr "ເຫຼົ່ານີ້ແມ່ນສິນຄ້າທີ່ສາມາດແລກຮັບໄດ້ດ້ວຍກົດເກນນີ້."
+msgstr "ເຫຼົ່ານີ້ແມ່ນສິນຄ້າທີ່ສາມາດແລກໄດ້ດ້ວຍກົດລະບຽບນີ້."
 
 #. module: sale_loyalty
 #. odoo-python
@@ -479,8 +514,8 @@ msgid ""
 "This discount (%(discount)s) is not compatible with \"%(other_discount)s\". "
 "Please remove it in order to apply this one."
 msgstr ""
-"ສ່ວນຫຼຸດນີ້ (%(discount)s) ບໍ່ສາມາດໃຊ້ຮ່ວມກັບ \"%(other_discount)s\" ໄດ້. ກະລຸນາລົບອອກກ່ອນເ"
-"ພື່ອຈະນຳໃຊ້ອັນນີ້."
+"ສ່ວນຫຼຸດນີ້ (%(discount)s) ບໍ່ສາມາດໃຊ້ຮ່ວມກັບ \"%(other_discount)s\". ກະລຸນາລຶບມັນອອກກ່ອນເພື່"
+"ອໃຊ້ສ່ວນຫຼຸດນີ້."
 
 #. module: sale_loyalty
 #. odoo-python
@@ -504,7 +539,7 @@ msgstr "ໂຄງການນີ້ບໍ່ມີໃຫ້ສຳລັບຜູ
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
 msgid "This program requires a code to be applied."
-msgstr "ໂຄງການນີ້ຕ້ອງມີລະຫັດເພື່ອເຂົ້າຮ່ວມ."
+msgstr "ໂຄງການນີ້ຕ້ອງໃຊ້ລະຫັດເພື່ອເຮັດວຽກ."
 
 #. module: sale_loyalty
 #. odoo-python
@@ -513,14 +548,23 @@ msgid "This promo code is already applied."
 msgstr "ລະຫັດໂປຣໂມຊັນນີ້ຖືກນຳໃຊ້ແລ້ວ."
 
 #. module: sale_loyalty
+#. odoo-python
+#: code:addons/sale_loyalty/models/sale_order.py:0
+msgid ""
+"To take advantage of this offer, your order must include at least %(amount)s "
+"%(currency)s of the eligible products."
+msgstr ""
+"ເພື່ອຮັບສິດທິພິເສດນີ້, ຄຳສັ່ງຊື້ຂອງທ່ານຕ້ອງມີສິນຄ້າທີ່ຮ່ວມລາຍການຢ່າງໜ້ອຍ %(amount)s %(currency)s."
+
+#. module: sale_loyalty
 #: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_order_view_form_inherit_sale_loyalty
 msgid "Update current promotional lines and select new rewards if applicable."
-msgstr "ອັບເດດລາຍການໂປຣໂມຊັນປັດຈຸບັນ ແລະ ເລືອກລາງວັນໃໝ່ຖ້າສາມາດໃຊ້ໄດ້."
+msgstr "ອັບເດດລາຍການໂປຣໂມຊັນປັດຈຸບັນ ແລະ ເລືອກລາງວັນໃໝ່ຖ້າເປັນໄປໄດ້."
 
 #. module: sale_loyalty
 #: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_order_portal_loyalty_content
 msgid "Used"
-msgstr "ທີ່ໃຊ້ແລ້ວ"
+msgstr "ໃຊ້ແລ້ວ"
 
 #. module: sale_loyalty
 #. odoo-javascript
@@ -532,7 +576,7 @@ msgstr "ໃຊ້ແລ້ວ :"
 #. odoo-python
 #: code:addons/sale_loyalty/models/sale_order.py:0
 msgid "You don't have the required product quantities on your sales order."
-msgstr "ທ່ານບໍ່ມີຈຳນວນສິນຄ້າຕາມທີ່ກຳນົດໄວ້ໃນໃບສັ່ງຊື້ຂອງທ່ານ."
+msgstr "ທ່ານມີຈຳນວນສິນຄ້າບໍ່ພໍຕາມທີ່ກຳນົດໃນໃບສັ່ງຊື້ຂອງທ່ານ."
 
 #. module: sale_loyalty
 #: model_terms:ir.ui.view,arch_db:sale_loyalty.sale_purchased_gift_card
@@ -540,5 +584,15 @@ msgid ""
 "You will find below your gift cards code. An email has been sent with it. "
 "You can use it starting right now."
 msgstr ""
-"ທ່ານຈະເຫັນລະຫັດບັດຂອງຂວັນຂອງທ່ານຢູ່ຂ້າງລຸ່ມນີ້. ອີເມວໄດ້ຖືກສົ່ງໄປພ້ອມກັບລະຫັດແລ້ວ. ທ່ານສາມາດເລີ່ມນຳໃຊ້ໄ"
-"ດ້ເລີຍຕັ້ງແຕ່ຕອນນີ້."
+"ທ່ານຈະເຫັນລະຫັດບັດຂອງຂວັນຂອງທ່ານຢູ່ລຸ່ມນີ້. ອີເມວໄດ້ຖືກສົ່ງໄປພ້ອມກັບລະຫັດແລ້ວ. ທ່ານສາມາດເລີ່ມໃຊ້ມັນໄດ້ທັນ"
+"ທີ."
+
+#. module: sale_loyalty
+#. odoo-python
+#: code:addons/sale_loyalty/models/sale_order.py:0
+msgid "order_id"
+msgstr "order_id"
+
+#~ msgid ""
+#~ "A minimum of %(amount)s %(currency)s should be purchased to get the reward"
+#~ msgstr "ຕ້ອງຊື້ຢ່າງໜ້ອຍ %(amount)s %(currency)s ເພື່ອຮັບລາງວັນ"

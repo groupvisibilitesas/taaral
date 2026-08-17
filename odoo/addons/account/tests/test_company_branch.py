@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from contextlib import nullcontext
+from contextlib import nullcontext, closing
 from freezegun import freeze_time
 from functools import partial
 
 from odoo import Command, fields
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged, Form
 
 
@@ -166,7 +166,7 @@ class TestCompanyBranch(AccountTestInvoicingCommon):
                     invoice_date=invoice_date,
                     move_type=move_type,
                     company=company.name,
-                ), self.env.cr.savepoint() as sp:
+                ), closing(self.env.cr.savepoint()):
                     check = partial(self.assertRaises, UserError) if failure_expected else nullcontext
                     move = self.init_invoice(
                         move_type, amounts=[100], taxes=self.root_company.account_sale_tax_id,
@@ -178,7 +178,6 @@ class TestCompanyBranch(AccountTestInvoicingCommon):
                         self.branch_a[lock] = branch_lock
                     with check():
                         move.button_draft()
-                    sp.close()
 
     def test_change_record_company(self):
         account = self.env['account.account'].create({
@@ -299,11 +298,6 @@ class TestCompanyBranch(AccountTestInvoicingCommon):
             'email': "user_a@example.com",
             'company_id': company_a.id,
             'company_ids': [Command.set([company_a.id])],
-            'groups_id': [Command.set([
-                self.env.ref('base.group_system').id,
-                self.env.ref('base.group_erp_manager').id,
-                self.env.ref('account.group_account_user').id,
-            ])],
         })
 
         # Try to change company B's currency as user A (should raise UserError)
@@ -313,6 +307,12 @@ class TestCompanyBranch(AccountTestInvoicingCommon):
                 'currency_id': self.env.ref('base.EUR').id,
             })
 
+    def test_set_fiscalyear_last_day_to_negative_value(self):
+        """Test that ensure that fiscalyear_last_day raises ValidationError when set
+           to negative value."""
+        with self.assertRaises(ValidationError):
+            self.root_company.fiscalyear_last_day = -1
+
     def test_branch_user_bank_statement_foreign_currency(self):
         # Create a user that only belongs to branch a
         user = self.env['res.users'].create({
@@ -321,9 +321,7 @@ class TestCompanyBranch(AccountTestInvoicingCommon):
             'email': "user_a@example.com",
             'company_id': self.branch_a.id,
             'company_ids': [Command.set([self.branch_a.id])],
-            'groups_id': [Command.set([
-                self.env.ref('base.group_system').id,
-                self.env.ref('base.group_erp_manager').id,
+            'group_ids': [Command.set([
                 self.env.ref('account.group_account_user').id,
             ])],
         })
@@ -343,7 +341,6 @@ class TestCompanyBranch(AccountTestInvoicingCommon):
             'partner_id': False,
             'foreign_currency_id': False,
             'amount': 25,
-            'amount_currency': 0,
             'company_id': self.branch_a.id
         })
 

@@ -4,7 +4,7 @@
 from odoo import api, models
 
 
-class IrConfigParameter(models.Model):
+class IrConfig_Parameter(models.Model):
     # Override of config parameter to specifically handle the template
     # rendering group (de)activation through ICP.
 
@@ -35,6 +35,9 @@ class IrConfigParameter(models.Model):
     #    50 by default;
     # * 'mail.render.cron.limit': used in cron involving rendering of content
     #   and/or templates, like event mail scheduler cron. Defaults to 1000;
+    # * 'mail.server.personal.limit.minutes': used when sending email using
+    #   personal mail servers, maximum number of emails that can be sent in
+    #   one minute
 
     # Mail Gateway
     #   * 'mail.gateway.loop.minutes' and 'mail.gateway.loop.threshold': block
@@ -71,10 +74,14 @@ class IrConfigParameter(models.Model):
     #     google translate;
     #   * 'mail.web_push_vapid_private_key' and 'mail.web_push_vapid_public_key':
     #     configuration parameters when using web push notifications;
-    #   * 'mail.use_twilio_rtc_servers', 'mail.sfu_server_url' and 'mail.
+    #   * 'mail.use_twilio_rtc_servers', 'mail.use_sfu_server', 'mail.sfu_server_url' and 'mail.
     #     sfu_server_key': rtc server usage and configuration;
-    #   * 'discuss.klipy_api_key', 'discuss.tenor_gif_limit' and 'discuss.
-    #     tenor_content_filter' used for gif fetch service;
+    #   * 'discuss.klipy_api_key': used for gif fetch service;
+    #   * 'mail.server.outlook.iap.endpoint': URL of the IAP endpoint
+    #     for outlook oauth server
+    #   * 'mail.server.gmail.iap.endpoint': URL of the IAP endpoint
+    #     for gmail oauth server
+
     _inherit = 'ir.config_parameter'
 
     @api.model
@@ -84,7 +91,7 @@ class IrConfigParameter(models.Model):
             group_mail_template_editor = self.env.ref('mail.group_mail_template_editor')
 
             if not value and group_mail_template_editor not in group_user.implied_ids:
-                group_user.implied_ids |= group_mail_template_editor
+                group_user._apply_group(group_mail_template_editor)
 
             elif value and group_mail_template_editor in group_user.implied_ids:
                 # remove existing users, including inactive template user

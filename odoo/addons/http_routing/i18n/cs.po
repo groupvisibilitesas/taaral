@@ -3,17 +3,18 @@
 # * http_routing
 #
 # Translators:
-# Wil Odoo, 2024
-#
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Jiří Podhorecký, 2022
+# Aleš Fiala <f.ales1@seznam.cz>, 2023
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# "Marta (wacm)" <wacm@odoo.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~15.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:38+0000\n"
-"PO-Revision-Date: 2025-11-08 16:51+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Czech <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-02 18:06+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Czech <https://translate.odoo.com/projects/odoo-19/"
 "http_routing/cs/>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -21,7 +22,12 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
+
+#. module: http_routing
+#: model_terms:ir.ui.view,arch_db:http_routing.400
+msgid "400: Bad Request"
+msgstr ""
 
 #. module: http_routing
 #: model_terms:ir.ui.view,arch_db:http_routing.403
@@ -29,17 +35,19 @@ msgid "403: Forbidden"
 msgstr "403 Přístup odepřen"
 
 #. module: http_routing
+#: model_terms:ir.ui.view,arch_db:http_routing.415
+msgid "415: Unsupported Media Type"
+msgstr ""
+
+#. module: http_routing
 #: model_terms:ir.ui.view,arch_db:http_routing.404
 msgid ""
 "<b>Don't panic.</b> If you think it's our mistake, please send us a message "
 "on"
 msgstr ""
-"<b>Bez paniky!</b> Pokud si myslíte, že jsme něco pokazili, pošlete nám "
-"zprávu na"
 
 #. module: http_routing
 #: model_terms:ir.ui.view,arch_db:http_routing.error_message
-#: model_terms:ir.ui.view,arch_db:http_routing.http_error_debug
 msgid "<strong>Error message:</strong>"
 msgstr "<strong>Chybová hláška:</strong>"
 
@@ -47,6 +55,13 @@ msgstr "<strong>Chybová hláška:</strong>"
 #: model_terms:ir.ui.view,arch_db:http_routing.500
 msgid "Back"
 msgstr "Zpět"
+
+#. module: http_routing
+#: model:ir.model.fields,field_description:http_routing.field_ir_http__display_name
+#: model:ir.model.fields,field_description:http_routing.field_ir_qweb__display_name
+#: model:ir.model.fields,field_description:http_routing.field_res_lang__display_name
+msgid "Display Name"
+msgstr "Zobrazovaný název"
 
 #. module: http_routing
 #: model_terms:ir.ui.view,arch_db:http_routing.http_error_debug
@@ -70,6 +85,20 @@ msgid "Home"
 msgstr "Domovská stránka"
 
 #. module: http_routing
+#: model:ir.model.fields,field_description:http_routing.field_ir_http__id
+#: model:ir.model.fields,field_description:http_routing.field_ir_qweb__id
+#: model:ir.model.fields,field_description:http_routing.field_res_lang__id
+msgid "ID"
+msgstr "ID"
+
+#. module: http_routing
+#: model_terms:ir.ui.view,arch_db:http_routing.415
+msgid ""
+"It looks like the URL you are accessing doesn't support the format of the "
+"request. Take a look at the error message below."
+msgstr ""
+
+#. module: http_routing
 #: model:ir.model,name:http_routing.model_res_lang
 msgid "Languages"
 msgstr "Jazyky"
@@ -77,10 +106,11 @@ msgstr "Jazyky"
 #. module: http_routing
 #: model_terms:ir.ui.view,arch_db:http_routing.404
 msgid "Maybe you were looking for one of these <b>popular pages?</b>"
-msgstr "Možná hledáte jednu z těchto <b>populárních stránek?</b>"
+msgstr ""
 
 #. module: http_routing
-#: model_terms:ir.ui.view,arch_db:http_routing.400
+#: model_terms:ir.ui.view,arch_db:http_routing.422
+#: model_terms:ir.ui.view,arch_db:http_routing.4xx
 msgid "Oops! Something went wrong."
 msgstr "Jejda! Něco se pokazilo."
 
@@ -95,7 +125,8 @@ msgid "Qweb"
 msgstr "Qweb"
 
 #. module: http_routing
-#: model_terms:ir.ui.view,arch_db:http_routing.400
+#: model_terms:ir.ui.view,arch_db:http_routing.422
+#: model_terms:ir.ui.view,arch_db:http_routing.4xx
 msgid "Take a look at the error message below."
 msgstr "Podívejte se na chybové hlášení níže."
 
@@ -108,6 +139,13 @@ msgstr "Během renderování šablony se vyskytla chyba"
 #: model_terms:ir.ui.view,arch_db:http_routing.403
 msgid "The page you were looking for could not be authorized."
 msgstr "Stránka, kterou jste hledali, nemohla být schválena."
+
+#. module: http_routing
+#: model_terms:ir.ui.view,arch_db:http_routing.400
+msgid ""
+"The server couldn't understand the request. Take a look at the error message "
+"below."
+msgstr ""
 
 #. module: http_routing
 #: model_terms:ir.ui.view,arch_db:http_routing.http_error_debug

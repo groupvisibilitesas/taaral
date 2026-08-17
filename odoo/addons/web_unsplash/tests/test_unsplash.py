@@ -89,7 +89,7 @@ class TestUnsplashHttp(HttpCaseWithUserDemo):
                     },
                 )
 
-            self.assertIn(
-                "WARNING:odoo.http:You are not allowed to modify 'User' (res.users) records",
+            self.assertEqual(
                 log_catcher.output[0],
+                "WARNING:odoo.http:Sorry, you are not allowed to access this document.",
             )

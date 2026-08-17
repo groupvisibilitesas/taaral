@@ -1,14 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import api, models
+from odoo import models
 
 
 class PosConfig(models.Model):
     _inherit = 'pos.config'
-
-    @api.model
-    def _get_dynamic_models(self):
-        models = super()._get_dynamic_models()
-        return models + ['event.registration', 'event.registration.answer']
 
     def _update_events_seats(self, events):
         data = []
@@ -19,7 +14,11 @@ class PosConfig(models.Model):
                 'event_ticket_ids': [{
                     'ticket_id': ticket.id,
                     'seats_available': ticket.seats_available
-                } for ticket in event.event_ticket_ids]
+                } for ticket in event.event_ticket_ids],
+                'event_slot_ids': [{
+                    'slot_id': slot.id,
+                    'seats_available': slot.seats_available
+                } for slot in event.event_slot_ids]
             })
 
         for record in self:

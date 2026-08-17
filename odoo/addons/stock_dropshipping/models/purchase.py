@@ -4,6 +4,7 @@
 from collections import defaultdict
 
 from odoo import api, models, fields, SUPERUSER_ID
+from odoo.fields import Command
 
 
 class PurchaseOrder(models.Model):
@@ -25,12 +26,19 @@ class PurchaseOrder(models.Model):
     def action_view_dropship(self):
         return self._get_action_view_picking(self.picking_ids.filtered(lambda p: p.is_dropship))
 
-    def _prepare_group_vals(self):
-        res = super()._prepare_group_vals()
+    def _prepare_reference_vals(self):
+        res = super()._prepare_reference_vals()
         sale_orders = self.order_line.sale_order_id
         if len(sale_orders) == 1:
-            res['sale_id'] = sale_orders.id
+            res['sale_ids'] = [Command.link(sale_orders.id)]
         return res
+
+    def _is_dropshipped(self):
+        self.ensure_one()
+        return self.picking_type_id and self.picking_type_id.code == 'dropship'
+
+    def _should_set_dest_address(self):
+        return super()._should_set_dest_address() or self._is_dropshipped()
 
     def _create_picking(self):
         multi_so = self.filtered(
@@ -72,10 +80,5 @@ class PurchaseOrder(models.Model):
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
-    def _prepare_stock_moves(self, picking):
-        res = super()._prepare_stock_moves(picking)
-        sale_group = self.sale_line_id.order_id.procurement_group_id
-        if sale_group:
-            for vals in res:
-                vals['group_id'] = sale_group.id
-        return res
+    def _is_dropshipped(self):
+        return self.order_id._is_dropshipped()

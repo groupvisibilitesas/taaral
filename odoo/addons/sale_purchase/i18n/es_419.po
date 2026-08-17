@@ -2,26 +2,24 @@
 # This file contains the translation of the following modules:
 # * sale_purchase
 #
-# Translators:
-# Wil Odoo, 2024
-#
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# "Patricia Gutiérrez (pagc)" <pagc@odoo.com>, 2025, 2026.
 # "Fernanda Alvarez (mfar)" <mfar@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-20 18:39+0000\n"
-"PO-Revision-Date: 2026-03-21 09:24+0000\n"
-"Last-Translator: \"Fernanda Alvarez (mfar)\" <mfar@odoo.com>\n"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-05 19:46+0000\n"
+"Last-Translator: \"Patricia Gutiérrez (pagc)\" <pagc@odoo.com>\n"
 "Language-Team: Spanish (Latin America) <https://translate.odoo.com/projects/"
-"odoo-18/sale_purchase/es_419/>\n"
+"odoo-19/sale_purchase/es_419/>\n"
 "Language: es_419\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == "
-"0) ? 1 : 2);\n"
-"X-Generator: Weblate 5.16.2\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: sale_purchase
 #: model_terms:ir.ui.view,arch_db:sale_purchase.exception_purchase_on_sale_cancellation
@@ -34,14 +32,18 @@ msgstr ""
 "            Es posible que se necesiten acciones manuales."
 
 #. module: sale_purchase
-#: model_terms:ir.ui.view,arch_db:sale_purchase.sale_order_inherited_form_purchase
-msgid "<span class=\"o_stat_text\">Purchase</span>"
-msgstr "<span class=\"o_stat_text\">Compra</span>"
-
-#. module: sale_purchase
 #: model_terms:ir.ui.view,arch_db:sale_purchase.purchase_order_inherited_form_sale
 msgid "<span class=\"o_stat_text\">Sale</span>"
 msgstr "<span class=\"o_stat_text\">Venta</span>"
+
+#. module: sale_purchase
+#: model:ir.model.fields,field_description:sale_purchase.field_product_template__display_name
+#: model:ir.model.fields,field_description:sale_purchase.field_purchase_order__display_name
+#: model:ir.model.fields,field_description:sale_purchase.field_purchase_order_line__display_name
+#: model:ir.model.fields,field_description:sale_purchase.field_sale_order__display_name
+#: model:ir.model.fields,field_description:sale_purchase.field_sale_order_line__display_name
+msgid "Display Name"
+msgstr "Mostrar nombre"
 
 #. module: sale_purchase
 #: model_terms:ir.ui.view,arch_db:sale_purchase.exception_sale_on_purchase_cancellation
@@ -65,6 +67,15 @@ msgstr "Excepciones:"
 #: model:ir.model.fields,field_description:sale_purchase.field_sale_order_line__purchase_line_ids
 msgid "Generated Purchase Lines"
 msgstr "Líneas de compra generadas"
+
+#. module: sale_purchase
+#: model:ir.model.fields,field_description:sale_purchase.field_product_template__id
+#: model:ir.model.fields,field_description:sale_purchase.field_purchase_order__id
+#: model:ir.model.fields,field_description:sale_purchase.field_purchase_order_line__id
+#: model:ir.model.fields,field_description:sale_purchase.field_sale_order__id
+#: model:ir.model.fields,field_description:sale_purchase.field_sale_order_line__id
+msgid "ID"
+msgstr "ID"
 
 #. module: sale_purchase
 #: model:ir.model.fields,help:sale_purchase.field_product_product__service_to_purchase
@@ -134,14 +145,14 @@ msgstr ""
 "servicios."
 
 #. module: sale_purchase
+#: model_terms:ir.ui.view,arch_db:sale_purchase.sale_order_inherited_form_purchase
+msgid "Purchase"
+msgstr "Compras"
+
+#. module: sale_purchase
 #: model:ir.model,name:sale_purchase.model_purchase_order
 msgid "Purchase Order"
 msgstr "Orden de compra"
-
-#. module: sale_purchase
-#: model:ir.model.fields,field_description:sale_purchase.field_sale_order_cancel__display_purchase_orders_alert
-msgid "Purchase Order Alert"
-msgstr "Alerta de orden de compra"
 
 #. module: sale_purchase
 #: model:ir.model,name:sale_purchase.model_purchase_order_line
@@ -179,11 +190,6 @@ msgid "Sales Order"
 msgstr "Orden de venta"
 
 #. module: sale_purchase
-#: model:ir.model,name:sale_purchase.model_sale_order_cancel
-msgid "Sales Order Cancel"
-msgstr "Cancelar orden de venta"
-
-#. module: sale_purchase
 #: model:ir.model,name:sale_purchase.model_sale_order_line
 msgid "Sales Order Line"
 msgstr "Línea de la orden de venta"
@@ -201,13 +207,12 @@ msgid "Subcontract Service"
 msgstr "Servicio de subcontratación"
 
 #. module: sale_purchase
-#: model_terms:ir.ui.view,arch_db:sale_purchase.sale_order_cancel_view_form
+#: model:ir.model.fields,field_description:sale_purchase.field_purchase_order__has_sale_order
 msgid ""
-"There are active purchase orders linked to this sale order that are not "
-"cancelled automatically! <br/>"
+"Technical field for whether the purchase order has associated sale orders"
 msgstr ""
-"Existen órdenes de compra activas vinculadas a esta orden de venta que no se "
-"cancelan de forma automática. <br/>"
+"Campo técnico para determinar si la orden de compra tiene órdenes de venta "
+"asociadas"
 
 #. module: sale_purchase
 #. odoo-python
@@ -246,6 +251,9 @@ msgstr "de"
 msgid "ordered instead of"
 msgstr "ordenado en lugar de"
 
+#~ msgid "<span class=\"o_stat_text\">Purchase</span>"
+#~ msgstr "<span class=\"o_stat_text\">Compra</span>"
+
 #~ msgid ""
 #~ "<span id=\"display_invoice_alert\" position=\"after\">\n"
 #~ "                <span id=\"display_purchase_orders_alert\" "
@@ -264,3 +272,9 @@ msgstr "ordenado en lugar de"
 #~ "vinculadas que no se cancelan de forma automática. <br/>\n"
 #~ "                </span>\n"
 #~ "            </span>"
+
+#~ msgid "Purchase Order Alert"
+#~ msgstr "Alerta de orden de compra"
+
+#~ msgid "Sales Order Cancel"
+#~ msgstr "Cancelar orden de venta"

@@ -5,7 +5,7 @@ import logging
 import psycopg2
 
 from odoo.addons.website.controllers.main import Website
-from odoo.addons.website.tools import MockRequest
+from odoo.addons.http_routing.tests.common import MockRequest
 import odoo.tests
 from odoo.tests.common import TransactionCase
 
@@ -114,9 +114,9 @@ class TestAutoComplete(TransactionCase):
         self._autocomplete_page('testTotallyUnique', 1, False)
         test_page.visibility = False
 
-        test_page.groups_id = self.env.ref('base.group_public')
+        test_page.group_ids = self.env.ref('base.group_public')
         self._autocomplete_page('testTotallyUnique', 1, False)
-        test_page.groups_id = False
+        test_page.group_ids = False
 
         # Public user don't see restricted page
         saved_env = self.env
@@ -126,12 +126,12 @@ class TestAutoComplete(TransactionCase):
         test_page.website_indexed = True
         self._autocomplete_page('testTotallyUnique', 1, False)
 
-        test_page.groups_id = self.env.ref('base.group_system')
+        test_page.group_ids = self.env.ref('base.group_system')
         self._autocomplete_page('testTotallyUnique', 0, "Not found")
 
-        test_page.groups_id = self.env.ref('base.group_public')
+        test_page.group_ids = self.env.ref('base.group_public')
         self._autocomplete_page('testTotallyUnique', 1, False)
-        test_page.groups_id = False
+        test_page.group_ids = False
 
         test_page.visibility = 'password'
         self._autocomplete_page('testTotallyUnique', 0, "Not found")
@@ -143,8 +143,8 @@ class TestAutoComplete(TransactionCase):
         self.website.env = self.env = saved_env
 
     def test_indirect(self):
-        self._autocomplete('module', 2, 'model')
-        self._autocomplete('rechord', 1, 'record')
+        self._autocomplete('module', 4, 'model')
+        self._autocomplete('rechord', 3, 'record')
         self._autocomplete('suborder', 1, 'submodel')
         # Sub-sub-fields are currently not supported.
         # Adapt expected result if this becomes a feature.

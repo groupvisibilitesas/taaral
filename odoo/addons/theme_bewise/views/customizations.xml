@@ -6,12 +6,12 @@
     <xpath expr="//section" position="attributes">
         <attribute name="class" add="pt200 pb200 oe_img_bg o_bg_img_center" remove="bg-black-50 s_parallax_is_fixed parallax pt232 pb232" separator=" "/>
         <attribute name="style">background-image: url('/web/image/website.s_cover_default_image'); background-position: 50% 50%;</attribute>
-        <attribute name="data-oe-shape-data">{"shape":"web_editor/Rainy/08_001","flip":[]}</attribute>
+        <attribute name="data-oe-shape-data">{"shape":"html_builder/Rainy/08_001","flip":[]}</attribute>
         <attribute name="data-scroll-background-ratio">0</attribute>
     </xpath>
     <!-- Shape -->
     <xpath expr="//div[hasclass('container')]" position="before">
-        <div class="o_we_shape o_web_editor_Rainy_08_001"/>
+        <div class="o_we_shape o_html_builder_Rainy_08_001"/>
     </xpath>
     <!-- Remove the background image for parallax -->
     <xpath expr="//span[hasclass('s_parallax_bg')]" position="replace"/>
@@ -132,10 +132,10 @@
 <template id="s_numbers" inherit_id="website.s_numbers" name="Be Wise s_numbers">
     <xpath expr="//section" position="attributes">
         <attribute name="class" add="o_cc3" remove="o_cc1" separator=" "/>
-        <attribute name="data-oe-shape-data">{"shape":"web_editor/Blobs/11","flip":["x"]}</attribute>
+        <attribute name="data-oe-shape-data">{"shape":"html_builder/Blobs/05_001"}</attribute>
     </xpath>
     <xpath expr="//section/div" position="before">
-        <div class="o_we_shape o_web_editor_Blobs_11" style="background-image: url('/web_editor/shape/web_editor/Blobs/11.svg?c1=o-color-1&amp;flip=x'); background-position: 50% 50%;"/>
+        <div class="o_we_shape o_html_builder_Blobs_05_001" style="background-image: url('/html_editor/shape/html_builder/Blobs/05_001.svg?c1=rgba(0,0,0,0.25)');"/>
     </xpath>
     <xpath expr="//span[hasclass('h5-fs')]" position="replace" mode="inner">
         Faculties
@@ -215,11 +215,11 @@
 <template id="configurator_s_quotes_carousel" inherit_id="website.configurator_s_quotes_carousel" name="Be Wise s_quotes_carousel">
     <!-- Shape option -->
     <xpath expr="//div[hasclass('s_quotes_carousel')]" position="attributes">
-        <attribute name="data-oe-shape-data">{"shape":"web_editor/Origins/14_001","flip":["y"]}</attribute>
+        <attribute name="data-oe-shape-data">{"shape":"html_builder/Connections/06","colors":{"c5": "o-color-3"},"flip":["y"]}</attribute>
     </xpath>
     <!-- Shape -->
     <xpath expr="//div[hasclass('carousel-indicators')]" position="before">
-        <div class="o_we_shape o_web_editor_Origins_14_001" style="background-image: url('/web_editor/shape/web_editor/Origins/14_001.svg?c3=o-color-4&amp;c4=o-color-4&amp;flip=y'); background-position: 50% 0%;"/>
+        <div class="o_we_shape o_html_builder_Connections_06" style="background-image: url('/html_editor/shape/html_builder/Connections/06.svg?c5=o-color-3&amp;flip=y'); background-position: 50% 0%;"/>
     </xpath>
 </template>
 
@@ -243,15 +243,15 @@
 <template id="s_call_to_action" inherit_id="website.s_call_to_action" name="Be Wise s_call_to_action">
     <!-- Shape options -->
     <xpath expr="//section" position="attributes">
-        <attribute name="data-oe-shape-data">{"shape":"web_editor/Blobs/11","flip":[]}</attribute>
+        <attribute name="data-oe-shape-data">{"shape":"html_builder/Blobs/05_001","flip":["x","y"]}</attribute>
     </xpath>
     <!-- Shape -->
     <xpath expr="//section/div" position="before">
-        <div class="o_we_shape o_web_editor_Blobs_11"/>
+        <div class="o_we_shape o_html_builder_Blobs_05_001" style="background-image: url('/html_editor/shape/html_builder/Blobs/05_001.svg?c1=rgba(0,0,0,0.25)&amp;flip=xy'); background-position: 50% 0%;"/>
     </xpath>
     <!-- Title -->
-    <xpath expr="//h3" position="replace">
-        <h4>3,000 students graduate each year and find a job within 2 months</h4>
+    <xpath expr="//h2" position="replace">
+        <h2 class="h4-fs">3,000 students graduate each year and find a job within 2 months</h2>
     </xpath>
     <!-- Subtitle -->
     <xpath expr="//div[hasclass('col-lg-9')]/p" position="replace" mode="inner">
@@ -271,7 +271,7 @@
     </xpath>
     <!-- Image -->
     <xpath expr="//img" position="attributes">
-        <attribute name="src">/theme_bewise/static/src/img/content/college_students.jpg</attribute>
+        <attribute name="src">/theme_bewise/static/src/img/content/college_students.webp</attribute>
     </xpath>
     <!-- Button -->
     <xpath expr="//a[hasclass('btn')]" position="replace" mode="inner">
@@ -282,58 +282,58 @@
 <!-- ======== TEAM ======== -->
 <template id="s_company_team" inherit_id="website.s_company_team" name="Be Wise s_company_team">
     <!-- Profile #1 -->
-    <xpath expr="//div[hasclass('s_nb_column_fixed')]/div//h4" position="replace" mode="inner">
+    <xpath expr="//div[hasclass('row')]/div//h3" position="replace" mode="inner">
         <b>Tony Fred</b>
     </xpath>
-    <xpath expr="//div[hasclass('s_nb_column_fixed')]/div//p" position="replace" mode="inner">
+    <xpath expr="//div[hasclass('row')]/div//p" position="replace" mode="inner">
         Faculty Head of IT
     </xpath>
-    <xpath expr="//div[hasclass('col-lg-6')]//p[2]" position="replace" mode="inner">
+    <xpath expr="//div[hasclass('container')]/div[hasclass('row')]/div//p[2]" position="replace" mode="inner">
         Tony received a degree in Electrical and Mechanical Engineering and a Ph D. degree in 1998 and 2004. After a post-doctoral experience  he joined the school as professor of mechatronics in 2006. In 2010, he became Head of IT.
     </xpath>
     <!-- Profile #2 -->
-    <xpath expr="//div[hasclass('s_nb_column_fixed')]/div[2]//h4" position="replace" mode="inner">
+    <xpath expr="//div[hasclass('row')]/div[2]//h3" position="replace" mode="inner">
         <b>Mich Stark</b>
     </xpath>
-    <xpath expr="//div[hasclass('s_nb_column_fixed')]/div[2]//p" position="replace" mode="inner">
+    <xpath expr="//div[hasclass('row')]/div[2]//p" position="replace" mode="inner">
         IT Officer
     </xpath>
-    <xpath expr="//div[hasclass('s_nb_column_fixed')]/div[2]//p[2]" position="replace" mode="inner">
+    <xpath expr="//div[hasclass('row')]/div[2]//p[2]" position="replace" mode="inner">
         He is professor in the Institute of Mechanics, Materials and Civil Engineering since 2000. He lectures in mechanical drawing and mechanical design for undergraduate and graduate students. He is active in Problem and Project based learning. He is the promoter of 8 doctoral theses.
     </xpath>
     <!-- Profile #3 -->
-    <xpath expr="//div[hasclass('s_nb_column_fixed')]/div[3]//h4" position="replace" mode="inner">
+    <xpath expr="//div[hasclass('row')]/div[3]//h3" position="replace" mode="inner">
         <b>Aline Turner</b>
     </xpath>
-    <xpath expr="//div[hasclass('s_nb_column_fixed')]/div[3]//p" position="replace" mode="inner">
+    <xpath expr="//div[hasclass('row')]/div[3]//p" position="replace" mode="inner">
         Law professor
     </xpath>
-    <xpath expr="//div[hasclass('s_nb_column_fixed')]/div[3]//p[2]" position="replace" mode="inner">
+    <xpath expr="//div[hasclass('row')]/div[3]//p[2]" position="replace" mode="inner">
         She has been practicing law at the French-speaking Brussels Bar since 2006. She has worked in various major law firms based in Brussels, as member and then head of their litigation/arbitration practice groups.
     </xpath>
     <!-- Profile #4 -->
-    <xpath expr="//div[hasclass('s_nb_column_fixed')]/div[4]//h4" position="replace" mode="inner">
+    <xpath expr="//div[hasclass('row')]/div[4]//h3" position="replace" mode="inner">
         <b>Iris Joe</b>
     </xpath>
-    <xpath expr="//div[hasclass('s_nb_column_fixed')]/div[4]//p" position="replace" mode="inner">
+    <xpath expr="//div[hasclass('row')]/div[4]//p" position="replace" mode="inner">
         Team leader professor
     </xpath>
 </template>
 
 <!-- ======== TEAM BASIC ======== -->
 <template id="s_company_team_basic" inherit_id="website.s_company_team_basic">
-    <xpath expr="//h3" position="replace" mode="inner">
+    <xpath expr="//h2" position="replace" mode="inner">
         Discover our dedicated staff
     </xpath>
     <!-- Profile #1 -->
-    <xpath expr="(//h4)[1]" position="replace" mode="inner">
+    <xpath expr="(//h3)[1]" position="replace" mode="inner">
         Tony Fred
     </xpath>
     <xpath expr="(//p[hasclass('o_small-fs')])[1]" position="replace" mode="inner">
         Faculty Head of IT
     </xpath>
     <!-- Profile #2 -->
-    <xpath expr="(//h4)[2]" position="replace" mode="inner">
+    <xpath expr="(//h3)[2]" position="replace" mode="inner">
         Mich Stark
     </xpath>
     <xpath expr="(//p[hasclass('o_small-fs')])[2]" position="replace" mode="inner">
@@ -524,11 +524,11 @@
 <template id="s_media_list" inherit_id="website.s_media_list" name="Be Wise s_media_list">
     <!-- Shape options -->
     <xpath expr="//section" position="attributes">
-        <attribute name="data-oe-shape-data">{"shape":"web_editor/Airy/04_001","flip":[]}</attribute>
+        <attribute name="data-oe-shape-data">{"shape":"html_builder/Grids/02","colors":{"c5":"rgba(0,0,0,0.25)"},"flip":[]}</attribute>
     </xpath>
     <!-- Shape -->
     <xpath expr="//div[hasclass('container')]" position="before">
-        <div class="o_we_shape o_web_editor_Airy_04_001"/>
+        <div class="o_we_shape o_html_builder_Grids_02" style="background-image: url('/html_editor/shape/html_builder/Grids/02.svg?c5=rgba(0,0,0,0.25)');"/>
     </xpath>
     <!-- Item #1 -->
     <xpath expr="//div[hasclass('s_media_list_item')]" position="attributes">
@@ -608,12 +608,12 @@
 <template id="s_product_catalog" inherit_id="website.s_product_catalog" name="Be Wise s_product_catalog">
     <xpath expr="//section" position="attributes">
         <attribute name="class" add="o_cc o_cc5 pt120 pb120" remove="pt64 pb64" separator=" "/>
-        <attribute name="data-oe-shape-data">{"shape":"web_editor/Floats/06","flip":[]}</attribute>
+        <attribute name="data-oe-shape-data">{"shape":"html_builder/Floats/06","flip":[]}</attribute>
     </xpath>
     <!-- Filter & shape -->
     <xpath expr="//div[hasclass('o_we_bg_filter')]" position="replace">
         <div class="o_we_bg_filter bg-black-75"/>
-        <div class="o_we_shape o_web_editor_Floats_06"/>
+        <div class="o_we_shape o_html_builder_Floats_06"/>
     </xpath>
 </template>
 
@@ -626,6 +626,13 @@
     <!-- Paragraph -->
     <xpath expr="//p" position="replace" mode="inner">
         Empower your future with our comprehensive academic programs and supportive learning environment.
+    </xpath>
+</template>
+
+<template id="s_company_team_grid" inherit_id="website.s_company_team_grid">
+    <!-- Section -->
+    <xpath expr="//section" position="attributes">
+        <attribute name="class" add="o_cc5" remove="o_cc1" separator=" "/>
     </xpath>
 </template>
 
@@ -799,32 +806,32 @@
 
 <template id="s_cards_grid" inherit_id="website.s_cards_grid">
     <!-- Title -->
-    <xpath expr="//h3" position="replace" mode="inner">
+    <xpath expr="//h2" position="replace" mode="inner">
         Elevate Your Academic Journey
     </xpath>
     <!-- Card 1 -->
-    <xpath expr="(//h5)[1]" position="replace" mode="inner">
+    <xpath expr="(//h3)[1]" position="replace" mode="inner">
         Cutting-Edge Research Facilities
     </xpath>
     <xpath expr="(//p)[1]" position="replace" mode="inner">
         Explore our state-of-the-art research facilities, equipped with the latest technology to support groundbreaking research and innovative projects.
     </xpath>
     <!-- Card 2 -->
-    <xpath expr="(//h5)[2]" position="replace" mode="inner">
+    <xpath expr="(//h3)[2]" position="replace" mode="inner">
         Personalized Academic Support
     </xpath>
     <xpath expr="(//p)[2]" position="replace" mode="inner">
         Benefit from tailored academic advising and support services, designed to guide you through your educational journey.
     </xpath>
     <!-- Card 3 -->
-    <xpath expr="(//h5)[3]" position="replace" mode="inner">
+    <xpath expr="(//h3)[3]" position="replace" mode="inner">
         Advanced Learning Programs
     </xpath>
     <xpath expr="(//p)[3]" position="replace" mode="inner">
         Engage in our cutting-edge learning programs that offer specialized courses, hands-on experiences for in-depth exploration in your field of interest.
     </xpath>
     <!-- Card 4 -->
-    <xpath expr="(//h5)[4]" position="replace" mode="inner">
+    <xpath expr="(//h3)[4]" position="replace" mode="inner">
         Expert Faculty and Mentorship
     </xpath>
     <xpath expr="(//p)[4]" position="replace" mode="inner">
@@ -891,19 +898,19 @@
 <template id="s_big_number" inherit_id="website.s_big_number">
     <!-- Section -->
     <xpath expr="//section" position="attributes">
-        <attribute name="data-oe-shape-data">{"shape":"web_editor/Bold/06_001"}</attribute>
+        <attribute name="data-oe-shape-data">{"shape":"html_builder/Bold/20","colors":{"c5":"o-color-4","c1":"o-color-4"}}</attribute>
     </xpath>
 
     <!-- Shape -->
     <xpath expr="//div[hasclass('o_we_shape')]" position="replace">
-        <div class="o_we_shape o_web_editor_Bold_06_001 bg-o-color-4" style="background-image: url('/web_editor/shape/web_editor/Bold/06_001.svg?c3=o-color-1&amp;');"/>
+        <div class="o_we_shape o_html_builder_Bold_20 bg-rgba(0,0,0,0.25)" style="background-image: url('/html_editor/shape/html_builder/Bold/20.svg?c5=o-color-4&amp;c1=o-color-4');"/>
     </xpath>
 
     <!-- Text -->
-    <xpath expr="//h2/div" position="replace" mode="inner">
-        <font class="text-gradient" style="background-image: linear-gradient(0deg, rgb(29, 32, 48) 0%, rgb(222, 222, 222) 56%);">60+</font>
+    <xpath expr="//h2/span" position="replace" mode="inner">
+        <font class="text-gradient" style="background-image: linear-gradient(0deg, var(--rgba(0,0,0,0.25)) 0%, var(--o-color-4) 90%);">60+</font>
     </xpath>
-    <xpath expr="//h2/following-sibling::div" position="replace" mode="inner">
+    <xpath expr="//p/span" position="replace" mode="inner">
         academic programs available
     </xpath>
 </template>
@@ -912,10 +919,10 @@
 <template id="s_wavy_grid" inherit_id="website.s_wavy_grid">
     <!-- Layout -->
     <xpath expr="//section" position="attributes">
-        <attribute name="data-oe-shape-data">{'shape':'web_editor/Airy/06','flip':[],'showOnMobile':false,'shapeAnimationSpeed':'0'}</attribute>
+        <attribute name="data-oe-shape-data">{'shape':'html_builder/Airy/06_001','colors':{'c5':'o-color-3'},'flip':[],'showOnMobile':false,'shapeAnimationSpeed':'0'}</attribute>
     </xpath>
     <xpath expr="//div[hasclass('o_we_shape')]" position="replace">
-        <div class="o_we_shape o_web_editor_Airy_06"/>
+        <div class="o_we_shape o_html_builder_Airy_06_001" style="background-image: url('/html_editor/shape/html_builder/Airy/06_001.svg?c5=o-color-3');"/>
     </xpath>
 
     <!-- Texts -->
@@ -954,7 +961,7 @@
         <attribute name="src">/web/image/website.s_carousel_default_image_2</attribute>
     </xpath>
     <!-- Title -->
-    <xpath expr="//h3" position="replace" mode="inner">
+    <xpath expr="//h2" position="replace" mode="inner">
         Shaping Tomorrow's Leaders
     </xpath>
     <!-- Paragraph 1 -->
@@ -1086,7 +1093,7 @@
 <template id="s_text_cover" inherit_id="website.s_text_cover">
     <!-- Section -->
     <xpath expr="//section" position="attributes">
-        <attribute name="class" add="o_cc4" remove="o_cc3" separator=" "/>
+        <attribute name="class" add="o_cc4" remove="o_cc5" separator=" "/>
     </xpath>
     <!-- Title -->
     <xpath expr="//h1" position="replace">
@@ -1130,11 +1137,90 @@
 <!-- ======== COMPANY TEAM SHAPES ======== -->
 <template id="configurator_s_company_team_shapes" inherit_id="website.configurator_s_company_team_shapes">
     <xpath expr="//section" position="attributes">
-        <attribute name="data-oe-shape-data">{"shape":"web_editor/Origins/05",'colors':{'c3': 'o-color-4'}}</attribute>
+        <attribute name="data-oe-shape-data">{"shape":"html_builder/Bold/15", "colors":{"c5": "o-color-4"}}</attribute>
     </xpath>
     <!-- Shape -->
     <xpath expr="//div[hasclass('o_container_small')]" position="before">
-        <div class="o_we_shape o_web_editor_Origins_05" style="background-image: url('/web_editor/shape/web_editor%2FOrigins%2F05.svg?c3=o-color-4');"/>
+        <div class="o_we_shape o_html_builder_Bold_15" style="background-image: url('/html_editor/shape/html_builder/Bold/15.svg?c5=o-color-4');"/>
+    </xpath>
+</template>
+
+<!-- ======== NUMBERS BOXED ======== -->
+<template id="s_numbers_boxed" inherit_id="website.s_numbers_boxed">
+    <!-- Section -->
+    <xpath expr="//section" position="attributes">
+        <attribute name="data-oe-shape-data">{"shape":"html_builder/Blobs/17", "colors":{"c5": "rgba(0,0,0,0.25)"}, "flip":[], "showOnMobile":true}</attribute>
+        <attribute name="class" add="o_cc3" remove="o_cc5" separator=" "/>
+    </xpath>
+    <!-- Shape -->
+    <xpath expr="//div[hasclass('container')]" position="before">
+        <div class="o_we_shape o_html_builder_Blobs_17" style="background-image: url('/html_editor/shape/html_builder/Blobs/17.svg?c5=rgba(0,0,0,0.25)');"/>
+    </xpath>
+    <!-- Grid Item -->
+    <xpath expr="//div[hasclass('o_grid_item')][2]//h3" position="replace" mode="inner">
+        30+
+    </xpath>
+    <!-- Grid Item 2 -->
+    <xpath expr="(//div[hasclass('o_grid_item')])[3]//h3" position="replace" mode="inner">
+        45%
+    </xpath>
+    <!-- Grid Item 3 -->
+    <xpath expr="(//div[hasclass('o_grid_item')])[4]//h3" position="replace" mode="inner">
+        8+
+    </xpath>
+</template>
+
+<!-- ======== COMPANY TEAM CARD ======== -->
+<template id="s_company_team_card" inherit_id="website.s_company_team_card" name="Be Wise s_company_team_card">
+    <!-- Section -->
+    <xpath expr="//section" position="attributes">
+        <attribute name="class" add="o_cc3" remove="o_cc2" separator=" "/>
+    </xpath>
+    <!-- Team Member 1 -->
+    <xpath expr="//div[hasclass('card')]" position="attributes">
+        <attribute name="class" add="o_cc4" remove="o_cc1" separator=" "/>
+    </xpath>
+    <!-- Team Member 2 -->
+    <xpath expr="(//div[hasclass('card')])[2]" position="attributes">
+        <attribute name="class" add="o_cc4" remove="o_cc1" separator=" "/>
+    </xpath>
+    <!-- Team Member 3 -->
+    <xpath expr="(//div[hasclass('card')])[3]" position="attributes">
+        <attribute name="class" add="o_cc4" remove="o_cc1" separator=" "/>
+    </xpath>
+    <!-- Team Member 4 -->
+    <xpath expr="(//div[hasclass('card')])[4]" position="attributes">
+        <attribute name="class" add="o_cc4" remove="o_cc1" separator=" "/>
+    </xpath>
+</template>
+
+<!-- ======== SPLIT INTRO ======== -->
+<template id="s_split_intro" inherit_id="website.s_split_intro">
+    <!-- Title -->
+    <xpath expr="//h1" position="replace" mode="inner">
+        Enhance your<br/>academic journey
+    </xpath>
+    <!-- Paragraph -->
+    <xpath expr="//p" position="replace" mode="inner">
+        <br/>Discover a university experience designed to elevate your learning. With state-of-the-art facilities and expert faculty, we provide an environment where knowledge thrives. From innovative programs to hands-on research opportunities, we empower you to achieve your academic goals and prepare for a successful future.<br/><br/>
+    </xpath>
+</template>
+
+<!-- ======== NUMBERS FRAMED ======== -->
+<template id="s_numbers_framed" inherit_id="website.s_numbers_framed">
+    <!-- Section -->
+    <xpath expr="//section" position="attributes">
+        <attribute name="class" add="o_cc5" separator=" "/>
+    </xpath>
+    <!-- KPI's -->
+    <xpath expr="//div[hasclass('col-lg-4')][1]" position="attributes">
+        <attribute name="class" add="o_cc4" remove="o_cc2" separator=" "/>
+    </xpath>
+    <xpath expr="//div[hasclass('col-lg-4')][2]" position="attributes">
+        <attribute name="class" add="o_cc4" remove="o_cc2" separator=" "/>
+    </xpath>
+    <xpath expr="//div[hasclass('col-lg-4')][3]" position="attributes">
+        <attribute name="class" add="o_cc4" remove="o_cc2" separator=" "/>
     </xpath>
 </template>
 

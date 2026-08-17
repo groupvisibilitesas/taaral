@@ -5,7 +5,7 @@ from io import BytesIO
 from unittest.mock import MagicMock, call, patch
 
 from odoo.exceptions import UserError
-from odoo.tests import tagged
+from odoo.tests import freeze_time, tagged
 from odoo.tools import file_open
 
 from odoo.addons.l10n_tr_nilvera_einvoice.tests.test_xml_ubl_tr_common import TestUBLTRCommon
@@ -34,7 +34,7 @@ def mock_requests_request(method, url, *args, **kwargs):
                     'TaxNumber': EINVOICE_PARTNER_VAT,
                     'Title': 'Salt Bae LLC',
                     'Type': 'OZEL',
-                }
+                },
             ]
         elif COMPANY_VAT in url:
             response.json.return_value = [
@@ -46,7 +46,7 @@ def mock_requests_request(method, url, *args, **kwargs):
                     'DocumentType': 'text',
                     'Name': 'text',
                     'Type': 'text',
-                }
+                },
             ]
         elif EARCHIVE_PARTNER_VAT in url:
             response.json.return_value = []
@@ -86,13 +86,18 @@ def mock_requests_request(method, url, *args, **kwargs):
                     "Code": 2000,
                     "Description": "Yeterli Kontörünüz Bulunmamaktadır.",
                     "Detail": "Yeterli Kontörünüz Bulunmamaktadır. Lütfen Kontör Alımı Yapınız.",
-                }]
+                }],
             }
         else:
             response.json.return_value = {
                 "UUID": "00aac88a-576b-4a62-98b5-ed34fe4d187d",
                 "InvoiceNumber": "",
             }
+
+    elif method == 'GET' and re.fullmatch(r'/(einvoice|earchive)/(sale|invoices)/[\w-]+/pdf', url):
+        # Outbound PDF retrieval: e-invoice sales use "sale", e-archive uses "invoices".
+        with file_open('l10n_tr_nilvera_einvoice/tests/test_files/fetching/invoice.pdf', 'rb') as pdf:
+            response = b64encode(pdf.read()).decode()
 
     elif method == 'GET' and '/einvoice/Purchase' in url:
         if '/xml' in url:
@@ -105,9 +110,16 @@ def mock_requests_request(method, url, *args, **kwargs):
                 # so the caller receives a base64 str, not raw bytes.
                 response = b64encode(pdf.read()).decode()
         else:
-            response.get.return_value = [
-                {'UUID': 'invoice_uuid'},
-            ]
+            data = {
+                    'TotalPages': 1,
+                    'Content': [
+                        {
+                            'UUID': 'invoice_uuid',
+                            'CreatedDate': '2026-02-02',
+                        },
+                    ],
+            }
+            response.get.side_effect = data.get
     return response
 
 
@@ -116,13 +128,12 @@ def patch_nilvera_request(function):
     def wrapper(*args, **kwargs):
         with patch(
             'odoo.addons.l10n_tr_nilvera.lib.nilvera_client.NilveraClient.request',
-            side_effect=mock_requests_request
+            side_effect=mock_requests_request,
         ) as mocked_request:
             # If the test expects the mock as an argument, pass it
             if 'mocked_request' in function.__code__.co_varnames:
                 return function(*args, mocked_request, **kwargs)
-            else:
-                return function(*args, **kwargs)
+            return function(*args, **kwargs)
     return wrapper
 
 
@@ -133,10 +144,15 @@ class TestTRNilveraMockedRequests(TestUBLTRCommon):
     @patch_nilvera_request
     def setUpClass(cls):
         super().setUpClass()
-        # Needed to ensure the partners are fully initialized before tests run (i.e. this ends up calling the Nilvera mock API to validate some fields)
-        cls.env.context = {**cls.env.context, 'l10n_tr_nilvera_use_mock': True}
-        cls.einvoice_partner.flush_recordset()
-        cls.earchive_partner.flush_recordset()
+        with patch.object(cls.env.cr, 'commit', autospec=True):
+            cls.einvoice_partner._check_nilvera_customer()
+            cls.earchive_partner._check_nilvera_customer()
+        cls.env['account.journal'].create({
+            'name': 'TR Journal',
+            'code': 'TRJ',
+            'type': 'purchase',
+            'company_id': cls.company.id,
+        })
 
     def test_amount_in_words_rounds_subunit(self):
         note = self.env['account.edi.xml.ubl.tr']._l10n_tr_get_amount_integer_partn_text_note(
@@ -211,7 +227,7 @@ class TestTRNilveraMockedRequests(TestUBLTRCommon):
         error_cases = [
             (UNAUTHORIZED_ALIAS, "Oops, seems like you're unauthorised to do this. Try another API key with more rights or contact Nilvera."),
             (SERVER_ERROR_ALIAS, "Server error from Nilvera, please try again later."),
-            (ERRORENOUS_ALIAS, "The invoice couldn't be sent due to the following errors:\n2000 - Yeterli Kontörünüz Bulunmamaktadır.: Yeterli Kontörünüz Bulunmamaktadır. Lütfen Kontör Alımı Yapınız.\n"),
+            (ERRORENOUS_ALIAS, "The invoice couldn't be sent due to the following errors:\n\n2000 - You do not have sufficient credits:\nYeterli Kontörünüz Bulunmamaktadır. Lütfen Kontör Alımı Yapınız.\n"),
         ]
 
         for alias, expected_error in error_cases:
@@ -227,6 +243,20 @@ class TestTRNilveraMockedRequests(TestUBLTRCommon):
         self.assertEqual(invoice.l10n_tr_nilvera_send_status, 'succeed')
 
     @patch_nilvera_request
+    def test_get_pdf_earchive(self, mocked_request):
+        # E-archive PDF retrieval must use the "invoices" resource, not the e-invoice "sale" one.
+        _, invoice = self._generate_invoice_xml(self.earchive_partner, include_invoice=True)
+        invoice.l10n_tr_nilvera_send_status = 'succeed'
+
+        invoice.l10n_tr_nilvera_get_pdf()
+
+        mocked_request.assert_any_call(
+            'GET',
+            f'/earchive/invoices/{invoice.l10n_tr_nilvera_uuid}/pdf',
+        )
+        self.assertTrue(invoice.message_main_attachment_id.raw.startswith(b'%PDF-'))
+
+    @patch_nilvera_request
     def test_fetch_invalid_status(self):
         _, invoice = self._generate_invoice_xml(self.einvoice_partner, include_invoice=True)
         invoice.l10n_tr_nilvera_uuid = UUID_INVALID_STATUS
@@ -235,20 +265,46 @@ class TestTRNilveraMockedRequests(TestUBLTRCommon):
 
         self.assertIn(
             invoice.message_ids[0].preview,
-            "The invoice status couldn't be retrieved from Nilvera."
+            "The invoice status couldn't be retrieved from Nilvera.",
         )
 
+    @freeze_time('2026-02-02T12:00:00')
     @patch_nilvera_request
     def test_fetching_einvoices(self, mocked_request):
+        # EndDate is adjusted to match Europe/Istanbul timezone(UTC+3)
         with patch.object(self.env.cr, 'commit', autospec=True):
             self.env['account.move']._l10n_tr_nilvera_get_documents()
-            self.env['account.move']._l10n_tr_nilvera_get_documents()  # Test that the second time it does not fetch again
+            self.env['account.move']._l10n_tr_nilvera_get_documents()
 
             self.assertListEqual(mocked_request.call_args_list, [
-                call('GET', '/einvoice/Purchase', params={'StatusCode': ['succeed']}),
+                call(
+                    'GET',
+                    '/einvoice/Purchase',
+                    params={
+                        'StatusCode': ['succeed'],
+                        'StartDate': '2026-01-02',
+                        'EndDate': '2026-02-02T15:00:00',
+                        'DateFilterType': 'CreatedDate',
+                        'SortColumn': 'CreationDateTime',
+                        'SortType': 'ASC',
+                        'Page': 1,
+                    },
+                ),
                 call('GET', '/einvoice/Purchase/invoice_uuid/xml', params={'StatusCode': ['succeed']}),
                 call('GET', '/einvoice/Purchase/invoice_uuid/pdf'),
-                call('GET', '/einvoice/Purchase', params={'StatusCode': ['succeed']}),
+                call(
+                    'GET',
+                    '/einvoice/Purchase',
+                    params={
+                        'StatusCode': ['succeed'],
+                        'StartDate': '2026-02-02',
+                        'EndDate': '2026-02-02T15:00:00',
+                        'DateFilterType': 'CreatedDate',
+                        'SortColumn': 'CreationDateTime',
+                        'SortType': 'ASC',
+                        'Page': 1,
+                    },
+                ),
             ])
 
             invoice = self.env['account.move'].search([('l10n_tr_nilvera_uuid', '=', 'invoice_uuid')])

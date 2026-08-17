@@ -1,7 +1,7 @@
 import { baseContainerGlobalSelector } from "./base_container";
 import { closestBlock, isBlock } from "./blocks";
 import { childNodes, closestElement, firstLeaf, lastLeaf } from "./dom_traversal";
-import { DIRECTIONS, nodeSize } from "./position";
+import { childNodeIndex, DIRECTIONS, nodeSize } from "./position";
 
 export function isEmpty(el) {
     if (isProtecting(el) || isProtected(el)) {
@@ -15,7 +15,25 @@ export function isEmpty(el) {
 }
 
 export function isEmptyTextNode(node) {
-    return node.nodeType === Node.TEXT_NODE && node.nodeValue.length === 0;
+    if (node.nodeType !== Node.TEXT_NODE) {
+        return false;
+    }
+    if (!node.textContent) {
+        return true;
+    }
+    const trimmedContent = node.textContent.trim();
+    if (!trimmedContent) {
+        // Only `\n` is considered as empty
+        if (node.textContent.includes("\n")) {
+            return true;
+        }
+        // Only spaces is not considered as empty
+        // we technically can apply styles on spaces
+        if (node.textContent) {
+            return false;
+        }
+    }
+    return !trimmedContent;
 }
 
 /**
@@ -28,7 +46,11 @@ export function isEmptyTextNode(node) {
  */
 export function isBold(node) {
     const fontWeight = +getComputedStyle(closestElement(node)).fontWeight;
-    return fontWeight > 500 || fontWeight > +getComputedStyle(closestBlock(node)).fontWeight;
+    const referenceElement = closestElement(
+        node,
+        (el) => isBlock(el) || +getComputedStyle(el).fontWeight !== fontWeight
+    );
+    return fontWeight > 500 || fontWeight > +getComputedStyle(referenceElement).fontWeight;
 }
 
 /**
@@ -67,7 +89,10 @@ export function isUnderline(node) {
 export function isStrikeThrough(node) {
     let parent = closestElement(node);
     while (parent) {
-        if (getComputedStyle(parent).textDecorationLine.includes("line-through")) {
+        if (
+            !parent.classList.contains("o_checked") &&
+            getComputedStyle(parent).textDecorationLine.includes("line-through")
+        ) {
             return true;
         }
         parent = parent.parentElement;
@@ -261,7 +286,10 @@ export function isVisible(node) {
             isMediaElement(node) ||
             hasVisibleContent(node) ||
             isProtecting(node) ||
-            isEmbeddedComponent(node))
+            isEmbeddedComponent(node) ||
+            // Keep editor tables visible even when cells only contain
+            // placeholder ZWS content, as `.o_table` tables are always visible.
+            (node.nodeName === "TD" && !!closestElement(node, "table.o_table")))
     );
 }
 export function hasVisibleContent(node) {
@@ -294,17 +322,13 @@ export const isNotEditableNode = (node) =>
 
 const iconTags = ["I", "SPAN"];
 // @todo @phoenix: move the specific part in a proper plugin.
-const iconClasses = ["fa", "fab", "fad", "far", "oi"];
+export const iconClasses = ["fa", "fab", "fad", "far", "oi"];
 
 export const ICON_SELECTOR = iconTags
-    .map((tag) => {
-        return iconClasses
-            .map((cls) => {
-                return `${tag}.${cls}`;
-            })
-            .join(", ");
-    })
+    .map((tag) => iconClasses.map((cls) => `${tag}.${cls}`).join(", "))
     .join(", ");
+
+export const MEDIA_SELECTOR = `${ICON_SELECTOR}, .media_iframe_video, .o_file_box`;
 
 export const EDITABLE_MEDIA_CLASS = "o_editable_media";
 
@@ -327,8 +351,38 @@ export function isMediaElement(node) {
     return (
         isIconElement(node) ||
         (node.classList &&
-            (node.classList.contains("o_image") || node.classList.contains("media_iframe_video")))
+            (node.classList.contains("o_file_box") ||
+                node.classList.contains("media_iframe_video"))) ||
+        node.nodeName === "CANVAS"
     );
+}
+
+/**
+ * Checks whether the content of mediaContainerEl is only made of "media"
+ * (image, video, icon, document) - or links around "media".
+ *
+ * @param {HTMLElement} mediaContainerEl element within which to check
+ * @param {boolean} [requiresSingleMedia=false] if true, limits the positive
+ *     result to situations where only a single media is present
+ * @returns {boolean}
+ */
+export function hasMediaOnly(mediaContainerEl, requiresSingleMedia = false) {
+    const nonEmptyContent = [...mediaContainerEl.childNodes].filter(
+        (node) =>
+            node.tagName !== "BR" &&
+            (node.nodeType !== Node.TEXT_NODE || node.textContent.replaceAll(/\s+/g, ""))
+    );
+    if (requiresSingleMedia && nonEmptyContent.length !== 1) {
+        return false;
+    }
+    return nonEmptyContent.every((el) => {
+        if (isMediaElement(el) || el.tagName === "IMG") {
+            return true;
+        }
+        if (el.tagName === "A") {
+            return hasMediaOnly(el, requiresSingleMedia);
+        }
+    });
 }
 
 // See https://developer.mozilla.org/en-US/docs/Web/HTML/Content_categories#phrasing_content
@@ -501,7 +555,7 @@ export const paragraphRelatedElements = ["P", "H1", "H2", "H3", "H4", "H5", "H6"
  * @returns {boolean}
  */
 export function allowsParagraphRelatedElements(node) {
-    return isBlock(node) && !isParagraphRelatedElement(node);
+    return !isParagraphRelatedElement(node) && isBlock(node);
 }
 
 export const phrasingContent = new Set(["#text", ...phrasingTagNames]);
@@ -555,6 +609,10 @@ export function isListElement(node) {
 
 export const listElementSelector = [...listContainers].join(",");
 
+export function isTableCell(node) {
+    return ["TH", "TD"].includes(node.nodeName);
+}
+
 /**
  * @param {Element} parentBlock
  * @param {Node[]} nodes
@@ -603,7 +661,10 @@ export function isEmptyBlock(blockEl) {
         // this visible is a "visible empty" node like an image.
         if (
             node.nodeName != "BR" &&
-            (isSelfClosingElement(node) || isMediaElement(node) || isProtecting(node))
+            (isSelfClosingElement(node) ||
+                isMediaElement(node) ||
+                isProtecting(node) ||
+                isButton(node))
         ) {
             return false;
         }
@@ -618,7 +679,12 @@ export function isEmptyBlock(blockEl) {
  * @returns {boolean}
  */
 export function isShrunkBlock(blockEl) {
-    return isEmptyBlock(blockEl) && !blockEl.querySelector("br") && !isSelfClosingElement(blockEl);
+    return (
+        isElement(blockEl) &&
+        !blockEl.querySelector("br") &&
+        !isSelfClosingElement(blockEl) &&
+        isEmptyBlock(blockEl)
+    );
 }
 
 export function isEditorTab(node) {
@@ -650,6 +716,76 @@ export function getDeepestPosition(node, offset) {
         next = !isSelfClosingElement(next) && next;
     }
     return [node, offset];
+}
+
+/**
+ * Return the deepest editable position from a given DOM position.
+ *
+ * This resolves a [node, offset] pair to the deepest descendant that is
+ * allowed to contain the caret. If the resolved deepest position is inside
+ * a non-editable element, the function walks up the DOM until it reaches
+ * an editable ancestor and adjusts the offset so the caret sits just before
+ * or after the non-editable region.
+ *
+ * Example:
+ *   <div contenteditable="true">
+ *       <span contenteditable="false">X</span>
+ *   </div>
+ *   getDeepestEditablePosition(div, 1)
+ *   → [div, 1]
+ *
+ * @param {node} node   - Node in which the position is being resolved.
+ * @param {number} offset - Offset within node.
+ * @returns {[Node, number]} A corrected editable node and offset.
+ */
+export function getDeepestEditablePosition(node, offset) {
+    const [deepNode, deepOffset] = getDeepestPosition(node, offset);
+
+    // If deepest node is already editable, nothing to correct.
+    if (isContentEditable(deepNode)) {
+        return [deepNode, deepOffset];
+    }
+
+    // The direct child of root that contains the deepest resolved node.
+    const nodeLevelAncestor =
+        isTextNode(deepNode) && deepNode.parentElement === node
+            ? deepNode
+            : closestElement(deepNode, (el) => el.parentElement === node);
+
+    // The closest non-editable ancestor whose parent is editable.
+    const closestNonEditable = closestElement(
+        deepNode,
+        (el) => !isContentEditable(el) && isContentEditable(el.parentElement)
+    );
+
+    const nodeLevelAncestorIndex = childNodeIndex(nodeLevelAncestor);
+    const closestNonEditableIndex = childNodeIndex(closestNonEditable);
+
+    // Decide whether the caret should be placed before or after
+    // the non-editable element based on the requested offset.
+    const deepEditableNode = closestNonEditable.parentElement;
+    const deepEditableOffset =
+        nodeLevelAncestorIndex < offset ? closestNonEditableIndex + 1 : closestNonEditableIndex;
+
+    // If caret lands on non-editable, resolve it from previous sibling.
+    if (deepEditableOffset === closestNonEditableIndex) {
+        const previousSiblingOfNonEditable = closestNonEditable.previousSibling;
+        if (previousSiblingOfNonEditable) {
+            if (isTextNode(previousSiblingOfNonEditable)) {
+                return [previousSiblingOfNonEditable, nodeSize(previousSiblingOfNonEditable)];
+            } else if (
+                isElement(previousSiblingOfNonEditable) &&
+                previousSiblingOfNonEditable.childNodes.length
+            ) {
+                return getDeepestEditablePosition(
+                    previousSiblingOfNonEditable,
+                    nodeSize(previousSiblingOfNonEditable)
+                );
+            }
+        }
+    }
+
+    return [deepEditableNode, deepEditableOffset];
 }
 
 export function previousLeaf(node, editable, skipInvisible = false) {
@@ -704,7 +840,15 @@ export function areSimilarElements(node, node2) {
         return false; // The nodes aren't the same type of element.
     }
     for (const name of new Set([...node.getAttributeNames(), ...node2.getAttributeNames()])) {
-        if (node.getAttribute(name) !== node2.getAttribute(name)) {
+        if (name === "style") {
+            if (!hasSameStyleAttributes(node, node2)) {
+                return false;
+            }
+        } else if (name === "class") {
+            if (!hasSameClasses(node, node2)) {
+                return false; // The nodes don't have the same classes.
+            }
+        } else if (node.getAttribute(name) !== node2.getAttribute(name)) {
             return false; // The nodes don't have the same attributes.
         }
     }
@@ -730,6 +874,32 @@ export function areSimilarElements(node, node2) {
         !+node2Style.padding.replace(NOT_A_NUMBER, "") &&
         !+nodeStyle.margin.replace(NOT_A_NUMBER, "") &&
         !+node2Style.margin.replace(NOT_A_NUMBER, "")
+    );
+}
+
+export function hasSameStyleAttributes(node, node2) {
+    const getNodeStyles = (node) =>
+        (node.getAttribute("style") || "")
+            .split(";")
+            .map((style) => style.trim())
+            .filter(Boolean);
+    const [nodeStyles, node2Styles] = [node, node2].map(getNodeStyles);
+    return (
+        nodeStyles.length === node2Styles.length &&
+        nodeStyles.every((style) => node2Styles.includes(style))
+    );
+}
+
+export function hasSameClasses(node, node2) {
+    const getNodeClasses = (node) =>
+        (node.getAttribute("class") || "")
+            .split(/\s+/)
+            .map((c) => c.trim())
+            .filter(Boolean);
+    const [nodeClasses, node2Classes] = [node, node2].map(getNodeClasses);
+    return (
+        nodeClasses.length === node2Classes.length &&
+        nodeClasses.every((cls) => node2Classes.includes(cls))
     );
 }
 

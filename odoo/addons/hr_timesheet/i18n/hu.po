@@ -3,35 +3,31 @@
 # * hr_timesheet
 #
 # Translators:
-# Kovács Tibor <kovika@gmail.com>, 2024
-# krnkris, 2024
-# Martin Trigaux, 2024
-# Tamás Dombos, 2024
-# Ákos Nagy <akos.nagy@oregional.hu>, 2024
-# Tamás Németh <ntomasz81@gmail.com>, 2025
-# Valics Lehel, 2025
-# gezza <geza.nagy@oregional.hu>, 2025
-# Tamás Dombos <tdombos@gmail.com>, 2025.
+# Zsolt Godó <zsolttokio@gmail.com>, 2022
+# Krisztián Juhász <juhasz.krisztian@josafar.hu>, 2022
+# Ákos Nagy <akos.nagy@oregional.hu>, 2022
+# Martin Trigaux, 2022
+# krnkris, 2022
+# Tamás Dombos, 2022
+# gezza <geza.nagy@oregional.hu>, 2023
+# Tamás Németh <ntomasz81@gmail.com>, 2023
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# Nagy Géza <geza.nagy@oregional.hu>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 17:37+0000\n"
-"PO-Revision-Date: 2025-08-22 22:20+0000\n"
-"Last-Translator: Tamás Dombos <tdombos@gmail.com>\n"
-"Language-Team: Hungarian <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-06-12 17:36+0000\n"
+"PO-Revision-Date: 2026-08-02 18:47+0000\n"
+"Last-Translator: \"Dylan Kiss (dyki)\" <dyki@odoo.com>\n"
+"Language-Team: Hungarian <https://translate.odoo.com/projects/odoo-19/"
 "hr_timesheet/hu/>\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
-
-#. module: hr_timesheet
-#: model_terms:ir.ui.view,arch_db:hr_timesheet.portal_timesheet_table
-msgid "#{timesheet.employee_id.name}"
-msgstr "#{timesheet.employee_id.name}"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: hr_timesheet
 #. odoo-python
@@ -73,7 +69,25 @@ msgstr "%(hours)só%(minutes)s"
 #. odoo-python
 #: code:addons/hr_timesheet/models/project_project.py:0
 msgid "%(name)s's Timesheets"
-msgstr "%(name)sidőkimutatásai"
+msgstr "%(name)s időkimutatásai"
+
+#. module: hr_timesheet
+#. odoo-python
+#: code:addons/hr_timesheet/models/hr_timesheet.py:0
+msgid "%(project_name)s (%(days)sd)"
+msgstr "%(project_name)s (%(days)sn)"
+
+#. module: hr_timesheet
+#. odoo-python
+#: code:addons/hr_timesheet/models/hr_timesheet.py:0
+msgid "%(project_name)s (%(sign)s%(hours)sh%(minutes)s)"
+msgstr ""
+
+#. module: hr_timesheet
+#. odoo-python
+#: code:addons/hr_timesheet/models/hr_timesheet.py:0
+msgid "%(project_name)s (%(sign)s%(hours)sh)"
+msgstr ""
 
 #. module: hr_timesheet
 #. odoo-python
@@ -116,8 +130,7 @@ msgstr "2 óra"
 #. module: hr_timesheet
 #: model_terms:digest.tip,tip_description:hr_timesheet.digest_tip_hr_timesheet_0
 msgid "<b class=\"tip_title\">Tip: Record your Timesheets faster</b>"
-msgstr ""
-"<b class=\"tip_title\">Tipp: Rögzítsd gyorsabban az időkimutatásaidat</b>"
+msgstr "<b class=\"tip_title\">Tipp: Rögzítse gyorsabban az időkimutatásait</b>"
 
 #. module: hr_timesheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.view_kanban_account_analytic_line
@@ -125,8 +138,8 @@ msgid ""
 "<i class=\"fa fa-calendar me-1\" role=\"img\" aria-label=\"Date\" "
 "title=\"Date\"/>"
 msgstr ""
-"<i class=\"fa fa-calendar me-1\" role=\"img\" aria-label=\"Date\" "
-"title=\"Date\"/>"
+"<i class=\"fa fa-calendar me-1\" role=\"img\" aria-label=\"Dátum\" "
+"title=\"Dátum\"/>"
 
 #. module: hr_timesheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.portal_my_task
@@ -134,6 +147,7 @@ msgid "<i class=\"fa fa-print\"/> View Details"
 msgstr "<i class=\"fa fa-print\"/> Részletek megtekintése"
 
 #. module: hr_timesheet
+#: model_terms:ir.ui.view,arch_db:hr_timesheet.hr_employee_public_view_form
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.hr_employee_view_form_inherit_timesheet
 msgid "<span class=\"o_stat_text\">Timesheets</span>"
 msgstr "<span class=\"o_stat_text\">Időkimutatások</span>"
@@ -185,7 +199,7 @@ msgstr "<span>Eltöltött idő</span>"
 #. module: hr_timesheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.portal_my_task
 msgid "<strong>Progress:</strong>"
-msgstr "<strong>Folyamat:</strong>"
+msgstr "<strong>Haladás:</strong>"
 
 #. module: hr_timesheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.portal_timesheet_table
@@ -227,7 +241,7 @@ msgstr "Összes"
 #: model:ir.actions.act_window,name:hr_timesheet.timesheet_action_all
 #: model:ir.ui.menu,name:hr_timesheet.timesheet_menu_activity_all
 msgid "All Timesheets"
-msgstr "Minden időkimutatás"
+msgstr "Összes időkimutatás"
 
 #. module: hr_timesheet
 #: model:ir.model.fields,field_description:hr_timesheet.field_project_project__allocated_hours
@@ -279,7 +293,7 @@ msgstr ""
 #. module: hr_timesheet
 #: model:ir.model.fields,field_description:hr_timesheet.field_res_config_settings__reminder_allow
 msgid "Approver Reminder"
-msgstr "Jóváhagyás emlékeztető"
+msgstr "Jóváhagyó emlékeztető"
 
 #. module: hr_timesheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.hr_employee_delete_wizard_form
@@ -317,6 +331,12 @@ msgid "Call client and discuss project"
 msgstr "Ügyfél hívása és projekt megbeszélése"
 
 #. module: hr_timesheet
+#. odoo-javascript
+#: code:addons/hr_timesheet/static/src/views/timesheet_calendar/timesheet_calendar_model.js:0
+msgid "Choose an employee to create their timesheet."
+msgstr "Válasszon munkavállalót az időkimutatás létrehozásához."
+
+#. module: hr_timesheet
 #: model:ir.model,name:hr_timesheet.model_project_collaborator
 msgid "Collaborators in project shared"
 msgstr "Együttműködők megosztott projektben"
@@ -348,11 +368,18 @@ msgid "Confirmation"
 msgstr "Megerősítés"
 
 #. module: hr_timesheet
+#: model:ir.model,website_form_label:hr_timesheet.model_project_task
+msgid "Create a Task"
+msgstr "Feladat létrehozása"
+
+#. module: hr_timesheet
+#: model:ir.model.fields,field_description:hr_timesheet.field_account_analytic_line_calendar_employee__create_uid
 #: model:ir.model.fields,field_description:hr_timesheet.field_hr_employee_delete_wizard__create_uid
 msgid "Created by"
 msgstr "Létrehozta"
 
 #. module: hr_timesheet
+#: model:ir.model.fields,field_description:hr_timesheet.field_account_analytic_line_calendar_employee__create_date
 #: model:ir.model.fields,field_description:hr_timesheet.field_hr_employee_delete_wizard__create_date
 msgid "Created on"
 msgstr "Létrehozva"
@@ -378,6 +405,7 @@ msgstr "Nap / Fél nap"
 
 #. module: hr_timesheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.project_sharing_inherit_project_task_view_form
+#: model_terms:ir.ui.view,arch_db:hr_timesheet.view_project_kanban_inherited
 msgid "Days Remaining"
 msgstr "Maradék nap"
 
@@ -390,8 +418,7 @@ msgstr "Számla deaktiválása."
 #. module: hr_timesheet
 #: model:ir.model.fields,help:hr_timesheet.field_res_company__internal_project_id
 msgid "Default project value for timesheet generated from time off type."
-msgstr ""
-"Alapértelmezett projekt szabadság típusbóll generált időkimutatásokhoz."
+msgstr "Alapértelmezett projekt szabadság típusból generált időkimutatásokhoz."
 
 #. module: hr_timesheet
 #: model:ir.model.fields,help:hr_timesheet.field_account_analytic_line__employee_id
@@ -448,9 +475,23 @@ msgid "Discard"
 msgstr "Elvetés"
 
 #. module: hr_timesheet
+#: model:ir.model.fields,field_description:hr_timesheet.field_account_analytic_applicability__display_name
+#: model:ir.model.fields,field_description:hr_timesheet.field_account_analytic_line__display_name
+#: model:ir.model.fields,field_description:hr_timesheet.field_account_analytic_line_calendar_employee__display_name
+#: model:ir.model.fields,field_description:hr_timesheet.field_hr_employee__display_name
 #: model:ir.model.fields,field_description:hr_timesheet.field_hr_employee_delete_wizard__display_name
+#: model:ir.model.fields,field_description:hr_timesheet.field_hr_employee_public__display_name
+#: model:ir.model.fields,field_description:hr_timesheet.field_ir_http__display_name
+#: model:ir.model.fields,field_description:hr_timesheet.field_ir_ui_menu__display_name
+#: model:ir.model.fields,field_description:hr_timesheet.field_project_collaborator__display_name
+#: model:ir.model.fields,field_description:hr_timesheet.field_project_project__display_name
 #: model:ir.model.fields,field_description:hr_timesheet.field_project_task__display_name
+#: model:ir.model.fields,field_description:hr_timesheet.field_project_update__display_name
+#: model:ir.model.fields,field_description:hr_timesheet.field_report_project_task_user__display_name
+#: model:ir.model.fields,field_description:hr_timesheet.field_res_company__display_name
+#: model:ir.model.fields,field_description:hr_timesheet.field_res_config_settings__display_name
 #: model:ir.model.fields,field_description:hr_timesheet.field_timesheets_analysis_report__display_name
+#: model:ir.model.fields,field_description:hr_timesheet.field_uom_uom__display_name
 msgid "Display Name"
 msgstr "Megjelenített név"
 
@@ -534,20 +575,41 @@ msgid "Has Department Manager Access"
 msgstr "Részlegvezetői hozzáférése van"
 
 #. module: hr_timesheet
+#: model:ir.model.fields,field_description:hr_timesheet.field_hr_employee_public__has_timesheet
+msgid "Has Timesheet"
+msgstr "Van időkimutatás"
+
+#. module: hr_timesheet
 #: model:ir.model.fields.selection,name:hr_timesheet.selection__res_config_settings__timesheet_encode_method__hours
 msgid "Hours / Minutes"
 msgstr "Óra / Perc"
 
 #. module: hr_timesheet
-#: model:ir.model.fields,field_description:hr_timesheet.field_report_project_task_user__total_hours_spent
-msgid "Hours By Task (Including Subtasks)"
-msgstr "Órák feladatonként (alfeladatokkal)"
-
-#. module: hr_timesheet
+#: model:ir.model.fields,field_description:hr_timesheet.field_account_analytic_applicability__id
+#: model:ir.model.fields,field_description:hr_timesheet.field_account_analytic_line__id
+#: model:ir.model.fields,field_description:hr_timesheet.field_account_analytic_line_calendar_employee__id
+#: model:ir.model.fields,field_description:hr_timesheet.field_hr_employee__id
 #: model:ir.model.fields,field_description:hr_timesheet.field_hr_employee_delete_wizard__id
+#: model:ir.model.fields,field_description:hr_timesheet.field_hr_employee_public__id
+#: model:ir.model.fields,field_description:hr_timesheet.field_ir_http__id
+#: model:ir.model.fields,field_description:hr_timesheet.field_ir_ui_menu__id
+#: model:ir.model.fields,field_description:hr_timesheet.field_project_collaborator__id
+#: model:ir.model.fields,field_description:hr_timesheet.field_project_project__id
+#: model:ir.model.fields,field_description:hr_timesheet.field_project_task__id
+#: model:ir.model.fields,field_description:hr_timesheet.field_project_update__id
+#: model:ir.model.fields,field_description:hr_timesheet.field_report_project_task_user__id
+#: model:ir.model.fields,field_description:hr_timesheet.field_res_company__id
+#: model:ir.model.fields,field_description:hr_timesheet.field_res_config_settings__id
 #: model:ir.model.fields,field_description:hr_timesheet.field_timesheets_analysis_report__id
+#: model:ir.model.fields,field_description:hr_timesheet.field_uom_uom__id
 msgid "ID"
 msgstr "ID"
+
+#. module: hr_timesheet
+#. odoo-python
+#: code:addons/hr_timesheet/models/hr_timesheet.py:0
+msgid "Import Template for Timesheets"
+msgstr "Időkimutatás importálás sablon"
 
 #. module: hr_timesheet
 #. odoo-python
@@ -563,18 +625,6 @@ msgstr "Belső projekt"
 
 #. module: hr_timesheet
 #. odoo-python
-#: code:addons/hr_timesheet/models/project_project.py:0
-msgid "Invalid operator: %s"
-msgstr "Érvénytelen operátor: %s"
-
-#. module: hr_timesheet
-#. odoo-python
-#: code:addons/hr_timesheet/models/project_project.py:0
-msgid "Invalid value: %s"
-msgstr "Érvénytelen érték: %s"
-
-#. module: hr_timesheet
-#. odoo-python
 #: code:addons/hr_timesheet/controllers/portal.py:0
 msgid "Last Month"
 msgstr "Előző hónap"
@@ -586,11 +636,13 @@ msgid "Last Quarter"
 msgstr "Előző negyedév"
 
 #. module: hr_timesheet
+#: model:ir.model.fields,field_description:hr_timesheet.field_account_analytic_line_calendar_employee__write_uid
 #: model:ir.model.fields,field_description:hr_timesheet.field_hr_employee_delete_wizard__write_uid
 msgid "Last Updated by"
 msgstr "Frissítette"
 
 #. module: hr_timesheet
+#: model:ir.model.fields,field_description:hr_timesheet.field_account_analytic_line_calendar_employee__write_date
 #: model:ir.model.fields,field_description:hr_timesheet.field_hr_employee_delete_wizard__write_date
 msgid "Last Updated on"
 msgstr "Frissítve"
@@ -693,6 +745,12 @@ msgstr "Nincs még adat!"
 
 #. module: hr_timesheet
 #. odoo-python
+#: code:addons/hr_timesheet/models/hr_timesheet.py:0
+msgid "No timesheets created: employees aren’t working on the selected days"
+msgstr ""
+
+#. module: hr_timesheet
+#. odoo-python
 #: code:addons/hr_timesheet/controllers/portal.py:0
 msgid "None"
 msgstr "Nincs"
@@ -727,6 +785,11 @@ msgstr "Szülő feladat"
 #: model:ir.model.fields,field_description:hr_timesheet.field_timesheets_analysis_report__partner_id
 msgid "Partner"
 msgstr "Partner"
+
+#. module: hr_timesheet
+#: model:ir.model,name:hr_timesheet.model_account_analytic_line_calendar_employee
+msgid "Personal Filters on Employees for the Calendar view"
+msgstr "Személyes szűrő munkavállalókra a naptár nézethez"
 
 #. module: hr_timesheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.hr_employee_delete_wizard_form
@@ -782,6 +845,11 @@ msgid "Project's Timesheets"
 msgstr "Projekt időkimutatásai"
 
 #. module: hr_timesheet
+#: model:ir.model,name:hr_timesheet.model_hr_employee_public
+msgid "Public Employee"
+msgstr "Publikus munkavállaló"
+
+#. module: hr_timesheet
 #: model_terms:ir.actions.act_window,help:hr_timesheet.act_hr_timesheet_line_by_project
 #: model_terms:ir.actions.act_window,help:hr_timesheet.timesheet_action_from_employee
 msgid "Record a new activity"
@@ -795,6 +863,12 @@ msgid ""
 msgstr ""
 "Rögzítse gyorsan az időkimutatásait lenyomva a Shift + a meghatározott "
 "billenytűt és adjon 15 percet a projekthez."
+
+#. module: hr_timesheet
+#: model_terms:ir.ui.view,arch_db:hr_timesheet.project_sharing_kanban_inherit_project_task_view_kanban
+#: model_terms:ir.ui.view,arch_db:hr_timesheet.view_task_kanban_inherited_progress
+msgid "Remaining days"
+msgstr "Maradék nap"
 
 #. module: hr_timesheet
 #: model:ir.ui.menu,name:hr_timesheet.menu_timesheets_reports
@@ -865,7 +939,7 @@ msgid ""
 "timesheets to validate"
 msgstr ""
 "Időszakos email emlékeztető küldése a jóváhagyóknak a jóváhagyásra váró "
-"időkimutatásokról "
+"időkimutatásokról"
 
 #. module: hr_timesheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.res_config_settings_view_form
@@ -882,9 +956,27 @@ msgid "Settings"
 msgstr "Beállítások"
 
 #. module: hr_timesheet
+#. odoo-python
+#: code:addons/hr_timesheet/models/project_task.py:0
+msgid ""
+"Some timesheet entries are weighing down these tasks! Remove them first, "
+"then you’ll be able to delete the tasks!"
+msgstr ""
+"Időkimutatás kapcsolódik ezekhez a feladatokhoz! Távolítsa el ezeket a "
+"feladatok törlése előtt!"
+
+#. module: hr_timesheet
+#. odoo-python
+#: code:addons/hr_timesheet/models/hr_timesheet.py:0
+msgid ""
+"Some timesheets were not created: employees aren’t working on the selected "
+"days"
+msgstr ""
+
+#. module: hr_timesheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.timesheet_report_subtask
 msgid "Sub-Task of '"
-msgstr "Alfeladata ennek: "
+msgstr "Alfeladata ennek:"
 
 #. module: hr_timesheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.project_sharing_inherit_project_task_view_form
@@ -947,16 +1039,6 @@ msgstr ""
 
 #. module: hr_timesheet
 #. odoo-python
-#: code:addons/hr_timesheet/models/project_task.py:0
-msgid ""
-"These tasks have some timesheet entries referencing them. Before removing "
-"these tasks, you have to remove these timesheet entries."
-msgstr ""
-"Időkimutatás bejegyzések hivatkoznak ezekre a feladatokra. Távolítsa el az "
-"időkimutatás bejegyzéseket mielőtt eltávolítaná a feladatokat."
-
-#. module: hr_timesheet
-#. odoo-python
 #: code:addons/hr_timesheet/controllers/portal.py:0
 msgid "This Month"
 msgstr "Ebben a hónapban"
@@ -965,7 +1047,7 @@ msgstr "Ebben a hónapban"
 #. odoo-python
 #: code:addons/hr_timesheet/controllers/portal.py:0
 msgid "This Quarter"
-msgstr "Ez a  negyedév"
+msgstr "Aktuális negyedév"
 
 #. module: hr_timesheet
 #. odoo-python
@@ -979,12 +1061,6 @@ msgstr "Ezen a héten"
 #: code:addons/hr_timesheet/controllers/portal.py:0
 msgid "This Year"
 msgstr "Tárgyév"
-
-#. module: hr_timesheet
-#. odoo-python
-#: code:addons/hr_timesheet/models/project_task.py:0
-msgid "This operator %s is not supported in this search method."
-msgstr "A(z) %s operátor nem támogatott ennél a keresési módszernél."
 
 #. module: hr_timesheet
 #. odoo-python
@@ -1009,11 +1085,13 @@ msgstr ""
 #. odoo-python
 #: code:addons/hr_timesheet/models/project_task.py:0
 msgid ""
-"This task has some timesheet entries referencing it. Before removing this "
-"task, you have to remove these timesheet entries."
+"This task can’t be deleted because it’s linked to timesheets. Please contact "
+"someone with higher access to remove the timesheets first, and then you’ll "
+"be able to delete the task."
 msgstr ""
-"Időkimutatás bejegyzések hivatkoznak erre a feladatra. Távolítsa el az "
-"időkimutatás bejegyzéseket mielőtt eltávolítaná a feladatot."
+"Ez a feladat nem törölhető, mert időkimutatásokhoz kapcsolódik. Lépjen "
+"kapcsolat bővebb jogosultságokkal rendelkező felhasználóval, aki el tudja "
+"távolítani az időkimutatásokat, utána törölhető lesz a feladat."
 
 #. module: hr_timesheet
 #: model:ir.model.fields,help:hr_timesheet.field_res_company__project_time_mode_id
@@ -1043,7 +1121,10 @@ msgstr "Szabadság"
 #: model:ir.model.fields,field_description:hr_timesheet.field_project_task__remaining_hours
 #: model:ir.model.fields,field_description:hr_timesheet.field_report_project_task_user__remaining_hours
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.project_sharing_inherit_project_task_view_form
+#: model_terms:ir.ui.view,arch_db:hr_timesheet.project_sharing_kanban_inherit_project_task_view_kanban
+#: model_terms:ir.ui.view,arch_db:hr_timesheet.view_project_kanban_inherited
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.view_task_form2_inherited
+#: model_terms:ir.ui.view,arch_db:hr_timesheet.view_task_kanban_inherited_progress
 msgid "Time Remaining"
 msgstr "Maradék idő"
 
@@ -1069,6 +1150,7 @@ msgstr "Vevői rendelés maradék idő"
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.portal_timesheet_table
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.project_sharing_inherit_project_task_view_form
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.timesheets_analysis_report_form
+#: model_terms:ir.ui.view,arch_db:hr_timesheet.view_calendar_account_analytic_line_multi_create
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.view_hr_timesheet_line_graph
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.view_hr_timesheet_line_graph_all
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.view_hr_timesheet_line_graph_my
@@ -1079,7 +1161,6 @@ msgid "Time Spent"
 msgstr "Eltöltött idő"
 
 #. module: hr_timesheet
-#: model:ir.model.fields,field_description:hr_timesheet.field_report_project_task_user__subtask_effective_hours
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.view_task_tree2_inherited
 msgid "Time Spent on Sub-Tasks"
 msgstr "Alfeladatokon eltöltött idő"
@@ -1091,19 +1172,13 @@ msgstr "Alfeladatokon eltöltött idő"
 
 #. module: hr_timesheet
 #: model:ir.model.fields,help:hr_timesheet.field_project_task__subtask_effective_hours
-#: model:ir.model.fields,help:hr_timesheet.field_report_project_task_user__subtask_effective_hours
 msgid "Time spent on the sub-tasks (and their own sub-tasks) of this task."
-msgstr "Feladat alfeladataira (és azok alfeladataira) fordított idő"
+msgstr "Feladat alfeladataira (és azok alfeladataira) fordított idő."
 
 #. module: hr_timesheet
 #: model:ir.model.fields,help:hr_timesheet.field_project_task__total_hours_spent
 msgid "Time spent on this task and its sub-tasks (and their own sub-tasks)."
-msgstr "Feladatra és alfeladataira (és azok alfeladataira) fordított idő"
-
-#. module: hr_timesheet
-#: model:ir.model.fields,help:hr_timesheet.field_report_project_task_user__total_hours_spent
-msgid "Time spent on this task, including its sub-tasks."
-msgstr "Feladaton eltöltött idő, beleértve a kapcsolt alfeladatokat is."
+msgstr "Feladatra és alfeladataira (és azok alfeladataira) fordított idő."
 
 #. module: hr_timesheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.res_config_settings_view_form
@@ -1173,6 +1248,7 @@ msgstr "Időkimutatás idő"
 #: model:ir.ui.menu,name:hr_timesheet.menu_hr_time_tracking
 #: model:ir.ui.menu,name:hr_timesheet.menu_timesheets_reports_timesheet
 #: model:ir.ui.menu,name:hr_timesheet.timesheet_menu_root
+#: model:res.groups.privilege,name:hr_timesheet.res_groups_privilege_timesheets
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.hr_department_view_kanban
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.portal_layout
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.portal_my_home_timesheet
@@ -1232,7 +1308,7 @@ msgstr "Időkimutatás ellenőrzés"
 #. module: hr_timesheet
 #: model:ir.actions.act_window,name:hr_timesheet.act_hr_timesheet_report
 msgid "Timesheets by Employee"
-msgstr "Munkavállaló időkimutatás "
+msgstr "Munkavállaló időkimutatás"
 
 #. module: hr_timesheet
 #: model:ir.actions.act_window,name:hr_timesheet.timesheet_action_report_by_project
@@ -1272,6 +1348,12 @@ msgstr ""
 #: code:addons/hr_timesheet/wizard/hr_employee_delete_wizard.py:0
 msgid "Timesheets of %(name)s"
 msgstr "Időkimutatások: %(name)s"
+
+#. module: hr_timesheet
+#. odoo-python
+#: code:addons/hr_timesheet/models/hr_timesheet.py:0
+msgid "Timesheets successfully created"
+msgstr "Az időkimutatások sikeresen létrehozásra kerültek"
 
 #. module: hr_timesheet
 #: model:digest.tip,name:hr_timesheet.digest_tip_hr_timesheet_0
@@ -1325,6 +1407,7 @@ msgstr "Összes eltöltött idő"
 
 #. module: hr_timesheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.portal_my_timesheets
+#: model_terms:ir.ui.view,arch_db:hr_timesheet.portal_tasks_list_inherit
 msgid "Total:"
 msgstr "Összesen:"
 
@@ -1346,6 +1429,17 @@ msgid "Training"
 msgstr "Képzés"
 
 #. module: hr_timesheet
+#: model_terms:ir.ui.view,arch_db:hr_timesheet.hr_employee_delete_wizard_form
+msgid ""
+"Uh-oh! The employee you’re trying to delete still has some timesheets "
+"hanging around and can’t be deleted.\n"
+"                        <span invisible=\"not has_active_employee\">\n"
+"                            So here are your two options: either delete "
+"those timesheets or consider archiving the employee instead.\n"
+"                        </span>"
+msgstr ""
+
+#. module: hr_timesheet
 #: model:ir.model.fields,help:hr_timesheet.field_project_task__display_name
 msgid ""
 "Use these keywords in the title to set new tasks:\n"
@@ -1353,21 +1447,24 @@ msgid ""
 "        30h Allocate 30 hours to the task\n"
 "        #tags Set tags on the task\n"
 "        @user Assign the task to a user\n"
-"        ! Set the task a high priority\n"
+"        ! Set the task a medium priority\n"
+"        !! Set the task a high priority\n"
+"        !!! Set the task a urgent priority\n"
 "\n"
-"        Make sure to use the right format and order e.g. Improve the "
+"        Make sure to use the right format and order e.g. Improve the "
 "configuration screen 5h #feature #v16 @Mitchell !"
 msgstr ""
-"Használja ezeket a kulcsszavakat a címben új feladatok megadásához:\n"
+"Használja ezeket a kulcsszavakat a címben új feladatok létrehozására:\n"
 "\n"
-"        30h : 30 óra kiosztása a feladatra\n"
-"        #címke : címkék megadása a feladathoz\n"
-"        @felhasználó : feladat hozzárendelése felhasználóhoz\n"
-"        ! : magas prioritás megadása\n"
+"        30h betervez 30 órát a feladatra\n"
+"        #tags címkéket állít be a feladatra\n"
+"        @user hozzárendeli felhasználóhoz a feladatot\n"
+"        ! közepes prioritást ad a feladatnak\n"
+"        !! magas prioritást ad a feladatnak\n"
+"        !!! sürgős prioritást ad a feladatnak\n"
 "\n"
-"        MFigyeljen arra, hogy a helyes formátumot és sorrendet "
-"használjah pl.: Képernyő konfiguráció fejlesztése 5h #feature #v16 "
-"@Mitchell !"
+"        Figyeljen a megfelelő formátumra és sorrendre, pl.: Konfiguráció "
+"fejlesztése 5h #funkció #v19 @Mitchell !"
 
 #. module: hr_timesheet
 #: model:ir.model.fields,field_description:hr_timesheet.field_account_analytic_line__user_id
@@ -1416,16 +1513,6 @@ msgid "You cannot delete employees who have timesheets."
 msgstr "Nem lehet törlöni időkimutatásokkal rendelkező munkavállalót."
 
 #. module: hr_timesheet
-#: model_terms:ir.ui.view,arch_db:hr_timesheet.hr_employee_delete_wizard_form
-msgid ""
-"You cannot delete employees who have timesheets.\n"
-"                        <span invisible=\"not has_active_employee\">\n"
-"                            You can either archive these employees or first "
-"delete all of their timesheets.\n"
-"                        </span>"
-msgstr ""
-
-#. module: hr_timesheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.project_invoice_form
 msgid ""
 "You cannot log timesheets on this project since it is linked to an inactive "
@@ -1456,6 +1543,17 @@ msgid "You cannot set an archived employee on existing timesheets."
 msgstr "Nem lehet archivált munkavállalót megadni létező időkimutatáson."
 
 #. module: hr_timesheet
+#. odoo-python
+#: code:addons/hr_timesheet/controllers/portal.py:0
+msgid "date"
+msgstr "dátum"
+
+#. module: hr_timesheet
+#: model_terms:ir.ui.view,arch_db:hr_timesheet.view_calendar_account_analytic_line_multi_create
+msgid "e.g. Sending E-mails"
+msgstr "pl.: Email küldése"
+
+#. module: hr_timesheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.report_timesheet_task
 msgid "for"
 msgstr "felelős"
@@ -1463,7 +1561,7 @@ msgstr "felelős"
 #. module: hr_timesheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.report_timesheet
 msgid "for the"
-msgstr "ehhez: "
+msgstr "ehhez:"
 
 #. module: hr_timesheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet.view_task_form2_inherited
@@ -1489,12 +1587,19 @@ msgstr ""
 #~ msgid "2021-09-01"
 #~ msgstr "2021-09-01"
 
+#~ msgid "%(project_name)s (%(hours)sh%(minutes)s)"
+#~ msgstr "%(project_name)s (%(hours)só%(minutes)s)"
+
+#~ msgid "%(project_name)s (%(hours)sh)"
+#~ msgstr "%(project_name)s (%(hours)só)"
+
 #~ msgid ""
 #~ "<span invisible=\"not has_timesheet\">\n"
-#~ "                        You cannot delete employees who have timesheets.\n"
+#~ "                        Uh-oh! The employee you’re trying to delete still "
+#~ "has some timesheets hanging around and can’t be deleted.\n"
 #~ "                        <span invisible=\"not has_active_employee\">\n"
-#~ "                            You can either archive these employees or "
-#~ "first delete all of their timesheets.\n"
+#~ "                            So here are your two options: either delete "
+#~ "those timesheets or consider archiving the employee instead.\n"
 #~ "                        </span>\n"
 #~ "                        <span invisible=\"has_active_employee\" "
 #~ "groups=\"hr_timesheet.group_hr_timesheet_approver\">\n"
@@ -1506,19 +1611,130 @@ msgstr ""
 #~ "                    </span>"
 #~ msgstr ""
 #~ "<span invisible=\"not has_timesheet\">\n"
-#~ "                        Nem lehet törölni időkimutatással rendelkező "
-#~ "munkavállalókat.\n"
+#~ "                        Upsz! A törölni kívánt munkavállalónak vannak még "
+#~ "függő időkimutatásai, emiatt a törlés nem lehetséges.\n"
 #~ "                        <span invisible=\"not has_active_employee\">\n"
-#~ "                            Vagy archiválja a munkavállalókat, vagy előbb "
-#~ "törölje az összes hozzájuk kapcsolt időkimutatást.\n"
+#~ "                            Lehetőségek: vagy törölje az időkimutatásokat "
+#~ "vagy archiválja a munkavállalót.\n"
 #~ "                        </span>\n"
 #~ "                        <span invisible=\"has_active_employee\" "
 #~ "groups=\"hr_timesheet.group_hr_timesheet_approver\">\n"
-#~ "                            Kérjük előbb törölje az összes hozzájuk "
-#~ "kapcsolt időkimutatást.\n"
+#~ "                            Kérjük, előbb törölje a munkavállaló összes "
+#~ "időkimutatását.\n"
 #~ "                        </span>\n"
 #~ "                    </span>\n"
 #~ "                    <span invisible=\"has_timesheet\">\n"
 #~ "                        Biztosan törölni akarja ezeket a "
 #~ "munkavállalókat?\n"
 #~ "                    </span>"
+
+#~ msgid "Timesheets could not be created for any of the selected days"
+#~ msgstr "Nem lehet létrehozni időkimutatásokat egyik kiválasztott napra sem"
+
+#~ msgid "<i class=\"fa fa-download\"/> Download"
+#~ msgstr "<i class=\"fa fa-download\"/> Letöltés"
+
+#~ msgid "<i class=\"fa fa-print\"/> Print"
+#~ msgstr "<i class=\"fa fa-print\"/> Nyomtatás"
+
+#~ msgid "<span>Project</span>"
+#~ msgstr "<span>Projekt</span>"
+
+#~ msgid "<span>Task</span>"
+#~ msgstr "<span>Feladat</span>"
+
+#~ msgid "<strong>Duration: </strong>"
+#~ msgstr "<strong>Időtartam: </strong>"
+
+#~ msgid "Allocated Hours"
+#~ msgstr "Kiosztott órák"
+
+#~ msgid "Allow timesheets"
+#~ msgstr "Munkaidő-nyilvántartás engedélyezése"
+
+#~ msgid "Analytic Account"
+#~ msgstr "Analitikus számla"
+
+#~ msgid "Download"
+#~ msgstr "Letöltés"
+
+#~ msgid "Duration"
+#~ msgstr "Időtartam"
+
+#~ msgid "Encoding Uom"
+#~ msgstr "Időegység me."
+
+#~ msgid "Group By"
+#~ msgstr "Csoportosítás"
+
+#~ msgid "Hours"
+#~ msgstr "óra"
+
+#~ msgid "Hours Spent"
+#~ msgstr "Eltöltött órák"
+
+#~ msgid "Initially Planned Hours"
+#~ msgstr "Kezdetben tervezett órák száma"
+
+#~ msgid "Invalid operator: %s"
+#~ msgstr "Érvénytelen művelet: %s"
+
+#~ msgid "Invalid value: %s"
+#~ msgstr "Érvénytelen érték: %s"
+
+#~ msgid "Job Title"
+#~ msgstr "Beosztás"
+
+#~ msgid "Last month"
+#~ msgstr "Múlt hónap"
+
+#~ msgid "Last week"
+#~ msgstr "Múlt hét"
+
+#~ msgid "Last year"
+#~ msgstr "Tavaly"
+
+#~ msgid "Print"
+#~ msgstr "Nyomtatás"
+
+#~ msgid "Remaining Days"
+#~ msgstr "Hátralévő napok"
+
+#~ msgid "Remaining Days:"
+#~ msgstr "Hátralevő napok:"
+
+#~ msgid "Remaining Hours"
+#~ msgstr "Hátralévő idő"
+
+#~ msgid "Remaining Hours:"
+#~ msgstr "Hátralevő idő:"
+
+#~ msgid "Search in All"
+#~ msgstr "Keresés mindenben"
+
+#~ msgid "Sub-tasks Hours Spent"
+#~ msgstr "Alfeladatokon eltöltött idő"
+
+#~ msgid "This month"
+#~ msgstr "Ebben a hónapban"
+
+#~ msgid "This week"
+#~ msgstr "Ezen a héten"
+
+#~ msgid "This year"
+#~ msgstr "Ebben az évben"
+
+#~ msgid "Timesheet by Date"
+#~ msgstr "Munkaidő-nyilvántartás dátum szerint"
+
+#~ msgid "Total Days"
+#~ msgstr "Összes nap"
+
+#~ msgid "Total Hours"
+#~ msgstr "Összes óra"
+
+#~ msgid "days"
+#~ msgstr "nap"
+
+#~ msgid "hours"
+#~ msgstr "óra"

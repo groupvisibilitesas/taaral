@@ -1,8 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
-from odoo.osv import expression
 from odoo.exceptions import AccessError
+from odoo.fields import Command, Domain
 from odoo.tests import Form, tagged
 from odoo.tools import mute_logger
 
@@ -319,8 +318,6 @@ class TestProjectSharing(TestProjectSharingCommon):
             task = Task.with_context(default_parent_id=self.task_no_collabo.id).create({'name': 'foo'})
 
         # Create/Update a forbidden task through child_ids
-        with self.assertRaisesRegex(AccessError, "You cannot write on the following fields"):
-            Task.create({'name': 'foo', 'child_ids': [Command.create({'name': 'Foo', 'color': 1})]})
         with self.assertRaisesRegex(AccessError, "top-secret records"):
             Task.create({'name': 'foo', 'child_ids': [Command.update(self.task_no_collabo.id, {'name': 'Foo'})]})
         with self.assertRaisesRegex(AccessError, "top-secret records"):
@@ -333,16 +330,28 @@ class TestProjectSharing(TestProjectSharingCommon):
             Task.create({'name': 'foo', 'child_ids': [Command.set([self.task_no_collabo.id])]})
 
         # Same thing but using context defaults
+        # However, cache is updated, but nothing is written.
         with self.assertRaisesRegex(AccessError, "top-secret records"):
             Task.with_context(default_child_ids=[Command.update(self.task_no_collabo.id, {'name': 'Foo'})]).create({'name': 'foo'})
+        with Task.env.cr.savepoint() as sp:
+            task = Task.with_context(default_child_ids=[Command.delete(self.task_no_collabo.id)]).create({'name': 'foo'})
+            task.env.invalidate_all()
+            self.assertTrue(self.task_no_collabo.exists(), "Task should still be there, no delete is sent")
+            sp.rollback()
+        with self.env.cr.savepoint() as sp:
+            self.task_no_collabo.parent_id = self.task_no_collabo.create({'name': 'parent collabo'})
+            task = Task.with_context(default_child_ids=[Command.unlink(self.task_no_collabo.id)]).create({'name': 'foo'})
+            task.env.invalidate_all()
+            self.assertTrue(self.task_no_collabo.parent_id, "Task should still be there, no delete is sent")
+            sp.rollback()
         with self.assertRaisesRegex(AccessError, "top-secret records"):
-            Task.with_context(default_child_ids=[Command.delete(self.task_no_collabo.id)]).create({'name': 'foo'})
+            task = Task.with_context(default_child_ids=[Command.link(self.task_no_collabo.id)]).create({'name': 'foo'})
+            task.env.invalidate_all()
+            self.assertFalse(task.child_ids)
         with self.assertRaisesRegex(AccessError, "top-secret records"):
-            Task.with_context(default_child_ids=[Command.unlink(self.task_no_collabo.id)]).create({'name': 'foo'})
-        with self.assertRaisesRegex(AccessError, "top-secret records"):
-            Task.with_context(default_child_ids=[Command.link(self.task_no_collabo.id)]).create({'name': 'foo'})
-        with self.assertRaisesRegex(AccessError, "top-secret records"):
-            Task.with_context(default_child_ids=[Command.set([self.task_no_collabo.id])]).create({'name': 'foo'})
+            task = Task.with_context(default_child_ids=[Command.set([self.task_no_collabo.id])]).create({'name': 'foo'})
+            task.env.invalidate_all()
+            self.assertFalse(task.child_ids)
 
         # Create/update a tag through tag_ids
         with self.assertRaisesRegex(AccessError, "not allowed to create 'Project Tags'"):
@@ -355,15 +364,23 @@ class TestProjectSharing(TestProjectSharingCommon):
         # Same thing but using context defaults
         with self.assertRaisesRegex(AccessError, "not allowed to create 'Project Tags'"):
             Task.with_context(default_tag_ids=[Command.create({'name': 'Bar'})]).create({'name': 'foo'})
-        with self.assertRaisesRegex(AccessError, "not allowed to modify 'Project Tags'"):
-            Task.with_context(default_tag_ids=[Command.update(self.task_tag.id, {'name': 'Bar'})]).create({'name': 'foo'})
-        with self.assertRaisesRegex(AccessError, "not allowed to delete 'Project Tags'"):
+        with Task.env.cr.savepoint() as sp:
+            task = Task.with_context(default_tag_ids=[Command.update(self.task_tag.id, {'name': 'Bar'})]).create({'name': 'foo'})
+            task.env.invalidate_all()
+            self.assertNotEqual(self.task_tag.name, 'Bar')
+            sp.rollback()
+        with Task.env.cr.savepoint() as sp:
             Task.with_context(default_tag_ids=[Command.delete(self.task_tag.id)]).create({'name': 'foo'})
+            task.env.invalidate_all()
+            self.assertTrue(self.task_tag.exists())
+            sp.rollback()
 
-        task = Task.create({'name': 'foo', 'tag_ids': [Command.link(self.task_tag.id)]})
+        task = Task.create({'name': 'foo', 'color': 1, 'tag_ids': [Command.link(self.task_tag.id)]})
+        self.assertEqual(task.color, 1)
         self.assertEqual(task.tag_ids, self.task_tag)
 
-        Task.create({'name': 'foo', 'tag_ids': [Command.set([self.task_tag.id])]})
+        task = Task.create({'name': 'foo', 'color': 4, 'tag_ids': [Command.set([self.task_tag.id])]})
+        self.assertEqual(task.color, 4)
         self.assertEqual(task.tag_ids, self.task_tag)
 
     @mute_logger('odoo.addons.base.models.ir_model', 'odoo.addons.base.models.ir_rule')
@@ -443,8 +460,6 @@ class TestProjectSharing(TestProjectSharingCommon):
             task.write({'parent_id': self.task_no_collabo.id})
 
         # Create/Update a forbidden task through child_ids
-        with self.assertRaisesRegex(AccessError, "You cannot write on the following fields"):
-            task.write({'child_ids': [Command.create({'name': 'Foo', 'color': 1})]})
         with self.assertRaisesRegex(AccessError, "top-secret records"):
             task.write({'child_ids': [Command.update(self.task_no_collabo.id, {'name': 'Foo'})]})
         with self.assertRaisesRegex(AccessError, "top-secret records"):
@@ -553,65 +568,52 @@ class TestProjectSharing(TestProjectSharingCommon):
             if a email template is set in `rating_template_id` field in the new stage.
         """
         self.project_portal.write({
-            'rating_active': True,
-            'rating_status': 'stage',
             'collaborator_ids': [
                 Command.create({'partner_id': self.user_portal.partner_id.id}),
             ],
         })
-        self.task_portal.with_user(self.user_portal).write({'stage_id': self.project_portal.type_ids[-1].id})
+        stage = self.project_portal.type_ids[-1]
+        stage.write({
+            'rating_active': True,
+            'rating_status': 'stage',
+        })
+        self.task_portal.with_user(self.user_portal).write({'stage_id': stage.id})
 
     def test_orm_method_with_true_false_domain(self):
-        """ Test orm method overriden in project for project sharing works with TRUE_LEAF/FALSE_LEAF
+        """ Test orm method overriden in project for project sharing works
 
             Test Case
             =========
             1) Share a project in edit mode for portal user
-            2) Search the portal task contained in the project shared by using a domain with TRUE_LEAF
+            2) Search the portal task contained in the project shared by using a TRUE domain
             3) Check the task is found with the `search` method
-            4) filter the task with `TRUE_DOMAIN` and check if the task is always returned by `filtered_domain` method
-            5) filter the task with `FALSE_DOMAIN` and check if no task is returned by `filtered_domain` method
-            6) Search the task with `FALSE_LEAF` and check no task is found with `search` method
-            7) Call `read_group` method with `TRUE_LEAF` in the domain and check if the task is found
-            8) Call `read_group` method with `FALSE_LEAF` in the domain and check if no task is found
+            4) Search the task with `FALSE` and check no task is found with `search` method
+            5) Call `read_group` method with `TRUE` in the domain and check if the task is found
+            6) Call `read_group` method with `FALSE` in the domain and check if no task is found
         """
-        domain = [('id', '=', self.task_portal.id)]
+        domain = Domain('id', '=', self.task_portal.id)
         self.project_portal.write({
             'collaborator_ids': [Command.create({
                 'partner_id': self.user_portal.partner_id.id,
             })],
         })
-        task = self.env['project.task'].with_user(self.user_portal).search(
-            expression.AND([
-                expression.TRUE_DOMAIN,
-                domain,
-            ])
-        )
+        task = self.env['project.task'].with_user(self.user_portal).search(domain)
         self.assertTrue(task, 'The task should be found.')
-        self.assertEqual(task, task.filtered_domain(expression.TRUE_DOMAIN), 'The task found should be kept since the domain is truly')
-        self.assertFalse(task.filtered_domain(expression.FALSE_DOMAIN), 'The task should not be found since the domain is falsy')
-        task = self.env['project.task'].with_user(self.user_portal).search(
-            expression.AND([
-                expression.FALSE_DOMAIN,
-                domain,
-            ]),
-        )
+        task = self.env['project.task'].with_user(self.user_portal).search(Domain.FALSE)
         self.assertFalse(task, 'No task should be found since the domain contained a falsy tuple.')
 
-        task_read_group = self.env['project.task'].read_group(
-            expression.AND([expression.TRUE_DOMAIN, domain]),
-            ['id:min'],
-            [],
+        task_read_group = self.env['project.task'].formatted_read_group(
+            domain,
+            aggregates=['id:min', '__count'],
         )
-        self.assertEqual(task_read_group[0]['__count'], 1, 'The task should be found with the read_group method containing a truly tuple.')
-        self.assertEqual(task_read_group[0]['id'], self.task_portal.id, 'The task should be found with the read_group method containing a truly tuple.')
+        self.assertEqual(task_read_group[0]['__count'], 1, 'The task should be found with the formatted_read_group method containing a truly tuple.')
+        self.assertEqual(task_read_group[0]['id:min'], self.task_portal.id, 'The task should be found with the formatted_read_group method containing a truly tuple.')
 
-        task_read_group = self.env['project.task'].read_group(
-            expression.AND([expression.FALSE_DOMAIN, domain]),
-            ['id:min'],
-            [],
+        task_read_group = self.env['project.task'].formatted_read_group(
+            Domain.FALSE,
+            aggregates=['__count'],
         )
-        self.assertFalse(task_read_group[0]['__count'], 'No result should found with the read_group since the domain is falsy.')
+        self.assertFalse(task_read_group[0]['__count'], 'No result should found with the formatted_read_group since the domain is falsy.')
 
     def test_milestone_read_access_right(self):
         """ This test ensures that a portal user has read access on the milestone of the project that was shared with him """
@@ -697,3 +699,78 @@ class TestProjectSharing(TestProjectSharingCommon):
         project_share_wizard.action_send_mail()
         self.assertIn(self.user_projectmanager.partner_id, project.message_partner_ids, "Project manager should still be a follower after sharing the project")
         self.assertEqual(len(project.message_follower_ids), 2, "number of followers should be 2")
+
+    def test_portal_user_with_edit_rights_can_close_recurring_task(self):
+        """
+            Test that a portal user with edit rights can close a recurrent task.
+
+            Test Case:
+            ==========
+            1) Create a project with a recurrent task.
+            2) Create a portal user and give them edit rights on the project.
+            3) Ensure the portal user can close the recurrent task.
+        """
+        portal_user = self.env['res.users'].create({
+            'name': 'Portal User',
+            'login': 'portaluser',
+            'email': 'portaluser@odoo.com',
+            'group_ids': [(6, 0, [self.env.ref('base.group_portal').id])],
+        })
+        project = self.env['project.project'].create({
+            'name': 'Project with Portal User',
+        })
+        project.task_ids = [Command.create({
+            'name': 'Recurrent Task',
+            'recurring_task': True,
+            'repeat_type': 'forever',
+        })]
+        self.env['project.share.wizard'].create({
+            'res_model': 'project.project',
+            'res_id': project.id,
+            'collaborator_ids': [
+                Command.create({'partner_id': portal_user.partner_id.id, 'access_mode': 'edit'}),
+            ],
+        })
+        task = project.task_ids[0]
+        self.env.invalidate_all()
+        task.with_user(portal_user).write({'state': '1_done'})
+        self.assertEqual(task.state, '1_done', "The portal user with edit rights should be able to mark the task as done.")
+        next_task = task.recurrence_id.task_ids.filtered(lambda t: t != task)
+        self.assertTrue(next_task, "The next occurrence of the recurrent task should be created.")
+
+    def test_portal_collaborator_cannot_transfer_task_between_shared_projects(self):
+        """ Test external collaborator cannot transfer an existing task from one shared
+            project to the other.
+
+            Test Cases:
+            ==========
+            1) Share `project_cows` and `project_portal` in edit mode with the portal user.
+            2) Check the portal user can create a task in each of the two projects.
+            3) Check the portal user cannot write `project_id` on a task to move it
+               to the other shared project.
+            4) Check the portal user cannot set `project_id` directly in the vals of
+               a `create` call either.
+        """
+        self.project_cows.write({
+            'collaborator_ids': [Command.create({'partner_id': self.user_portal.partner_id.id})],
+        })
+        self.project_cows.message_subscribe(partner_ids=self.user_portal.partner_id.ids)
+        self.project_portal.write({
+            'collaborator_ids': [Command.create({'partner_id': self.user_portal.partner_id.id})],
+        })
+        self.project_portal.message_subscribe(partner_ids=self.user_portal.partner_id.ids)
+
+        Task = self.env['project.task'].with_user(self.user_portal)
+
+        task_in_cows = Task.with_context(default_project_id=self.project_cows.id).create({'name': 'Task in Cows'})
+        self.assertEqual(task_in_cows.project_id, self.project_cows, "The portal user should be able to create a task in the Cows project.")
+
+        task_in_portal = Task.with_context(default_project_id=self.project_portal.id).create({'name': 'Task in Portal'})
+        self.assertEqual(task_in_portal.project_id, self.project_portal, "The portal user should be able to create a task in the Portal project.")
+
+        with self.assertRaises(AccessError, msg="Should not accept the portal user to transfer a task from one project to another."):
+            task_in_cows.with_context(project_sharing_create=True).write({'project_id': self.project_portal.id})
+        self.assertEqual(task_in_cows.project_id, self.project_cows, "The task should still belong to its original project.")
+
+        with self.assertRaises(AccessError, msg="Should not accept the portal user to set project_id directly through create vals."):
+            Task.with_context(project_sharing_create=True).create({'name': 'foo', 'project_id': self.project_portal.id})

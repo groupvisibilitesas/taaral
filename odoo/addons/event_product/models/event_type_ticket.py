@@ -8,7 +8,7 @@ from odoo.addons.product.models.product_template import PRICE_CONTEXT_KEYS
 _logger = logging.getLogger(__name__)
 
 
-class EventTemplateTicket(models.Model):
+class EventTypeTicket(models.Model):
     _inherit = 'event.type.ticket'
     _order = "sequence, price, name, id"
 
@@ -18,7 +18,7 @@ class EventTemplateTicket(models.Model):
     description = fields.Text(compute='_compute_description', readonly=False, store=True)
     # product
     product_id = fields.Many2one(
-        'product.product', string='Product', required=True,
+        'product.product', string='Product', required=True, index=True,
         domain=[("service_tracking", "=", "event")], default=_default_product_id)
     currency_id = fields.Many2one(related="product_id.currency_id", string="Currency")
     price = fields.Float(

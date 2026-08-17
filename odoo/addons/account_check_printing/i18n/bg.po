@@ -3,23 +3,21 @@
 # * account_check_printing
 #
 # Translators:
-# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2024
-# Albena Mincheva <albena_vicheva@abv.bg>, 2024
-# KeyVillage, 2024
-# Igor Sheludko <igor.sheludko@gmail.com>, 2024
-# Venelin Stoykov, 2024
-# Margarita Katzeva, 2024
-# Petko Karamotchev, 2025
-# Maria Boyadjieva <marabo2000@gmail.com>, 2025
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Nikola Iliev, 2023
+# aleksandar ivanov, 2023
+# Albena Mincheva <albena_vicheva@abv.bg>, 2023
+# Igor Sheludko <igor.sheludko@gmail.com>, 2023
+# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2023, 2026.
+# Maria Boyadjieva <marabo2000@gmail.com>, 2023
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-07-25 17:35+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-02 17:23+0000\n"
+"Last-Translator: Rosen Vladimirov <vladimirov.rosen@gmail.com>\n"
+"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-19/"
 "account_check_printing/bg/>\n"
 "Language: bg\n"
 "MIME-Version: 1.0\n"
@@ -33,6 +31,12 @@ msgstr ""
 #: code:addons/account_check_printing/models/account_journal.py:0
 msgid "%(journal)s: Check Number Sequence"
 msgstr "%(journal)s: Поредност на номерата на чекове"
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "%(number)s in journal %(journal)s"
+msgstr "%(number)s в дневник %(journal)s"
 
 #. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.account_journal_dashboard_kanban_view_inherited
@@ -62,7 +66,7 @@ msgstr "Сумата с думи"
 #. odoo-python
 #: code:addons/account_check_printing/models/account_payment.py:0
 msgid "Bills"
-msgstr "Фактури за покупка"
+msgstr "Фактури за Покупка"
 
 #. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.print_pre_numbered_checks_view
@@ -85,7 +89,7 @@ msgstr "Ляво поле на чека"
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_account_payment__check_number
 msgid "Check Number"
-msgstr "Номер на чека"
+msgstr "Отметнете номера"
 
 #. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.view_account_journal_form_inherited
@@ -159,12 +163,12 @@ msgstr "Фирми"
 #. module: account_check_printing
 #: model:ir.model,name:account_check_printing.model_res_config_settings
 msgid "Config Settings"
-msgstr "Конфигурационни настройки"
+msgstr "Настройки"
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__create_uid
 msgid "Created by"
-msgstr "Създаден от"
+msgstr "Създадено от"
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__create_date
@@ -177,7 +181,12 @@ msgid "Default"
 msgstr "Стандартен"
 
 #. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_account_journal__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment_method__display_name
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_res_company__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr "Име за показване"
 
@@ -188,7 +197,17 @@ msgid "Go to the configuration panel"
 msgstr "Отидете в конфигурационния панел"
 
 #. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment__check_layout_available
+msgid "Has Check Layout"
+msgstr "Има оформление на чек"
+
+#. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_account_journal__id
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment__id
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment_method__id
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__id
+#: model:ir.model.fields,field_description:account_check_printing.field_res_company__id
+#: model:ir.model.fields,field_description:account_check_printing.field_res_config_settings__id
 msgid "ID"
 msgstr "ID"
 
@@ -235,9 +254,11 @@ msgid ""
 "submitting a batch deposit to your bank. Module account_batch_payment is "
 "necessary.\n"
 "SEPA Credit Transfer: Pay in the SEPA zone by submitting a SEPA Credit "
-"Transfer file to your bank. Module account_sepa is necessary.\n"
+"Transfer file to your bank. Module account_iso20022 is necessary.\n"
 "SEPA Direct Debit: Get paid in the SEPA zone thanks to a mandate your "
-"partner will have granted to you. Module account_sepa is necessary.\n"
+"partner will have granted to you. Module account_iso20022 is necessary.\n"
+"U.S. ISO20022: Pay in the US by submitting an ISO20022 file to your bank. "
+"Module account_iso20022 is necessary.\n"
 msgstr ""
 "Ръководство: Платете или получете плащане по произволен метод извън Odoo.\n"
 "Доставчици на плащания: Всеки доставчик на плащания има свой собствен метод "
@@ -248,10 +269,12 @@ msgstr ""
 "и изпратите партиден депозит във вашата банка. Необходим е модул "
 "account_batch_payment.\n"
 "Кредитен превод SEPA: Платете в зоната SEPA, като изпратите файл за кредитен "
-"превод SEPA във вашата банка. Необходим е модул account_sepa.\n"
+"превод SEPA във вашата банка. Необходим е модул account_iso20022.\n"
 "Директен дебит SEPA: Получавайте плащания в зоната SEPA благодарение на "
 "мандат, който вашият партньор ще ви е предоставил. Необходим е модул "
-"account_sepa.\n"
+"account_iso20022.\n"
+"U.S. ISO20022: Платете в САЩ, като изпратите файл ISO20022 във вашата банка. "
+"Необходим е модул account_iso20022.\n"
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_res_company__account_check_printing_multi_stub
@@ -477,3 +500,30 @@ msgid ""
 msgstr ""
 "Трябва да изберете оформление на чека. За целта отидете в Настройки на "
 "Фактуриране/Счетоводство, потърсете „Оформление на чекове“ и задайте едно."
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "check_number"
+msgstr "check_number"
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "out_refund"
+msgstr "out_refund"
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "sep"
+msgstr "sep"
+
+#~ msgid "Contact"
+#~ msgstr "Контакт"
+
+#~ msgid "Journal Entry"
+#~ msgstr "Записи в Дневника"
+
+#~ msgid "Register Payment"
+#~ msgstr "Регистрирай плащания"

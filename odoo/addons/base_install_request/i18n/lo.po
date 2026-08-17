@@ -2,23 +2,22 @@
 # This file contains the translation of the following modules:
 # * base_install_request
 #
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
 # Bone NI <bounkirdni@gmail.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-05-30 08:12+0000\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-02 19:23+0000\n"
 "Last-Translator: Bone NI <bounkirdni@gmail.com>\n"
-"Language-Team: Lao <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Lao <https://translate.odoo.com/projects/odoo-19/"
 "base_install_request/lo/>\n"
 "Language: lo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.17\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: base_install_request
 #: model:mail.template,body_html:base_install_request.mail_template_base_install_request
@@ -27,18 +26,18 @@ msgid ""
 "    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "        Hello,\n"
 "        <br/><br/>\n"
-"        <span style=\"font-weight: bold;\" t-out=\"object.user_id.name\"/> has requested to activate the <span style=\"font-weight: bold;\" t-out=\"object.module_id.shortdesc\"/> module. This module is included in your subscription. It has <span style=\"color: #875A7B; font-weight: bold;\">no extra cost</span>, but an administrator role is required to activate it.\n"
+"        <span style=\"font-weight: bold;\" t-out=\"object.user_id.name\"/> has requested to activate the <span style=\"font-weight: bold;\" t-out=\"object.module_id.shortdesc\"/> module.\n"
 "        <br/><br/>\n"
 "        </p><blockquote data-o-mail-quote-node=\"1\" data-o-mail-quote=\"1\">\n"
 "            <t t-out=\"object.body_html\"/>\n"
 "        </blockquote>\n"
 "        <br data-o-mail-quote=\"1\"/><br data-o-mail-quote=\"1\"/>\n"
-"        <a style=\"background-color:#875A7B; padding:8px 16px 8px 16px; text-decoration:none; color:#fff; border-radius:5px\" t-attf-href=\"/odoo/{{ object.module_id.id }}/action-base_install_request.action_base_module_install_review?menu_id={{ ctx['menu_id'] }}\">Review Request</a>\n"
+"        <a t-attf-style=\"background-color: {{object.user_id.company_id.email_secondary_color or '#875A7B'}}; padding:8px 16px 8px 16px; text-decoration:none; color: {{object.user_id.company_id.email_primary_color or '#FFFFFF'}}; border-radius:5px\" t-attf-href=\"/odoo/{{ object.module_id.id }}/action-base_install_request.action_base_module_install_review?menu_id={{ ctx['menu_id'] }}\">Review Request</a>\n"
 "        <br/><br/>\n"
 "        Thanks,\n"
 "        <t t-if=\"not is_html_empty(object.user_id.signature)\" data-o-mail-quote-container=\"1\">\n"
 "            <br/><br/>\n"
-"            <t t-out=\"object.user_id.signature or ''\" data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/><t t-out=\"object.user_id.signature or ''\" data-o-mail-quote=\"1\">Mitchell Admin</t></div>\n"
 "        </t>\n"
 "        <br/><br/>\n"
 "    \n"
@@ -50,28 +49,29 @@ msgstr ""
 "        ສະບາຍດີ,\n"
 "        <br/><br/>\n"
 "        <span style=\"font-weight: bold;\" t-out=\"object.user_id.name\"/> ໄດ້"
-"ຮ້ອງຂໍໃຫ້ເປີດໃຊ້ງານໂມດູນ <span style=\"font-weight: bold;\" t-"
-"out=\"object.module_id.shortdesc\"/>. ໂມດູນນີ້ແມ່ນລວມຢູ່ໃນການລົງທະບຽນນຳໃຊ້ຂອງທ່ານແລ້ວ. "
-"ມັນ <span style=\"color: #875A7B; font-weight: bold;\">ບໍ່ມີຄ່າໃຊ້ຈ່າຍເພີ່ມເຕີມ</span>"
-", ແຕ່ຈຳເປັນຕ້ອງມີສິດລະດັບຜູ້ດູແລລະບົບເພື່ອເປີດໃຊ້ງານ.\n"
+"ຮ້ອງຂໍໃຫ້ເປີດນຳໃຊ້ໂມດູນ <span style=\"font-weight: bold;\" t-"
+"out=\"object.module_id.shortdesc\"/>.\n"
 "        <br/><br/>\n"
 "        </p><blockquote data-o-mail-quote-node=\"1\" data-o-mail-quote=\"1\">"
 "\n"
 "            <t t-out=\"object.body_html\"/>\n"
 "        </blockquote>\n"
 "        <br data-o-mail-quote=\"1\"/><br data-o-mail-quote=\"1\"/>\n"
-"        <a style=\"background-color:#875A7B; padding:8px 16px 8px 16px; text-"
-"decoration:none; color:#fff; border-radius:5px\" t-attf-href=\"/odoo/{{ "
-"object.module_id.id }}/action-"
+"        <a t-attf-style=\"background-color: {"
+"{object.user_id.company_id.email_secondary_color or '#875A7B'}}; padding:8px "
+"16px 8px 16px; text-decoration:none; color: {"
+"{object.user_id.company_id.email_primary_color or '#FFFFFF'}}; border-"
+"radius:5px\" t-attf-href=\"/odoo/{{ object.module_id.id }}/action-"
 "base_install_request.action_base_module_install_review?menu_id={{ "
-"ctx['menu_id'] }}\">ກວດສອບການຮ້ອງຂໍ</a>\n"
+"ctx['menu_id'] }}\">ກວດສອບຄຳຮ້ອງຂໍ</a>\n"
 "        <br/><br/>\n"
-"        ຂໍຂອບໃຈ,\n"
+"        ຂອບໃຈ,\n"
 "        <t t-if=\"not is_html_empty(object.user_id.signature)\" data-o-mail-"
 "quote-container=\"1\">\n"
 "            <br/><br/>\n"
-"            <t t-out=\"object.user_id.signature or ''\" data-o-mail-"
-"quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/><t t-"
+"out=\"object.user_id.signature or ''\" data-o-mail-quote=\"1\">Mitchell "
+"Admin</t></div>\n"
 "        </t>\n"
 "        <br/><br/>\n"
 "</div>\n"
@@ -114,14 +114,16 @@ msgstr "ແອັບທີ່ກ່ຽວຂ້ອງ"
 #. module: base_install_request
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_request__display_name
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_review__display_name
+#: model:ir.model.fields,field_description:base_install_request.field_ir_module_module__display_name
 msgid "Display Name"
 msgstr "ຊື່ສະແດງ"
 
 #. module: base_install_request
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_request__id
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_review__id
+#: model:ir.model.fields,field_description:base_install_request.field_ir_module_module__id
 msgid "ID"
-msgstr "ໄອດີ"
+msgstr "ລະຫັດ"
 
 #. module: base_install_request
 #: model_terms:ir.ui.view,arch_db:base_install_request.base_module_install_review_view_form
@@ -132,13 +134,13 @@ msgstr "ຕິດຕັ້ງແອັບ"
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_request__write_uid
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_review__write_uid
 msgid "Last Updated by"
-msgstr "ແກ້ໄຂລ້າສຸດໂດຍ"
+msgstr "ອັບເດດລ້າສຸດໂດຍ"
 
 #. module: base_install_request
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_request__write_date
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_review__write_date
 msgid "Last Updated on"
-msgstr "ແກ້ໄຂລ້າສຸດເມື່ອ"
+msgstr "ອັບເດດລ້າສຸດເມື່ອ"
 
 #. module: base_install_request
 #: model:mail.template,name:base_install_request.mail_template_base_install_request
@@ -173,11 +175,6 @@ msgid "Modules Description"
 msgstr "ຄຳອະທິບາຍໂມດູນ"
 
 #. module: base_install_request
-#: model_terms:ir.ui.view,arch_db:base_install_request.base_module_install_review_view_form
-msgid "No extra cost, this application is free."
-msgstr "ບໍ່ມີຄ່າໃຊ້ຈ່າຍເພີ່ມເຕີມ, ແອັບພລິເຄຊັນນີ້ແມ່ນຟຣີ."
-
-#. module: base_install_request
 #. odoo-python
 #: code:addons/base_install_request/wizard/base_module_install_request.py:0
 msgid "No module selected."
@@ -208,16 +205,7 @@ msgstr "ແອັບຕໍ່ໄປນີ້ຈະຖືກຕິດຕັ້ງ
 #. odoo-python
 #: code:addons/base_install_request/wizard/base_module_install_request.py:0
 msgid "The module is already installed."
-msgstr "ໂມດູນນີ້ຖືກຕິດຕັ້ງແລ້ວ."
-
-#. module: base_install_request
-#: model_terms:ir.ui.view,arch_db:base_install_request.base_module_install_request_view_form
-msgid ""
-"This app is included in your subscription. It's free to activate, but only "
-"an administrator can do it. Fill this form to send an activation request."
-msgstr ""
-"ແອັບນີ້ແມ່ນລວມຢູ່ໃນການລົງທະບຽນນຳໃຊ້ຂອງທ່ານແລ້ວ. ມັນເປີດໃຊ້ງານໄດ້ຟຣີ, ແຕ່ມີພຽງຜູ້ດູແລລະບົບເທົ່ານັ້ນທີ່ສາມ"
-"າດເຮັດໄດ້. ກະລຸນາຕື່ມແບບຟອມນີ້ເພື່ອສົ່ງຄຳຮ້ອງຂໍເປີດໃຊ້ງານ."
+msgstr "ໂມດູນນີ້ໄດ້ຕິດຕັ້ງແລ້ວ."
 
 #. module: base_install_request
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_request__user_id
@@ -246,5 +234,5 @@ msgid ""
 "e.g. I'd like to use the SMS Marketing module to organize the promotion of "
 "our internal events, and exhibitions. I need access for 3 people of my team."
 msgstr ""
-"ຕົວຢ່າງ: ຂ້ອຍຕ້ອງການໃຊ້ໂມດູນການຕະຫຼາດຜ່ານ SMS ເພື່ອຈັດການໂປຣໂມຊັນສຳລັບງານກິດຈະກຳພາຍໃນ ແລະ ງ"
-"ານວາງສະແດງຕ່າງໆ. ຂ້ອຍຕ້ອງການສິດເຂົ້າເຖິງສຳລັບທີມງານ 3 ຄົນ."
+"ຕົວຢ່າງ: ຂ້ອຍຕ້ອງການໃຊ້ໂມດູນການຕະຫຼາດ SMS ເພື່ອຈັດກິດຈະກຳສົ່ງເສີມການຂາຍພາຍໃນ ແລະ ງານວາງສະແດ"
+"ງ. ຂ້ອຍຕ້ອງການໃຫ້ທີມງານ 3 ຄົນສາມາດເຂົ້າເຖິງໄດ້."

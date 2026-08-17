@@ -137,7 +137,7 @@ _mime_mappings = (
     _Entry('image/png', [b'\x89PNG\r\n\x1A\n'], []),
     _Entry('image/gif', [b'GIF87a', b'GIF89a'], []),
     _Entry('image/bmp', [b'BM'], []),
-    _Entry('application/xml', [b'<'], [
+    _Entry('text/xml', [b'<'], [
         _check_svg,
     ]),
     _Entry('image/x-icon', [b'\x00\x00\x01\x00'], []),
@@ -151,11 +151,13 @@ _mime_mappings = (
     # zip, but will include jar, odt, ods, odp, docx, xlsx, pptx, apk
     _Entry('application/zip', [b'PK\x03\x04'], [_check_ooxml, _check_open_container_format]),
 )
-def _odoo_guess_mimetype(bin_data, default='application/octet-stream'):
+
+
+def _odoo_guess_mimetype(bin_data: bytes, default='application/octet-stream'):
     """ Attempts to guess the mime type of the provided binary data, similar
     to but significantly more limited than libmagic
 
-    :param str bin_data: binary data to try and guess a mime type for
+    :param bin_data: binary data to try and guess a mime type for
     :returns: matched mimetype or ``application/octet-stream`` if none matched
     """
     # by default, guess the type using the magic number of file hex signature (like magic, but more limited)
@@ -187,32 +189,18 @@ def _odoo_guess_mimetype(bin_data, default='application/octet-stream'):
 
 try:
     import magic
-except ImportError:
-    magic = None
-
-if magic:
-    # There are 2 python libs named 'magic' with incompatible api.
-    # magic from pypi https://pypi.python.org/pypi/python-magic/
-    if hasattr(magic, 'from_buffer'):
-        _guesser = functools.partial(magic.from_buffer, mime=True)
-    # magic from file(1) https://packages.debian.org/squeeze/python-magic
-    elif hasattr(magic, 'open'):
-        ms = magic.open(magic.MAGIC_MIME_TYPE)
-        ms.load()
-        _guesser = ms.buffer
-
     def guess_mimetype(bin_data, default=None):
-        mimetype = _guesser(bin_data[:MIMETYPE_HEAD_SIZE])
+        if isinstance(bin_data, bytearray):
+            bin_data = bytes(bin_data[:MIMETYPE_HEAD_SIZE])
+        elif not isinstance(bin_data, bytes):
+            raise TypeError('`bin_data` must be bytes or bytearray')
+        mimetype = magic.from_buffer(bin_data[:MIMETYPE_HEAD_SIZE], mime=True)
         if mimetype == 'application/octet-stream':
             mimetype = _odoo_guess_mimetype(bin_data)
-        # upgrade incorrect mimetype to official one, fixed upstream
-        # https://github.com/file/file/commit/1a08bb5c235700ba623ffa6f3c95938fe295b262
-        if mimetype == 'image/svg':
-            return 'image/svg+xml'
-        # application/CDFV2 and application/x-ole-storage are two files
-        # formats that Microsoft Office was using before 2006. Use our
-        # own guesser to further discriminate the mimetype.
-        if mimetype in _olecf_mimetypes:
+        if mimetype in ('application/CDFV2', 'application/x-ole-storage'):
+            # Those are the generic file format that Microsoft Office
+            # was using before 2006, use our own check to further
+            # discriminate the mimetype.
             try:
                 if msoffice_mimetype := _check_olecf(bin_data):
                     return msoffice_mimetype
@@ -222,8 +210,25 @@ if magic:
                     mimetype,
                     exc_info=True,
                 )
+        if mimetype == 'application/zip':
+            # magic doesn't properly detect some Microsoft Office
+            # documents created after 2025, use our own check to further
+            # discriminate the mimetype.
+            # /!\ Only work when bin_data holds the whole zipfile. /!\
+            try:
+                if msoffice_mimetype := _check_ooxml(bin_data):
+                    return msoffice_mimetype
+            except zipfile.BadZipFile:
+                pass
+            except Exception:  # noqa: BLE001
+                _logger_guess_mimetype.warning(
+                    "Sub-checker '_check_ooxml' of type '%s' failed",
+                    mimetype,
+                    exc_info=True,
+                )
         return mimetype
-else:
+
+except ImportError:
     guess_mimetype = _odoo_guess_mimetype
 
 

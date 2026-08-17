@@ -111,14 +111,18 @@ $o-website-values-palettes: (
         'btn-padding-x-sm': .5rem,
         'btn-padding-y-lg': .75rem,
         'btn-padding-x-lg': 1.5rem,
-        'btn-border-radius': 2px,
-        'btn-border-radius-sm': 2px,
-        'btn-border-radius-lg': 2px,
-        'input-border-radius': 2px,
-        'input-border-radius-sm': 2px,
-        'input-border-radius-lg': 2px,
+        'btn-border-radius': .125rem,
+        'btn-border-radius-sm': .125rem,
+        'btn-border-radius-lg': .125rem,
+        'input-border-radius': .125rem,
+        'input-border-radius-sm': .125rem,
+        'input-border-radius-lg': .125rem,
     ),
 );
+
+$artists-1: map-get($o-color-palettes, 'artists-1');
+$artists-1: map-merge($artists-1, ('footer': 5));
+$o-color-palettes: map-merge($o-color-palettes, ('artists-1': $artists-1));
 
 $o-selected-color-palettes-names: append($o-selected-color-palettes-names, 'artists-1');
 
@@ -152,16 +156,16 @@ $o-color-palettes-compatibility-indexes: (
 // Shapes
 //------------------------------------------------------------------------------
 
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Airy/12', (3: 3));
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Airy/12_001', (3: 5));
-$o-bg-shapes: add-extra-shape-colors-mapping('web_editor', 'Airy/12_001', 'second', (3: 4));
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Wavy/02_001', (3: 5));
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Wavy/04', (5: 4));
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Wavy/05', (5: 4));
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Wavy/08', (2: 4));
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Wavy/27', (2: 4));
-$o-bg-shapes: add-extra-shape-colors-mapping('web_editor', 'Wavy/27', 'second', (1: 5, 2: 5));
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Origins/16', (3: 5));
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Floats/02', (1: 5, 2: 5, 3: 1, 5: 1));
-$o-bg-shapes: add-footer-shape-colors-mapping('web_editor', 'Airy/12', (3: 'footer'));
-$o-bg-shapes: add-footer-shape-colors-mapping('web_editor', 'Airy/12_001', (3: 'footer'));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Airy/12', (3: 3));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Airy/12_001', (3: 5));
+$o-bg-shapes: add-extra-shape-colors-mapping('html_builder', 'Airy/12_001', 'second', (3: 4));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Wavy/02_001', (3: 5));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Wavy/04', (5: 4));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Wavy/05', (5: 4));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Wavy/08', (2: 4));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Wavy/27', (2: 4));
+$o-bg-shapes: add-extra-shape-colors-mapping('html_builder', 'Wavy/27', 'second', (1: 5, 2: 5));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Origins/16', (3: 5));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Floats/02', (1: 5, 2: 5, 3: 1, 5: 1));
+$o-bg-shapes: add-footer-shape-colors-mapping('html_builder', 'Airy/12', (3: 'footer'));
+$o-bg-shapes: add-footer-shape-colors-mapping('html_builder', 'Airy/12_001', (3: 'footer'));

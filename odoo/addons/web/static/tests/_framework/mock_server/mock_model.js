@@ -36,15 +36,9 @@ const {
  * @typedef {import("@web/core/context").Context} Context
  * @typedef {import("@web/core/domain").DomainListRepr} DomainListRepr
  *
- * @typedef {{
- *  domain?: DomainListRepr;
- *  fields?: Record<string, any>;
- *  groupby: string[];
- *  lazy?: boolean;
- *  limit?: number;
- *  offset?: number;
- *  orderby?: string;
- * }} GroupByParams
+ * @typedef {{ fieldName: string; func: Aggregator; name: string }} AggregatedField
+ *
+ * @typedef {(records: ModelRecord[], fieldName: string) => any} AggregatorFunction
  *
  * @typedef {typeof Model} ModelConstructor
  *
@@ -58,9 +52,8 @@ const {
  * }} ModelRecord
  *
  * @typedef {{
- *  __domain: string;
- *  __count: number;
- *  __range: Record<string, unknown>;
+ *  __domain: any;
+ *  __extra_domain: any[];
  *  [key: string]: unknown;
  * }} ModelRecordGroup
  *
@@ -98,49 +91,13 @@ const {
 //-----------------------------------------------------------------------------
 
 /**
- * @param {Iterable<[FieldDefinition, string, Aggregator?]>} aggregatedFields
+ * @param {Iterable<AggregatedField>} aggregatedFields
  * @param {ModelRecordGroup} group
  * @param {ModelRecord[]} records
  */
 function aggregateFields(aggregatedFields, group, records) {
-    for (const [field, name, aggregator] of aggregatedFields) {
-        switch (field.type) {
-            case "integer":
-            case "float": {
-                if (aggregator === "array_agg") {
-                    group[name] = records.map((r) => r[field.name]);
-                } else if (records.length) {
-                    group[name] = 0;
-                    for (const r of records) {
-                        group[name] += r[field.name];
-                    }
-                } else {
-                    group[name] = false;
-                }
-                break;
-            }
-            case "many2one":
-            case "reference": {
-                const ids = records.map((r) => r[field.name]);
-                if (aggregator === "array_agg") {
-                    group[name] = ids.map((id) => (id ? id : null));
-                } else {
-                    const uniqueIds = unique(ids).filter(Boolean);
-                    group[name] = uniqueIds.length;
-                }
-                break;
-            }
-            case "boolean": {
-                if (aggregator === "array_agg") {
-                    group[name] = records.map((r) => r[field.name]);
-                } else if (aggregator === "bool_or") {
-                    group[name] = records.some((r) => Boolean(r[field.name]));
-                } else if (aggregator === "bool_and") {
-                    group[name] = records.every((r) => Boolean(r[field.name]));
-                }
-                break;
-            }
-        }
+    for (const { fieldName, func, name } of aggregatedFields) {
+        group[name] = AGGREGATOR_FUNCTIONS[func](records, fieldName);
     }
 }
 
@@ -261,85 +218,36 @@ function findView(model, viewType, viewId) {
 }
 
 /**
- * @param {Record<string, FieldDefinition>} fields
+ * @param {FieldType} fieldType
  * @param {string} groupByField
  * @param {unknown} val
  */
-function formatFieldValue(fields, groupByField, val) {
+function formatFieldValue(fieldType, groupByField, val) {
     if (val === false || val === undefined) {
         return false;
     }
-    const [fieldName, aggregateFunction = "month"] = safeSplit(groupByField, ":");
-    const { type } = fields[fieldName];
+    const [, granularityFunction = false] = safeSplit(groupByField, ":");
+    const type = fieldType;
+
+    if (["date", "datetime"].includes(type) && !granularityFunction) {
+        throw new MockServer(`Granularity should be always explicit for ${groupByField}`);
+    }
+
     if (type === "date") {
         const date = deserializeDate(String(val));
-        return aggregateFunction in DATE_FORMAT
-            ? DATE_FORMAT[aggregateFunction](date)
+        return granularityFunction in DATE_FORMAT
+            ? DATE_FORMAT[granularityFunction](date)
             : date.toFormat("MMMM yyyy");
     } else if (type === "datetime") {
         const date = deserializeDateTime(val);
-        return aggregateFunction in DATETIME_FORMAT
-            ? DATETIME_FORMAT[aggregateFunction](date)
+        return granularityFunction in DATETIME_FORMAT
+            ? DATETIME_FORMAT[granularityFunction](date)
             : date.toFormat("MMMM yyyy");
     } else if (Array.isArray(val)) {
         return val.length !== 0 && (isX2MField(type) ? val : val[0]);
     } else {
         return val;
     }
-}
-
-/**
- * Extract a sorting value for date/datetime fields from read_group __range
- * The start of the range for the shortest granularity is taken since it is
- * the most specific for a given group.
- *
- * @param {{ __range: Record<string, { from?: string | false; to?: string | false }> }} group
- * @param {string} fieldName
- */
-function getDateSortingValue(group, fieldName) {
-    // extract every range start related to fieldName
-    let max = null;
-    for (const groupedBy in group.__range) {
-        if (groupedBy.startsWith(fieldName)) {
-            const value = group.__range[groupedBy].from;
-            if (!value) {
-                return false;
-            }
-            const ts = new Date(value).getTime();
-            if (ts > max) {
-                max = ts;
-            }
-        }
-    }
-    // return false or the latest range start (related to the shortest
-    // granularity (i.e. day, week, ...))
-    return max ?? false;
-}
-
-/**
- * Extract a sorting value for date/datetime fields from read_group when the
- * date is groupby by a date number (month_number, year_number, ...)
- * The value for the shortest granularity is taken since it is the most specific
- * for a given group.
- *
- * @param {{ __range: Record<string, { from?: string | false; to?: string | false }> }} group
- * @param {string} fieldName
- * @returns {number | false}
- */
-function getDateNumberSortingValue(group, fieldName) {
-    let max = -1;
-    let value = false;
-    for (const groupedBy in group) {
-        if (groupedBy.startsWith(fieldName)) {
-            const [, granularity] = groupedBy.split(":");
-            const index = READ_GROUP_NUMBER_GRANULARITY.indexOf(granularity);
-            if (index !== -1 && index > max) {
-                max = index;
-                value = group[groupedBy];
-            }
-        }
-    }
-    return value;
 }
 
 /**
@@ -430,11 +338,24 @@ function getModelDefinition(previous, constructor) {
  * @param {string} [fieldNameSpec]
  */
 function getOrderByField({ _fields, _name }, fieldNameSpec) {
-    const fieldName = fieldNameSpec?.split(":")[0] || ("sequence" in _fields ? "sequence" : "id");
+    if (fieldNameSpec === "__count") {
+        return _fields["id"];
+    }
+    const fieldPath = fieldNameSpec?.split(":")[0] || ("sequence" in _fields ? "sequence" : "id");
+    const fieldNames = fieldPath.split(".");
+    for (const fieldName of fieldNames.slice(0, -1)) {
+        if (!(fieldName in _fields)) {
+            throw fieldNotFoundError(_name, fieldName, "could not order records");
+        }
+        const relation = getRelation(_fields[fieldName]);
+        _fields = relation._fields;
+        _name = relation._name;
+    }
+    const fieldName = fieldNames.at(-1);
     if (!(fieldName in _fields)) {
         throw fieldNotFoundError(_name, fieldName, "could not order records");
     }
-    return _fields[fieldName];
+    return _fields[fieldNames.at(-1)];
 }
 
 /**
@@ -621,9 +542,6 @@ function isValidFieldValue(record, fieldDef) {
         case "text": {
             return typeof value === "string";
         }
-        case "json": {
-            return typeof value === "string" || typeof value === "object";
-        }
         case "boolean": {
             return typeof value === "boolean";
         }
@@ -726,6 +644,40 @@ function isX2MField(field) {
 }
 
 /**
+ * @param {string} order
+ * @param {string[]} groupby
+ * @param {string[]} aggregates
+ */
+function getReadGroupOrder(order, groupby, aggregates) {
+    if (!order) {
+        return groupby.join(", ");
+    }
+    groupby = groupby.slice();
+    const orderSpecs = [];
+    for (const orderSpec of order.split(",")) {
+        const [fname, direction] = orderSpec.trim().split(" ");
+        if (fname == "__count") {
+            orderSpecs.push(`${fname} ${direction}`);
+            continue;
+        }
+        for (const groupbySpec of groupby) {
+            if (fname === groupbySpec || groupbySpec.startsWith(`${fname}:`)) {
+                groupby.splice(groupby.indexOf(groupbySpec), 1);
+                orderSpecs.push(`${groupbySpec} ${direction}`);
+                break;
+            }
+        }
+        for (const agg of aggregates) {
+            if (fname === agg || agg.startsWith(`${fname}:`)) {
+                orderSpecs.push(`${agg} ${direction}`);
+                break;
+            }
+        }
+    }
+    return [...orderSpecs, ...groupby].join(", ");
+}
+
+/**
  * Sorts the given list of records *IN PLACE* by the given field name. The
  * 'orderby' field name and sorting direction are determined by the optional
  * `orderBy` param, else the default orderBy field is applied (with "ASC").
@@ -784,9 +736,24 @@ function orderByField(model, orderBy, records) {
 
     // Actual sorting
     const sortedRecords = records.sort((r1, r2) => {
-        let v1 = r1[field.name];
-        let v2 = r2[field.name];
+        if (!Object.hasOwn(r1, fieldNameSpec) || !Object.hasOwn(r2, fieldNameSpec)) {
+            throw new MockServerError(
+                `Cannot order by ${fieldNameSpec} because the field/spec isn't not in the record/group`
+            );
+        }
+        let v1 = r1[fieldNameSpec];
+        let v2 = r2[fieldNameSpec];
         switch (field.type) {
+            case "integer": {
+                // For id fields grouped as [id, label]
+                if (Array.isArray(v1)) {
+                    v1 = v1[0];
+                }
+                if (Array.isArray(v2)) {
+                    v2 = v2[0];
+                }
+                break;
+            }
             case "boolean": {
                 v1 = Number(v1);
                 v2 = Number(v2);
@@ -794,8 +761,8 @@ function orderByField(model, orderBy, records) {
             }
             case "many2one":
             case "many2one_reference": {
-                v1 &&= valuesMap.get(v1[0]);
-                v2 &&= valuesMap.get(v2[0]);
+                v1 &&= valuesMap.get(v1[0] ?? v1);
+                v2 &&= valuesMap.get(v2[0] ?? v2);
                 break;
             }
             case "many2many":
@@ -808,13 +775,8 @@ function orderByField(model, orderBy, records) {
             }
             case "date":
             case "datetime": {
-                if (r1.__range && r2.__range) {
-                    v1 = getDateSortingValue(r1, field.name);
-                    v2 = getDateSortingValue(r2, field.name);
-                } else {
-                    v1 = getDateNumberSortingValue(r1, field.name);
-                    v2 = getDateNumberSortingValue(r2, field.name);
-                }
+                v1 = Array.isArray(v1) ? new Date(v1[0]).getTime() : v1;
+                v2 = Array.isArray(v2) ? new Date(v2[0]).getTime() : v2;
                 break;
             }
             case "reference":
@@ -832,7 +794,7 @@ function orderByField(model, orderBy, records) {
         } else {
             if (!["boolean", "number", "string"].includes(typeof v1) || typeof v1 !== typeof v2) {
                 throw new MockServerError(
-                    `Cannot order by field "${field.name}" in model "${
+                    `Cannot order by field "${fieldNameSpec}" in model "${
                         model._name
                     }": values must be of the same primitive type (got ${typeof v1} and ${typeof v2})`
                 );
@@ -1015,7 +977,7 @@ function searchPanelDomainImage(model, fieldName, domain, setCount = false, limi
     let groupIdName;
     if (isM2OField(field)) {
         groupIdName = (value) => value || [false, undefined];
-        // read_group does not take care of the condition [fieldName, '!=', false]
+        // formatted_read_group does not take care of the condition [fieldName, '!=', false]
         // in the domain defined below!!!
     } else if (field.type === "selection") {
         const selection = {};
@@ -1025,14 +987,19 @@ function searchPanelDomainImage(model, fieldName, domain, setCount = false, limi
         groupIdName = (value) => [value, selection[value]];
     }
     domain = new Domain([...domain, [fieldName, "!=", false]]).toList();
-    const groups = model.read_group(domain, [fieldName], [fieldName], makeKwArgs({ limit }));
+    const groups = model.formatted_read_group(
+        domain,
+        [fieldName],
+        ["__count"],
+        makeKwArgs({ limit })
+    );
     /** @type {Map<number, Record<string, any>>} */
     const domainImage = new Map();
     for (const group of groups) {
         const [id, display_name] = groupIdName(group[fieldName]);
         const values = { id, display_name };
         if (setCount) {
-            values.__count = group[fieldName + "_count"];
+            values.__count = group.__count;
         }
         domainImage.set(id, values);
     }
@@ -1311,13 +1278,92 @@ function viewNotFoundError(modelName, viewType, viewId, consequence) {
 }
 
 //-----------------------------------------------------------------------------
+// Aggregator functions
+//-----------------------------------------------------------------------------
+
+/** @type {AggregatorFunction} */
+function array_agg_distinct(records, fieldName) {
+    return unique(records.map((record) => record[fieldName]));
+}
+
+/** @type {AggregatorFunction} */
+function array_agg(records, fieldName) {
+    return records.map((record) => record[fieldName]);
+}
+
+/** @type {AggregatorFunction} */
+function bool_and(records, fieldName) {
+    return records.every((record) => record[fieldName]);
+}
+
+/** @type {AggregatorFunction} */
+function bool_or(records, fieldName) {
+    return records.some((record) => record[fieldName]);
+}
+
+/** @type {AggregatorFunction} */
+function count_distinct(records, fieldName) {
+    return unique(records.map((record) => record[fieldName])).filter(Boolean).length;
+}
+
+/** @type {AggregatorFunction} */
+function count(records) {
+    return records.length;
+}
+
+/** @type {AggregatorFunction} */
+function max(records, fieldName) {
+    if (!records.length) {
+        return false;
+    }
+    return Math.max(...records.map((record) => record[fieldName]));
+}
+
+/** @type {AggregatorFunction} */
+function min(records, fieldName) {
+    if (!records.length) {
+        return false;
+    }
+    return Math.min(...records.map((record) => record[fieldName]));
+}
+
+/** @type {AggregatorFunction} */
+function sum(records, fieldName) {
+    if (!records.length) {
+        return false;
+    }
+    return records.reduce((acc, record) => acc + record[fieldName], 0);
+}
+
+/** @type {AggregatorFunction} */
+function sum_currency(records, fieldName) {
+    if (!records.length) {
+        return false;
+    }
+    return records.reduce((acc, record) => acc + record[fieldName], 0);
+}
+
+//-----------------------------------------------------------------------------
 // Local constants
 //-----------------------------------------------------------------------------
 
+const AGGREGATOR_FUNCTIONS = {
+    array_agg_distinct,
+    array_agg,
+    avg: sum, // TODO: avg? lots of tests to adapt
+    bool_and,
+    bool_or,
+    count_distinct,
+    count,
+    max,
+    min,
+    sum,
+    sum_currency,
+};
 /** @type {Record<string, (date: luxon["DateTime"]["prototype"]) => string | number>} */
 const DATE_FORMAT = {
     day_of_month: (date) => date.day,
-    day_of_week: (date) => date.weekday % 7, // number of days after the first day of the week (assumed to be Sunday)
+    day_of_week: (date) => date.weekday % 7, // (0 = Sunday, 6 = Saturday)
     day_of_year: (date) => date.ordinal,
     day: (date) => date.toFormat("yyyy-MM-dd"),
     iso_week_number: (date) => date.weekNumber,
@@ -1347,13 +1393,14 @@ const INHERITED_OBJECT_KEYS = [
 ];
 const INHERITED_PRIMITIVE_KEYS = [
     ["_description", null],
+    ["_fold_name", null],
     ["_inherit", null],
     ["_order", null],
     ["_parent_name", null],
     ["_rec_name", null],
     ["_related", (set) => new Set(set)],
 ];
-const READ_GROUP_NUMBER_GRANULARITY = [
+const READ_GROUP_NUMBER_GRANULARITY = /** @type {const} */ ([
     "day_of_month",
     "day_of_week",
     "day_of_year",
@@ -1364,22 +1411,16 @@ const READ_GROUP_NUMBER_GRANULARITY = [
     "quarter_number",
     "second_number",
     "year_number",
-];
-/** @type {Aggregator[]} */
-const VALID_AGGREGATE_FUNCTIONS = [
-    "array_agg",
-    "avg",
-    "bool_and",
-    "bool_or",
-    "count",
-    "count_distinct",
-    "max",
-    "min",
-    "sum",
-];
+]);
+
+/**
+ * @typedef {READ_GROUP_NUMBER_GRANULARITY[number]} ReadGroupNumberGranularity
+ */
+
+const MAX_NUMBER_OPENED_GROUPS = 10;
 
 // Regular expressions
-const R_AGGREGATE_FUNCTION = /(\w+)(?::(\w+)(?:\((\w+)\))?)?/;
+const R_AGGREGATE_FUNCTION = /(\w+):(\w+)/;
 const R_CAMEL_CASE = /([a-z])([A-Z])/g;
 const R_DATE = /\d{4}-\d{2}-\d{2}/;
 const R_DATE_TIME = /\d{4}-\d{2}-\d{2}( \d{2}:\d{2}:\d{2})?/;
@@ -1455,6 +1496,13 @@ export class Model extends Array {
     }
     static set _filters(value) {
         this.definition._filters = value;
+    }
+
+    static get _fold_name() {
+        return this.definition._fold_name;
+    }
+    static set _fold_name(value) {
+        this.definition._fold_name = value;
     }
 
     static get _inherit() {
@@ -1553,6 +1601,8 @@ export class Model extends Array {
     _fields = {};
     /** @type {Record<string, any>[]} */
     _filters = [];
+    /** @type {string} */
+    _fold_name = "fold";
     /** @type {string | null} */
     _inherit = null;
     /** @type {string} */
@@ -1578,7 +1628,7 @@ export class Model extends Array {
     }
 
     // Default fields, common to all models
-    id = fields.Integer({ readonly: true });
+    id = fields.Integer({ readonly: true, aggregator: undefined });
     display_name = fields.Char({ compute: "_compute_display_name" });
     create_date = fields.Datetime({
         string: "Created on",
@@ -1604,6 +1654,7 @@ export class Model extends Array {
             this._computes = modelInstance._computes;
             this._description = modelInstance._description;
             this._fields = modelInstance._fields;
+            this._fold_name = modelInstance._fold_name;
             this._inherit = modelInstance._inherit;
             this._name = modelInstance._name;
             this._onChanges = modelInstance._onChanges;
@@ -1778,6 +1829,248 @@ export class Model extends Array {
     }
 
     /**
+     * @param {DomainListRepr} domain
+     * @param {string[]} groupby
+     * @param {string[]} aggregates
+     * @param {DomainListRepr} [having]
+     * @param {number} [offset]
+     * @param {number} [limit]
+     * @param {string} [order]
+     */
+    formatted_read_group(domain, groupby, aggregates, having, offset, limit, order) {
+        const kwargs = getKwArgs(
+            arguments,
+            "domain",
+            "groupby",
+            "aggregates",
+            "having",
+            "offset",
+            "limit",
+            "order"
+        );
+        ({ domain, groupby, aggregates, having, offset, limit, order } = kwargs);
+
+        // TODO: having is not implemented now. Because it is not used right now.
+
+        const records = this._filter(domain);
+        /** @type {AggregatedField[]} */
+        const aggregatedFields = aggregates.map((fspec) => {
+            if (fspec === "__count") {
+                return { fieldName: "__count", func: "count", name: "__count" };
+            }
+            const [, fieldName, func] = fspec.match(R_AGGREGATE_FUNCTION);
+            if (func && !(func in AGGREGATOR_FUNCTIONS)) {
+                throw new MockServerError(`Invalid aggregation function "${func}"`);
+            }
+            if (!this._fields[fieldName]) {
+                throw new MockServerError(`Invalid field in "${fspec}"`);
+            }
+            return { fieldName, func, name: fspec };
+        });
+
+        if (!groupby.length) {
+            const group = { __extra_domain: [] };
+            aggregateFields(aggregatedFields, group, records);
+            return [group];
+        }
+
+        /** @type {Record<any, ModelRecord[]>} */
+        const groups = {};
+        for (const record of records) {
+            const recordGroupsValues = [{}];
+            for (const groupbySpec of groupby) {
+                const [fieldName] = String(groupbySpec).split(":");
+                const [recordValue, field] = this._followRelation(record, fieldName.split("."));
+                const value = formatFieldValue(field.type, groupbySpec, recordValue);
+
+                if (field.type == "many2many" && value) {
+                    // groups by many2many duplicate recordGroupsValues for each values and record
+                    // can be inside multiple groups
+                    for (const group of [...recordGroupsValues]) {
+                        for (const [index, id] of Object.entries(value)) {
+                            if (index == 0) {
+                                group[groupbySpec] = id;
+                            } else {
+                                const new_group = { ...group };
+                                new_group[groupbySpec] = id;
+                                recordGroupsValues.push(new_group);
+                            }
+                        }
+                    }
+                } else {
+                    for (const group of recordGroupsValues) {
+                        group[groupbySpec] = value;
+                    }
+                }
+            }
+            for (const group of recordGroupsValues) {
+                const valueKey = JSON.stringify(group);
+                groups[valueKey] = groups[valueKey] || [];
+                groups[valueKey].push(record);
+            }
+        }
+
+        /** @type {ModelRecordGroup[]} */
+        let readGroupResult = [];
+        for (const [groupKey, groupRecords] of Object.entries(groups)) {
+            /** @type {ModelRecordGroup} */
+            const group = {
+                ...JSON.parse(groupKey),
+                __extra_domain: [],
+            };
+            for (const groupbySpec of groupby) {
+                const [fieldPath, granularity] = safeSplit(groupbySpec, ":");
+                const value = Number.isInteger(group[groupbySpec])
+                    ? group[groupbySpec]
+                    : group[groupbySpec] || false;
+                const [, field] = this._followRelation({}, fieldPath.split("."));
+                const { relation, type } = field;
+
+                if (relation && !Array.isArray(value)) {
+                    const relatedRecord = this.env[relation].find(({ id }) => id === value);
+                    if (relatedRecord) {
+                        group[groupbySpec] = [value, relatedRecord.display_name];
+                        const _fold_name = this.env[relation]._fold_name;
+                        if (_fold_name in this.env[relation]._fields) {
+                            group.__fold = relatedRecord[_fold_name] || false;
+                        }
+                    } else {
+                        group[groupbySpec] = false;
+                    }
+                } else if (fieldPath === "id") {
+                    if (!value) {
+                        group[groupbySpec] = false;
+                    } else {
+                        const relatedRecord = this.env[this._name].find(({ id }) => id === value);
+                        const displayName = relatedRecord?.display_name || "";
+                        group[groupbySpec] = [value, displayName];
+                    }
+                }
+                if (isDateField(type)) {
+                    if (value) {
+                        if (READ_GROUP_NUMBER_GRANULARITY.includes(granularity)) {
+                            group.__extra_domain = [
+                                ...this._readGroupExtraDomain(fieldPath, value, granularity),
+                                ...group.__extra_domain,
+                            ];
+                        } else {
+                            let startDate, endDate;
+                            switch (granularity) {
+                                case "hour": {
+                                    startDate = parseDateTime(value, {
+                                        format: "HH:00 dd MMM yyyy",
+                                    });
+                                    endDate = startDate.plus({ hours: 1 });
+                                    // Remove the year from the result value of the group. It was needed
+                                    // to compute the startDate and endDate.
+                                    group[groupbySpec] = startDate.toFormat("HH:00 dd MMM");
+                                    break;
+                                }
+                                case "day": {
+                                    startDate = parseDateTime(value, { format: "yyyy-MM-dd" });
+                                    endDate = startDate.plus({ days: 1 });
+                                    break;
+                                }
+                                case "week": {
+                                    startDate = parseDateTime(value, { format: "WW kkkk" });
+                                    endDate = startDate.plus({ weeks: 1 });
+                                    break;
+                                }
+                                case "quarter": {
+                                    startDate = parseDateTime(value, { format: "q yyyy" });
+                                    endDate = startDate.plus({ quarters: 1 });
+                                    break;
+                                }
+                                case "year": {
+                                    startDate = parseDateTime(value, { format: "y" });
+                                    endDate = startDate.plus({ years: 1 });
+                                    break;
+                                }
+                                case "month":
+                                default: {
+                                    startDate = parseDateTime(value, { format: "MMMM yyyy" });
+                                    endDate = startDate.plus({ months: 1 });
+                                    break;
+                                }
+                            }
+                            const serialize = type === "date" ? serializeDate : serializeDateTime;
+                            const from = serialize(startDate);
+                            const to = serialize(endDate);
+                            group.__extra_domain = [
+                                ...this._readGroupDateRangeExtraDomain(fieldPath, from, to),
+                                ...group.__extra_domain,
+                            ];
+                            group[groupbySpec] = [from, group[groupbySpec]];
+                        }
+                    } else {
+                        group.__extra_domain = [
+                            ...this._readGroupExtraDomain(fieldPath, value),
+                            ...group.__extra_domain,
+                        ];
+                    }
+                } else {
+                    group.__extra_domain = [
+                        ...this._readGroupExtraDomain(fieldPath, value),
+                        ...group.__extra_domain,
+                    ];
+                }
+            }
+            aggregateFields(aggregatedFields, group, groupRecords);
+            readGroupResult.push(group);
+        }
+
+        // Order by
+        orderByField(this, order || groupby.join(","), readGroupResult);
+
+        // Limit
+        if (limit) {
+            offset ||= 0;
+            readGroupResult = readGroupResult.slice(offset, limit + offset);
+        }
+
+        return readGroupResult;
+    }
+
+    formatted_read_grouping_sets(domain, grouping_sets, aggregates, having, order) {
+        const kwargs = getKwArgs(
+            arguments,
+            "domain",
+            "grouping_sets",
+            "aggregates",
+            "having",
+            "order"
+        );
+        ({ domain, grouping_sets, aggregates, having, order } = kwargs);
+        const result = [];
+        for (const groupby of grouping_sets) {
+            let current_order = order;
+            if (order) {
+                const parts = [];
+                // Remove parts of order coming from other groupby spec from grouping_sets
+                for (const order_part of order.split(",")) {
+                    const fname = order_part.split(" ", 1)[0];
+                    if (groupby.includes(fname) || aggregates.includes(fname)) {
+                        parts.push(order_part);
+                    }
+                }
+                current_order = parts.join(",");
+            }
+            result.push(
+                this.formatted_read_group(
+                    domain,
+                    groupby,
+                    aggregates,
+                    having,
+                    null,
+                    null,
+                    current_order
+                )
+            );
+        }
+        return result;
+    }
+
+    /**
      * @param {[number | false, string][]} views
      * @param {{ load_filters?: boolean }} [options]
      */
@@ -1793,7 +2086,7 @@ export class Model extends Array {
         // Determine all the models/fields used in the views
         // modelFields = {modelName: {fields: Set([...fieldNames])}}
         const modelFields = {};
-        views.forEach(([viewId, viewType]) => {
+        for (const [viewId, viewType] of views) {
             result[viewType] = getView(this, [viewId, viewType], kwargs);
             for (const [modelName, fields] of Object.entries(result[viewType].models)) {
                 modelFields[modelName] ||= { fields: new Set() };
@@ -1802,11 +2095,13 @@ export class Model extends Array {
                 }
             }
             delete result[viewType].models;
-        });
+        }
 
         // For each model, fetch the information of the fields used in the views only
         for (const [modelName, value] of Object.entries(modelFields)) {
-            models[modelName] = { fields: this.env[modelName].fields_get(value.fields) };
+            models[modelName] = {
+                fields: this.env[modelName].fields_get(value.fields),
+            };
         }
 
         if (options.load_filters && "search" in result) {
@@ -1834,21 +2129,15 @@ export class Model extends Array {
      * @param {number} [limit]
      */
     name_search(name, domain, operator, limit) {
-        const kwargs = getKwArgs(arguments, "name", "args", "operator", "limit");
-        ({ name = "", args: domain = [], operator = "ilike", limit = 100 } = kwargs);
+        const kwargs = getKwArgs(arguments, "name", "domain", "operator", "limit");
+        ({ name = "", domain = [], operator = "ilike", limit = 100 } = kwargs);
 
         const actualDomain = new Domain(domain);
         /** @type {[number, string][]} */
         const result = [];
         for (const record of this) {
             const isInDomain = actualDomain.contains(record);
-            if (
-                isInDomain &&
-                (!name ||
-                    (operator === "="
-                        ? record.display_name === name
-                        : record.display_name?.includes(name)))
-            ) {
+            if (isInDomain && (!name || record.display_name?.includes(name))) {
                 result.push(toIdDisplayName(record));
             }
         }
@@ -1940,220 +2229,6 @@ export class Model extends Array {
     }
 
     /**
-     * @param {DomainListRepr} domain
-     * @param {Iterable<string>} fields
-     * @param {string[]} groupby
-     * @param {number} [offset]
-     * @param {number} [limit]
-     * @param {string} [orderby]
-     * @param {boolean} [lazy]
-     */
-    read_group(domain, fields, groupby, offset, limit, orderby, lazy) {
-        const kwargs = getKwArgs(
-            arguments,
-            "domain",
-            "fields",
-            "groupby",
-            "offset",
-            "limit",
-            "orderby",
-            "lazy"
-        );
-        ({ domain, fields, groupby, offset, limit, orderby, lazy = true } = kwargs);
-
-        const records = this._filter(domain);
-        /** @type {string[]} */
-        let groupBy = [];
-        if (groupby.length) {
-            groupBy = lazy ? [groupby[0]] : groupby;
-        }
-        const groupByFieldNames = groupBy.map((groupByField) => safeSplit(groupByField, ":")[0]);
-        /** @type {{ fieldName: string; func?: string; name: string }[]} */
-        const aggregatedFields = [];
-        // if no fields have been given, the server picks all stored fields
-        if (fields.length === 0) {
-            for (const fieldName in this._fields) {
-                if (!groupByFieldNames.includes(fieldName)) {
-                    aggregatedFields.push([this._fields[fieldName], fieldName]);
-                }
-            }
-        } else {
-            for (const fspec of fields) {
-                const [, name, aggregator, fname] = fspec.match(R_AGGREGATE_FUNCTION);
-                const fieldName = aggregator ? fname || name : name;
-                if (aggregator && !VALID_AGGREGATE_FUNCTIONS.includes(aggregator)) {
-                    throw new MockServerError(`Invalid aggregation function "${aggregator}"`);
-                }
-                const field = this._fields[fieldName];
-                if (
-                    !field ||
-                    groupByFieldNames.includes(fieldName) || // grouped fields are not aggregated
-                    (["many2one", "reference"].includes(field.type) &&
-                        !["count_distinct", "array_agg"].includes(aggregator))
-                ) {
-                    continue;
-                }
-                aggregatedFields.push([field, name, aggregator]);
-            }
-        }
-
-        if (!groupBy.length) {
-            const group = { __count: records.length, __domain: kwargs.domain };
-            aggregateFields(aggregatedFields, group, records);
-            return [group];
-        }
-
-        /** @type {Record<any, ModelRecord[]>} */
-        const groups = {};
-        for (const record of records) {
-            let recordGroupValues = [];
-            for (const gbField of groupBy) {
-                const [fieldName] = safeSplit(gbField, ":");
-                const value = formatFieldValue(this._fields, gbField, record[fieldName]);
-                recordGroupValues = ensureArray(value).reduce((acc, val) => {
-                    const newGroup = {};
-                    newGroup[gbField] = val;
-                    if (recordGroupValues.length === 0) {
-                        acc.push(newGroup);
-                    } else {
-                        for (const groupValue of recordGroupValues) {
-                            acc.push({ ...groupValue, ...newGroup });
-                        }
-                    }
-                    return acc;
-                }, []);
-            }
-            for (const groupValue of recordGroupValues) {
-                const valueKey = JSON.stringify(groupValue);
-                groups[valueKey] = groups[valueKey] || [];
-                groups[valueKey].push(record);
-            }
-        }
-
-        /** @type {ModelRecordGroup[]} */
-        let readGroupResult = [];
-        for (const [groupId, groupRecords] of Object.entries(groups)) {
-            /** @type {ModelRecordGroup} */
-            const group = {
-                ...JSON.parse(groupId),
-                __domain: domain || [],
-                __range: {},
-            };
-            for (const gbField of groupBy) {
-                if (!(gbField in group)) {
-                    group[gbField] = false;
-                    continue;
-                }
-
-                const [fieldName, granularity] = safeSplit(gbField, ":");
-                const value = Number.isInteger(group[gbField])
-                    ? group[gbField]
-                    : group[gbField] || false;
-                const { relation, type } = this._fields[fieldName];
-
-                if (relation && !Array.isArray(value)) {
-                    const relatedRecord = this.env[relation].find(({ id }) => id === value);
-                    if (relatedRecord) {
-                        group[gbField] = [value, relatedRecord.display_name];
-                    } else {
-                        group[gbField] = false;
-                    }
-                }
-
-                if (isDateField(type)) {
-                    if (value) {
-                        if (!READ_GROUP_NUMBER_GRANULARITY.includes(granularity)) {
-                            let startDate, endDate;
-                            switch (granularity) {
-                                case "hour": {
-                                    startDate = parseDateTime(value, {
-                                        format: "HH:00 dd MMM yyyy",
-                                    });
-                                    endDate = startDate.plus({ hours: 1 });
-                                    // Remove the year from the result value of the group. It was needed
-                                    // to compute the startDate and endDate.
-                                    group[gbField] = startDate.toFormat("HH:00 dd MMM");
-                                    break;
-                                }
-                                case "day": {
-                                    startDate = parseDateTime(value, { format: "yyyy-MM-dd" });
-                                    endDate = startDate.plus({ days: 1 });
-                                    break;
-                                }
-                                case "week": {
-                                    startDate = parseDateTime(value, { format: "WW kkkk" });
-                                    endDate = startDate.plus({ weeks: 1 });
-                                    break;
-                                }
-                                case "quarter": {
-                                    startDate = parseDateTime(value, { format: "q yyyy" });
-                                    endDate = startDate.plus({ quarters: 1 });
-                                    break;
-                                }
-                                case "year": {
-                                    startDate = parseDateTime(value, { format: "y" });
-                                    endDate = startDate.plus({ years: 1 });
-                                    break;
-                                }
-                                case "month":
-                                default: {
-                                    startDate = parseDateTime(value, { format: "MMMM yyyy" });
-                                    endDate = startDate.plus({ months: 1 });
-                                    break;
-                                }
-                            }
-                            const serialize = type === "date" ? serializeDate : serializeDateTime;
-                            const from = serialize(startDate);
-                            const to = serialize(endDate);
-                            group.__range[gbField] = { from, to };
-                            group.__domain = [
-                                [fieldName, ">=", from],
-                                [fieldName, "<", to],
-                                ...group.__domain,
-                            ];
-                        } else {
-                            group.__domain = [
-                                [`${fieldName}.${granularity}`, "=", value],
-                                ...group.__domain,
-                            ];
-                        }
-                    } else {
-                        group.__range[gbField] = false;
-                        group.__domain = [[fieldName, "=", value], ...group.__domain];
-                    }
-                } else {
-                    group.__domain = [[fieldName, "=", value], ...group.__domain];
-                }
-            }
-            if (Object.keys(group.__range || {}).length === 0) {
-                delete group.__range;
-            }
-            // compute count key to match dumb server logic...
-            const groupByNoLeaf = kwargs.context ? "group_by_no_leaf" in kwargs.context : false;
-            let countKey;
-            if (lazy && (groupBy.length >= 2 || !groupByNoLeaf)) {
-                countKey = safeSplit(groupBy[0], ":")[0] + "_count";
-            } else {
-                countKey = "__count";
-            }
-            group[countKey] = groupRecords.length;
-            aggregateFields(aggregatedFields, group, groupRecords);
-            readGroupResult.push(group);
-        }
-
-        // Order by
-        orderByField(this, orderby || groupByFieldNames.join(","), readGroupResult);
-
-        // Limit
-        if (limit) {
-            offset ||= 0;
-            readGroupResult = readGroupResult.slice(offset, limit + offset);
-        }
-
-        return readGroupResult;
-    }
-
-    /**
      * @param {KwArgs<{ domain: DomainListRepr, group_by: string, progress_bar: any }>} [kwargs={}]
      */
     /**
@@ -2165,13 +2240,12 @@ export class Model extends Array {
         const kwargs = getKwArgs(arguments, "domain", "group_by", "progress_bar");
         ({ domain, group_by: groupBy, progress_bar: progressBar } = kwargs);
 
-        const groups = this.read_group(domain, [], [groupBy]);
+        const groups = this.formatted_read_group(domain, [groupBy, progressBar.field], ["__count"]);
 
         // Find group by field
         const data = {};
         for (const group of groups) {
-            const records = this._filter(group.__domain);
-            let groupByValue = group[groupBy]; // always technical value here
+            let groupByValue = group[groupBy];
             if (Array.isArray(groupByValue)) {
                 groupByValue = groupByValue[0];
             }
@@ -2191,14 +2265,8 @@ export class Model extends Array {
                     data[groupByValue][key] = 0;
                 }
             }
-            for (const record of records) {
-                const fieldValue = record[progressBar.field];
-                if (fieldValue in data[groupByValue]) {
-                    data[groupByValue][fieldValue]++;
-                }
-            }
+            data[groupByValue][group[progressBar.field]] += group.__count;
         }
-
         return data;
     }
 
@@ -2560,10 +2628,11 @@ export class Model extends Array {
      * @param {number} [offset]
      * @param {number} [limit]
      * @param {string} [order]
+     * @param {boolean} [load=true]
      */
-    search_read(domain, fields, offset, limit, order) {
-        const kwargs = getKwArgs(arguments, "domain", "fields", "offset", "limit", "order");
-        ({ domain, fields, offset, limit, order } = kwargs);
+    search_read(domain, fields, offset, limit, order, load = true) {
+        const kwargs = getKwArgs(arguments, "domain", "fields", "offset", "limit", "order", "load");
+        ({ domain, fields, offset, limit, order, load } = kwargs);
 
         if (!fields?.length) {
             fields = Object.keys(this._fields);
@@ -2577,7 +2646,8 @@ export class Model extends Array {
         });
         return this.read(
             records.map((r) => r.id),
-            unique([...fields, "id"])
+            unique([...fields, "id"]),
+            load
         );
     }
 
@@ -2615,6 +2685,32 @@ export class Model extends Array {
     }
 
     /**
+     * @param {string} name
+     * @param {Record<string, any>} specification
+     * @param {DomainListRepr} [domain]
+     * @param {string} [operator]
+     * @param {number} [limit]
+     */
+    web_name_search(name, specification, domain, operator, limit) {
+        const kwargs = getKwArgs(arguments, "name", "specification", "args", "operator", "limit");
+        ({ name, specification, domain = [], operator = "ilike", limit = 100 } = kwargs);
+
+        const idNamePairs = this.name_search(name, domain, operator, limit, kwargs);
+        if (Object.keys(specification).length === 1 && "display_name" in specification) {
+            return idNamePairs.map(([id, name]) => ({
+                id,
+                display_name: name,
+                __formatted_display_name: name,
+            }));
+        }
+
+        return this.web_read(
+            idNamePairs.map(([id]) => id),
+            specification
+        );
+    }
+
+    /**
      * @param {MaybeIterable<number>} idOrIds
      * @param {Record<string, any>} specification
      */
@@ -2634,29 +2730,216 @@ export class Model extends Array {
 
     /**
      * @param {DomainListRepr} domain
-     * @param {Record<string, any>} fields
      * @param {string[]} groupby
+     * @param {Record<string, any>} aggregates
      * @param {number} [limit]
      * @param {number} [offset]
-     * @param {string} [orderby]
-     * @param {boolean} [lazy]
+     * @param {string} [order]
      */
-    web_read_group(domain, fields, groupby, limit, offset, orderby, lazy) {
+    web_read_group(
+        domain,
+        groupby,
+        aggregates,
+        limit,
+        offset,
+        order,
+        auto_unfold,
+        opening_info,
+        unfold_read_specification,
+        unfold_read_default_limit,
+        groupby_read_specification
+    ) {
         const kwargs = getKwArgs(
             arguments,
             "domain",
-            "fields",
             "groupby",
+            "aggregates",
             "limit",
             "offset",
-            "orderby",
-            "lazy"
+            "order",
+            "auto_unfold",
+            "opening_info",
+            "unfold_read_specification",
+            "unfold_read_default_limit",
+            "groupby_read_specification"
         );
-        ({ domain, fields, groupby, limit, offset, orderby, lazy } = kwargs);
+        ({
+            domain,
+            groupby,
+            aggregates,
+            limit,
+            offset,
+            order,
+            auto_unfold,
+            opening_info,
+            unfold_read_specification,
+            unfold_read_default_limit,
+            groupby_read_specification,
+        } = kwargs);
 
-        const groups = this.read_group(kwargs);
-        const allGroups = this.read_group(domain, ["display_name"], groupby, makeKwArgs({ lazy }));
-        return { groups, length: allGroups.length };
+        // FIXME:
+        // - order not take in account for the formatted read group
+        aggregates = ["__count", ...aggregates];
+        const read_group_order = getReadGroupOrder(order, [groupby[0]], aggregates);
+        let groups = this.formatted_read_group(
+            domain,
+            [groupby[0]],
+            aggregates,
+            [],
+            null,
+            null,
+            read_group_order
+        );
+        const length = groups.length;
+        offset = offset || 0;
+        groups = groups.slice(offset, limit ? limit + offset : undefined);
+
+        this._openGroups(
+            groups,
+            domain,
+            groupby,
+            aggregates,
+            order,
+            opening_info,
+            auto_unfold,
+            {
+                specification: unfold_read_specification,
+                offset: 0,
+                limit: unfold_read_default_limit,
+                order: order,
+            },
+            groupby_read_specification
+        );
+
+        return { groups, length };
+    }
+
+    _openGroups(
+        groups,
+        mainDomain,
+        remainingGroupby,
+        aggregates,
+        order,
+        infoOpening,
+        autoUnfold,
+        webSearchArgs,
+        groupbyReadSpecification
+    ) {
+        let groupInfos = false;
+        if (infoOpening && infoOpening.length !== 0) {
+            groupInfos = Object.fromEntries(infoOpening.map((info) => [info.value, info]));
+        }
+        const previousGroupby = remainingGroupby[0];
+        const field = this._fields[previousGroupby.split(":")[0]];
+        let nbOpenedGroup = 0;
+
+        if (groupbyReadSpecification && Object.hasOwn(groupbyReadSpecification, previousGroupby)) {
+            const readSpec = groupbyReadSpecification[previousGroupby];
+            for (const group of groups) {
+                const groupbyValue = group[previousGroupby];
+                if (Array.isArray(groupbyValue)) {
+                    const id = groupbyValue[0];
+                    group.__values = this.env[field.relation].web_read([id], readSpec)[0];
+                } else {
+                    group.__values = { id: false };
+                }
+            }
+        }
+
+        for (const group of groups) {
+            let fold = false;
+            let foldInfo = false;
+            if (Object.hasOwn(group, "__fold")) {
+                fold = group.__fold;
+                foldInfo = true;
+                delete group.__fold;
+            }
+
+            if (nbOpenedGroup >= MAX_NUMBER_OPENED_GROUPS) {
+                continue;
+            }
+
+            const groupbyValue = group[previousGroupby];
+            const rawGroupbyValue = Array.isArray(groupbyValue) ? groupbyValue[0] : groupbyValue;
+
+            const argsRead = { ...webSearchArgs };
+            let subgroupOpeningInfo = null;
+            let extraDomain = [];
+            if (groupInfos && Object.hasOwn(groupInfos, rawGroupbyValue)) {
+                const groupInfo = groupInfos[rawGroupbyValue];
+                if (groupInfo.folded) {
+                    continue;
+                }
+                argsRead.limit = groupInfo.limit;
+                argsRead.offset = groupInfo.offset;
+                extraDomain = groupInfo.progressbar_domain || [];
+                subgroupOpeningInfo = groupInfo.groups;
+            } else if ((!foldInfo && !autoUnfold) || fold || (field.relation && !groupbyValue)) {
+                continue;
+            }
+
+            nbOpenedGroup += 1;
+            if (remainingGroupby.length == 1) {
+                if (argsRead.offset && argsRead.offset >= group.__count) {
+                    group.__offset = 0;
+                    argsRead.offset = 0;
+                }
+                const groupDomain = [...group.__extra_domain, ...mainDomain, ...extraDomain];
+                group.__records = this.web_search_read(
+                    groupDomain,
+                    ...Object.values(argsRead)
+                ).records;
+            } else {
+                const groupDomain = [...group.__extra_domain, ...mainDomain];
+
+                let groups = this.formatted_read_group(
+                    groupDomain,
+                    [remainingGroupby[1]],
+                    aggregates,
+                    [],
+                    null,
+                    null,
+                    getReadGroupOrder(order, [remainingGroupby[1]], aggregates)
+                );
+                const length = groups.length;
+                groups = groups.slice(argsRead.offset ? argsRead.offset - 1 : 0, argsRead.limit);
+                group.__groups = { groups, length };
+
+                this._openGroups(
+                    groups,
+                    groupDomain,
+                    remainingGroupby.slice(1),
+                    aggregates,
+                    order,
+                    subgroupOpeningInfo,
+                    0,
+                    webSearchArgs,
+                    groupbyReadSpecification
+                );
+            }
+        }
+    }
+
+    /**
+     * @param {MaybeIterable<number>} idOrIds
+     * @param {Record<string, any>} specification
+     * @param {string} fieldName
+     * @param {number} offset
+     */
+    web_resequence(idOrIds, specification, fieldName, offset) {
+        const kwargs = getKwArgs(arguments, "ids", "field_name", "offset", "specification");
+        ({ ids: idOrIds, field_name: fieldName, offset = 0, specification } = kwargs);
+
+        if (!(fieldName in this._fields)) {
+            return [];
+        }
+
+        const ids = ensureArray(idOrIds);
+        for (const [index, id] of ids.entries()) {
+            this.write(id, { [fieldName]: offset + index });
+        }
+
+        return this.web_read(ids, specification);
     }
 
     /**
@@ -2679,6 +2962,36 @@ export class Model extends Array {
             ids = nextId;
         }
         return this.web_read(ids, specification);
+    }
+
+    /**
+     * @param {number[]} ids - List of record IDs to update
+     * @param {Partial<ModelRecord>[]} values - List of value dicts (same length/order as `ids`)
+     * @param {Record<string, any>} specification - Fields to return after save
+     * @returns {any[]} - List of saved records
+     */
+    web_save_multi(ids, values, specification) {
+        const kwargs = getKwArgs(arguments, "ids", "values", "specification");
+        ({ ids, values, specification } = kwargs);
+
+        if (!Array.isArray(ids) || !Array.isArray(values) || ids.length !== values.length) {
+            throw new Error("web_save_multi requires `ids` and `values` of the same length.");
+        }
+
+        const results = [];
+
+        for (let i = 0; i < ids.length; i++) {
+            const id = ids[i];
+            const val = values[i];
+            const res = this.web_save([id], val, specification);
+            if (Array.isArray(res)) {
+                results.push(...res);
+            } else {
+                results.push(res);
+            }
+        }
+
+        return results;
     }
 
     /**
@@ -2847,8 +3160,8 @@ export class Model extends Array {
         const field = this._fields[fieldName];
         const fieldNames = safeSplit(field.related, ".");
         for (const record of this) {
-            const [value, fieldType] = this._followRelation(record, fieldNames);
-            if (!fieldType) {
+            const [value, field] = this._followRelation(record, fieldNames);
+            if (!field) {
                 // The related field is not found on the record, so we
                 // remove the compute function.
                 this.env[this._name]._related.delete(fieldName);
@@ -2856,7 +3169,7 @@ export class Model extends Array {
             }
             if (value === undefined) {
                 // Value is null: assign default value (if null)
-                record[fieldName] ??= DEFAULT_FIELD_VALUES[fieldType]();
+                record[fieldName] ??= DEFAULT_FIELD_VALUES[field.type]();
             } else {
                 // Value is not null: override
                 record[fieldName] = value;
@@ -2978,10 +3291,6 @@ export class Model extends Array {
             if (!currentField) {
                 break;
             }
-            if (!currentRecord) {
-                value = undefined;
-                break;
-            }
             value = currentRecord?.[fieldName];
             const relation = getRelation(currentField, currentRecord);
             if (relation) {
@@ -2991,7 +3300,7 @@ export class Model extends Array {
             }
         }
 
-        return [value, currentField?.type];
+        return [value, currentField];
     }
 
     /**
@@ -3103,7 +3412,7 @@ export class Model extends Array {
                         result[field.name] = container[field.definition_record_field].map(
                             (def) => ({
                                 ...def,
-                                value: record[field.name][def.name] ?? false,
+                                value: record[field.name][def.name],
                             })
                         );
                     } else {
@@ -3358,7 +3667,7 @@ export class Model extends Array {
                     if (property.definition_deleted) {
                         delete record[fieldName][property.name];
                     } else {
-                        let value = property.value ?? property.default ?? false;
+                        let value = property.value ?? property.default;
                         if (value && property.comodel) {
                             // For relational fields: transform to [id, display_name] tuples
                             const coModel = this.env[property.comodel];
@@ -3381,6 +3690,57 @@ export class Model extends Array {
                 record[fieldName] = value;
             }
             i++;
+        }
+    }
+
+    /**
+     * @param {string} fieldPath
+     * @param {any} value
+     * @param {ReadGroupNumberGranularity} [numberGranularity]
+     * @returns {DomainListRepr}
+     * @private
+     */
+    _readGroupExtraDomain(fieldPath, value, numberGranularity) {
+        const [fieldName, ...remainingPath] = fieldPath.split(".");
+        if (remainingPath.length) {
+            const relation = getRelation(this._fields[fieldName]);
+            const subDomain = relation._readGroupExtraDomain(
+                remainingPath.join("."),
+                value,
+                numberGranularity
+            );
+            return value
+                ? [[fieldName, "any", subDomain]]
+                : ["|", [fieldName, "not any", []], [fieldName, "any", subDomain]];
+        } else if (numberGranularity) {
+            return [[`${fieldName}.${numberGranularity}`, "=", value]];
+        } else {
+            return [[fieldName, "=", value]];
+        }
+    }
+
+    /**
+     * @param {string} fieldPath
+     * @param {string} from
+     * @param {string} to
+     * @returns {DomainListRepr}
+     * @private
+     */
+    _readGroupDateRangeExtraDomain(fieldPath, from, to) {
+        const [fieldName, ...remainingPath] = fieldPath.split(".");
+        if (remainingPath.length) {
+            const relation = getRelation(this._fields[fieldName]);
+            const subDomain = relation._readGroupDateRangeExtraDomain(
+                remainingPath.join("."),
+                from,
+                to
+            );
+            return [[fieldName, "any", subDomain]];
+        } else {
+            return [
+                [fieldName, ">=", from],
+                [fieldName, "<", to],
+            ];
         }
     }
 }

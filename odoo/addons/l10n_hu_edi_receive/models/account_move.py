@@ -184,7 +184,7 @@ class AccountMove(models.Model):
             })
 
             if supplier_bank_account_number := supplier_info.findtext('{*}supplierBankAccountNumber'):
-                partner.bank_ids = [Command.create({'acc_number': supplier_bank_account_number})]
+                partner.with_context(default_journal_id=None).bank_ids = [Command.create({'acc_number': supplier_bank_account_number})]
 
         currency = self.env.ref(f'base.{invoice_detail.findtext("{*}currencyCode")}', raise_if_not_found=False)
         move_vals = {
@@ -225,7 +225,7 @@ class AccountMove(models.Model):
                 ('partner_id', '=', bank_partner.id),
             ], limit=1)
             if not partner_bank:
-                partner_bank = self.env['res.partner.bank'].create({
+                partner_bank = self.env['res.partner.bank'].with_context(default_journal_id=None).create({
                     'acc_number': account_number,
                     'partner_id': bank_partner.id,
                 })
@@ -384,7 +384,7 @@ class AccountMove(models.Model):
         # EXTENDS 'account'
         if (
             self.country_code == 'HU'
-            and file_data['type'] == 'xml'
+            and file_data['xml_tree'] is not None
             and (root := etree.QName(file_data['xml_tree']).localname) in ('InvoiceData', 'QueryInvoiceDataResponse')
         ):
             def decoder(invoice, file_data, new):
@@ -396,8 +396,10 @@ class AccountMove(models.Model):
                 invoice.write(moves_vals_list[0])
                 moves = invoice + self.create(moves_vals_list[1:])
                 self._l10n_hu_edi_post_process_data(moves, post_process_data_list)
-                return True
 
-            return decoder
+            return {
+                'priority': 20,
+                'decoder': decoder,
+            }
 
         return super()._get_edi_decoder(file_data, new=new)

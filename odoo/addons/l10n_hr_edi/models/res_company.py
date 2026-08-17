@@ -155,7 +155,7 @@ class ResCompany(models.Model):
             move.is_in_extractable_state = False
 
         move.l10n_hr_edi_addendum_id = self.env['l10n_hr_edi.addendum'].create({'move_id': move.id, **document})
-        move._extend_with_attachments(attachment, new=True)
+        move._extend_with_attachments(move._to_files_data(attachment), new=True)
         move._message_log(
             body=self.env._(
                 "eRacun document (ElectroicId: %(electronic_id)s) has been received from MojEracun successfully.",
@@ -173,7 +173,7 @@ class ResCompany(models.Model):
         :param undelivered_only (bool, optional): Import only undelivered documents. Defaults to True.
         :param slc (tuple of two ints, optional): Import only a slice of the list of documents for testing. Defaults to False.
         """
-        job_count = self._context.get('mer_crons_job_count') or BATCH_SIZE
+        job_count = self.env.context.get('mer_crons_job_count') or BATCH_SIZE
         need_retrigger = False
         imported_documents = {}
         for company in self.filtered(lambda c: c.l10n_hr_mer_connection_state == 'active'):

@@ -137,7 +137,7 @@ test("a failing tour logs the step that failed in run", async () => {
         warn: (s) => {},
         error: (s) => {
             s = s.replace(/\n +at.*/g, ""); // strip stack trace
-            expect.step(`error: ${s}`)
+            expect.step(`error: ${s}`);
         },
     });
     class Root extends Component {

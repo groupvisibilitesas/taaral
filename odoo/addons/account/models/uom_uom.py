@@ -35,7 +35,7 @@ UOM_TO_UNECE_CODE = {
 }
 
 
-class UoM(models.Model):
+class UomUom(models.Model):
     _inherit = "uom.uom"
 
     fiscal_country_codes = fields.Char(compute="_compute_fiscal_country_codes")

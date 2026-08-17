@@ -3,11 +3,14 @@
 from odoo.fields import Command
 from odoo.tests import HttpCase, tagged
 
-from odoo.addons.sale.tests.test_sale_product_attribute_value_config import TestSaleProductAttributeValueCommon
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+from odoo.addons.product.tests.test_product_attribute_value_config import (
+    TestProductAttributeValueCommon,
+)
 
 
 @tagged('post_install', '-at_install')
-class TestWebsiteSaleMrpAvailability(HttpCase, TestSaleProductAttributeValueCommon):
+class TestWebsiteSaleMrpAvailability(HttpCase, AccountTestInvoicingCommon, TestProductAttributeValueCommon):
 
     @classmethod
     def setUpClass(cls):
@@ -75,4 +78,7 @@ class TestWebsiteSaleMrpAvailability(HttpCase, TestSaleProductAttributeValueComm
         """
         Check that the website availability of products is influenced by kits present in the cart.
         """
+        if self.env['ir.module.module']._get('website_sale_collect').state == 'installed':
+            # Disable the Click & Collect as the Availability widget is modified when the option is enabled
+            self.website.in_store_dm_id.is_published = False
         self.start_tour("/shop", 'test_website_sale_availability_kit', login="")

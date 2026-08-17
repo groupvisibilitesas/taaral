@@ -1,5 +1,3 @@
-/** @odoo-module **/
-
 import { Component, onWillStart, useState } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 
@@ -8,6 +6,15 @@ import { useSpreadsheetNotificationStore } from "@spreadsheet/hooks";
 import * as spreadsheet from "@odoo/o-spreadsheet";
 import { Spreadsheet, Model } from "@odoo/o-spreadsheet";
 import { useSpreadsheetPrint } from "../hooks";
+import { _t } from "@web/core/l10n/translation";
+
+spreadsheet.registries.topbarMenuRegistry.addChild("download_public_excel", ["file"], {
+    name: _t("Download"),
+    execute: (env) => env.downloadExcel(),
+    isReadonlyAllowed: true,
+    icon: "o-spreadsheet-Icon.DOWNLOAD",
+    isVisible: (env) => env.canDownloadExcel?.(),
+});
 
 export class PublicReadonlySpreadsheet extends Component {
     static template = "spreadsheet.PublicReadonlySpreadsheet";
@@ -47,7 +54,12 @@ export class PublicReadonlySpreadsheet extends Component {
         this.data = await this.http.get(this.props.dataUrl);
         this.model = new Model(
             this.data,
-            { mode: this.props.mode === "dashboard" ? "dashboard" : "readonly" },
+            {
+                mode: this.props.mode === "dashboard" ? "dashboard" : "readonly",
+                custom: {
+                    isFrozenSpreadsheet: true,
+                },
+            },
             this.data.revisions || []
         );
         if (this.env.debug) {

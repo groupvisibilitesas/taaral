@@ -5,7 +5,7 @@ patch(PaymentScreen.prototype, {
     onMounted() {
         super.onMounted();
         if (this.pos.isArgentineanCompany()) {
-            this.currentOrder.set_to_invoice(true);
+            this.currentOrder.setToInvoice(true);
         }
     },
 });

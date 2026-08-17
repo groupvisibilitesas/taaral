@@ -1,11 +1,10 @@
-import { deserializeDateTime, formatDateTime } from "@web/core/l10n/dates";
+import { formatDateTime } from "@web/core/l10n/dates";
 
 export function computeSAQRCode(name, vat, date_isostring, amount_total, amount_tax) {
     /* Generate the qr code for Saudi e-invoicing. Specs are available at the following link at page 23
     https://zatca.gov.sa/ar/E-Invoicing/SystemsDevelopers/Documents/20210528_ZATCA_Electronic_Invoice_Security_Features_Implementation_Standards_vShared.pdf
     */
-
-    const ksa_timestamp = formatDateTime(deserializeDateTime(date_isostring), {
+    const ksa_timestamp = formatDateTime(date_isostring, {
         tz: "Asia/Riyadh",
         format: "MM/dd/yyyy, HH:mm:ss",
     });

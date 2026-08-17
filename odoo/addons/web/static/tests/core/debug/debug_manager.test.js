@@ -45,16 +45,11 @@ class DebugMenuParent extends Component {
 
 const debugRegistry = registry.category("debug");
 
-onRpc(async (args) => {
-    if (args.method === "has_access") {
-        return true;
-    }
-    if (args.route === "/web/dataset/call_kw/ir.attachment/regenerate_assets_bundles") {
-        expect.step("ir.attachment/regenerate_assets_bundles");
-        return true;
-    }
+onRpc("has_access", () => true);
+onRpc("ir.attachment", "regenerate_assets_bundles", () => {
+    expect.step("ir.attachment/regenerate_assets_bundles");
+    return true;
 });
-
 beforeEach(() => {
     // Remove this service to clear the debug menu from anything else than what the test insert into
     registry.category("services").remove("profiling");
@@ -67,41 +62,33 @@ describe("DebugMenu", () => {
     test("can be rendered", async () => {
         debugRegistry
             .category("default")
-            .add("item_1", () => {
-                return {
-                    type: "item",
-                    description: "Item 1",
-                    callback: () => {
-                        expect.step("callback item_1");
-                    },
-                    sequence: 10,
-                    section: "a",
-                };
-            })
-            .add("item_2", () => {
-                return {
-                    type: "item",
-                    description: "Item 2",
-                    callback: () => {
-                        expect.step("callback item_2");
-                    },
-                    sequence: 5,
-                    section: "a",
-                };
-            })
-            .add("item_3", () => {
-                return {
-                    type: "item",
-                    description: "Item 3",
-                    callback: () => {
-                        expect.step("callback item_3");
-                    },
-                    section: "b",
-                };
-            })
-            .add("item_4", () => {
-                return null;
-            });
+            .add("item_1", () => ({
+                type: "item",
+                description: "Item 1",
+                callback: () => {
+                    expect.step("callback item_1");
+                },
+                sequence: 10,
+                section: "a",
+            }))
+            .add("item_2", () => ({
+                type: "item",
+                description: "Item 2",
+                callback: () => {
+                    expect.step("callback item_2");
+                },
+                sequence: 5,
+                section: "a",
+            }))
+            .add("item_3", () => ({
+                type: "item",
+                description: "Item 3",
+                callback: () => {
+                    expect.step("callback item_3");
+                },
+                section: "b",
+            }))
+            .add("item_4", () => null);
         await mountWithCleanup(DebugMenuParent);
         await contains("button.dropdown-toggle").click();
         expect(".dropdown-menu .dropdown-item").toHaveCount(3);
@@ -120,36 +107,28 @@ describe("DebugMenu", () => {
     test("items are sorted by sequence regardless of category", async () => {
         debugRegistry
             .category("default")
-            .add("item_1", () => {
-                return {
-                    type: "item",
-                    description: "Item 4",
-                    sequence: 4,
-                };
-            })
-            .add("item_2", () => {
-                return {
-                    type: "item",
-                    description: "Item 1",
-                    sequence: 1,
-                };
-            });
+            .add("item_1", () => ({
+                type: "item",
+                description: "Item 4",
+                sequence: 4,
+            }))
+            .add("item_2", () => ({
+                type: "item",
+                description: "Item 1",
+                sequence: 1,
+            }));
         debugRegistry
             .category("custom")
-            .add("item_1", () => {
-                return {
-                    type: "item",
-                    description: "Item 3",
-                    sequence: 3,
-                };
-            })
-            .add("item_2", () => {
-                return {
-                    type: "item",
-                    description: "Item 2",
-                    sequence: 2,
-                };
-            });
+            .add("item_1", () => ({
+                type: "item",
+                description: "Item 3",
+                sequence: 3,
+            }))
+            .add("item_2", () => ({
+                type: "item",
+                description: "Item 2",
+                sequence: 2,
+            }));
         await mountWithCleanup(DebugMenuParent);
         await contains("button.dropdown-toggle").click();
         expect(queryAllTexts(".dropdown-menu .dropdown-item")).toEqual([
@@ -171,39 +150,33 @@ describe("DebugMenu", () => {
     });
 
     test("Display the DebugMenu correctly in a ActionDialog if debug mode is enabled", async () => {
-        debugRegistry.category("default").add("global", () => {
-            return {
-                type: "item",
-                description: "Global 1",
-                callback: () => {
-                    expect.step("callback global_1");
-                },
-                sequence: 0,
-            };
-        });
+        debugRegistry.category("default").add("global", () => ({
+            type: "item",
+            description: "Global 1",
+            callback: () => {
+                expect.step("callback global_1");
+            },
+            sequence: 0,
+        }));
         debugRegistry
             .category("custom")
-            .add("item1", () => {
-                return {
-                    type: "item",
-                    description: "Item 1",
-                    callback: () => {
-                        expect.step("callback item_1");
-                    },
-                    sequence: 10,
-                };
-            })
-            .add("item2", ({ customKey }) => {
-                return {
-                    type: "item",
-                    description: "Item 2",
-                    callback: () => {
-                        expect.step("callback item_2");
-                        expect(customKey).toBe("abc");
-                    },
-                    sequence: 20,
-                };
-            });
+            .add("item1", () => ({
+                type: "item",
+                description: "Item 1",
+                callback: () => {
+                    expect.step("callback item_1");
+                },
+                sequence: 10,
+            }))
+            .add("item2", ({ customKey }) => ({
+                type: "item",
+                description: "Item 2",
+                callback: () => {
+                    expect.step("callback item_2");
+                    expect(customKey).toBe("abc");
+                },
+                sequence: 20,
+            }));
         class WithCustom extends ActionDialog {
             setup() {
                 super.setup(...arguments);
@@ -428,7 +401,7 @@ describe("DebugMenu", () => {
     test("set defaults: click close", async () => {
         serverState.debug = "1";
 
-        onRpc("ir.default", "set", async () => {
+        onRpc("ir.default", "set", () => {
             throw new Error("should not create a default");
         });
 
@@ -459,8 +432,8 @@ describe("DebugMenu", () => {
         expect.assertions(3);
         serverState.debug = "1";
 
-        onRpc("ir.default", "set", async (args) => {
-            expect(args.args).toEqual(["res.partner", "name", "p1", true, true, false]);
+        onRpc("ir.default", "set", ({ args }) => {
+            expect(args).toEqual(["res.partner", "name", "p1", true, true, false]);
             return true;
         });
 
@@ -497,9 +470,10 @@ describe("DebugMenu", () => {
 
             name = fields.Char();
             raw = fields.Binary();
+            parent_id = fields.Many2one({ relation: "custom" });
             properties = fields.Properties({
                 string: "Properties",
-                definition_record: "product_id",
+                definition_record: "parent_id",
                 definition_record_field: "definitions",
             });
             definitions = fields.PropertiesDefinition({
@@ -511,17 +485,12 @@ describe("DebugMenu", () => {
                     id: 1,
                     name: "custom1",
                     raw: "<raw>",
-                    properties: [
-                        {
-                            name: "bd6404492c244cff",
-                            string: "test",
-                            type: "char",
-                        },
-                    ],
                     definitions: [{ name: "xphone_prop_1", string: "P1", type: "boolean" }],
                 },
             ];
         }
+        const fnames = Object.keys(Custom._fields).map((fname) => `<field name="${fname}"/>`);
+        Custom._views.form = `<form>\n${fnames.join("\n")}\n</form>`;
 
         defineWebModels();
         defineModels([Custom]);
@@ -560,20 +529,18 @@ describe("DebugMenu", () => {
     test("view metadata: basic rendering", async () => {
         serverState.debug = "1";
 
-        onRpc("get_metadata", async () => {
-            return [
-                {
-                    create_date: "2023-01-26 14:12:10",
-                    create_uid: [4, "Some user"],
-                    id: 1003,
-                    noupdate: false,
-                    write_date: "2023-01-26 14:13:31",
-                    write_uid: [6, "Another User"],
-                    xmlid: "abc.partner_16",
-                    xmlids: [{ xmlid: "abc.partner_16", noupdate: false }],
-                },
-            ];
-        });
+        onRpc("get_metadata", () => [
+            {
+                create_date: "2023-01-26 14:12:10",
+                create_uid: [4, "Some user"],
+                id: 1003,
+                noupdate: false,
+                write_date: "2023-01-26 14:13:31",
+                write_uid: [6, "Another User"],
+                xmlid: "abc.partner_16",
+                xmlids: [{ xmlid: "abc.partner_16", noupdate: false }],
+            },
+        ]);
 
         webModels.ResPartner._records.push({ id: 1003, name: "p1" });
 
@@ -611,10 +578,8 @@ describe("DebugMenu", () => {
     test("set defaults: setting default value for datetime field", async () => {
         serverState.debug = "1";
 
-        const argSteps = [];
-
-        onRpc("ir.default", "set", async (args) => {
-            argSteps.push(args.args);
+        onRpc("ir.default", "set", ({ args }) => {
+            expect.step(args);
             return true;
         });
 
@@ -681,7 +646,7 @@ describe("DebugMenu", () => {
             expect(".modal").toHaveCount(0);
         }
 
-        expect(argSteps).toEqual([
+        expect.verifySteps([
             ["partner", "datetime", "2024-01-24 16:46:16", true, true, false],
             [
                 "partner",
@@ -726,10 +691,9 @@ describe("DebugMenu", () => {
         serverState.debug = "1";
 
         const fooValue = "12".repeat(250);
-        const argSteps = [];
 
-        onRpc("ir.default", "set", async (args) => {
-            argSteps.push(args.args);
+        onRpc("ir.default", "set", ({ args }) => {
+            expect.step(args);
             return true;
         });
 
@@ -799,6 +763,6 @@ describe("DebugMenu", () => {
         await contains(".modal #formview_default_fields").select("foo");
         await contains(".modal .modal-footer button:nth-child(2)").click();
         expect(".modal").toHaveCount(0);
-        expect(argSteps).toEqual([["partner", "foo", fooValue, true, true, false]]);
+        expect.verifySteps([["partner", "foo", fooValue, true, true, false]]);
     });
 });

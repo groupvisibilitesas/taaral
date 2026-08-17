@@ -38,7 +38,7 @@ class TestPoSSetup(TestPoSCommon):
         # check basic product category
         # it is expected to have standard and manual_periodic valuation
         self.assertEqual(self.categ_basic.property_cost_method, 'standard')
-        self.assertEqual(self.categ_basic.property_valuation, 'manual_periodic')
+        self.assertEqual(self.categ_basic.property_valuation, 'periodic')
         # check anglo saxon product category
         # this product categ is expected to have fifo and real_time valuation
         self.assertEqual(self.categ_anglo.property_cost_method, 'fifo')
@@ -82,7 +82,7 @@ class TestPoSSetup(TestPoSCommon):
             'company_id': self.company.id,
             'code': 'BANKOS',
             'type': 'bank',
-            'invoice_reference_type': 'none',
+            'invoice_reference_type': 'invoice',
             'invoice_reference_model': 'odoo'
         })
         payment_method = self.env['pos.payment.method'].create({'name': 'Lets Pay for Tests', 'journal_id': journal.id})
@@ -118,3 +118,11 @@ class TestPoSSetup(TestPoSCommon):
         )
         with self.assertRaises(ValidationError):
             journal.action_archive()
+
+    def test_card_payment_method_initialization(self):
+        """Test that the 'Card' payment method created by default has an outstanding account."""
+        card_pm = self.env['pos.payment.method'].search([
+            ('name', '=', 'Card'), ('company_id', '=', self.env.company.id),
+        ], limit=1)
+        self.assertTrue(card_pm)
+        self.assertTrue(card_pm.outstanding_account_id)

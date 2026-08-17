@@ -3,39 +3,46 @@
 # * account_check_printing
 #
 # Translators:
-# Miku Laitinen <miku.laitinen@gmail.com>, 2024
-# Kari Lindgren <kari.lindgren@emsystems.fi>, 2024
-# Martin Trigaux, 2024
-# Eino Mäkitalo <eino.makitalo@netitbe.fi>, 2024
-# Marko Happonen <marko.happonen@sprintit.fi>, 2024
-# Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2024
-# Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2024
-# Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2024
-# Jessica Jakara, 2025
-# Wil Odoo, 2025
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
-# Saara Hakanen <sahak@odoo.com>, 2026.
+# Tuomas Lyyra <tuomas.lyyra@legenda.fi>, 2022
+# Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2022
+# Marko Happonen <marko.happonen@sprintit.fi>, 2022
+# Miku Laitinen <miku.laitinen@gmail.com>, 2022
+# Kari Lindgren <kari.lindgren@emsystems.fi>, 2022
+# Martin Trigaux, 2022
+# Eino Mäkitalo <eino.makitalo@netitbe.fi>, 2022
+# Kim Asplund <kim.asplund@gmail.com>, 2022
+# Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2022
+# Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2023
+# "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
+# Saara Hakanen <sahak@odoo.com>, 2025, 2026.
+# Konsta Aavaranta <konsta.aavaranta@sprintit.fi>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-04-11 09:02+0000\n"
-"Last-Translator: Saara Hakanen <sahak@odoo.com>\n"
-"Language-Team: Finnish <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-07 18:48+0000\n"
+"Last-Translator: Konsta Aavaranta <konsta.aavaranta@sprintit.fi>\n"
+"Language-Team: Finnish <https://translate.odoo.com/projects/odoo-19/"
 "account_check_printing/fi/>\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_journal.py:0
 msgid "%(journal)s: Check Number Sequence"
 msgstr "%(journal)s: Shekkinumeroiden sekvenssi"
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "%(number)s in journal %(journal)s"
+msgstr "%(number)s päiväkirjassa %(journal)s"
 
 #. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.account_journal_dashboard_kanban_view_inherited
@@ -178,7 +185,12 @@ msgid "Default"
 msgstr "Oletus"
 
 #. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_account_journal__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment_method__display_name
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_res_company__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr "Näyttönimi"
 
@@ -189,7 +201,17 @@ msgid "Go to the configuration panel"
 msgstr "Siirry asetusvalikkoon"
 
 #. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment__check_layout_available
+msgid "Has Check Layout"
+msgstr "Shekin asettelu saatavilla"
+
+#. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_account_journal__id
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment__id
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment_method__id
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__id
+#: model:ir.model.fields,field_description:account_check_printing.field_res_company__id
+#: model:ir.model.fields,field_description:account_check_printing.field_res_config_settings__id
 msgid "ID"
 msgstr "Tunnus"
 
@@ -236,22 +258,26 @@ msgid ""
 "submitting a batch deposit to your bank. Module account_batch_payment is "
 "necessary.\n"
 "SEPA Credit Transfer: Pay in the SEPA zone by submitting a SEPA Credit "
-"Transfer file to your bank. Module account_sepa is necessary.\n"
+"Transfer file to your bank. Module account_iso20022 is necessary.\n"
 "SEPA Direct Debit: Get paid in the SEPA zone thanks to a mandate your "
-"partner will have granted to you. Module account_sepa is necessary.\n"
+"partner will have granted to you. Module account_iso20022 is necessary.\n"
+"U.S. ISO20022: Pay in the US by submitting an ISO20022 file to your bank. "
+"Module account_iso20022 is necessary.\n"
 msgstr ""
 "Manuaalisesti: Maksa tai vastaanota maksu millä tahansa Odoon ulkopuolisella "
 "menetelmällä.\n"
 "Maksupalveluntarjoajat: Jokaisella maksupalveluntarjoajalla on oma "
-"maksutapansa. Pyydä maksutapahtuma kortilla/kortille yhteistyökumppanin "
-"tallentaman maksutunnisteen avulla, kun ostat tai tilaat verkossa.\n"
+"maksutapansa. Pyydä maksua kortilla/kortille kumppanin tallentamalla "
+"maksutunnisteella, kun ostat tai tilaat verkossa.\n"
 "Shekki: Maksa laskut shekillä ja tulosta se Odoosta.\n"
 "Erätalletus: Kerää useita asiakasshekkejä kerralla luomalla ja lähettämällä "
-"erätalletuksen pankkiin. Vaatii moduulin account_batch_payment.\n"
-"SEPA-tilisiirto: Maksa SEPA-alueella lähettämällä SEPA-tilisiirtotiedoston "
-"pankkiin. Vaatii moduulin account_sepa.\n"
-"SEPA-suoraveloitus: Saat maksun SEPA-alueella kumppanisi sinulle myöntämän "
-"valtuutuksen ansiosta. Vaatii moduulin account_sepa.\n"
+"erätalletuksen pankillesi. Vaatii moduulin account_batch_payment.\n"
+"SEPA-tilisiirto: Maksa SEPA-alueella lähettämällä SEPA-tilisiirtotiedosto "
+"pankillesi. Vaatii moduulin account_iso20022.\n"
+"SEPA-suoraveloitus: Saat maksut SEPA-alueella kumppanisi sinulle myöntämällä "
+"valtuutuksella. Vaatii moduulin account_iso20022.\n"
+"U.S. ISO20022: Maksa Yhdysvalloissa lähettämällä ISO20022-tiedosto "
+"pankillesi. Vaatii moduulin account_iso20022.\n"
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_res_company__account_check_printing_multi_stub
@@ -472,3 +498,71 @@ msgid ""
 msgstr ""
 "Sinun on valittava shekin asettelu. Tätä varten siirry Laskutuksen/"
 "Kirjanpidon asetuksiin, hae 'Shekin ulkoasu' ja määritä sellainen."
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "check_number"
+msgstr "check_number"
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "out_refund"
+msgstr "out_refund"
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "sep"
+msgstr "sep"
+
+#~ msgid "Contact"
+#~ msgstr "Kontakti"
+
+#~ msgid "Journal Entry"
+#~ msgstr "Päiväkirjan kirjaus"
+
+#~ msgid ""
+#~ "Manual: Pay or Get paid by any method outside of Odoo.\n"
+#~ "Payment Providers: Each payment provider has its own Payment Method. "
+#~ "Request a transaction on/to a card thanks to a payment token saved by the "
+#~ "partner when buying or subscribing online.\n"
+#~ "Check: Pay bills by check and print it from Odoo.\n"
+#~ "Batch Deposit: Collect several customer checks at once generating and "
+#~ "submitting a batch deposit to your bank. Module account_batch_payment is "
+#~ "necessary.\n"
+#~ "SEPA Credit Transfer: Pay in the SEPA zone by submitting a SEPA Credit "
+#~ "Transfer file to your bank. Module account_sepa is necessary.\n"
+#~ "SEPA Direct Debit: Get paid in the SEPA zone thanks to a mandate your "
+#~ "partner will have granted to you. Module account_sepa is necessary.\n"
+#~ msgstr ""
+#~ "Käsikirja: Maksa tai saat maksun millä tahansa Odoon ulkopuolisella "
+#~ "menetelmällä.\n"
+#~ "Maksupalveluntarjoajat: Jokaisella maksupalveluntarjoajalla on oma "
+#~ "maksutapansa. Pyydä maksutapahtuma kortilla/ kortille yhteistyökumppanin "
+#~ "tallentaman maksutunnisteen ansiosta, kun ostat tai tilaat verkossa.\n"
+#~ "Tarkista: Maksa laskut sekillä ja tulosta se Odoosta.\n"
+#~ "Erätalletus: Kerää useita asiakasshekkejä kerralla generoimalla ja "
+#~ "lähettämällä erätalletus pankkiin. Moduuli account_batch_payment on "
+#~ "välttämätön.\n"
+#~ "SEPA-tilisiirto: Maksa SEPA-alueella lähettämällä SEPA-tilisiirtotiedosto "
+#~ "pankkiin. Moduuli account_sepa on välttämätön.\n"
+#~ "SEPA-suoraveloitus: Saat maksun SEPA-alueella yhteistyökumppanisi sinulle "
+#~ "antaman valtuutuksen avulla. Moduuli account_sepa on välttämätön.\n"
+
+#~ msgid "Preferred Payment Method"
+#~ msgstr "Ensisijainen maksutapa"
+
+#~ msgid ""
+#~ "Preferred payment method when paying this vendor. This is used to filter "
+#~ "vendor bills by preferred payment method to register payments in mass. "
+#~ "Use cases: create bank files for batch wires, check runs."
+#~ msgstr ""
+#~ "Suositeltava maksutapa tälle toimittajalle maksettaessa. Käytetään "
+#~ "toimittajan laskujen suodattamiseen suositellun maksutavan mukaan "
+#~ "massamaksujen rekisteröimiseksi. Käyttötapaukset: luo pankkitiedostoja "
+#~ "eräsiirtoille, tarkista ajoja."
+
+#~ msgid "Register Payment"
+#~ msgstr "Kirjaa maksu"

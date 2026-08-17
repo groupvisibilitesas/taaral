@@ -41,13 +41,13 @@ function _toNumber(value) {
 pivotToFunctionValueRegistry
     .add("text", _toString)
     .add("selection", _toString)
+    .replace("char", _toString)
+    .replace("integer", _toNumber)
     .add("reference", _toString)
-    .add("char", _toString)
-    .add("integer", _toNumber)
     .add("monetary", _toNumber)
     .add("many2one", _toNumber)
     .add("many2one_reference", _toNumber)
     .add("many2many", _toNumber)
     .add("float", _toNumber)
-    .add("date", _toDate)
-    .add("datetime", _toDate);
+    .replace("date", _toDate)
+    .replace("datetime", _toDate);

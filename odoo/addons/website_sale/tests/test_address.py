@@ -6,18 +6,15 @@ from unittest.mock import patch
 
 from werkzeug.exceptions import Forbidden
 
-from odoo import api
 from odoo.fields import Command
 from odoo.tests import tagged
 
-from odoo.addons.base.tests.common import BaseUsersCommon
-from odoo.addons.website.tools import MockRequest
 from odoo.addons.website_sale.controllers.main import WebsiteSale
-from odoo.addons.website_sale.tests.common import WebsiteSaleCommon
+from odoo.addons.website_sale.tests.common import MockRequest, WebsiteSaleCommon
 
 
 @tagged('post_install', '-at_install')
-class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
+class TestCheckoutAddress(WebsiteSaleCommon):
     """Test the address management part of the checkout process:
 
     * address creation (/shop/address)
@@ -29,6 +26,8 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
     def setUpClass(cls):
         super().setUpClass()
         cls.country_id = cls.country_be.id
+        cls.user_portal = cls._create_new_portal_user()
+        cls.user_internal = cls._create_new_internal_user()
         cls.user_internal.partner_id.company_id = cls.env.company
 
     def setUp(self):
@@ -101,9 +100,8 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
         self._setUp_multicompany_env()
         so = self._create_so(partner_id=self.demo_partner.id)
 
-        env = api.Environment(self.env.cr, self.demo_user.id, {})
-        # change also website env for `sale_get_order` to not change order partner_id
-        with MockRequest(env, website=self.website.with_env(env), sale_order_id=so.id) as req:
+        website = self.website.with_user(self.demo_user).with_context({})
+        with MockRequest(website.env, website=website, sale_order_id=so.id) as req:
             req.httprequest.method = "POST"
 
             # 1. Logged in user, new shipping
@@ -124,9 +122,8 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
         self._setUp_multicompany_env()
         so = self._create_so(partner_id=self.website.user_id.partner_id.id)
 
-        env = api.Environment(self.env.cr, self.website.user_id.id, {})
-        # change also website env for `sale_get_order` to not change order partner_id
-        with MockRequest(env, website=self.website.with_env(env), sale_order_id=so.id) as req:
+        website = self.website.with_user(self.public_user).with_context({})
+        with MockRequest(website.env, website=website, sale_order_id=so.id) as req:
             req.httprequest.method = "POST"
 
             # 1. Public user, new billing
@@ -144,16 +141,23 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
     def test_03_carrier_rate_on_shipping_address_change(self):
         """ Test that when a shipping address is changed the price of delivery is recalculated
         and updated on the order."""
-        partner = self.env.user.partner_id
-        order = self._create_so()
-        order.carrier_id = self.carrier.id  # Set the carrier on the order.
-        shipping_partner_values = {'name': 'dummy', 'parent_id': partner.id, 'type': 'delivery'}
-        shipping_partner = self.env['res.partner'].create(shipping_partner_values)
-        order.partner_shipping_id = shipping_partner
-        with MockRequest(self.env, website=self.website, sale_order_id=order.id), patch(
-            'odoo.addons.delivery.models.delivery_carrier.DeliveryCarrier.rate_shipment',
-            return_value={'success': True, 'price': 10, 'warning_message': ''}
-        ) as rate_shipment_mock:
+        shipping_partner = self.env['res.partner'].create({
+            'name': 'dummy',
+            'parent_id': self.partner.id,
+            'type': 'delivery',
+        })
+        self.cart.write({
+            'carrier_id': self.carrier.id,
+            'partner_shipping_id': shipping_partner.id
+        })
+        website = self.website.with_user(self.public_user).with_context({})
+        with (
+            MockRequest(website.env, website=website, sale_order_id=self.cart.id),
+            patch(
+                'odoo.addons.delivery.models.delivery_carrier.DeliveryCarrier.rate_shipment',
+                return_value={'success': True, 'price': 10, 'warning_message': ''}
+            ) as rate_shipment_mock
+        ):
             # Change a shipping address of the order in the checkout.
             shipping_partner2 = shipping_partner.copy()
             self.WebsiteSaleController.shop_update_address(
@@ -165,13 +169,14 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
                 msg="The carrier rate must be recalculated when shipping address is changed.",
             )
             self.assertEqual(
-                order.order_line.filtered(lambda l: l.is_delivery)[0].price_unit,
+                self.cart.order_line.filtered('is_delivery')[0].price_unit,
                 10,
                 msg="The recalculated delivery price must be updated on the order.",
             )
 
     def test_04_apply_empty_pl(self):
         ''' Ensure empty pl code reset the applied pl '''
+        self._enable_pricelists()
         so = self._create_so(partner_id=self.env.user.partner_id.id)
         eur_pl = self.env['product.pricelist'].create({
             'name': 'EUR_test',
@@ -187,6 +192,7 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
             self.assertNotEqual(so.pricelist_id, eur_pl, "Pricelist should be removed when sending an empty pl code")
 
     def test_04_pl_reset_on_login(self):
+        self._enable_pricelists()
         """Check that after login, the SO pricelist is correctly recomputed."""
         test_user = self.env['res.users'].create({
             'name': 'Toto',
@@ -206,15 +212,17 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
         self.assertEqual(so.pricelist_id, self.pricelist)
 
         with MockRequest(
-            self.env, website=self.website,
+            public_user_env,
+            website=self.website.with_env(public_user_env),
             sale_order_id=so.id,
             website_sale_current_pl=so.pricelist_id.id
-        ):
-            self.assertEqual(self.website.pricelist_id, self.pricelist)
-            order = self.website.with_env(public_user_env).sale_get_order()
+        ) as request:
+            self.assertEqual(request.pricelist, self.pricelist)
+            order = request.cart
             self.assertEqual(order, so)
             self.assertEqual(order.pricelist_id, self.pricelist)
-            order_b = self.website.with_user(test_user).sale_get_order()
+
+            order_b = request.website.with_user(test_user)._get_and_cache_current_cart()
             self.assertEqual(order, order_b)
             self.assertEqual(order_b.pricelist_id, pl_with_code)
 
@@ -246,9 +254,8 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
         self._setUp_multicompany_env()
         so = self._create_so(partner_id=self.portal_partner.id)
 
-        env = api.Environment(self.env.cr, self.portal_user.id, {})
-        # change also website env for `sale_get_order` to not change order partner_id
-        with MockRequest(env, website=self.website.with_env(env), sale_order_id=so.id) as req:
+        website = self.website.with_user(self.portal_user).with_context({})
+        with MockRequest(website.env, website=website, sale_order_id=so.id) as req:
             req.httprequest.method = "POST"
 
             # 1. Portal user, new shipping, same with the log in user
@@ -262,6 +269,52 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
             self.WebsiteSaleController.shop_address_submit(**self.default_billing_address_values)
             # Name cannot be changed if there are issued invoices
             self.assertNotEqual(self.portal_partner.name, self.default_address_values['name'], "Portal User should not be able to change the name if they have invoices under their name.")
+
+    def test_resync_partner_preserves_selected_addresses(self):
+        """Re-syncing the cart customer must not discard the delivery/invoice addresses the
+        customer already selected, when those addresses still belong to the customer's company.
+        """
+        company = self.env["res.partner"].create({
+            "name": "B2B Company", "is_company": True, "type": "contact",
+        })
+        delivery_1, delivery_2 = self.env["res.partner"].create([
+            {"name": "Branch 1", "parent_id": company.id, "type": "delivery"},
+            {"name": "Branch 2", "parent_id": company.id, "type": "delivery"},
+        ])
+        invoice = self.env["res.partner"].create({
+            "name": "Accounting", "parent_id": company.id, "type": "invoice",
+        })
+        user = self.env["res.users"].create({
+            "name": "B2B Company", "login": "b2b_company", "password": "b2b_company_pwd",
+            "partner_id": company.id,
+            "group_ids": [Command.link(self.env.ref("base.group_portal").id)],
+        })
+
+        # The customer selected a branch and a billing contact that differ from the defaults
+        # computed from the company.
+        default_delivery = company.address_get(["delivery"])["delivery"]
+        selected_delivery = (delivery_1 | delivery_2).filtered(lambda p: p.id != default_delivery)
+        so = self._create_so(partner_id=company.id)
+        so.partner_shipping_id = selected_delivery
+        so.partner_invoice_id = invoice
+
+        website = self.website.with_user(user).with_context({})
+        # No cart session key set => the cart is retrieved through the abandoned-cart branch,
+        # which re-runs the customer sync on the order.
+        with MockRequest(website.env, website=website) as request:
+            cart = request.website._get_and_cache_current_cart()
+
+            self.assertEqual(cart, so)
+            self.assertEqual(
+                cart.partner_shipping_id,
+                selected_delivery,
+                "The delivery address selected by the customer must be preserved.",
+            )
+            self.assertEqual(
+                cart.partner_invoice_id,
+                invoice,
+                "The invoice address selected by the customer must be preserved.",
+            )
 
     def test_07_change_fiscal_position(self):
         """
@@ -284,27 +337,26 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
             },
         ]
 
-        tax_10_incl, tax_20_excl, tax_15_incl = self.env['account.tax'].create([
-            {'name': 'Tax 10% incl', 'amount': 10, 'price_include_override': 'tax_included'},
-            {'name': 'Tax 20% excl', 'amount': 20, 'price_include_override': 'tax_excluded'},
-            {'name': 'Tax 15% incl', 'amount': 15, 'price_include_override': 'tax_included'},
-        ])
         fpos_be, fpos_nl = self.env['account.fiscal.position'].create([
             {
                 'sequence': 1,
                 'name': 'BE',
                 'auto_apply': True,
                 'country_id': self.env.ref('base.be').id,
-                'tax_ids': [Command.create({'tax_src_id': tax_10_incl.id, 'tax_dest_id': tax_20_excl.id})],
             },
             {
                 'sequence': 2,
                 'name': 'NL',
                 'auto_apply': True,
                 'country_id': self.env.ref('base.nl').id,
-                'tax_ids': [Command.create({'tax_src_id': tax_10_incl.id, 'tax_dest_id': tax_15_incl.id})],
             },
         ])
+        tax_10_incl, tax_20_excl, tax_15_incl = self.env['account.tax'].create([
+            {'name': 'Tax 10% incl', 'amount': 10, 'price_include_override': 'tax_included'},
+            {'name': 'Tax 20% excl', 'amount': 20, 'price_include_override': 'tax_excluded', 'fiscal_position_ids': fpos_be},
+            {'name': 'Tax 15% incl', 'amount': 15, 'price_include_override': 'tax_included', 'fiscal_position_ids': fpos_nl},
+        ])
+        (tax_20_excl | tax_15_incl).original_tax_ids = tax_10_incl
 
         product = self.env['product.product'].create({
             'name': 'Product test',
@@ -327,8 +379,8 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
             [90.91, 9.09, 100.0]
         )
 
-        env = api.Environment(self.env.cr, self.website.user_id.id, {})
-        with MockRequest(self.env, website=self.website.with_env(env), sale_order_id=so.id) as req:
+        website = self.website.with_user(self.public_user).with_context({})
+        with MockRequest(website.env, website=website, sale_order_id=so.id) as req:
             req.httprequest.method = "POST"
 
             self.WebsiteSaleController.shop_address_submit(**be_address_POST)
@@ -356,9 +408,8 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
         self._setUp_multicompany_env()
         so = self._create_so(partner_id=self.demo_partner.id)
 
-        env = api.Environment(self.env.cr, self.demo_user.id, {})
-        # change also website env for `sale_get_order` to not change order partner_id
-        with MockRequest(env, website=self.website.with_env(env), sale_order_id=so.id) as req:
+        website = self.website.with_user(self.demo_user).with_context({})
+        with MockRequest(website.env, website=website, sale_order_id=so.id) as req:
             req.httprequest.method = "POST"
 
             # check the default values
@@ -478,13 +529,11 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
         so = self._create_so(partner_id=user_partner.id)
         self.assertNotEqual(so.partner_shipping_id, shipping)
         self.assertNotEqual(so.partner_invoice_id, invoicing)
-        self.assertFalse(colleague._can_be_edited_by_current_customer(so, 'billing'))
-        self.assertFalse(colleague._can_be_edited_by_current_customer(so, 'delivery'))
 
-        env = api.Environment(self.env.cr, user.id, {})
-        # change also website env for `sale_get_order` to not change order partner_id
-        with MockRequest(env, website=self.website.with_env(env), sale_order_id=so.id):
+        website = self.website.with_user(user).with_context({})
+        with MockRequest(website.env, website=website, sale_order_id=so.id):
 
+            self.assertFalse(colleague._can_be_edited_by_current_customer(order_sudo=so))
             # Invalid addresses unaccessible to current customer
             with self.assertRaises(Forbidden):
                 # cannot use contact type addresses
@@ -562,9 +611,9 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
         })
         partner_1, _partner_2, _partner_3 = partner_company.child_ids
         self.assertTrue(partner_company.can_edit_vat())
-        self.assertTrue(partner_company._can_edit_name())
+        self.assertTrue(partner_company._can_edit_country())
         self.assertTrue(all(not p.can_edit_vat() for p in partner_company.child_ids))
-        self.assertTrue(all(p._can_edit_name() for p in partner_company.child_ids))
+        self.assertTrue(all(p._can_edit_country() for p in partner_company.child_ids))
 
         dumb_product = self.env['product.product'].create({'name': 'test'})
         invoice = self.env['account.move'].create({
@@ -580,8 +629,8 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
 
         self.assertEqual(invoice.state, 'posted')
         self.assertFalse(partner_company.can_edit_vat())
-        self.assertFalse(partner_company._can_edit_name())
-        self.assertTrue(all(p._can_edit_name() for p in partner_company.child_ids))
+        self.assertFalse(partner_company._can_edit_country())
+        self.assertTrue(all(p._can_edit_country() for p in partner_company.child_ids))
         invoice = self.env['account.move'].create({
             'move_type': 'out_invoice',
             'partner_id': partner_1.id,
@@ -592,7 +641,7 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
             ],
         })
         invoice.action_post()
-        self.assertFalse(partner_1._can_edit_name())
+        self.assertFalse(partner_1._can_edit_country())
 
     def test_11_payment_term_when_address_change(self):
         """Make sure the expected payment terms are set on ecommerce orders"""
@@ -602,8 +651,8 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
         so = self._create_so(partner_id=self.portal_partner.id)
         self.assertTrue(so.payment_term_id, "A payment term should be set by default on the sale order")
 
-        env = api.Environment(self.env.cr, self.portal_user.id, {})
-        with MockRequest(env, website=self.website.with_env(env).with_context(website_id=self.website.id)) as req:
+        website = self.website.with_user(self.portal_user).with_context({})
+        with MockRequest(website.env, website=website) as req:
             req.httprequest.method = "POST"
 
             self.default_address_values['partner_id'] = self.portal_partner.id
@@ -616,26 +665,25 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
 
     def test_12_recompute_taxes_on_address_change(self):
         self.env.company.country_id = self.env.ref('base.us')
+        fpos_be = self.env['account.fiscal.position'].create({
+            'name': "Fiscal Position BE",
+            'auto_apply': True,
+            'country_id': self.country_id,
+        })
         tax_15_incl, tax_0 = self.env['account.tax'].create([
             {
                 'name': "15% excl",
                 'amount': 15,
                 'price_include_override': 'tax_included',
+                'fiscal_position_ids': fpos_be.ids,
             },
             {
                 'name': "0%",
                 'amount': 0,
+                'fiscal_position_ids': fpos_be.ids,
             },
         ])
-        fpos_be = self.env['account.fiscal.position'].create({
-            'name': "Fiscal Position BE",
-            'auto_apply': True,
-            'country_id': self.country_id,
-            'tax_ids': [Command.create({
-                'tax_src_id': tax_15_incl.id,
-                'tax_dest_id': tax_0.id,
-            })],
-        })
+        tax_0.original_tax_ids = tax_15_incl
         self.product.taxes_id = [Command.set(tax_15_incl.ids)]
         self.partner.country_id = self.country_id
 
@@ -644,98 +692,19 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
         amount_untaxed = cart.amount_untaxed
 
         self.assertEqual(cart.fiscal_position_id, fpos_be)
-        self.assertEqual(cart.order_line.tax_id, tax_0)
+        self.assertEqual(cart.order_line.tax_ids, tax_0)
 
         self.partner.country_id = self.env.company.country_id
         self.assertNotEqual(cart.fiscal_position_id, fpos_be)
-        self.assertEqual(cart.order_line.tax_id, tax_15_incl)
+        self.assertEqual(cart.order_line.tax_ids, tax_15_incl)
         self.assertEqual(cart.amount_untaxed, amount_untaxed, "Untaxed amount should not change")
 
         cart.action_confirm()
         self.partner.country_id = self.country_id
         self.assertEqual(
-            cart.order_line.tax_id, tax_15_incl,
+            cart.order_line.tax_ids, tax_15_incl,
             "Tax should no longer change after order confirmation",
         )
-
-    def test_13_shop_address_submit_eu_vat_number(self):
-        if not hasattr(self.env['res.partner'], 'check_vat'):
-            self.skipTest("base_vat is not installed")
-
-        partner = self.env['res.partner'].create({
-            'name': 'test partner',
-            'vat': '0477472701',
-            'country_id': self.country_id,
-        })
-        user = self.env['res.users'].create({
-            'name': 'test user',
-            'login': 'test',
-            'email': 'test@test.com',
-            'partner_id': partner.id,
-        })
-
-        invoice = self.env['account.move'].create({
-            'move_type': 'out_invoice',
-            'partner_id': partner.id,
-            'invoice_line_ids': [
-                Command.create({
-                    'product_id': self.product.id,
-                })
-            ],
-        })
-        invoice.action_post()
-        self.assertFalse(partner.can_edit_vat())
-
-        so = self._create_so(partner_id=partner.id)
-        address_values = {
-            **self.default_address_values,
-            'vat': '0477472701',
-            'name': partner.name,
-            'email': partner.email,
-        }
-        env = api.Environment(self.env.cr, user.id, {})
-        with MockRequest(env, website=self.website.with_env(env), sale_order_id=so.id) as req:
-            req.httprequest.method = "POST"
-            self.WebsiteSaleController.shop_address_submit(
-                partner_id=partner.id,
-                **address_values,
-            )
-
-        self.assertEqual(partner.vat, 'BE0477472701')
-
-    def test_14_shop_address_submit_conditionally_ignores_company_name(self):
-        """Ensure that updating an address does not set company_name when parent_id is set on the partner."""
-        user = self.user_portal
-        partner_user = user.partner_id
-        partner_company = self.env['res.partner'].create({
-            'name': 'My company',
-            'is_company': True,
-            'child_ids': [Command.link(partner_user.id)],
-        })
-
-        so = self._create_so(partner_id=partner_user.id)
-        env = api.Environment(self.env.cr, user.id, {})
-        address_values = {
-            **self.default_address_values,
-            'company_name': partner_company.name,
-        }
-
-        with MockRequest(env, website=self.website.with_env(env), sale_order_id=so.id) as req:
-            req.httprequest.method = "POST"
-            self.WebsiteSaleController.shop_address_submit(
-                partner_id=partner_user.id,
-                **address_values,
-            )
-        self.assertFalse(partner_user.company_name, "company_name should remain empty for partners with an existing parent_id.")
-
-        partner_user.parent_id = None
-        with MockRequest(env, website=self.website.with_env(env), sale_order_id=so.id) as req:
-            req.httprequest.method = "POST"
-            self.WebsiteSaleController.shop_address_submit(
-                partner_id=partner_user.id,
-                **address_values,
-            )
-        self.assertEqual(partner_user.company_name, 'My company')
 
     def test_imported_user_with_trailing_name_can_checkout(self):
         """Ensure that an imported user with trailing spaces in their name can complete checkout without error."""
@@ -748,8 +717,8 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
         imported_partner = imported_user.partner_id
         so = self._create_so(partner_id=imported_partner.id)
 
-        env = api.Environment(self.env.cr, imported_user.id, {})
-        with MockRequest(env, website=self.website.with_env(env), sale_order_id=so.id) as req:
+        website = self.website.with_user(imported_user).with_context({})
+        with MockRequest(website.env, website=website, sale_order_id=so.id) as req:
             req.httprequest.method = "POST"
 
             values = {
@@ -795,7 +764,7 @@ class TestCheckoutAddress(BaseUsersCommon, WebsiteSaleCommon):
 
         website = self.website.with_user(self.user_portal)
         with MockRequest(self.env(user=self.user_portal), website=website):
-            so = website.sale_get_order(force_create=True)
+            so = website._create_cart()
 
         self.assertEqual(
             so.fiscal_position_id.country_id,

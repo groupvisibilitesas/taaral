@@ -4,6 +4,7 @@ from odoo import models, api
 
 class EventRegistration(models.Model):
     _inherit = ['event.registration']
+    _name = 'event.registration'
 
     @api.depends('pos_order_id.state')
     def _compute_registration_status(self):

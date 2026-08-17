@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
-import threading
 
 from uuid import uuid4
-from werkzeug.urls import url_join
 
 from odoo import api, fields, models, tools, _
 from odoo.addons.sms.tools.sms_api import SmsApi
+from odoo.tools.urls import urljoin as url_join
 
 _logger = logging.getLogger(__name__)
 
@@ -71,9 +69,15 @@ class SmsSms(models.Model):
         help='Will automatically be deleted, while notifications will not be deleted in any case.'
     )
 
-    _sql_constraints = [
-        ('uuid_unique', 'unique(uuid)', 'UUID must be unique'),
-    ]
+    _uuid_unique = models.Constraint(
+        'unique(uuid)',
+        'UUID must be unique',
+    )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        self.env.ref('sms.ir_cron_sms_scheduler_action')._trigger()
+        return super().create(vals_list)
 
     @api.depends('uuid')
     def _compute_sms_tracker_id(self):
@@ -92,26 +96,26 @@ class SmsSms(models.Model):
     def action_set_outgoing(self):
         self._update_sms_state_and_trackers('outgoing', failure_type=False)
 
-    def send(self, unlink_failed=False, unlink_sent=True, auto_commit=False, raise_exception=False):
+    def send(self, unlink_failed=False, unlink_sent=True, raise_exception=False):
         """ Main API method to send SMS.
+
+        This contacts an external server. If the transaction fails, it may be
+        retried which can result in sending multiple SMS messages!
 
           :param unlink_failed: unlink failed SMS after IAP feedback;
           :param unlink_sent: unlink sent SMS after IAP feedback;
-          :param auto_commit: commit after each batch of SMS;
           :param raise_exception: raise if there is an issue contacting IAP;
         """
-        to_send = self.filtered(lambda sms: sms.state == 'outgoing' and not sms.to_delete)
+        domain = [('state', '=', 'outgoing'), ('to_delete', '!=', True)]
+        to_send = self.try_lock_for_update().filtered_domain(domain)
 
         for sms_api, sms in to_send._split_by_api():
             for batch_ids in sms._split_batch():
-                self.env['sms.sms'].browse(batch_ids).with_context(sms_api=sms_api)._send(
+                self.browse(batch_ids).with_context(sms_api=sms_api)._send(
                     unlink_failed=unlink_failed,
                     unlink_sent=unlink_sent,
                     raise_exception=raise_exception,
                 )
-                # auto-commit if asked except in testing mode
-                if auto_commit is True and not getattr(threading.current_thread(), 'testing', False):
-                    self._cr.commit()
 
     def _split_by_api(self):
         yield SmsApi(self.env), self
@@ -144,48 +148,34 @@ class SmsSms(models.Model):
         }
 
     @api.model
-    def _process_queue(self, ids=None):
-        """ Send immediately queued messages, committing after each message is sent.
-        This is not transactional and should not be called during another transaction!
-
-       :param list ids: optional list of emails ids to send. If passed no search
-         is performed, and these ids are used instead.
-        """
+    def _process_queue(self):
+        """ CRON job to send queued SMS messages. """
         domain = [('state', '=', 'outgoing'), ('to_delete', '!=', True)]
 
-        filtered_ids = self.search(domain, limit=10000).ids  # TDE note: arbitrary limit we might have to update
-        if ids:
-            ids = list(set(filtered_ids) & set(ids))
-        else:
-            ids = filtered_ids
-        ids.sort()
+        batch_size = self._get_send_batch_size()
+        records = self.search(domain, limit=batch_size, order='id').try_lock_for_update()
+        if not records:
+            return
+        for sms_api, sms in records._split_by_api():
+            sms.with_context(sms_api=sms_api)._send(unlink_failed=False, unlink_sent=True, raise_exception=False)
+        self.env['ir.cron']._commit_progress(len(records), remaining=self.search_count(domain) if len(records) == batch_size else 0)
 
-        res = None
-        try:
-            # auto-commit except in testing mode
-            auto_commit = not getattr(threading.current_thread(), 'testing', False)
-            res = self.browse(ids).send(unlink_failed=False, unlink_sent=True, auto_commit=auto_commit, raise_exception=False)
-        except Exception:
-            _logger.exception("Failed processing SMS queue")
-        return res
+    def _get_send_batch_size(self):
+        return int(self.env['ir.config_parameter'].sudo().get_param('sms.session.batch.size', 500))
 
     def _get_sms_company(self):
         return self.mail_message_id.record_company_id or self.env.company
 
-    def _get_batch_size(self):
-        return int(self.env['ir.config_parameter'].sudo().get_param('sms.session.batch.size', 500))
-
     def _split_batch(self):
-        batch_size = self._get_batch_size()
-        for sms_batch in tools.split_every(batch_size, self.ids):
-            yield sms_batch
+        batch_size = self._get_send_batch_size()
+        yield from tools.split_every(batch_size, self.ids)
 
     def _send(self, unlink_failed=False, unlink_sent=True, raise_exception=False):
         """Send SMS after checking the number (presence and formatting)."""
         sms_api = self.env.context.get('sms_api')
         if not sms_api:
             company = self._get_sms_company()
-            company.ensure_one()  # This should always be the case since the grouping is done in `send`
+            company.ensure_one()  # should always be the case since the grouping is done in `send` or `_process_queue`
             sms_api = company._get_sms_api_class()(self.env)
 
         return self._send_with_api(
@@ -246,5 +236,5 @@ class SmsSms(models.Model):
 
     @api.autovacuum
     def _gc_device(self):
-        self._cr.execute("DELETE FROM sms_sms WHERE to_delete = TRUE")
-        _logger.info("GC'd %d sms marked for deletion", self._cr.rowcount)
+        self.env.cr.execute("DELETE FROM sms_sms WHERE to_delete = TRUE")
+        _logger.info("GC'd %d sms marked for deletion", self.env.cr.rowcount)

@@ -56,7 +56,7 @@ defineModels([Partner, Product]);
 
 class Counter extends Component {
     static props = ["*"];
-    static template = xml/*html*/ `
+    static template = xml /*html*/ `
         <div class="counter">
             <div class="interval">
                 <input type="number" t-model.number="state.interval" />
@@ -141,7 +141,7 @@ test("next step with new anchor at same position", async () => {
     class Dummy extends Component {
         static props = ["*"];
         state = useState({ bool: true });
-        static template = xml/*html*/ `
+        static template = xml /*html*/ `
             <button class="foo w-100" t-if="state.bool" t-on-click="() => { state.bool = false; }">Foo</button>
             <button class="bar w-100" t-if="!state.bool">Bar</button>
         `;
@@ -149,7 +149,7 @@ test("next step with new anchor at same position", async () => {
     class Root extends Component {
         static props = ["*"];
         static components = { Dummy };
-        static template = xml/*html*/ `
+        static template = xml /*html*/ `
             <t>
                 <Dummy />
             </t>
@@ -190,7 +190,7 @@ test("pointer is added on top of overlay's stack", async () => {
     registry.category("web_tour.tours").add("tour1", {
         steps: () => [
             { trigger: ".modal .a", run: "click" },
-            { trigger: ".btn-primary", run: "click" },
+            { trigger: ".modal .btn-close", run: "click" },
         ],
     });
     class DummyDialog extends Component {
@@ -224,7 +224,7 @@ test("pointer is added on top of overlay's stack", async () => {
     await animationFrame();
     expect(".o_tour_pointer").toHaveCount(1);
 
-    await click(".btn-primary");
+    await click(".modal .btn-close");
     await animationFrame();
     expect(".o_tour_pointer").toHaveCount(0);
 });
@@ -233,7 +233,7 @@ test("registering test tour after service is started doesn't auto-start the tour
     patchWithCleanup(session, { tour_enabled: true });
     class Root extends Component {
         static components = { Counter };
-        static template = xml/*html*/ `
+        static template = xml /*html*/ `
                 <t>
                     <Counter />
                 </t>
@@ -273,7 +273,7 @@ test("hovering to the anchor element should show the content and not when conten
     class Root extends Component {
         static props = ["*"];
         static components = { Counter };
-        static template = xml/*html*/ `
+        static template = xml /*html*/ `
             <t>
                 <Counter />
                 <button class="other">Pogačar</button>
@@ -288,7 +288,7 @@ test("hovering to the anchor element should show the content and not when conten
     await contains("button.inc").hover();
     await animationFrame();
     expect(".o_tour_pointer_content:not(.invisible)").toHaveCount(1);
-    expect(".o_tour_pointer_content:not(.invisible)").toHaveText("content");
+    expect(".o_tour_pointer_content:not(.invisible) span").toHaveText("content");
     await contains(".other").hover();
     await animationFrame();
     expect(".o_tour_pointer_content.invisible").toHaveCount(1);
@@ -325,7 +325,7 @@ test("should show only 1 pointer at a time", async () => {
     class Root extends Component {
         static props = ["*"];
         static components = { Counter };
-        static template = xml/*html*/ `
+        static template = xml /*html*/ `
             <t>
                 <Counter />
             </t>
@@ -360,7 +360,7 @@ test("perform edit on next step", async () => {
     class Root extends Component {
         static props = ["*"];
         static components = { Counter };
-        static template = xml/*html*/ `
+        static template = xml /*html*/ `
             <t>
                 <Counter />
             </t>
@@ -395,7 +395,7 @@ test("scrolling to next step should update the pointer's height", async (assert)
     class Root extends Component {
         static props = ["*"];
         static components = { Counter };
-        static template = xml/*html*/ `
+        static template = xml /*html*/ `
             <div class="scrollable-parent" style="overflow-y: scroll; height: 150px;">
                 <Counter />
                 <div class="bottom-filler" style="height: 300px" />
@@ -415,7 +415,7 @@ test("scrolling to next step should update the pointer's height", async (assert)
     expect(firstOpenWidth).toBe("28px");
 
     await contains("button.inc").hover();
-    expect(".o_tour_pointer").toHaveText(content);
+    expect(".o_tour_pointer span").toHaveText(content);
     expect(".o_tour_pointer").toHaveClass("o_open");
     await contains(".interval input").hover();
     expect(".o_tour_pointer").not.toHaveClass("o_open");
@@ -427,7 +427,7 @@ test("scrolling to next step should update the pointer's height", async (assert)
     expect(".o_tour_pointer").toHaveCount(1);
     await contains(".o_tour_pointer").hover();
     await animationFrame();
-    expect(".o_tour_pointer").toHaveText("Scroll up to reach the next step.");
+    expect(".o_tour_pointer span").toHaveText("Scroll up to reach the next step.");
     await contains(".o_tour_pointer").click();
 
     await runAllTimers();
@@ -440,7 +440,7 @@ test("scrolling to next step should update the pointer's height", async (assert)
     await contains("button.inc").hover();
     await animationFrame();
     expect(".o_tour_pointer").toHaveClass("o_open");
-    expect(".o_tour_pointer").toHaveText(content);
+    expect(".o_tour_pointer span").toHaveText(content);
     await contains(".interval input").hover();
     const secondOpenHeight = queryFirst(".o_tour_pointer").style.height;
     const secondOpenWidth = queryFirst(".o_tour_pointer").style.width;
@@ -464,7 +464,7 @@ test("scroller pointer to reach next step", async () => {
     class Root extends Component {
         static props = ["*"];
         static components = { Counter };
-        static template = xml/*html*/ `
+        static template = xml /*html*/ `
             <div class="scrollable-parent" style="overflow-y: scroll; height: 150px;">
                 <button class="test">Test me</button>
                 <div class="top-filler" style="height: 500px" />
@@ -519,7 +519,7 @@ test("scroller pointer to reach next step (X axis)", async () => {
     class Root extends Component {
         static props = ["*"];
         static components = { Counter };
-        static template = xml/*html*/ `
+        static template = xml /*html*/ `
             <div class="scrollable-parent d-flex flex-row" style="overflow-x: scroll; width: 300px;">
                 <button class="test">Test me</button>
                 <div class="left-filler" style="min-width: 500px" />
@@ -601,7 +601,7 @@ test("manual tour with inactive steps", async () => {
     class Root extends Component {
         static props = ["*"];
         static components = { Counter };
-        static template = xml/*html*/ `
+        static template = xml /*html*/ `
             <t>
                 <Counter />
             </t>
@@ -647,7 +647,7 @@ test("manual tour with alternative trigger", async () => {
     });
     class Root extends Component {
         static components = {};
-        static template = xml/*html*/ `
+        static template = xml /*html*/ `
             <t>
                 <div class="container">
                     <button class="button0">0, hello</button>
@@ -854,7 +854,7 @@ test("check tooltip position", async () => {
     });
     class Root extends Component {
         static components = {};
-        static template = xml/*html*/ `
+        static template = xml /*html*/ `
             <t>
                 <div class="container">
                     <div class="p-3"><button class="button0">Button 0</button></div>
@@ -926,7 +926,7 @@ test("check rainbowManMessage", async () => {
     });
     class Root extends Component {
         static components = {};
-        static template = xml/*html*/ `
+        static template = xml /*html*/ `
             <t>
                 <div class="container">
                     <div class="p-3"><button class="button0">Button 0</button></div>
@@ -962,7 +962,7 @@ test("check alternative trigger that appear after the initial trigger", async ()
     });
     class Root extends Component {
         static components = {};
-        static template = xml/*html*/ `
+        static template = xml /*html*/ `
             <t>
                 <div class="container">
                     <div class="p-3"><button class="button0">Button 0</button></div>
@@ -1119,7 +1119,7 @@ test("Tour don't backward when dropdown loading", async () => {
         views: [[false, "form"]],
     });
 
-    onRpc("product", "name_search", async () => {
+    onRpc("product", "web_name_search", async () => {
         if (makeItLag) {
             await def;
         }
@@ -1237,4 +1237,44 @@ test("pointer hidden when trigger is behind overlay", async () => {
     await waitFor(".o_tour_pointer");
     // Finalize the dummy tour to avoid leaving in a dirty state
     await contains("button.foo").click();
+});
+
+test("pointer in active element", async () => {
+    registry.category("web_tour.tours").add("tour1", {
+        steps: () => [
+            { trigger: "button.foo", run: "click" },
+            { trigger: "button.a", run: "click" },
+        ],
+    });
+
+    class DummyDialog extends Component {
+        static props = ["*"];
+        static components = { Dialog };
+        static template = xml`
+            <Dialog>
+                <button class="a">A</button>
+            </Dialog>
+        `;
+    }
+
+    class Dummy extends Component {
+        static props = ["*"];
+        static components = {};
+        static template = xml`
+            <button class="foo w-100" t-on-click="this.click">Foo</button>
+        `;
+
+        click() {
+            getService("dialog").add(DummyDialog, {});
+        }
+    }
+
+    await mountWithCleanup(Dummy);
+    await getService("tour_service").startTour("tour1", { mode: "manual" });
+    await waitFor(".o_tour_pointer");
+    await contains(".foo").click();
+    await waitFor(".modal");
+    await waitFor(".o_tour_pointer");
+    await contains(".modal .a").click();
+    await waitForNone(".o_tour_pointer");
 });

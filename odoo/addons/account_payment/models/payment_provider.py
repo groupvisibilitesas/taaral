@@ -70,6 +70,8 @@ class PaymentProvider(models.Model):
             )
             if pay_method_line_same_code:
                 create_values['payment_account_id'] = pay_method_line_same_code.payment_account_id.id
+            if self._get_code() == 'sepa_direct_debit':
+                create_values['name'] = "Online SEPA"
             self.env['account.payment.method.line'].create(create_values)
 
     def _get_payment_method_outstanding_account_id(self, payment_method_id):
@@ -115,9 +117,9 @@ class PaymentProvider(models.Model):
     #=== BUSINESS METHODS ===#
 
     @api.model
-    def _setup_provider(self, code):
+    def _setup_provider(self, code, **kwargs):
         """ Override of `payment` to create the payment method of the provider. """
-        super()._setup_provider(code)
+        super()._setup_provider(code, **kwargs)
         self._setup_payment_method(code)
 
     @api.model

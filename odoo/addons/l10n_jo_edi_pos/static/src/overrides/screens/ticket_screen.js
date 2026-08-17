@@ -1,6 +1,6 @@
 import { TicketScreen } from "@point_of_sale/app/screens/ticket_screen/ticket_screen";
-import { makeAwaitable } from "@point_of_sale/app/store/make_awaitable_dialog";
-import { TextInputPopup } from "@point_of_sale/app/utils/input_popups/text_input_popup";
+import { makeAwaitable } from "@point_of_sale/app/utils/make_awaitable_dialog";
+import { TextInputPopup } from "@point_of_sale/app/components/popups/text_input_popup/text_input_popup";
 import { _t } from "@web/core/l10n/translation";
 import { patch } from "@web/core/utils/patch";
 

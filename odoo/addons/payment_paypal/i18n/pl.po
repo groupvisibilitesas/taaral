@@ -3,18 +3,20 @@
 # * payment_paypal
 #
 # Translators:
-# Wil Odoo, 2024
-#
-# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Martin Trigaux, 2019
+# Dariusz Żbikowski <darek@krokus.com.pl>, 2019
+# Piotr Szlązak <szlazakpiotr@gmail.com>, 2019
+# Wiktor Kaźmierczak <wik92tor@wp.pl>, 2019
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
 # "Marta (wacm)" <wacm@odoo.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~12.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:38+0000\n"
-"PO-Revision-Date: 2026-03-05 13:54+0000\n"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-02 12:54+0000\n"
 "Last-Translator: \"Marta (wacm)\" <wacm@odoo.com>\n"
-"Language-Team: Polish <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Polish <https://translate.odoo.com/projects/odoo-19/"
 "payment_paypal/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
@@ -23,7 +25,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && "
 "(n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && "
 "n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
-"X-Generator: Weblate 5.16.1\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: payment_paypal
 #: model_terms:ir.ui.view,arch_db:payment_paypal.payment_provider_form
@@ -43,14 +45,14 @@ msgstr "Kod"
 #. module: payment_paypal
 #. odoo-python
 #: code:addons/payment_paypal/models/payment_provider.py:0
-msgid "Could not establish the connection to the API."
-msgstr "Nie można nawiązać połączenia z interfejsem API."
-
-#. module: payment_paypal
-#. odoo-python
-#: code:addons/payment_paypal/models/payment_provider.py:0
 msgid "Could not generate a new access token."
 msgstr "Nie można wygenerować nowego tokenu dostępu."
+
+#. module: payment_paypal
+#: model:ir.model.fields,field_description:payment_paypal.field_payment_provider__display_name
+#: model:ir.model.fields,field_description:payment_paypal.field_payment_transaction__display_name
+msgid "Display Name"
+msgstr "Nazwa wyświetlana"
 
 #. module: payment_paypal
 #: model:ir.model.fields,field_description:payment_paypal.field_payment_provider__paypal_email_account
@@ -68,6 +70,12 @@ msgid "How to configure your paypal account?"
 msgstr "Jak konfigurować twoje konto paypal?"
 
 #. module: payment_paypal
+#: model:ir.model.fields,field_description:payment_paypal.field_payment_provider__id
+#: model:ir.model.fields,field_description:payment_paypal.field_payment_transaction__id
+msgid "ID"
+msgstr "ID"
+
+#. module: payment_paypal
 #. odoo-python
 #: code:addons/payment_paypal/controllers/main.py:0
 msgid "Invalid response format, can't normalize."
@@ -78,12 +86,6 @@ msgstr "Nieprawidłowy format odpowiedzi, nie można normalizować."
 #: code:addons/payment_paypal/models/payment_transaction.py:0
 msgid "Missing value for txn_id (%(txn_id)s) or txn_type (%(txn_type)s)."
 msgstr "Brakująca wartość dla txn_id (%(txn_id)s) lub txn_type (%(txn_type)s)."
-
-#. module: payment_paypal
-#. odoo-python
-#: code:addons/payment_paypal/models/payment_transaction.py:0
-msgid "No transaction found matching reference %s."
-msgstr "Nie znaleziono transakcji pasującej do referencji %s."
 
 #. module: payment_paypal
 #: model:ir.model.fields.selection,name:payment_paypal.selection__payment_provider__code__paypal
@@ -132,7 +134,7 @@ msgstr "Transakcja płatnicza"
 
 #. module: payment_paypal
 #. odoo-javascript
-#: code:addons/payment_paypal/static/src/js/payment_form.js:0
+#: code:addons/payment_paypal/static/src/interactions/payment_form.js:0
 msgid "Payment processing failed"
 msgstr "Przetwarzanie płatności nie powiodło się"
 
@@ -141,12 +143,6 @@ msgstr "Przetwarzanie płatności nie powiodło się"
 #: code:addons/payment_paypal/models/payment_transaction.py:0
 msgid "Received data with invalid payment status: %s"
 msgstr "Otrzymano dane z nieprawidłowym statusem płatnosci: %s"
-
-#. module: payment_paypal
-#. odoo-python
-#: code:addons/payment_paypal/models/payment_provider.py:0
-msgid "The communication with the API failed. Details: %s"
-msgstr "Komunikacja z API nie powiodła się. Szczegóły: %s"
 
 #. module: payment_paypal
 #. odoo-python
@@ -180,6 +176,12 @@ msgid "The technical code of this payment provider."
 msgstr "Kod techniczny tego dostawcy usług płatniczych."
 
 #. module: payment_paypal
+#. odoo-python
+#: code:addons/payment_paypal/controllers/main.py:0
+msgid "Unable to verify the payment data"
+msgstr "Nie można zweryfikować danych dotyczących płatności"
+
+#. module: payment_paypal
 #: model_terms:ir.ui.view,arch_db:payment_paypal.payment_provider_form
 msgid "Webhook ID"
 msgstr "ID webhooka"
@@ -189,3 +191,12 @@ msgstr "ID webhooka"
 #: code:addons/payment_paypal/models/payment_provider.py:0
 msgid "You must have an HTTPS connection to generate a webhook."
 msgstr "Aby wygenerować webhook, musisz mieć połączenie HTTPS."
+
+#~ msgid "Paypal"
+#~ msgstr "Paypal"
+
+#~ msgid "Paypal Instant Payment Notification"
+#~ msgstr "Paypal IPN - Natychmiastowe Powiadomienia o Płatnościach"
+
+#~ msgid "Use IPN"
+#~ msgstr "Używaj IPN"

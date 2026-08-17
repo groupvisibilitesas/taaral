@@ -1,7 +1,7 @@
 from odoo import models
 
 
-class ThemePaptic(models.AbstractModel):
+class ThemeUtils(models.AbstractModel):
     _inherit = 'theme.utils'
 
     def _theme_paptic_post_copy(self, mod):

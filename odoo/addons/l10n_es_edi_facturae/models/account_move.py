@@ -11,6 +11,7 @@ from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import float_round, float_repr, float_compare, date_utils, SQL
 from odoo.tools.xml_utils import cleanup_xml_node, find_xml_value
+from odoo.tools.sql import column_exists, create_column
 from odoo.addons.l10n_es_edi_facturae.xml_utils import (
     NS_MAP,
     _canonicalize_node,
@@ -115,7 +116,12 @@ class AccountMove(models.Model):
             ('83', "Taxable Base modified due to discounts and rebates"),
             ('84', "Taxable Base modified due to firm court ruling or administrative decision"),
             ('85', "Taxable Base modified due to unpaid outputs where there is a judgement opening insolvency proceedings"),
-        ], string='Spanish Facturae EDI Reason Code', default='10')
+        ],
+        string='Spanish Facturae EDI Reason Code',
+        compute='_compute_l10n_es_edi_facturae_reason_code',
+        store=True,
+        readonly=False,
+    )
     l10n_es_invoicing_period_start_date = fields.Date(string="Invoice Period Start Date")
     l10n_es_invoicing_period_end_date = fields.Date(string="Invoice Period End Date")
     l10n_es_payment_means = fields.Selection(
@@ -139,7 +145,31 @@ class AccountMove(models.Model):
             ('17', "Banker’s draft"),
             ('18', "Cash on delivery"),
             ('19', "Payment by card"),
-        ], string="Payment Means", default='04')
+        ],
+        string="Payment Means",
+        compute='_compute_l10n_es_payment_means',
+        store=True,
+        readonly=False,
+    )
+
+    def _auto_init(self):
+        # Create compute stored field l10n_es_edi_facturae_reason_code and
+        # l10n_es_payment_means here to avoid timeout error on large databases.
+        if not column_exists(self.env.cr, 'account_move', 'l10n_es_edi_facturae_reason_code'):
+            create_column(self.env.cr, 'account_move', 'l10n_es_edi_facturae_reason_code', 'varchar')
+        if not column_exists(self.env.cr, 'account_move', 'l10n_es_payment_means'):
+            create_column(self.env.cr, 'account_move', 'l10n_es_payment_means', 'varchar')
+        return super()._auto_init()
+
+    @api.depends('country_code')
+    def _compute_l10n_es_edi_facturae_reason_code(self):
+        for move in self.filtered(lambda move: move.country_code == 'ES'):
+            move.l10n_es_edi_facturae_reason_code = move.l10n_es_edi_facturae_reason_code or '10'
+
+    @api.depends('country_code')
+    def _compute_l10n_es_payment_means(self):
+        for move in self.filtered(lambda move: move.country_code == 'ES'):
+            move.l10n_es_payment_means = move.l10n_es_payment_means or '04'
 
     def _get_fields_to_detach(self):
         # EXTENDS account
@@ -172,8 +202,8 @@ class AccountMove(models.Model):
 
     def _l10n_es_edi_facturae_get_tax_period(self):
         self.ensure_one()
-        if self.env['res.company'].fields_get(['account_tax_periodicity']):
-            period_start, period_end = self.company_id._get_tax_closing_period_boundaries(self.date, self.env.ref('l10n_es.mod_303'))
+        if self.env['res.company'].fields_get(['account_return_periodicity']):
+            period_start, period_end = self.env.ref('l10n_es_reports.es_mod303_tax_return_type')._get_period_boundaries(self.company_id, self.date)
         else:
             period_start = date_utils.start_of(self.date, 'month')
             period_end = date_utils.end_of(self.date, 'month')
@@ -288,7 +318,7 @@ class AccountMove(models.Model):
                 installments.append({
                     'InstallmentDueDate': payment_term.date_maturity,
                     'InstallmentAmount': payment_term.amount_residual_currency,
-                    'PaymentMeans': self.l10n_es_payment_means,
+                    'PaymentMeans': self.l10n_es_payment_means or '04',
                     'AccountToBeCredited': {
                         'IBAN': self.partner_bank_id.sanitized_acc_number,
                         'BIC': self.partner_bank_id.bank_bic,
@@ -418,7 +448,7 @@ class AccountMove(models.Model):
                 'OperationDate': operation_date,
                 'ExchangeRateDetails': conversion_needed,
                 'ExchangeRate': f"{round(self.invoice_currency_rate, 4):.4f}",
-                'LanguageName': self._context.get('lang', 'en_US').split('_')[0],
+                'LanguageName': self.env.context.get('lang', 'en_US').split('_')[0],
                 'InvoicingPeriod': None,
                 'ReceiverTransactionReference': invoice_ref,
                 'FileReference': invoice_ref,
@@ -561,23 +591,49 @@ class AccountMove(models.Model):
     # IMPORT
     # -------------------------------------------------------------------------
 
-    def _get_edi_decoder(self, file_data, new=False):
+    def _get_import_file_type(self, file_data):
+        """ Identify Factura-E files. """
+        # EXTENDS 'account'
         def is_facturae(tree):
             return tree.tag in [
                 '{http://www.facturae.es/Facturae/2014/v3.2.1/Facturae}Facturae',
                 '{http://www.facturae.gob.es/formato/Versiones/Facturaev3_2_2.xml}Facturae',
             ]
 
-        if file_data['type'] == 'xml' and is_facturae(file_data['xml_tree']):
-            return self._import_invoice_facturae
+        if file_data['xml_tree'] is not None and is_facturae(file_data['xml_tree']):
+            return 'l10n_es.facturae'
 
-        return super()._get_edi_decoder(file_data, new=new)
+        return super()._get_import_file_type(file_data)
+
+    def _unwrap_attachment(self, file_data, recurse=True):
+        """ Divide a Facturae file into constituent invoices and create a new attachment for each invoice after the first. """
+        # EXTENDS 'account'
+        if file_data['import_file_type'] != 'l10n_es.facturae':
+            return super()._unwrap_attachment(file_data, recurse)
+
+        embedded = self._split_xml_into_new_attachments(file_data, tag='Invoice')
+        if embedded and recurse:
+            embedded.extend(self._unwrap_attachments(embedded, recurse=True))
+        return embedded
+
+    def _get_edi_decoder(self, file_data, new=False):
+        # EXTENDS 'account'
+        if file_data['import_file_type'] == 'l10n_es.facturae':
+            return {
+                'priority': 20,
+                'decoder': self._import_invoice_facturae,
+            }
+        return super()._get_edi_decoder(file_data, new)
 
     def _import_invoice_facturae(self, invoice, file_data, new=False):
         tree = file_data['xml_tree']
         is_bill = invoice.move_type.startswith('in_')
         partner = self._import_get_partner(tree, is_bill)
-        self._import_invoice_facturae_invoices(invoice, partner, tree)
+
+        # Only decode the first invoice of the Factura-e file.
+        tree = tree.xpath('//Invoice')[0]
+
+        self._import_invoice_facturae_invoice(invoice, partner, tree)
 
     def _import_get_partner(self, tree, is_bill):
         # If we're dealing with a vendor bill, then the partner is the seller party, if an invoice then it's the buyer.
@@ -616,27 +672,8 @@ class AccountMove(models.Model):
             if country:
                 partner_vals['country_id'] = country.id
             partner = self.env['res.partner'].create(partner_vals)
-            if vat and self.env['res.partner']._run_vat_test(vat, country):
-                partner.vat = vat
-
+            partner.vat, _country_code = self.env['res.partner']._run_vat_checks(country, vat, validation='setnull')
         return partner
-
-    def _import_invoice_facturae_invoices(self, invoice, partner, tree):
-        invoices = tree.xpath('//Invoice')
-        if not invoices:
-            return
-
-        self._import_invoice_facturae_invoice(invoice, partner, invoices[0])
-
-        # There might be other invoices inside the facturae.
-        for node in invoices[1:]:
-            other_invoice = invoice.create({
-                'journal_id': invoice.journal_id.id,
-                'move_type': invoice.move_type
-            })
-            with other_invoice._get_edi_creation():
-                self._import_invoice_facturae_invoice(other_invoice, partner, node)
-                other_invoice.message_post(body=_("Created from attachment in %s", invoice._get_html_link()))
 
     def _import_invoice_facturae_invoice(self, invoice, partner, tree):
         logs = []
@@ -792,6 +829,19 @@ class AccountMove(models.Model):
         return product
 
     # -------------------------------------------------------------------------
+    # ACTION METHODS
+    # -------------------------------------------------------------------------
+
+    def action_invoice_download_facturae(self):
+        if invoices_with_facturae := self.filtered('l10n_es_edi_facturae_xml_id'):
+            return {
+                'type': 'ir.actions.act_url',
+                'url': f'/account/download_invoice_documents/{",".join(map(str, invoices_with_facturae.ids))}/facturae',
+                'target': 'download',
+            }
+        return False
+
+    # -------------------------------------------------------------------------
     # BUSINESS METHODS                                                        #
     # -------------------------------------------------------------------------
     def _l10n_es_facturae_sign_xml(self, edi_data, signature_data):
@@ -825,7 +875,7 @@ class AccountMove(models.Model):
             'x509_certificate': base64.encodebytes(base64.b64decode(certificate_sudo._get_der_certificate_bytes())).decode(),
             'public_modulus': n.decode(),
             'public_exponent': e.decode(),
-            'iso_now': fields.datetime.now().isoformat(),
+            'iso_now': fields.Datetime.now().isoformat(),
             'keyinfo_id': keyinfo_id,
             'signature_id': signature_id,
             'sigproperties_id': sigproperties_id,
@@ -844,3 +894,26 @@ class AccountMove(models.Model):
         signed_info_xml = signature.find("ds:SignedInfo", namespaces=NS_MAP)
         signature.find("ds:SignatureValue", namespaces=NS_MAP).text = certificate_sudo._sign(_canonicalize_node(signed_info_xml)).decode()
         return etree.tostring(root, xml_declaration=True, encoding='UTF-8', standalone=True)
+
+    def _get_invoice_legal_documents(self, filetype, allow_fallback=False):
+        # EXTENDS 'account'
+        self.ensure_one()
+        if filetype == 'facturae':
+            if facturae_attachment := self.l10n_es_edi_facturae_xml_id:
+                return {
+                    'filename': facturae_attachment.name,
+                    'filetype': 'xml',
+                    'content': facturae_attachment.raw,
+                }
+        return super()._get_invoice_legal_documents(filetype, allow_fallback=allow_fallback)
+
+    def get_extra_print_items(self):
+        # EXTENDS 'account' - add possibility to download Factura-e XML files
+        print_items = super().get_extra_print_items()
+        if self.filtered('l10n_es_edi_facturae_xml_id'):
+            print_items.append({
+                'key': 'download_xml_facturae',
+                'description': _('Factura-e XML'),
+                **self.action_invoice_download_facturae(),
+            })
+        return print_items

@@ -1,14 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import hashlib
-import logging
 
 from odoo import fields, models
 
+from odoo.addons.payment.logging import get_payment_logger
 from odoo.addons.payment_nuvei import const
 
 
-_logger = logging.getLogger(__name__)
+_logger = get_payment_logger(__name__)
 
 
 class PaymentProvider(models.Model):
@@ -21,18 +21,41 @@ class PaymentProvider(models.Model):
         string="Nuvei Merchant Identifier",
         help="The code of the merchant account to use with this provider.",
         required_if_provider='nuvei',
+        copy=False,
     )
     nuvei_site_identifier = fields.Char(
         string="Nuvei Site Identifier",
         help="The site identifier code associated with the merchant account.",
         required_if_provider='nuvei',
+        copy=False,
         groups='base.group_system',
     )
     nuvei_secret_key = fields.Char(
         string="Nuvei Secret Key",
         required_if_provider='nuvei',
+        copy=False,
         groups='base.group_system',
     )
+
+    # === COMPUTE METHODS === #
+
+    def _get_supported_currencies(self):
+        """ Override of `payment` to return the supported currencies. """
+        supported_currencies = super()._get_supported_currencies()
+        if self.code == 'nuvei':
+            supported_currencies = supported_currencies.filtered(
+                lambda c: c.name in const.SUPPORTED_CURRENCIES
+            )
+        return supported_currencies
+
+    # === CRUD METHODS === #
+
+    def _get_default_payment_method_codes(self):
+        """ Override of `payment` to return the default payment method codes. """
+        self.ensure_one()
+        if self.code != 'nuvei':
+            return super()._get_default_payment_method_codes()
+        return const.DEFAULT_PAYMENT_METHOD_CODES
 
     # === BUSINESS METHODS === #
 
@@ -57,19 +80,3 @@ class PaymentProvider(models.Model):
         key = self.nuvei_secret_key
         signing_string = f'{key}{sign_data}'
         return hashlib.sha256(signing_string.encode()).hexdigest()
-
-    def _get_supported_currencies(self):
-        """ Override of `payment` to return the supported currencies. """
-        supported_currencies = super()._get_supported_currencies()
-        if self.code == 'nuvei':
-            supported_currencies = supported_currencies.filtered(
-                lambda c: c.name in const.SUPPORTED_CURRENCIES
-            )
-        return supported_currencies
-
-    def _get_default_payment_method_codes(self):
-        """ Override of `payment` to return the default payment method codes. """
-        default_codes = super()._get_default_payment_method_codes()
-        if self.code != 'nuvei':
-            return default_codes
-        return const.DEFAULT_PAYMENT_METHOD_CODES

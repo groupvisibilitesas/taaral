@@ -1,25 +1,11 @@
-import { cookie } from "@web/core/browser/cookie";
 import { registry } from "@web/core/registry";
 
 /**
- * Assert that the cookie preference matches the expected state.
+ * Assert that gtag consent values in `dataLayer` match the expected state.
  *
- * @param {boolean} expectedOptional - Whether optional cookies should be
- *                                     accepted
+ * @param {"granted" | "denied"} expectedState
  */
-function assertOptionalCookies(expectedOptional) {
-    const cookiePreference = JSON.parse(cookie.get("website_cookies_bar"));
-    if (cookiePreference.optional !== expectedOptional) {
-        console.error(`Optional cookies should be ${expectedOptional ? "accepted" : "rejected"}.`);
-    }
-}
-
-/**
- * Assert that all consent values in `dataLayer` match the expected state.
- *
- * @param {string} expectedState - "granted" or "denied"
- */
-function assertConsentInDataLayer(expectedState) {
+function assertGtagConsent(expectedState) {
     const lastDataLayerEntry = window.dataLayer?.at(-1);
 
     if (!lastDataLayerEntry || lastDataLayerEntry[0] !== "consent") {
@@ -35,7 +21,7 @@ function assertConsentInDataLayer(expectedState) {
     }
 }
 
-registry.category("web_tour.tours").add("cookies_consent", {
+registry.category("web_tour.tours").add("cookie_bar_updates_gtag_consent", {
     url: "/",
     steps: () => [
         {
@@ -44,17 +30,17 @@ registry.category("web_tour.tours").add("cookies_consent", {
             run: "click",
         },
         {
-            content: "Confirm if optional cookies are also accepted",
+            content: "Ensure gtag consent is granted",
             trigger: "body",
             run: function () {
-                assertOptionalCookies(true);
-                assertConsentInDataLayer("granted");
+                assertGtagConsent("granted");
             },
         },
         {
-            content: "Goto Cookie Policy page",
+            content: "Go to Cookie Policy page",
             trigger: "footer a[href='/cookie-policy']",
             run: "click",
+            expectUnloadPage: true,
         },
         {
             content: "Toggle the cookie bar",
@@ -67,11 +53,10 @@ registry.category("web_tour.tours").add("cookies_consent", {
             run: "click",
         },
         {
-            content: "Confirm if only the required cookies are accepted",
+            content: "Ensure gtag consent is revoked",
             trigger: "body",
             run: function () {
-                assertOptionalCookies(false);
-                assertConsentInDataLayer("denied");
+                assertGtagConsent("denied");
             },
         },
     ],

@@ -3,23 +3,22 @@
 # * purchase
 #
 # Translators:
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
 # Bone NI <bounkirdni@gmail.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo 9.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-05-16 13:48+0000\n"
-"PO-Revision-Date: 2026-05-21 07:07+0000\n"
+"PO-Revision-Date: 2026-08-06 18:33+0000\n"
 "Last-Translator: Bone NI <bounkirdni@gmail.com>\n"
-"Language-Team: Lao <https://translate.odoo.com/projects/odoo-18/purchase/lo/>"
+"Language-Team: Lao <https://translate.odoo.com/projects/odoo-19/purchase/lo/>"
 "\n"
 "Language: lo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.17\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: purchase
 #: model:ir.actions.report,print_report_name:purchase.action_report_purchase_order
@@ -37,7 +36,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase.field_res_partner__supplier_invoice_count
 #: model:ir.model.fields,field_description:purchase.field_res_users__supplier_invoice_count
 msgid "# Vendor Bills"
-msgstr "# ໃບບິນຜູ້ສະໜອງ"
+msgstr "# ໃບເກັບເງິນຜູ້ສະໜອງ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__nbr_lines
@@ -48,7 +47,7 @@ msgstr "# ຂອງລາຍການ"
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
 msgid "%(amount)s due %(date)s"
-msgstr "%(amount)s ຄົບກຳນົດວັນທີ %(date)s"
+msgstr "%(amount)s ຄົບກຳນົດ %(date)s"
 
 #. module: purchase
 #. odoo-python
@@ -88,12 +87,12 @@ msgstr "-&gt;"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "3-way matching"
-msgstr "ການກວດສອບ 3 ທາງ"
+msgstr "ການຈັບຄູ່ 3 ທາງ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_res_config_settings__module_account_3way_match
 msgid "3-way matching: purchases, receptions and bills"
-msgstr "ການກວດສອບ 3 ທາງ: ການສັ່ງຊື້, ການຮັບເຄື່ອງ ແລະ ໃບບິນ"
+msgstr "ການຈັບຄູ່ 3 ທາງ: ການສັ່ງຊື້, ການຮັບເຄື່ອງ ແລະ ໃບເກັບເງິນ"
 
 #. module: purchase
 #: model:mail.template,body_html:purchase.email_template_edi_purchase_reminder
@@ -133,21 +132,21 @@ msgstr ""
 "Interior</t>)\n"
 "        </t>\n"
 "        <br><br>\n"
-"        ນີ້ແມ່ນການແຈ້ງເຕືອນວ່າການຈັດສົ່ງຂອງໃບສັ່ງຊື້ <span style=\"font-weight:bold;\" t-"
-"out=\"object.name or ''\">P00015</span>\n"
+"        ນີ້ແມ່ນການແຈ້ງເຕືອນວ່າການສົ່ງເຄື່ອງຕາມໃບສັ່ງຊື້ <span style=\"font-weight:bold;\" "
+"t-out=\"object.name or ''\">P00015</span>\n"
 "        <t t-if=\"object.partner_ref\">\n"
 "            <span style=\"font-weight:bold;\">(<t t-out=\"object.partner_ref "
 "or ''\">REF_XXX</t>)</span>\n"
 "        </t>\n"
-"        ມີກຳນົດການໃນວັນທີ \n"
+"        ມີກຳນົດການໃນ \n"
 "        <t t-if=\"object.date_planned\">\n"
 "            <span style=\"font-weight:bold;\" t-out=\"format_date"
 "(object.date_planned) or ''\">05/05/2021</span>.\n"
 "        </t>\n"
 "         <t t-else=\"\">\n"
-"            <span style=\"font-weight:bold;\">ບໍ່ໄດ້ກຳນົດ</span>.\n"
+"            <span style=\"font-weight:bold;\">ບໍ່ທັນກຳນົດ</span>.\n"
 "        </t>\n"
-"        ກະລຸນາຢືນຢັນວ່າທ່ານຈະສາມາດຈັດສົ່ງໄດ້ທັນເວລາບໍ່?\n"
+"        ທ່ານສາມາດຢືນຢັນໄດ້ບໍ່ວ່າຈະສົ່ງເຄື່ອງໃຫ້ທັນເວລາ?\n"
 "        <t t-if=\"not is_html_empty(object.user_id.signature)\">\n"
 "            <br><br>\n"
 "            <t t-out=\"object.user_id.signature or ''\">--<br>Mitchell "
@@ -200,15 +199,15 @@ msgstr ""
 "        <t t-if=\"object.partner_ref\">\n"
 "            ເລກອ້າງອີງ: <t t-out=\"object.partner_ref or ''\">REF_XXX</t>\n"
 "        </t>\n"
-"        ລວມເປັນມູນຄ່າ <span style=\"font-weight:bold;\" t-out=\"format_amount"
+"        ລວມມູນຄ່າ <span style=\"font-weight:bold;\" t-out=\"format_amount"
 "(object.amount_total, object.currency_id) or ''\">$ 10.00</span>\n"
 "        ຈາກ <t t-out=\"object.company_id.name or ''\">YourCompany</t>. \n"
 "        <br><br>\n"
 "        <t t-if=\"object.date_planned\">\n"
-"            ຄາດວ່າຈະໄດ້ຮັບເຄື່ອງໃນວັນທີ <span style=\"font-weight:bold;\" t-"
+"            ກຳນົດການຮັບເຄື່ອງແມ່ນວັນທີ <span style=\"font-weight:bold;\" t-"
 "out=\"format_date(object.date_planned) or ''\">05/05/2021</span>.\n"
 "            <br><br>\n"
-"            ກະລຸນາຢືນຢັນການຮັບໃບສັ່ງຊື້ນີ້ດ້ວຍ?\n"
+"            ທ່ານສາມາດຢືນຢັນການຮັບໃບສັ່ງຊື້ນີ້ໄດ້ບໍ່?\n"
 "        </t>\n"
 "        <t t-if=\"not is_html_empty(object.user_id.signature)\">\n"
 "            <br><br>\n"
@@ -262,7 +261,7 @@ msgstr ""
 "        <br><br>\n"
 "        ຫາກທ່ານມີຄຳຖາມໃດໆ, ກະລຸນາຕິດຕໍ່ຫາພວກເຮົາໄດ້ທຸກເວລາ.\n"
 "        <br><br>\n"
-"        ດ້ວຍຄວາມເຄົາລົບ,\n"
+"        ດ້ວຍຄວາມນັບຖື,\n"
 "        <t t-if=\"not is_html_empty(object.user_id.signature)\">\n"
 "            <br><br>\n"
 "            <t t-out=\"object.user_id.signature or ''\">--<br>Mitchell "
@@ -285,40 +284,39 @@ msgstr "<i class=\"fa fa-download\"/> ດາວໂຫລດ"
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_orders
 msgid "<i class=\"fa fa-fw fa-check\" role=\"img\" aria-label=\"Done\" title=\"Done\"/><span class=\"d-none d-md-inline\"> Done</span>"
 msgstr ""
-"<i class=\"fa fa-fw fa-check\" role=\"img\" aria-label=\"Done\" "
-"title=\"Done\"/><span class=\"d-none d-md-inline\"> ສຳເລັດ</span>"
+"<i class=\"fa fa-fw fa-check\" role=\"img\" aria-label=\"ສຳເລັດ\" title=\"ສຳເລັ"
+"ດ\"/><span class=\"d-none d-md-inline\"> ສຳເລັດ</span>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "<i class=\"fa fa-fw fa-check\"/> <b>Paid</b>"
-msgstr "<i class=\"fa fa-fw fa-check\"/> <b>ຈ່າຍແລ້ວ</b>"
+msgstr "<i class=\"fa fa-fw fa-check\"/> <b>ຊຳລະແລ້ວ</b>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "<i class=\"fa fa-fw fa-clock-o\"/> <b>Waiting Payment</b>"
-msgstr "<i class=\"fa fa-fw fa-clock-o\"/> <b>ລໍຖ້າການຊຳລະ</b>"
+msgstr "<i class=\"fa fa-fw fa-clock-o\"/> <b>ຖ້າການຊຳລະ</b>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_partner_kanban_view
 msgid "<i class=\"fa fa-fw fa-credit-card\" role=\"img\" aria-label=\"Purchases\" title=\"Purchases\"/>"
 msgstr ""
-"<i class=\"fa fa-fw fa-credit-card\" role=\"img\" aria-label=\"Purchases\" "
-"title=\"Purchases\"/>"
+"<i class=\"fa fa-fw fa-credit-card\" role=\"img\" aria-label=\"ການສັ່ງຊື້\" "
+"title=\"ການສັ່ງຊື້\"/>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_orders
 msgid "<i class=\"fa fa-fw fa-file-text\" role=\"img\" aria-label=\"Waiting for Bill\" title=\"Waiting for Bill\"/><span class=\"d-none d-md-inline\"> Waiting for Bill</span>"
 msgstr ""
-"<i class=\"fa fa-fw fa-file-text\" role=\"img\" aria-label=\"Waiting for "
-"Bill\" title=\"Waiting for Bill\"/><span class=\"d-none d-md-inline\"> ລໍຖ້າໃບບິ"
-"ນ</span>"
+"<i class=\"fa fa-fw fa-file-text\" role=\"img\" aria-label=\"ຖ້າໃບເກັບເງິນ\" "
+"title=\"ຖ້າໃບເກັບເງິນ\"/><span class=\"d-none d-md-inline\"> ຖ້າໃບເກັບເງິນ</span>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_orders
 msgid "<i class=\"fa fa-fw fa-remove\" role=\"img\" aria-label=\"Cancelled\" title=\"Cancelled\"/><span class=\"d-none d-md-inline\"> Cancelled</span>"
 msgstr ""
-"<i class=\"fa fa-fw fa-remove\" role=\"img\" aria-label=\"Cancelled\" "
-"title=\"Cancelled\"/><span class=\"d-none d-md-inline\"> ຍົກເລີກແລ້ວ</span>"
+"<i class=\"fa fa-fw fa-remove\" role=\"img\" aria-label=\"ຍົກເລີກແລ້ວ\" "
+"title=\"ຍົກເລີກແລ້ວ\"/><span class=\"d-none d-md-inline\"> ຍົກເລີກແລ້ວ</span>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
@@ -340,8 +338,8 @@ msgid ""
 "<span class=\"d-none d-md-inline\">Purchase Order #</span>\n"
 "                          <span class=\"d-block d-md-none\">Ref.</span>"
 msgstr ""
-"<span class=\"d-none d-md-inline\">ເລກທີໃບສັ່ງຊື້ #</span>\n"
-"                          <span class=\"d-block d-md-none\">ອ້າງອີງ.</span>"
+"<span class=\"d-none d-md-inline\">ໃບສັ່ງຊື້ #</span>\n"
+"                          <span class=\"d-block d-md-none\">ອ້າງອີງ</span>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_rfqs
@@ -349,8 +347,8 @@ msgid ""
 "<span class=\"d-none d-md-inline\">Request for Quotation #</span>\n"
 "                        <span class=\"d-block d-md-none\">Ref.</span>"
 msgstr ""
-"<span class=\"d-none d-md-inline\">ເລກທີໃບສະເໜີລາຄາ #</span>\n"
-"                        <span class=\"d-block d-md-none\">ອ້າງອີງ.</span>"
+"<span class=\"d-none d-md-inline\">ໃບສະເໜີລາຄາ #</span>\n"
+"                        <span class=\"d-block d-md-none\">ອ້າງອີງ</span>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
@@ -386,7 +384,7 @@ msgstr ""
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_partner_property_form
 msgid "<span> day(s) before</span>"
-msgstr "<span> ມື້ ກ່ອນ</span>"
+msgstr "<span> ມື້ ກ່ອນໜ້າ</span>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
@@ -416,7 +414,7 @@ msgstr "<strong class=\"d-block mb-1\">ຈາກ:</strong>"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "<strong class=\"d-block mb-1\">Invoices</strong>"
-msgstr "<strong class=\"d-block mb-1\">ໃບແຈ້ງໜີ້</strong>"
+msgstr "<strong class=\"d-block mb-1\">ໃບເກັບເງິນ</strong>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
@@ -437,7 +435,7 @@ msgstr "<strong>ວັນທີຢືນຢັນ:</strong>"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
 msgid "<strong>Date Req.</strong>"
-msgstr "<strong>ວັນທີຮ້ອງຂໍ.</strong>"
+msgstr "<strong>ວັນທີຮ້ອງຂໍ</strong>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
@@ -480,13 +478,13 @@ msgstr "<strong>ວັນທີຮັບເຄື່ອງ:</strong>"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "<strong>Request For Quotation Date:</strong>"
-msgstr "<strong>ວັນທີຮ້ອງຂໍໃບສະເໜີລາຄາ:</strong>"
+msgstr "<strong>ວັນທີໃບສະເໜີລາຄາ:</strong>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchasequotation_document
 msgid "<strong>Shipping address:</strong>"
-msgstr "<strong>ທີ່ຢູ່ຈັດສົ່ງ:</strong>"
+msgstr "<strong>ສະຖານທີ່ສົ່ງເຄື່ອງ:</strong>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
@@ -506,12 +504,12 @@ msgstr "<strong>ອາກອນ</strong>"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.track_po_line_template
 msgid "<strong>The ordered quantity has been updated.</strong>"
-msgstr "<strong>ຈຳນວນທີ່ສັ່ງຊື້ໄດ້ຖືກປັບປຸງແລ້ວ.</strong>"
+msgstr "<strong>ຈຳນວນທີ່ສັ່ງຊື້ໄດ້ຖືກອັບເດດແລ້ວ.</strong>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.track_po_line_qty_received_template
 msgid "<strong>The received quantity has been updated.</strong>"
-msgstr "<strong>ຈຳນວນທີ່ໄດ້ຮັບໄດ້ຖືກປັບປຸງແລ້ວ.</strong>"
+msgstr "<strong>ຈຳນວນທີ່ຮັບໄດ້ຖືກອັບເດດແລ້ວ.</strong>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
@@ -521,12 +519,12 @@ msgstr "<strong>ການສັ່ງຊື້ນີ້ໄດ້ຖືກຍົ�
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
 msgid "<strong>Unit Price</strong>"
-msgstr "<strong>ລາຄາຕໍ່ໜ່ວຍ</strong>"
+msgstr "<strong>ລາຄາຫົວໜ່ວຍ</strong>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "<strong>Update Here</strong>"
-msgstr "<strong>ປັບປຸງທີ່ນີ້</strong>"
+msgstr "<strong>ອັບເດດທີ່ນີ້</strong>"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
@@ -546,20 +544,20 @@ msgid ""
 "A consumable product is a product for which stock is not managed.\n"
 "A service is a non-material product you provide."
 msgstr ""
-"ສິນຄ້າທີ່ເກັບສະຕັອກໄດ້ ແມ່ນສິນຄ້າທີ່ທ່ານຄຸ້ມຄອງສະຕັອກ. ຕ້ອງຕິດຕັ້ງແອັບ Inventory.\n"
-"ສິນຄ້າບໍລິໂພກ ແມ່ນສິນຄ້າທີ່ບໍ່ໄດ້ຄຸ້ມຄອງສະຕັອກ.\n"
+"ສິນຄ້າທີ່ຈັດເກັບໄດ້ ແມ່ນສິນຄ້າທີ່ທ່ານບໍລິຫານຈັດການສະຕັອກ. ຕ້ອງຕິດຕັ້ງແອັບສາງສິນຄ້າ.\n"
+"ສິນຄ້າບໍລິໂພກ ແມ່ນສິນຄ້າທີ່ບໍ່ມີການບໍລິຫານຈັດການສະຕັອກ.\n"
 "ການບໍລິການ ແມ່ນສິນຄ້າທີ່ບໍ່ແມ່ນວັດຖຸທີ່ທ່ານສະໜອງໃຫ້."
 
 #. module: purchase
 #: model:res.groups,name:purchase.group_warning_purchase
 msgid "A warning can be set on a product or a customer (Purchase)"
-msgstr "ສາມາດຕັ້ງຄຳເຕືອນໃນສິນຄ້າ ຫຼື ລູກຄ້າ (ການຈັດຊື້)"
+msgstr "ສາມາດຕັ້ງການເຕືອນໃນສິນຄ້າ ຫຼື ລູກຄ້າ (ການຈັດຊື້)"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "Ability to select a package type in purchase orders and to force a quantity that is a multiple of the number of units per package."
 msgstr ""
-"ຄວາມສາມາດໃນການເລືອກປະເພດການຫຸ້ມຫໍ່ໃນໃບສັ່ງຊື້ ແລະ ບັງຄັບຈຳນວນທີ່ເປັນຕົວຄູນຂອງຫົວໜ່ວຍຕໍ່ແພັກເກັດ."
+"ຄວາມສາມາດໃນການເລືອກປະເພດການຫຸ້ມຫໍ່ໃນໃບສັ່ງຊື້ ແລະ ບັງຄັບໃຫ້ຈຳນວນເປັນຕົວຄູນຂອງຫົວໜ່ວຍຕໍ່ແພັກເກັດ."
 
 #. module: purchase
 #. odoo-python
@@ -579,14 +577,14 @@ msgid ""
 "  - Manual: the quantity is set manually on the line\n"
 "  - Stock Moves: the quantity comes from confirmed pickings\n"
 msgstr ""
-"ອີງຕາມການກຳນົດຄ່າສິນຄ້າ, ຈຳນວນທີ່ໄດ້ຮັບສາມາດຄຳນວນອັດຕະໂນມັດໂດຍກົນໄກ:\n"
+"ອີງຕາມການຕັ້ງຄ່າສິນຄ້າ, ຈຳນວນທີ່ຮັບສາມາດຄິດໄລ່ໄດ້ໂດຍອັດຕະໂນມັດຜ່ານກົນໄກ:\n"
 "  - ດ້ວຍຕົນເອງ: ຈຳນວນຖືກຕັ້ງດ້ວຍຕົນເອງໃນລາຍການ\n"
-"  - ການເຄື່ອນຍ້າຍສະຕັອກ: ຈຳນວນມາຈາກການເກັບເຄື່ອງທີ່ຢືນຢັນແລ້ວ\n"
+"  - ການເຄື່ອນຍ້າຍສາງ: ຈຳນວນມາຈາກການຮັບເຄື່ອງທີ່ຢືນຢັນແລ້ວ\n"
 
 #. module: purchase
 #: model:ir.actions.act_window,name:purchase.action_accrued_expense_entry
 msgid "Accrued Expense Entry"
-msgstr "ລາຍການຄ່າໃຊ້ຈ່າຍຄ້າງຈ່າຍ"
+msgstr "ການບັນທຶກລາຍຈ່າຍຄ້າງຈ່າຍ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__message_needaction
@@ -616,7 +614,7 @@ msgstr "ໄອຄອນປະເພດກິດຈະກຳ"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Add a note"
-msgstr "ເພີ່ມບັນທຶກ"
+msgstr "ເພີ່ມໝາຍເຫດ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
@@ -626,7 +624,7 @@ msgstr "ເພີ່ມສິນຄ້າ"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Add a section"
-msgstr "ເພີ່ມຫົວຂໍ້"
+msgstr "ເພີ່ມສ່ວນ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
@@ -637,12 +635,12 @@ msgstr "ເພີ່ມສິນຄ້າຍ່ອຍຫຼາຍລາຍກາ
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
 msgid "Add some products or services to your quotation."
-msgstr "ເພີ່ມສິນຄ້າ ຫຼື ການບໍລິການບາງຢ່າງເຂົ້າໃນໃບສະເໜີລາຄາຂອງທ່ານ."
+msgstr "ເພີ່ມສິນຄ້າ ຫຼື ການບໍລິການເຂົ້າໃນໃບສະເໜີລາຄາຂອງທ່ານ."
 
 #. module: purchase
 #: model:res.groups,name:purchase.group_purchase_manager
 msgid "Administrator"
-msgstr "ຜູ້ດູແລລະບົບ"
+msgstr "ຜູ້ບໍລິຫານ"
 
 #. module: purchase
 #. odoo-python
@@ -654,13 +652,13 @@ msgstr "ທັງໝົດ"
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
 msgid "All Draft RFQs"
-msgstr "ໃບສະເໜີລາຄາສະບັບຮ່າງທັງໝົດ"
+msgstr "ໃບສະເໜີລາຄາຮ່າງທັງໝົດ"
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
 msgid "All Late RFQs"
-msgstr "ໃບສະເໜີລາຄາທີ່ຊັກຊ້າທັງໝົດ"
+msgstr "ໃບສະເໜີລາຄາທີ່ຊ້າທັງໝົດ"
 
 #. module: purchase
 #. odoo-javascript
@@ -672,12 +670,12 @@ msgstr "ໃບສະເໜີລາຄາທັງໝົດ"
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
 msgid "All Waiting RFQs"
-msgstr "ໃບສະເໜີລາຄາທີ່ກຳລັງລໍຖ້າທັງໝົດ"
+msgstr "ໃບສະເໜີລາຄາທີ່ຖ້າທັງໝົດ"
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_res_config_settings__group_send_reminder
 msgid "Allow automatically send email to remind your vendor the receipt date"
-msgstr "ອະນຸຍາດໃຫ້ສົ່ງອີເມວອັດຕະໂນມັດເພື່ອເຕືອນຜູ້ສະໜອງກ່ຽວກັບວັນທີຮັບເຄື່ອງ"
+msgstr "ອະນຸຍາດໃຫ້ສົ່ງອີເມວເຕືອນຜູ້ສະໜອງກ່ຽວກັບວັນທີຮັບເຄື່ອງໂດຍອັດຕະໂນມັດ"
 
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__res_company__po_lock__edit
@@ -708,22 +706,22 @@ msgstr "ບັນຊີວິເຄາະ"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__analytic_distribution
 msgid "Analytic Distribution"
-msgstr "ການແຈກຢາຍການວິເຄາະ"
+msgstr "ການກະຈາຍການວິເຄາະ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__analytic_distribution_search
 msgid "Analytic Distribution Search"
-msgstr "ຄົ້ນຫາການແຈກຢາຍການວິເຄາະ"
+msgstr "ຄົ້ນຫາການກະຈາຍການວິເຄາະ"
 
 #. module: purchase
 #: model:ir.model,name:purchase.model_account_analytic_applicability
 msgid "Analytic Plan's Applicabilities"
-msgstr "ການນຳໃຊ້ແຜນການວິເຄາະ"
+msgstr "ການນຳໃຊ້ຂອງແຜນວິເຄາະ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__analytic_precision
 msgid "Analytic Precision"
-msgstr "ຄວາມຊັດເຈນໃນການວິເຄາະ"
+msgstr "ຄວາມຊັດເຈນການວິເຄາະ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
@@ -757,14 +755,14 @@ msgstr "ຕື່ມຂໍ້ມູນອັດຕະໂນມັດ"
 #: model:ir.model.fields,help:purchase.field_account_move__purchase_vendor_bill_id
 #: model:ir.model.fields,help:purchase.field_account_payment__purchase_vendor_bill_id
 msgid "Auto-complete from a past bill / purchase order."
-msgstr "ຕື່ມຂໍ້ມູນອັດຕະໂນມັດຈາກໃບບິນ / ໃບສັ່ງຊື້ໃນອະດີດ."
+msgstr "ຕື່ມຂໍ້ມູນອັດຕະໂນມັດຈາກໃບເກັບເງິນ / ໃບສັ່ງຊື້ທີ່ຜ່ານມາ."
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_account_bank_statement_line__purchase_id
 #: model:ir.model.fields,help:purchase.field_account_move__purchase_id
 #: model:ir.model.fields,help:purchase.field_account_payment__purchase_id
 msgid "Auto-complete from a past purchase order."
-msgstr "ຕື່ມຂໍ້ມູນອັດຕະໂນມັດຈາກໃບສັ່ງຊື້ໃນອະດີດ."
+msgstr "ຕື່ມຂໍ້ມູນອັດຕະໂນມັດຈາກໃບສັ່ງຊື້ທີ່ຜ່ານມາ."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
@@ -774,7 +772,7 @@ msgstr "ລັອກໃບສັ່ງຊື້ທີ່ຢືນຢັນແລ
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "Automatically remind the receipt date to your vendors"
-msgstr "ເຕືອນວັນທີຮັບເຄື່ອງໃຫ້ຜູ້ສະໜອງຂອງທ່ານໂດຍອັດຕະໂນມັດ"
+msgstr "ເຕືອນວັນທີຮັບເຄື່ອງໃຫ້ຜູ້ສະໜອງໂດຍອັດຕະໂນມັດ"
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__receipt_reminder_email
@@ -783,7 +781,8 @@ msgstr "ເຕືອນວັນທີຮັບເຄື່ອງໃຫ້ຜູ
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Automatically send a confirmation email to the vendor X days before the expected receipt date, asking him to confirm the exact date."
 msgstr ""
-"ສົ່ງອີເມວຢືນຢັນໃຫ້ຜູ້ສະໜອງອັດຕະໂນມັດ X ມື້ກ່ອນວັນທີຄາດວ່າຈະຮັບເຄື່ອງ ເພື່ອໃຫ້ເຂົາເຈົ້າຢືນຢັນວັນທີທີ່ແນ່ນອນ."
+"ສົ່ງອີເມວຢືນຢັນໃຫ້ຜູ້ສະໜອງໂດຍອັດຕະໂນມັດ X ມື້ກ່ອນວັນທີຮັບເຄື່ອງທີ່ຄາດໄວ້, ເພື່ອໃຫ້ເຂົາເຈົ້າຢືນຢັນວັນທີທີ່ແນ່ນອ"
+"ນ."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__price_average
@@ -799,58 +798,58 @@ msgstr "ມູນຄ່າການສັ່ງຊື້ສະເລ່ຍ"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_res_config_settings__default_purchase_method
 msgid "Bill Control"
-msgstr "ການຄວບຄຸມໃບບິນ"
+msgstr "ການຄວບຄຸມໃບເກັບເງິນ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__invoice_count
 msgid "Bill Count"
-msgstr "ຈຳນວນໃບບິນ"
+msgstr "ຈຳນວນໃບເກັບເງິນ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__invoice_lines
 msgid "Bill Lines"
-msgstr "ລາຍການໃບບິນ"
+msgstr "ລາຍການໃບເກັບເງິນ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Billed"
-msgstr "ອອກບິນແລ້ວ"
+msgstr "ອອກໃບເກັບເງິນແລ້ວ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__qty_invoiced
 msgid "Billed Qty"
-msgstr "ຈຳນວນທີ່ອອກບິນ"
+msgstr "ຈຳນວນທີ່ອອກໃບເກັບເງິນແລ້ວ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Billed Quantity"
-msgstr "ຈຳນວນທີ່ອອກບິນ"
+msgstr "ຈຳນວນທີ່ອອກໃບເກັບເງິນແລ້ວ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.track_po_line_template
 msgid "Billed Quantity:"
-msgstr "ຈຳນວນທີ່ອອກບິນ:"
+msgstr "ຈຳນວນທີ່ອອກໃບເກັບເງິນແລ້ວ:"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__invoice_status
 msgid "Billing Status"
-msgstr "ສະຖານະການອອກບິນ"
+msgstr "ສະຖານະການອອກໃບເກັບເງິນ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__invoice_ids
 msgid "Bills"
-msgstr "ໃບບິນ"
+msgstr "ໃບເກັບເງິນ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
 msgid "Bills Received"
-msgstr "ໃບບິນທີ່ໄດ້ຮັບແລ້ວ"
+msgstr "ໃບເກັບເງິນທີ່ໄດ້ຮັບ"
 
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__product_template__purchase_line_warn__block
 #: model:ir.model.fields.selection,name:purchase.selection__res_partner__purchase_warn__block
 msgid "Blocking Message"
-msgstr "ຂໍ້ຄວາມປິດກັ້ນ"
+msgstr "ຂໍ້ຄວາມສະກັດກັ້ນ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__user_id
@@ -868,7 +867,8 @@ msgstr "ມຸມມອງປະຕິທິນ"
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "Calls for tenders are when you want to generate requests for quotations with several vendors for a given set of products to compare offers."
 msgstr ""
-"ການຮຽກປະກວດລາຄາ ແມ່ນເມື່ອທ່ານຕ້ອງການສ້າງໃບສະເໜີລາຄາຫາຜູ້ສະໜອງຫຼາຍລາຍເພື່ອປຽບທຽບລາຄາ."
+"ການປະກວດລາຄາ ແມ່ນເມື່ອທ່ານຕ້ອງການສ້າງໃບສະເໜີລາຄາຫາຜູ້ສະໜອງຫຼາຍລາຍສຳລັບສິນຄ້າຊຸດໃດໜຶ່ງເພື່ອປຽບທຽ"
+"ບຂໍ້ສະເໜີ."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
@@ -886,13 +886,13 @@ msgstr "ຍົກເລີກແລ້ວ"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
 msgid "Cancelled Purchase Order #"
-msgstr "ເລກທີໃບສັ່ງຊື້ທີ່ຍົກເລີກ #"
+msgstr "ໃບສັ່ງຊື້ທີ່ຍົກເລີກ #"
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
 msgid "Cannot delete a purchase order line which is in state '%s'."
-msgstr "ບໍ່ສາມາດລົບລາຍການໃບສັ່ງຊື້ທີ່ຢູ່ໃນສະຖານະ '%s'."
+msgstr "ບໍ່ສາມາດລຶບລາຍການໃບສັ່ງຊື້ທີ່ຢູ່ໃນສະຖານະ '%s'."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_uom_category_id
@@ -902,7 +902,7 @@ msgstr "ໝວດໝູ່"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__commercial_partner_id
 msgid "Commercial Entity"
-msgstr "ນິຕິບຸກຄົນທາງການຄ້າ"
+msgstr "ນິຕິບຸກຄົນທາງທຸລະກິດ"
 
 #. module: purchase
 #: model:ir.model,name:purchase.model_res_company
@@ -932,12 +932,12 @@ msgstr "ຂຽນອີເມວ"
 #. module: purchase
 #: model:ir.model,name:purchase.model_res_config_settings
 msgid "Config Settings"
-msgstr "ຕັ້ງຄ່າລະບົບ"
+msgstr "ການກໍານົດຄ່າ"
 
 #. module: purchase
 #: model:ir.ui.menu,name:purchase.menu_purchase_config
 msgid "Configuration"
-msgstr "ການກຳນົດຄ່າ"
+msgstr "ການກໍານົດຄ່າ"
 
 #. module: purchase
 #. odoo-python
@@ -964,7 +964,7 @@ msgstr "ຢືນຢັນໃບສັ່ງຊື້ໃນຂັ້ນຕອນ
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
 msgid "Confirm your purchase."
-msgstr "ຢືນຢັນການຈັດຊື້ຂອງທ່ານ."
+msgstr "ຢືນຢັນການຊື້ຂອງທ່ານ."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__date_approve
@@ -977,12 +977,12 @@ msgstr "ວັນທີຢືນຢັນ"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_search
 msgid "Confirmation Date Last Year"
-msgstr "ວັນທີຢືນຢັນປີທີ່ແລ້ວ"
+msgstr "ວັນທີຢືນຢັນປີກາຍນີ້"
 
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__res_company__po_lock__lock
 msgid "Confirmed purchase orders are not editable"
-msgstr "ໃບສັ່ງຊື້ທີ່ຢືນຢັນແລ້ວຈະບໍ່ສາມາດແກ້ໄຂໄດ້"
+msgstr "ໃບສັ່ງຊື້ທີ່ຢືນຢັນແລ້ວບໍ່ສາມາດແກ້ໄຂໄດ້"
 
 #. module: purchase
 #: model:ir.model,name:purchase.model_res_partner
@@ -1000,7 +1000,8 @@ msgstr "ນະໂຍບາຍການຄວບຄຸມ"
 #: model:ir.model.fields,help:purchase.field_purchase_order_line__product_uom_category_id
 msgid "Conversion between Units of Measure can only occur if they belong to the same category. The conversion will be made based on the ratios."
 msgstr ""
-"ການແປງລະຫວ່າງຫົວໜ່ວຍວັດແທກສາມາດເກີດຂຶ້ນໄດ້ພຽງແຕ່ຖ້າມັນຢູ່ໃນໝວດດຽວກັນ. ການແປງຈະອີງຕາມອັດຕາສ່ວນ."
+"ການປ່ຽນແປງລະຫວ່າງຫົວໜ່ວຍວັດແທກສາມາດເກີດຂຶ້ນໄດ້ກໍຕໍ່ເມື່ອຢູ່ໃນໝວດດຽວກັນ. ການປ່ຽນແປງຈະອີງຕາມອັດຕາສ່ວ"
+"ນ."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__country_code
@@ -1010,18 +1011,18 @@ msgstr "ລະຫັດປະເທດ"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Create Bill"
-msgstr "ສ້າງໃບບິນ"
+msgstr "ສ້າງໃບເກັບເງິນ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_kpis_tree
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_tree
 msgid "Create Bills"
-msgstr "ສ້າງໃບບິນ"
+msgstr "ສ້າງໃບເກັບເງິນ"
 
 #. module: purchase
 #: model:ir.actions.server,name:purchase.action_purchase_batch_bills
 msgid "Create Vendor Bills"
-msgstr "ສ້າງໃບບິນຜູ້ສະໜອງ"
+msgstr "ສ້າງໃບເກັບເງິນຜູ້ສະໜອງ"
 
 #. module: purchase
 #: model_terms:ir.actions.act_window,help:purchase.product_product_action
@@ -1056,7 +1057,7 @@ msgstr "ອັດຕາແລກປ່ຽນ"
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__access_url
 msgid "Customer Portal URL"
-msgstr "URL ຂອງພອດທໍລູກຄ້າ"
+msgstr "URL ພໍທໍລູກຄ້າ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_bill_union__date
@@ -1066,13 +1067,13 @@ msgstr "ວັນທີ"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__date_calendar_start
 msgid "Date Calendar Start"
-msgstr "ວັນທີເລີ່ມຕົ້ນໃນປະຕິທິນ"
+msgstr "ວັນທີເລີ່ມຕົ້ນປະຕິທິນ"
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
 msgid "Date Updated"
-msgstr "ວັນທີປັບປຸງ"
+msgstr "ວັນທີອັບເດດ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
@@ -1090,41 +1091,41 @@ msgstr "ມື້"
 #: model:ir.model.fields,field_description:purchase.field_res_partner__reminder_date_before_receipt
 #: model:ir.model.fields,field_description:purchase.field_res_users__reminder_date_before_receipt
 msgid "Days Before Receipt"
-msgstr "ມື້ ກ່ອນການຮັບເຄື່ອງ"
+msgstr "ມື້ກ່ອນການຮັບເຄື່ອງ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__delay
 msgid "Days to Confirm"
-msgstr "ຈຳນວນມື້ໃນການຢືນຢັນ"
+msgstr "ມື້ກ່ອນການຢືນຢັນ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__delay_pass
 msgid "Days to Receive"
-msgstr "ຈຳນວນມື້ໃນການຮັບເຄື່ອງ"
+msgstr "ມື້ກ່ອນການຮັບເຄື່ອງ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Define your terms and conditions ..."
-msgstr "ກຳນົດຂໍ້ກຳນົດ ແລະ ເງື່ອນໄຂຂອງທ່ານ ..."
+msgstr "ກຳນົດເງື່ອນໄຂຂອງທ່ານ..."
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order_line__date_planned
 msgid "Delivery date expected from vendor. This date respectively defaults to vendor pricelist lead time then today's date."
 msgstr ""
-"ວັນທີຈັດສົ່ງທີ່ຄາດຫວັງຈາກຜູ້ສະໜອງ. ວັນທີນີ້ຈະເລີ່ມຕົ້ນຈາກໄລຍະເວລາລໍຖ້າໃນໃບລາຄາຂອງຜູ້ສະໜອງ ຫຼື ວັນທີປັດຈຸບັ"
-"ນ."
+"ວັນທີສົ່ງເຄື່ອງທີ່ຄາດໄວ້ຈາກຜູ້ສະໜອງ. ວັນທີນີ້ຈະຖືກຕັ້ງເປັນຄ່າເລີ່ມຕົ້ນຕາມໄລຍະເວລາໃນໃບລາຄາຂອງຜູ້ສະໜອງ ຫຼື "
+"ວັນທີປັດຈຸບັນ."
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__date_planned
 msgid "Delivery date promised by vendor. This date is used to determine expected arrival of products."
 msgstr ""
-"ວັນທີຈັດສົ່ງທີ່ຜູ້ສະໜອງສັນຍາໄວ້. ວັນທີນີ້ໃຊ້ເພື່ອຄຳນວນການມາຮອດຂອງສິນຄ້າ."
+"ວັນທີສົ່ງເຄື່ອງທີ່ຜູ້ສະໜອງສັນຍາໄວ້. ວັນທີນີ້ໃຊ້ເພື່ອຄຳນວນການມາຮອດຂອງສິນຄ້າ."
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__date_order
 #: model:ir.model.fields,help:purchase.field_purchase_order_line__date_order
 msgid "Depicts the date within which the Quotation should be confirmed and converted into a purchase order."
-msgstr "ລະບຸວັນທີທີ່ຄວນຢືນຢັນໃບສະເໜີລາຄາ ແລະ ປ່ຽນເປັນໃບສັ່ງຊື້."
+msgstr "ສະແດງວັນທີທີ່ໃບສະເໜີລາຄາຄວນໄດ້ຮັບການຢືນຢັນ ແລະ ປ່ຽນເປັນໃບສັ່ງຊື້."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__name
@@ -1157,7 +1158,7 @@ msgstr "ສຳເລັດແລ້ວ"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_res_company__po_double_validation_amount
 msgid "Double validation amount"
-msgstr "ມູນຄ່າທີ່ຕ້ອງອະນຸມັດສອງຂັ້ນ"
+msgstr "ມູນຄ່າທີ່ຕ້ອງຢືນຢັນສອງຂັ້ນ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
@@ -1167,39 +1168,39 @@ msgstr "ດາວໂຫລດ"
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_report__state__draft
 msgid "Draft RFQ"
-msgstr "ໃບສະເໜີລາຄາສະບັບຮ່າງ"
+msgstr "ຮ່າງໃບສະເໜີລາຄາ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
 msgid "Draft RFQs"
-msgstr "ໃບສະເໜີລາຄາສະບັບຮ່າງ"
+msgstr "ຮ່າງໃບສະເໜີລາຄາ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__dest_address_id
 msgid "Dropship Address"
-msgstr "ທີ່ຢູ່ຈັດສົ່ງແບບ Dropship"
+msgstr "ທີ່ຢູ່ Dropship"
 
 #. module: purchase
 #: model:ir.model,name:purchase.model_mail_compose_message
 msgid "Email composition wizard"
-msgstr "ຕົວຊ່ວຍສ້າງການຂຽນອີເມວ"
+msgstr "ເຄື່ອງມືຊ່ວຍຂຽນອີເມວ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__date_planned
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__date_planned
 msgid "Expected Arrival"
-msgstr "ຄາດວ່າຈະມາຮອດ"
+msgstr "ການມາຮອດທີ່ຄາດໄວ້"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_search
 msgid "Extended Filters"
-msgstr "ຕົວກັ່ນຕອງເພີ່ມເຕີມ"
+msgstr "ຕົວຕອງເພີ່ມເຕີມ"
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
 msgid "Extra line with %s "
-msgstr "ລາຍການເພີ່ມເຕີມກັບ %s "
+msgstr "ລາຍການເພີ່ມເຕີມດ້ວຍ %s "
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__fiscal_position_id
@@ -1220,12 +1221,12 @@ msgstr "ຜູ້ຕິດຕາມ (ຄູ່ຄ້າ)"
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
-msgstr "ໄອຄອນ Font awesome ເຊັ່ນ: fa-tasks"
+msgstr "ໄອຄອນ Font awesome ເຊັ່ນ fa-tasks"
 
 #. module: purchase
 #: model:ir.model.constraint,message:purchase.constraint_purchase_order_line_non_accountable_null_fields
 msgid "Forbidden values on non-accountable purchase order line"
-msgstr "ຄ່າທີ່ຖືກຫ້າມໃນລາຍການໃບສັ່ງຊື້ທີ່ບໍ່ສາມາດຄິດໄລ່ທາງບັນຊີໄດ້"
+msgstr "ຄ່າທີ່ຖືກຫ້າມໃນລາຍການໃບສັ່ງຊື້ທີ່ບໍ່ສາມາດລົງບັນຊີໄດ້"
 
 #. module: purchase
 #. odoo-python
@@ -1237,12 +1238,12 @@ msgstr "ຈາກ %s"
 #. odoo-python
 #: code:addons/purchase/models/account_invoice.py:0
 msgid "From Electronic Document"
-msgstr "ຈາກເອກະສານອີເລັກໂທຣນິກ"
+msgstr "ຈາກເອກະສານເອເລັກໂຕຣນິກ"
 
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order__invoice_status__invoiced
 msgid "Fully Billed"
-msgstr "ອອກບິນເຕັມຈຳນວນແລ້ວ"
+msgstr "ອອກໃບເກັບເງິນຄົບແລ້ວ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
@@ -1258,7 +1259,7 @@ msgstr "ຕ້ອງມີການອະນຸມັດ 2 ຂັ້ນຕອນ
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "Get warnings in orders for products or vendors"
-msgstr "ຮັບຄຳເຕືອນໃນການສັ່ງຊື້ສຳລັບສິນຄ້າ ຫຼື ຜູ້ສະໜອງ"
+msgstr "ຮັບການເຕືອນໃນການສັ່ງຊື້ສຳລັບສິນຄ້າ ຫຼື ຜູ້ສະໜອງ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__weight
@@ -1304,7 +1305,7 @@ msgstr "ໄອຄອນ"
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__activity_exception_icon
 msgid "Icon to indicate an exception activity."
-msgstr "ໄອຄອນເພື່ອລະບຸກິດຈະກຳທີ່ຍົກເວັ້ນ."
+msgstr "ໄອຄອນເພື່ອບົ່ງບອກກິດຈະກຳທີ່ຍົກເວັ້ນ."
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__message_needaction
@@ -1321,17 +1322,18 @@ msgstr "ຖ້າໝາຍໄວ້, ບາງຂໍ້ຄວາມມີຂໍ�
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "If enabled, activates 3-way matching on vendor bills : the items must be received in order to pay the invoice."
 msgstr ""
-"ຖ້າເປີດໃຊ້, ຈະເປີດການກວດສອບ 3 ທາງໃນໃບບິນຜູ້ສະໜອງ: ສິນຄ້າຕ້ອງໄດ້ຮັບກ່ອນຈຶ່ງຈະຊຳລະໃບແຈ້ງໜີ້ໄດ້."
+"ຫາກເປີດໃຊ້, ຈະເປີດການຈັບຄູ່ 3 ທາງໃນໃບເກັບເງິນຜູ້ສະໜອງ: ຕ້ອງໄດ້ຮັບເຄື່ອງກ່ອນຈຶ່ງຈະສາມາດຊຳລະໃບເກັບ"
+"ເງິນໄດ້."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "If installed, the product variants will be added to purchase orders through a grid entry."
-msgstr "ຖ້າຕິດຕັ້ງ, ສິນຄ້າຍ່ອຍຈະຖືກເພີ່ມເຂົ້າໃນໃບສັ່ງຊື້ຜ່ານຮູບແບບຕາຕະລາງ."
+msgstr "ຫາກຕິດຕັ້ງ, ສິນຄ້າຍ່ອຍຈະຖືກເພີ່ມເຂົ້າໃນໃບສັ່ງຊື້ຜ່ານຕາຕະລາງ."
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_product_packaging__purchase
 msgid "If true, the packaging can be used for purchase orders"
-msgstr "ຖ້າເປັນຈິງ, ສາມາດໃຊ້ການຫຸ້ມຫໍ່ນີ້ສຳລັບໃບສັ່ງຊື້ໄດ້"
+msgstr "ຖ້າເປັນຈິງ, ການຫຸ້ມຫໍ່ນີ້ສາມາດໃຊ້ສຳລັບໃບສັ່ງຊື້ໄດ້"
 
 #. module: purchase
 #. odoo-python
@@ -1343,12 +1345,12 @@ msgstr "ນຳເຂົ້າແບບຟອມສຳລັບສິນຄ້າ
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
 msgid "In order to delete a purchase order, you must cancel it first."
-msgstr "ເພື່ອຈະລົບໃບສັ່ງຊື້, ທ່ານຕ້ອງຍົກເລີກມັນກ່ອນ."
+msgstr "ເພື່ອລຶບໃບສັ່ງຊື້, ທ່ານຕ້ອງຍົກເລີກມັນກ່ອນ."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__incoterm_id
 msgid "Incoterm"
-msgstr "Incoterm"
+msgstr "ເງື່ອນໄຂການສົ່ງມອບ (Incoterm)"
 
 #. module: purchase
 #. odoo-javascript
@@ -1360,18 +1362,17 @@ msgstr "ລະບຸຈຳນວນສິນຄ້າທີ່ທ່ານຕ້
 #: model:ir.model.fields,help:purchase.field_purchase_order__incoterm_id
 msgid "International Commercial Terms are a series of predefined commercial terms used in international transactions."
 msgstr ""
-"ເງື່ອນໄຂການຄ້າສາກົນ ແມ່ນຊຸດຂອງເງື່ອນໄຂທາງການຄ້າທີ່ກຳນົດໄວ້ລ່ວງໜ້າທີ່ໃຊ້ໃນການເຮັດທຸລະກຳລະຫວ່າງປະເທ"
-"ດ."
+"ເງື່ອນໄຂການຄ້າສາກົນ ແມ່ນຊຸດຂອງເງື່ອນໄຂທາງການຄ້າທີ່ກຳນົດໄວ້ລ່ວງໜ້າທີ່ໃຊ້ໃນທຸລະກຳລະຫວ່າງປະເທດ."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Invoices and Incoming Shipments"
-msgstr "ໃບແຈ້ງໜີ້ ແລະ ສິນຄ້າຂາເຂົ້າ"
+msgstr "ໃບເກັບເງິນ ແລະ ການຮັບເຄື່ອງ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "Invoicing"
-msgstr "ການອອກໃບແຈ້ງໜີ້"
+msgstr "ການອອກໃບເກັບເງິນ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__message_is_follower
@@ -1381,70 +1382,70 @@ msgstr "ແມ່ນຜູ້ຕິດຕາມ"
 #. module: purchase
 #: model:ir.model,name:purchase.model_account_move
 msgid "Journal Entry"
-msgstr "ລາຍການບັນຊີ"
+msgstr "ການບັນທຶກບັນຊີ"
 
 #. module: purchase
 #: model:ir.model,name:purchase.model_account_move_line
 msgid "Journal Item"
-msgstr "ລາຍການໃນປຶ້ມບັນຊີ"
+msgstr "ລາຍການບັນຊີ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__write_uid
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__write_uid
 msgid "Last Updated by"
-msgstr "ປັບປຸງຫຼ້າສຸດໂດຍ"
+msgstr "ອັບເດດຫຼ້າສຸດໂດຍ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__write_date
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__write_date
 msgid "Last Updated on"
-msgstr "ປັບປຸງຫຼ້າສຸດເມື່ອ"
+msgstr "ອັບເດດຫຼ້າສຸດເມື່ອ"
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
 msgid "Late"
-msgstr "ຊັກຊ້າ"
+msgstr "ຊ້າ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
 msgid "Late Activities"
-msgstr "ກິດຈະກຳທີ່ຊັກຊ້າ"
+msgstr "ກິດຈະກຳທີ່ກາຍກຳນົດ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
 msgid "Late RFQs"
-msgstr "ໃບສະເໜີລາຄາທີ່ຊັກຊ້າ"
+msgstr "ໃບສະເໜີລາຄາທີ່ຊ້າ"
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
 msgid "Lead Time to Purchase"
-msgstr "ໄລຍະເວລາລໍຖ້າໃນການຈັດຊື້"
+msgstr "ໄລຍະເວລາໃນການສັ່ງຊື້"
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
 msgid "Let's create your first request for quotation."
-msgstr "ມາສ້າງໃບສະເໜີລາຄາທຳອິດຂອງທ່ານກັນເລີຍ."
+msgstr "ລອງສ້າງໃບສະເໜີລາຄາທຳອິດຂອງທ່ານ."
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
 msgid "Let's try the Purchase app to manage the flow from purchase to reception and invoice control."
 msgstr ""
-"ມາລອງໃຊ້ແອັບການຈັດຊື້ເພື່ອຄຸ້ມຄອງຂັ້ນຕອນຕັ້ງແຕ່ການຊື້ ຈົນຮອດການຮັບເຄື່ອງ ແລະ ການຄວບຄຸມໃບແຈ້ງໜີ້."
+"ລອງໃຊ້ແອັບການຈັດຊື້ເພື່ອບໍລິຫານຂັ້ນຕອນຕັ້ງແຕ່ການຊື້ ຈົນຮອດການຮັບເຄື່ອງ ແລະ ການຄວບຄຸມໃບເກັບເງິນ."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_res_company__po_double_validation
 msgid "Levels of Approvals"
-msgstr "ລະດັບການອະນຸມັດ"
+msgstr "ຂັ້ນຕອນການອະນຸມັດ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_res_config_settings__po_double_validation
 msgid "Levels of Approvals *"
-msgstr "ລະດັບການອະນຸມັດ *"
+msgstr "ຂັ້ນຕອນການອະນຸມັດ *"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
@@ -1466,13 +1467,12 @@ msgstr "ລັອກແລ້ວ"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "Make sure you only pay bills for which you received the goods you ordered"
-msgstr "ໃຫ້ແນ່ໃຈວ່າທ່ານຊຳລະໃບບິນສະເພາະສິນຄ້າທີ່ທ່ານໄດ້ຮັບແລ້ວເທົ່ານັ້ນ"
+msgstr "ໃຫ້ແນ່ໃຈວ່າທ່ານຊຳລະໃບເກັບເງິນສະເພາະສິນຄ້າທີ່ທ່ານໄດ້ຮັບແລ້ວເທົ່ານັ້ນ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "Manage your purchase agreements (call for tenders, blanket orders)"
-msgstr ""
-"ຄຸ້ມຄອງຂໍ້ຕົກລົງການຈັດຊື້ຂອງທ່ານ (ການຮຽກປະກວດລາຄາ, ໃບສັ່ງຊື້ແບບ Blanket)"
+msgstr "ບໍລິຫານຂໍ້ຕົກລົງການຊື້ຂອງທ່ານ (ການປະກວດລາຄາ, ໃບສັ່ງຊື້ແບບເປີດ)"
 
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order_line__qty_received_method__manual
@@ -1482,27 +1482,27 @@ msgstr "ດ້ວຍຕົນເອງ"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_line_form2
 msgid "Manual Invoices"
-msgstr "ໃບແຈ້ງໜີ້ທີ່ສ້າງເອງ"
+msgstr "ໃບເກັບເງິນດ້ວຍຕົນເອງ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__qty_received_manual
 msgid "Manual Received Qty"
-msgstr "ຈຳນວນທີ່ໄດ້ຮັບແບບປ້ອນເອງ"
+msgstr "ຈຳນວນທີ່ຮັບດ້ວຍຕົນເອງ"
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_res_company__po_lead
 #: model:ir.model.fields,help:purchase.field_res_config_settings__po_lead
 msgid "Margin of error for vendor lead times. When the system generates Purchase Orders for procuring products, they will be scheduled that many days earlier to cope with unexpected vendor delays."
 msgstr ""
-"ໄລຍະເວລາເຜື່ອສຳລັບໄລຍະເວລາລໍຖ້າຂອງຜູ້ສະໜອງ. ເມື່ອລະບົບສ້າງໃບສັ່ງຊື້, ມັນຈະຖືກກຳນົດລ່ວງໜ້າເປັນເວລາຫຼ"
-"າຍມື້ເພື່ອຮັບມືກັບຄວາມຊັກຊ້າທີ່ບໍ່ຄາດຄິດ."
+"ໄລຍະເວລາເຜື່ອສຳລັບຜູ້ສະໜອງ. ເມື່ອລະບົບສ້າງໃບສັ່ງຊື້, ມັນຈະວາງແຜນລ່ວງໜ້າເປັນຈຳນວນມື້ທີ່ກຳນົດເພື່ອຮອງຮັບ"
+"ຄວາມລ່າຊ້າທີ່ບໍ່ຄາດຄິດ."
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_res_config_settings__use_po_lead
 msgid "Margin of error for vendor lead times. When the system generates Purchase Orders for reordering products,they will be scheduled that many days earlier to cope with unexpected vendor delays."
 msgstr ""
-"ໄລຍະເວລາເຜື່ອສຳລັບໄລຍະເວລາລໍຖ້າຂອງຜູ້ສະໜອງ. ເມື່ອລະບົບສ້າງໃບສັ່ງຊື້ເພື່ອສັ່ງສິນຄ້າຄືນໃໝ່, ມັນຈະຖືກກຳນົດ"
-"ລ່ວງໜ້າຫຼາຍມື້ເພື່ອຮັບມືກັບຄວາມຊັກຊ້າທີ່ບໍ່ຄາດຄິດ."
+"ໄລຍະເວລາເຜື່ອສຳລັບຜູ້ສະໜອງ. ເມື່ອລະບົບສ້າງໃບສັ່ງຊື້ສຳລັບການສັ່ງຊື້ໃໝ່, ມັນຈະວາງແຜນລ່ວງໜ້າເປັນຈຳນວນມື້ທີ່"
+"ກຳນົດເພື່ອຮອງຮັບຄວາມລ່າຊ້າທີ່ບໍ່ຄາດຄິດ."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__message_has_error
@@ -1535,12 +1535,12 @@ msgstr "ມູນຄ່າຂັ້ນຕ່ຳ"
 #: model:ir.model.fields,help:purchase.field_res_company__po_double_validation_amount
 #: model:ir.model.fields,help:purchase.field_res_config_settings__po_double_validation_amount
 msgid "Minimum amount for which a double validation is required"
-msgstr "ມູນຄ່າຂັ້ນຕ່ຳທີ່ຕ້ອງມີການອະນຸມັດສອງຂັ້ນ"
+msgstr "ມູນຄ່າຂັ້ນຕ່ຳທີ່ຕ້ອງມີການອະນຸມັດສອງຂັ້ນຕອນ"
 
 #. module: purchase
 #: model:ir.model.constraint,message:purchase.constraint_purchase_order_line_accountable_required_fields
 msgid "Missing required fields on accountable purchase order line."
-msgstr "ຂໍ້ມູນທີ່ຈຳເປັນຫາຍໄປໃນລາຍການໃບສັ່ງຊື້ທີ່ຕ້ອງຄິດໄລ່ທາງບັນຊີ."
+msgstr "ຂໍ້ມູນທີ່ຈຳເປັນຫາຍໄປໃນລາຍການໃບສັ່ງຊື້ທີ່ລົງບັນຊີໄດ້."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__my_activity_date_deadline
@@ -1551,23 +1551,23 @@ msgstr "ກຳນົດເວລາກິດຈະກຳຂອງຂ້ອຍ"
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
 msgid "My Draft RFQs"
-msgstr "ໃບສະເໜີລາຄາສະບັບຮ່າງຂອງຂ້ອຍ"
+msgstr "ຮ່າງໃບສະເໜີລາຄາຂອງຂ້ອຍ"
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
 msgid "My Late RFQs"
-msgstr "ໃບສະເໜີລາຄາທີ່ຊັກຊ້າຂອງຂ້ອຍ"
+msgstr "ໃບສະເໜີລາຄາທີ່ຊ້າຂອງຂ້ອຍ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
 msgid "My Orders"
-msgstr "ລາຍການສັ່ງຊື້ຂອງຂ້ອຍ"
+msgstr "ການສັ່ງຊື້ຂອງຂ້ອຍ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
 msgid "My Purchases"
-msgstr "ການຈັດຊື້ຂອງຂ້ອຍ"
+msgstr "ການຊື້ຂອງຂ້ອຍ"
 
 #. module: purchase
 #. odoo-javascript
@@ -1579,7 +1579,7 @@ msgstr "ໃບສະເໜີລາຄາຂອງຂ້ອຍ"
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
 msgid "My Waiting RFQs"
-msgstr "ໃບສະເໜີລາຄາທີ່ລໍຖ້າຂອງຂ້ອຍ"
+msgstr "ໃບສະເໜີລາຄາທີ່ຖ້າຂອງຂ້ອຍ"
 
 #. module: purchase
 #. odoo-python
@@ -1601,7 +1601,7 @@ msgstr "ໃໝ່ສຸດ"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr "ເຫດການປະຕິທິນກິດຈະກຳຖັດໄປ"
+msgstr "ກິດຈະກຳໃນປະຕິທິນຖັດໄປ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__activity_date_deadline
@@ -1632,22 +1632,22 @@ msgstr "ບໍ່ມີການວິເຄາະການຈັດຊື້"
 #. module: purchase
 #: model_terms:ir.actions.act_window,help:purchase.product_normal_action_puchased
 msgid "No product found. Let's create one!"
-msgstr "ບໍ່ພົບສິນຄ້າ. ມາສ້າງສິນຄ້າໃໝ່ກັນເລີຍ!"
+msgstr "ບໍ່ພົບສິນຄ້າ. ລອງສ້າງໃໝ່!"
 
 #. module: purchase
 #: model_terms:ir.actions.act_window,help:purchase.purchase_form_action
 msgid "No purchase order found. Let's create one!"
-msgstr "ບໍ່ພົບໃບສັ່ງຊື້. ມາສ້າງໃບສັ່ງຊື້ໃໝ່ກັນເລີຍ!"
+msgstr "ບໍ່ພົບໃບສັ່ງຊື້. ລອງສ້າງໃໝ່!"
 
 #. module: purchase
 #: model_terms:ir.actions.act_window,help:purchase.action_purchase_history
 msgid "No purchase order were made for this product yet!"
-msgstr "ຍັງບໍ່ມີການສັ່ງຊື້ສຳລັບສິນຄ້ານີ້ເທື່ອ!"
+msgstr "ຍັງບໍ່ທັນມີການສັ່ງຊື້ສຳລັບສິນຄ້ານີ້!"
 
 #. module: purchase
 #: model_terms:ir.actions.act_window,help:purchase.purchase_rfq
 msgid "No request for quotation found. Let's create one!"
-msgstr "ບໍ່ພົບໃບສະເໜີລາຄາ. ມາສ້າງໃໝ່ນຳກັນ!"
+msgstr "ບໍ່ພົບໃບສະເໜີລາຄາ. ລອງສ້າງໃໝ່!"
 
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order__priority__0
@@ -1657,7 +1657,7 @@ msgstr "ປົກກະຕິ"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
 msgid "Not Acknowledged"
-msgstr "ຍັງບໍ່ໄດ້ຮັບຊາບ"
+msgstr "ຍັງບໍ່ໄດ້ຮັບການຕອບຮັບ"
 
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order_line__display_type__line_note
@@ -1673,7 +1673,7 @@ msgstr "ໝາຍເຫດ"
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order__invoice_status__no
 msgid "Nothing to Bill"
-msgstr "ບໍ່ມີລາຍການໃຫ້ຮຽກເກັບເງິນ"
+msgstr "ບໍ່ມີຫຍັງໃຫ້ອອກໃບເກັບເງິນ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__message_needaction_counter
@@ -1685,7 +1685,7 @@ msgstr "ຈຳນວນການດຳເນີນການ"
 #: model:ir.model.fields,help:purchase.field_res_partner__reminder_date_before_receipt
 #: model:ir.model.fields,help:purchase.field_res_users__reminder_date_before_receipt
 msgid "Number of days to send reminder email before the promised receipt date"
-msgstr "ຈຳນວນມື້ທີ່ຈະສົ່ງອີເມວແຈ້ງເຕືອນກ່ອນມື້ນັດຮັບເຄື່ອງ"
+msgstr "ຈຳນວນມື້ທີ່ຈະສົ່ງອີເມວເຕືອນກ່ອນວັນທີຮັບເຄື່ອງທີ່ສັນຍາໄວ້"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__message_has_error_counter
@@ -1714,8 +1714,8 @@ msgid ""
 "On ordered quantities: Control bills based on ordered quantities.\n"
 "On received quantities: Control bills based on received quantities."
 msgstr ""
-"ອີງຕາມຈຳນວນທີ່ສັ່ງຊື້: ກວດສອບໃບບິນໂດຍອີງຕາມຈຳນວນທີ່ສັ່ງຊື້.\n"
-"ອີງຕາມຈຳນວນທີ່ໄດ້ຮັບ: ກວດສອບໃບບິນໂດຍອີງຕາມຈຳນວນທີ່ໄດ້ຮັບແທ້."
+"ອີງຕາມຈຳນວນທີ່ສັ່ງຊື້: ຄວບຄຸມໃບເກັບເງິນຕາມຈຳນວນທີ່ສັ່ງ.\n"
+"ອີງຕາມຈຳນວນທີ່ໄດ້ຮັບ: ຄວບຄຸມໃບເກັບເງິນຕາມຈຳນວນທີ່ໄດ້ຮັບແທ້."
 
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__product_template__purchase_method__receive
@@ -1727,13 +1727,13 @@ msgstr "ອີງຕາມຈຳນວນທີ່ໄດ້ຮັບ"
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
 msgid "Once you get the price from the vendor, you can complete the purchase order with the right price."
 msgstr ""
-"ເມື່ອທ່ານໄດ້ລາຄາຈາກຜູ້ສະໜອງແລ້ວ, ທ່ານສາມາດເຮັດໃບສັ່ງຊື້ໃຫ້ສຳເລັດດ້ວຍລາຄາທີ່ຖືກຕ້ອງ."
+"ເມື່ອທ່ານໄດ້ຮັບລາຄາຈາກຜູ້ສະໜອງແລ້ວ, ທ່ານສາມາດເຮັດໃບສັ່ງຊື້ໃຫ້ສົມບູນດ້ວຍລາຄາທີ່ຖືກຕ້ອງ."
 
 #. module: purchase
 #: model_terms:ir.actions.act_window,help:purchase.purchase_form_action
 msgid "Once you ordered your products to your supplier, confirm your request for quotation and it will turn into a purchase order."
 msgstr ""
-"ເມື່ອທ່ານສັ່ງສິນຄ້າຈາກຜູ້ສະໜອງແລ້ວ, ໃຫ້ຢືນຢັນໃບສະເໜີລາຄາ ແລະ ມັນຈະປ່ຽນເປັນໃບສັ່ງຊື້."
+"ເມື່ອທ່ານສັ່ງຊື້ສິນຄ້າຈາກຜູ້ສະໜອງແລ້ວ, ຢືນຢັນໃບສະເໜີລາຄາຂອງທ່ານ ແລະ ມັນຈະກາຍເປັນໃບສັ່ງຊື້."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__order_id
@@ -1793,12 +1793,12 @@ msgstr "ຂໍ້ມູນອື່ນໆ"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_packaging_id
 msgid "Packaging"
-msgstr "ການບັນຈຸພັນ"
+msgstr "ການຫຸ້ມຫໍ່"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_packaging_qty
 msgid "Packaging Quantity"
-msgstr "ຈຳນວນບັນຈຸພັນ"
+msgstr "ຈຳນວນການຫຸ້ມຫໍ່"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__partner_id
@@ -1813,22 +1813,22 @@ msgstr "ປະເທດຂອງຄູ່ຄ້າ"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__payment_term_id
 msgid "Payment Terms"
-msgstr "ເງື່ອນໄຂການຊຳລະເງິນ"
+msgstr "ເງື່ອນໄຂການຊຳລະ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "Payment terms"
-msgstr "ເງື່ອນໄຂການຊຳລະເງິນ"
+msgstr "ເງື່ອນໄຂການຊຳລະ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__access_url
 msgid "Portal Access URL"
-msgstr "URL ເຂົ້າເຖິງພອດທໍ (Portal)"
+msgstr "URL ເຂົ້າເຖິງພໍທໍ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Preview the reminder email by sending it to yourself."
-msgstr "ເບິ່ງຕົວຢ່າງອີເມວແຈ້ງເຕືອນໂດຍການສົ່ງໃຫ້ຕົວທ່ານເອງ."
+msgstr "ເບິ່ງຕົວຢ່າງອີເມວເຕືອນໂດຍການສົ່ງໃຫ້ຕົວທ່ານເອງ."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
@@ -1843,7 +1843,7 @@ msgstr "ພິມ"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Print RFQ"
-msgstr "ພິມໃບສະເໜີລາຄາ (RFQ)"
+msgstr "ພິມໃບສະເໜີລາຄາ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__priority
@@ -1869,18 +1869,18 @@ msgstr "ຄຸນລັກສະນະສິນຄ້າ"
 #. module: purchase
 #: model:ir.ui.menu,name:purchase.menu_product_category_config_purchase
 msgid "Product Categories"
-msgstr "ໝວດໝູ່ສິນຄ້າ"
+msgstr "ໝວດສິນຄ້າ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__category_id
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_search
 msgid "Product Category"
-msgstr "ໝວດໝູ່ສິນຄ້າ"
+msgstr "ໝວດສິນຄ້າ"
 
 #. module: purchase
 #: model:ir.model,name:purchase.model_product_packaging
 msgid "Product Packaging"
-msgstr "ການບັນຈຸພັນສິນຄ້າ"
+msgstr "ການຫຸ້ມຫໍ່ສິນຄ້າ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__product_tmpl_id
@@ -1895,13 +1895,13 @@ msgstr "ປະເພດສິນຄ້າ"
 #. module: purchase
 #: model:ir.model,name:purchase.model_product_product
 msgid "Product Variant"
-msgstr "ຮູບແບບສິນຄ້າ"
+msgstr "ສິນຄ້າຍ່ອຍ"
 
 #. module: purchase
 #: model:ir.actions.act_window,name:purchase.product_product_action
 #: model:ir.ui.menu,name:purchase.product_product_menu
 msgid "Product Variants"
-msgstr "ຮູບແບບສິນຄ້າຕ່າງໆ"
+msgstr "ສິນຄ້າຍ່ອຍ"
 
 #. module: purchase
 #: model:ir.actions.act_window,name:purchase.product_normal_action_puchased
@@ -1918,7 +1918,7 @@ msgstr "ສິນຄ້າ"
 #: model:ir.model.fields,help:purchase.field_res_company__po_double_validation
 #: model:ir.model.fields,help:purchase.field_res_config_settings__po_double_validation
 msgid "Provide a double validation mechanism for purchases"
-msgstr "ກຳນົດລະບົບການຢືນຢັນສອງຂັ້ນຕອນ ສຳລັບການສັ່ງຊື້"
+msgstr "ສະໜອງກົນໄກການອະນຸມັດສອງຂັ້ນຕອນສຳລັບການຈັດຊື້"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_product_packaging__purchase
@@ -1926,7 +1926,7 @@ msgstr "ກຳນົດລະບົບການຢືນຢັນສອງຂັ
 #: model:ir.ui.menu,name:purchase.purchase_report
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "Purchase"
-msgstr "ການຊື້"
+msgstr "ການຈັດຊື້"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_res_config_settings__module_purchase_requisition
@@ -1939,7 +1939,7 @@ msgstr "ຂໍ້ຕົກລົງການຊື້"
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_graph
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_pivot
 msgid "Purchase Analysis"
-msgstr "ການວິເຄາະການຊື້"
+msgstr "ການວິເຄາະການຈັດຊື້"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_product_supplier_inherit
@@ -1949,25 +1949,25 @@ msgstr "ຄຳອະທິບາຍການຊື້"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_res_config_settings__module_purchase_product_matrix
 msgid "Purchase Grid Entry"
-msgstr "ການປ້ອນຂໍ້ມູນການຊື້ແບບຕາຕະລາງ (Grid)"
+msgstr "ການປ້ອນຂໍ້ມູນການຊື້ແບບຕາຕະລາງ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Purchase History"
-msgstr "ປະຫວັດການຊື້"
+msgstr "ປະຫວັດການຈັດຊື້"
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/product.py:0
 #: code:addons/purchase/models/purchase.py:0
 msgid "Purchase History for %s"
-msgstr "ປະຫວັດການຊື້ສຳລັບ %s"
+msgstr "ປະຫວັດການຈັດຊື້ສຳລັບ %s"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_res_company__po_lead
 #: model:ir.model.fields,field_description:purchase.field_res_config_settings__po_lead
 msgid "Purchase Lead Time"
-msgstr "ໄລຍະເວລານຳສົ່ງການຊື້"
+msgstr "ໄລຍະເວລາການຈັດຊື້"
 
 #. module: purchase
 #. odoo-python
@@ -1999,7 +1999,7 @@ msgstr "ໃບສັ່ງຊື້"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
 msgid "Purchase Order #"
-msgstr "ໃບສັ່ງຊື້ເລກທີ"
+msgstr "ໃບສັ່ງຊື້ #"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_res_config_settings__po_order_approval
@@ -2035,7 +2035,7 @@ msgstr "ຄຳເຕືອນລາຍການໃບສັ່ງຊື້"
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_line_tree
 msgid "Purchase Order Lines"
-msgstr "ລາຍການໃບສັ່ງຊື້ທັງໝົດ"
+msgstr "ລາຍການໃບສັ່ງຊື້"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_res_company__po_lock
@@ -2052,7 +2052,7 @@ msgstr "ການແກ້ໄຂໃບສັ່ງຊື້ *"
 #: model:ir.model.fields,help:purchase.field_res_config_settings__po_lock
 msgid "Purchase Order Modification used when you want to purchase order editable after confirm"
 msgstr ""
-"ໃຊ້ການແກ້ໄຂໃບສັ່ງຊື້ ເມື່ອທ່ານຕ້ອງການໃຫ້ໃບສັ່ງຊື້ສາມາດແກ້ໄຂໄດ້ຫຼັງຈາກຢືນຢັນແລ້ວ"
+"ການແກ້ໄຂໃບສັ່ງຊື້ ໃຊ້ເມື່ອທ່ານຕ້ອງການໃຫ້ໃບສັ່ງຊື້ສາມາດແກ້ໄຂໄດ້ຫຼັງຈາກຢືນຢັນແລ້ວ"
 
 #. module: purchase
 #. odoo-python
@@ -2067,12 +2067,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_search
 msgid "Purchase Orders"
-msgstr "ໃບສັ່ງຊື້ທັງໝົດ"
+msgstr "ໃບສັ່ງຊື້"
 
 #. module: purchase
 #: model:ir.model,name:purchase.model_purchase_report
 msgid "Purchase Report"
-msgstr "ບົດລາຍງານການຊື້"
+msgstr "ລາຍງານການຈັດຊື້"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__user_id
@@ -2090,42 +2090,42 @@ msgstr "ຄຳເຕືອນການຈັດຊື້"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
 msgid "Purchase orders that have been invoiced."
-msgstr "ໃບສັ່ງຊື້ທີ່ໄດ້ອອກໃບບິນແລ້ວ."
+msgstr "ໃບສັ່ງຊື້ທີ່ໄດ້ອອກໃບເກັບເງິນແລ້ວ."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
 msgid "Purchase orders that include lines not invoiced."
-msgstr "ໃບສັ່ງຊື້ທີ່ມີລາຍການທີ່ຍັງບໍ່ທັນໄດ້ອອກໃບບິນ."
+msgstr "ໃບສັ່ງຊື້ທີ່ມີລາຍການທີ່ຍັງບໍ່ທັນອອກໃບເກັບເງິນ."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "Purchase products by multiple of unit # per package"
-msgstr "ຊື້ສິນຄ້າເປັນຈຳນວນທະວີຄູນຂອງຫົວໜ່ວຍຕໍ່ບັນຈຸພັນ"
+msgstr "ຊື້ສິນຄ້າຕາມຈຳນວນຕົວຄູນຂອງຫົວໜ່ວຍຕໍ່ແພັກເກັດ"
 
 #. module: purchase
 #: model:ir.actions.server,name:purchase.purchase_send_reminder_mail_ir_actions_server
 msgid "Purchase reminder"
-msgstr "ການແຈ້ງເຕືອນການຊື້"
+msgstr "ການແຈ້ງເຕືອນການຈັດຊື້"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "Purchase variants of a product using attributes (size, color, etc.)"
-msgstr "ຊື້ສິນຄ້າທີ່ມີຫຼາຍຮູບແບບໂດຍໃຊ້ຄຸນລັກສະນະ (ຂະໜາດ, ສີ, ແລະ ອື່ນໆ)"
+msgstr "ຊື້ສິນຄ້າຍ່ອຍໂດຍໃຊ້ຄຸນລັກສະນະ (ຂະໜາດ, ສີ, ແລະ ອື່ນໆ)"
 
 #. module: purchase
 #: model:mail.template,name:purchase.email_template_edi_purchase_done
 msgid "Purchase: Purchase Order"
-msgstr "ການຊື້: ໃບສັ່ງຊື້"
+msgstr "ການຈັດຊື້: ໃບສັ່ງຊື້"
 
 #. module: purchase
 #: model:mail.template,name:purchase.email_template_edi_purchase
 msgid "Purchase: Request For Quotation"
-msgstr "ການຊື້: ໃບສະເໜີລາຄາ"
+msgstr "ການຈັດຊື້: ໃບສະເໜີລາຄາ"
 
 #. module: purchase
 #: model:mail.template,name:purchase.email_template_edi_purchase_reminder
 msgid "Purchase: Vendor Reminder"
-msgstr "ການຊື້: ການແຈ້ງເຕືອນຜູ້ສະໜອງ"
+msgstr "ການຈັດຊື້: ການແຈ້ງເຕືອນຜູ້ສະໜອງ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_product_product__purchased_product_qty
@@ -2149,24 +2149,24 @@ msgstr "ຊື້ແລ້ວໃນ 365 ມື້ຜ່ານມາ"
 #: model_terms:ir.ui.view,arch_db:purchase.res_partner_view_purchase_buttons
 #: model_terms:ir.ui.view,arch_db:purchase.view_move_form_inherit_purchase
 msgid "Purchases"
-msgstr "ການຊື້"
+msgstr "ການຈັດຊື້"
 
 #. module: purchase
 #: model:ir.model,name:purchase.model_purchase_bill_union
 msgid "Purchases & Bills Union"
-msgstr "ການລວມການຊື້ ແລະ ໃບບິນ"
+msgstr "ການຮ່ວມການຈັດຊື້ ແລະ ໃບເກັບເງິນ"
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__dest_address_id
 msgid "Put an address if you want to deliver directly from the vendor to the customer. Otherwise, keep empty to deliver to your own company."
 msgstr ""
-"ໃສ່ທີ່ຢູ່ ຫາກທ່ານຕ້ອງການໃຫ້ນຳສົ່ງໂດຍກົງຈາກຜູ້ສະໜອງໄປຫາລູກຄ້າ. ຖ້າບໍ່ດັ່ງນັ້ນ, ໃຫ້ປະວ່າງໄວ້ເພື່ອໃຫ້ນຳສົ່ງມາຍັ"
-"ງບໍລິສັດຂອງທ່ານເອງ."
+"ໃສ່ທີ່ຢູ່ຫາກທ່ານຕ້ອງການໃຫ້ຜູ້ສະໜອງສົ່ງເຄື່ອງໃຫ້ລູກຄ້າໂດຍກົງ. ຖ້າບໍ່ດັ່ງນັ້ນ, ໃຫ້ປະຫວ່າງໄວ້ເພື່ອໃຫ້ສົ່ງມາທີ່ບໍລິສັດຂ"
+"ອງທ່ານ."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__qty_billed
 msgid "Qty Billed"
-msgstr "ຈຳນວນທີ່ອອກໃບບິນແລ້ວ"
+msgstr "ຈຳນວນທີ່ອອກໃບເກັບເງິນແລ້ວ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__qty_ordered
@@ -2176,17 +2176,17 @@ msgstr "ຈຳນວນທີ່ສັ່ງຊື້"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__qty_received
 msgid "Qty Received"
-msgstr "ຈຳນວນທີ່ໄດ້ຮັບແລ້ວ"
+msgstr "ຈຳນວນທີ່ໄດ້ຮັບ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__qty_to_be_billed
 msgid "Qty to be Billed"
-msgstr "ຈຳນວນທີ່ຈະອອກໃບບິນ"
+msgstr "ຈຳນວນທີ່ຈະອອກໃບເກັບເງິນ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "Quantities billed by vendors"
-msgstr "ຈຳນວນທີ່ອອກໃບບິນໂດຍຜູ້ສະໜອງ"
+msgstr "ຈຳນວນທີ່ຜູ້ສະໜອງອອກໃບເກັບເງິນ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_qty
@@ -2202,45 +2202,45 @@ msgstr "ຈຳນວນ:"
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order__state__draft
 msgid "RFQ"
-msgstr "ໃບສະເໜີລາຄາ (RFQ)"
+msgstr "ໃບສະເໜີລາຄາ"
 
 #. module: purchase
 #: model:mail.message.subtype,name:purchase.mt_rfq_approved
 msgid "RFQ Approved"
-msgstr "RFQ ໄດ້ຮັບອະນຸມັດແລ້ວ"
+msgstr "ໃບສະເໜີລາຄາທີ່ອະນຸມັດແລ້ວ"
 
 #. module: purchase
 #: model:mail.message.subtype,name:purchase.mt_rfq_confirmed
 msgid "RFQ Confirmed"
-msgstr "RFQ ຢືນຢັນແລ້ວ"
+msgstr "ໃບສະເໜີລາຄາທີ່ຢືນຢັນແລ້ວ"
 
 #. module: purchase
 #: model:mail.message.subtype,name:purchase.mt_rfq_done
 msgid "RFQ Done"
-msgstr "RFQ ສຳເລັດແລ້ວ"
+msgstr "ໃບສະເໜີລາຄາທີ່ສຳເລັດແລ້ວ"
 
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order__state__sent
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_report__state__sent
 #: model:mail.message.subtype,name:purchase.mt_rfq_sent
 msgid "RFQ Sent"
-msgstr "ສົ່ງ RFQ ແລ້ວ"
+msgstr "ໃບສະເໜີລາຄາທີ່ສົ່ງແລ້ວ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
 msgid "RFQs"
-msgstr "ໃບສະເໜີລາຄາທັງໝົດ"
+msgstr "ໃບສະເໜີລາຄາ"
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
 msgid "RFQs Sent Last 7 Days"
-msgstr "RFQ ທີ່ສົ່ງແລ້ວໃນ 7 ມື້ຜ່ານມາ"
+msgstr "ໃບສະເໜີລາຄາທີ່ສົ່ງໃນ 7 ມື້ຜ່ານມາ"
 
 #. module: purchase
 #: model:ir.actions.act_window,name:purchase.act_res_partner_2_purchase_order
 msgid "RFQs and Purchases"
-msgstr "RFQ ແລະ ການຊື້"
+msgstr "ໃບສະເໜີລາຄາ ແລະ ການຈັດຊື້"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__rating_ids
@@ -2255,14 +2255,14 @@ msgstr "ອັດຕາສ່ວນລະຫວ່າງສະກຸນເງິ
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Re-Send by Email"
-msgstr "ສົ່ງຄືນທາງອີເມວ"
+msgstr "ສົ່ງອີເມວຄືນໃໝ່"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_res_config_settings__group_send_reminder
 #: model:ir.model.fields,field_description:purchase.field_res_partner__receipt_reminder_email
 #: model:ir.model.fields,field_description:purchase.field_res_users__receipt_reminder_email
 msgid "Receipt Reminder"
-msgstr "ແຈ້ງເຕືອນການຮັບເຄື່ອງ"
+msgstr "ການແຈ້ງເຕືອນການຮັບເຄື່ອງ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__receipt_reminder_email
@@ -2303,12 +2303,12 @@ msgstr "ຈຳນວນທີ່ໄດ້ຮັບ"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__mail_reception_confirmed
 msgid "Reception Confirmed"
-msgstr "ຢືນຢັນການຮັບເຄື່ອງແລ້ວ"
+msgstr "ການຮັບເຄື່ອງໄດ້ຮັບການຢືນຢັນແລ້ວ"
 
 #. module: purchase
 #: model_terms:ir.actions.act_window,help:purchase.act_res_partner_2_supplier_invoices
 msgid "Record a new vendor bill"
-msgstr "ບັນທຶກໃບບິນຜູ້ສະໜອງໃໝ່"
+msgstr "ບັນທຶກໃບເກັບເງິນຜູ້ສະໜອງໃໝ່"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_bill_union__name
@@ -2317,7 +2317,7 @@ msgstr "ບັນທຶກໃບບິນຜູ້ສະໜອງໃໝ່"
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_tree
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_bill_union_filter
 msgid "Reference"
-msgstr "ເລກອ້າງອີງ"
+msgstr "ອ້າງອີງ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_bill_union_tree
@@ -2332,24 +2332,24 @@ msgstr "ຫົວໜ່ວຍວັດແທກອ້າງອີງ"
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__origin
 msgid "Reference of the document that generated this purchase order request (e.g. a sales order)"
-msgstr "ເອກະສານອ້າງອີງທີ່ສ້າງຄຳຮ້ອງຂໍໃບສັ່ງຊື້ນີ້ (ຕົວຢ່າງ: ໃບສັ່ງຂາຍ)"
+msgstr "ອ້າງອີງຂອງເອກະສານທີ່ສ້າງຄຳຮ້ອງຂໍໃບສັ່ງຊື້ນີ້ (ເຊັ່ນ: ໃບສັ່ງຂາຍ)"
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__partner_ref
 msgid "Reference of the sales order or bid sent by the vendor. It's used to do the matching when you receive the products as this reference is usually written on the delivery order sent by your vendor."
 msgstr ""
-"ເລກອ້າງອີງຂອງໃບສັ່ງຂາຍ ຫຼື ໃບສະເໜີລາຄາທີ່ສົ່ງໂດຍຜູ້ສະໜອງ. ມັນຖືກໃຊ້ເພື່ອຈັບຄູ່ເມື່ອທ່ານໄດ້ຮັບສິນຄ້າ ເພາະປົ"
-"ກກະຕິເລກອ້າງອີງນີ້ຈະຖືກຂຽນໄວ້ໃນໃບນຳສົ່ງທີ່ສົ່ງໂດຍຜູ້ສະໜອງຂອງທ່ານ."
+"ເລກອ້າງອີງຂອງໃບສັ່ງຂາຍ ຫຼື ໃບສະເໜີລາຄາທີ່ສົ່ງໂດຍຜູ້ສະໜອງ. ມັນຖືກໃຊ້ເພື່ອຈັບຄູ່ເມື່ອທ່ານຮັບເຄື່ອງ ເນື່ອງຈາກ"
+"ເລກອ້າງອີງນີ້ມັກຈະຖືກຂຽນໄວ້ໃນໃບສົ່ງເຄື່ອງທີ່ສົ່ງໂດຍຜູ້ສະໜອງຂອງທ່ານ."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__mail_reminder_confirmed
 msgid "Reminder Confirmed"
-msgstr "ຢືນຢັນການແຈ້ງເຕືອນແລ້ວ"
+msgstr "ການແຈ້ງເຕືອນໄດ້ຮັບການຢືນຢັນແລ້ວ"
 
 #. module: purchase
 #: model:ir.ui.menu,name:purchase.purchase_report_main
 msgid "Reporting"
-msgstr "ບົດລາຍງານ"
+msgstr "ການລາຍງານ"
 
 #. module: purchase
 #. odoo-python
@@ -2363,17 +2363,17 @@ msgstr "ໃບສະເໜີລາຄາ"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
 msgid "Request for Quotation #"
-msgstr "ໃບສະເໜີລາຄາເລກທີ"
+msgstr "ໃບສະເໜີລາຄາ #"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "Request managers to approve orders above a minimum amount"
-msgstr "ຮ້ອງຂໍໃຫ້ຜູ້ຈັດການອະນຸມັດການສັ່ງຊື້ທີ່ມີມູນຄ່າສູງກວ່າທີ່ກຳນົດ"
+msgstr "ໃຫ້ຜູ້ຈັດການອະນຸມັດໃບສັ່ງຊື້ທີ່ມີມູນຄ່າເກີນກຳນົດ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_rfqs
 msgid "Requests For Quotation"
-msgstr "ໃບສະເໜີລາຄາທັງໝົດ"
+msgstr "ໃບສະເໜີລາຄາ"
 
 #. module: purchase
 #: model:ir.actions.act_window,name:purchase.action_rfq_form
@@ -2383,7 +2383,7 @@ msgstr "ໃບສະເໜີລາຄາທັງໝົດ"
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_home_purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_search
 msgid "Requests for Quotation"
-msgstr "ໃບສະເໜີລາຄາທັງໝົດ"
+msgstr "ໃບສະເໜີລາຄາ"
 
 #. module: purchase
 #: model_terms:ir.actions.act_window,help:purchase.purchase_rfq
@@ -2391,14 +2391,13 @@ msgid ""
 "Requests for quotation are documents that will be sent to your suppliers to request prices for different products you consider buying.\n"
 "                Once an agreement has been found with the supplier, they will be confirmed and turned into purchase orders."
 msgstr ""
-"ໃບສະເໜີລາຄາແມ່ນເອກະສານທີ່ຈະຖືກສົ່ງໄປຫາຜູ້ສະໜອງຂອງທ່ານເພື່ອຂໍລາຄາສຳລັບສິນຄ້າຕ່າງໆທີ່ທ່ານກຳລັງພິຈາລະນ"
-"າຊື້.\n"
-"ເມື່ອມີການຕົກລົງກັບຜູ້ສະໜອງແລ້ວ, ພວກມັນຈະຖືກຢືນຢັນ ແລະ ປ່ຽນເປັນໃບສັ່ງຊື້."
+"ໃບສະເໜີລາຄາ ແມ່ນເອກະສານທີ່ຈະສົ່ງໃຫ້ຜູ້ສະໜອງຂອງທ່ານເພື່ອສອບຖາມລາຄາສິນຄ້າທີ່ທ່ານຕ້ອງການຊື້.\n"
+"                ເມື່ອໄດ້ຮັບການຕົກລົງກັບຜູ້ສະໜອງແລ້ວ, ພວກມັນຈະຖືກຢືນຢັນ ແລະ ປ່ຽນເປັນໃບສັ່ງຊື້."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__activity_user_id
 msgid "Responsible User"
-msgstr "ຜູ້ໃຊ້ທີ່ຮັບຜິດຊອບ"
+msgstr "ຜູ້ຮັບຜິດຊອບ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__message_has_sms_error
@@ -2408,7 +2407,7 @@ msgstr "ຂໍ້ຜິດພາດໃນການສົ່ງ SMS"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "Scheduled Date"
-msgstr "ວັນທີກຳນົດ"
+msgstr "ວັນທີທີ່ວາງແຜນໄວ້"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_line_search
@@ -2426,7 +2425,7 @@ msgstr "ຄົ້ນຫາເອກະສານອ້າງອີງ"
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
 msgid "Search a vendor name, or create one on the fly."
-msgstr "ຄົ້ນຫາຊື່ຜູ້ສະໜອງ ຫຼື ສ້າງໃໝ່ທັນທີ."
+msgstr "ຄົ້ນຫາຊື່ຜູ້ສະໜອງ ຫຼື ສ້າງໃໝ່ໄດ້ທັນທີ."
 
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order_line__display_type__line_section
@@ -2436,12 +2435,12 @@ msgstr "ສ່ວນ"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Section Name (eg. Products, Services)"
-msgstr "ຊື່ສ່ວນ (ຕົວຢ່າງ: ສິນຄ້າ, ການບໍລິການ)"
+msgstr "ຊື່ສ່ວນ (ເຊັ່ນ: ສິນຄ້າ, ການບໍລິການ)"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_res_config_settings__use_po_lead
 msgid "Security Lead Time for Purchase"
-msgstr "ໄລຍະເວລານຳສົ່ງສຳຮອງເພື່ອຄວາມປອດໄພສຳລັບການຊື້"
+msgstr "ໄລຍະເວລາເຜື່ອເພື່ອຄວາມປອດໄພໃນການຊື້"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__access_token
@@ -2452,12 +2451,12 @@ msgstr "ໂທເຄັນຄວາມປອດໄພ"
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
 msgid "Select a product, or create a new one on the fly."
-msgstr "ເລືອກສິນຄ້າ ຫຼື ສ້າງໃໝ່ທັນທີ."
+msgstr "ເລືອກສິນຄ້າ ຫຼື ສ້າງໃໝ່ໄດ້ທັນທີ."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_move_form_inherit_purchase
 msgid "Select a purchase order or an old bill"
-msgstr "ເລືອກໃບສັ່ງຊື້ ຫຼື ໃບບິນເກົ່າ"
+msgstr "ເລືອກໃບສັ່ງຊື້ ຫຼື ໃບເກັບເງິນເກົ່າ"
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_product_product__purchase_line_warn
@@ -2466,8 +2465,8 @@ msgstr "ເລືອກໃບສັ່ງຊື້ ຫຼື ໃບບິນເ�
 #: model:ir.model.fields,help:purchase.field_res_users__purchase_warn
 msgid "Selecting the \"Warning\" option will notify user with the message, Selecting \"Blocking Message\" will throw an exception with the message and block the flow. The Message has to be written in the next field."
 msgstr ""
-"ການເລືອກຕົວເລືອກ \"ຄຳເຕືອນ\" ຈະແຈ້ງເຕືອນຜູ້ໃຊ້ດ້ວຍຂໍ້ຄວາມ, ການເລືອກ \"ຂໍ້ຄວາມປິດກັ້ນ\" ຈະສະແດງຂໍ້"
-"ຜິດພາດພ້ອມຂໍ້ຄວາມ ແລະ ປິດກັ້ນຂັ້ນຕອນການເຮັດວຽກ. ຂໍ້ຄວາມຕ້ອງຖືກຂຽນໄວ້ໃນຫ້ອງຖັດໄປ."
+"ການເລືອກຕົວເລືອກ \"ຄຳເຕືອນ\" ຈະແຈ້ງເຕືອນຜູ້ໃຊ້ດ້ວຍຂໍ້ຄວາມ, ການເລືອກ \"ຂໍ້ຄວາມສະກັດກັ້ນ\" ຈະສະແດ"
+"ງຂໍ້ຜິດພາດພ້ອມຂໍ້ຄວາມ ແລະ ສະກັດກັ້ນຂັ້ນຕອນ. ຕ້ອງຂຽນຂໍ້ຄວາມໃນຫ້ອງຖັດໄປ."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
@@ -2482,12 +2481,12 @@ msgstr "ສົ່ງໃບສັ່ງຊື້ທາງອີເມວ"
 #. module: purchase
 #: model:ir.actions.server,name:purchase.action_purchase_send_reminder
 msgid "Send Reminder"
-msgstr "ສົ່ງຄຳແຈ້ງເຕືອນ"
+msgstr "ສົ່ງການແຈ້ງເຕືອນ"
 
 #. module: purchase
 #: model:res.groups,name:purchase.group_send_reminder
 msgid "Send an automatic reminder email to confirm delivery"
-msgstr "ສົ່ງອີເມວແຈ້ງເຕືອນອັດຕະໂນມັດເພື່ອຢືນຢັນການນຳສົ່ງ"
+msgstr "ສົ່ງອີເມວເຕືອນອັດຕະໂນມັດເພື່ອຢືນຢັນການສົ່ງເຄື່ອງ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
@@ -2498,7 +2497,7 @@ msgstr "ສົ່ງທາງອີເມວ"
 #. odoo-javascript
 #: code:addons/purchase/static/src/js/tours/purchase.js:0
 msgid "Send the request for quotation to your vendor."
-msgstr "ສົ່ງໃບສະເໜີລາຄາໄປຫາຜູ້ສະໜອງຂອງທ່ານ."
+msgstr "ສົ່ງໃບສະເໜີລາຄາໃຫ້ຜູ້ສະໜອງຂອງທ່ານ."
 
 #. module: purchase
 #: model:mail.template,description:purchase.email_template_edi_purchase
@@ -2508,7 +2507,7 @@ msgstr "ສົ່ງໃຫ້ຜູ້ສະໜອງດ້ວຍຕົນເອ
 #. module: purchase
 #: model:mail.template,description:purchase.email_template_edi_purchase_done
 msgid "Sent to vendor with the purchase order in attachment"
-msgstr "ສົ່ງໃຫ້ຜູ້ສະໜອງໂດຍມີໃບສັ່ງຊື້ຄັດຕິດໄປນຳ"
+msgstr "ສົ່ງໃຫ້ຜູ້ສະໜອງພ້ອມໃບສັ່ງຊື້ທີ່ຄັດຕິດມາ"
 
 #. module: purchase
 #: model:mail.template,description:purchase.email_template_edi_purchase_reminder
@@ -2523,13 +2522,13 @@ msgstr "ລຳດັບ"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Set to Draft"
-msgstr "ຕັ້ງເປັນສະບັບຮ່າງ"
+msgstr "ຕັ້ງເປັນຮ່າງ"
 
 #. module: purchase
 #: model:ir.actions.act_window,name:purchase.action_purchase_configuration
 #: model:ir.ui.menu,name:purchase.menu_purchase_general_settings
 msgid "Settings"
-msgstr "ການຕັ້ງຄ່າ"
+msgstr "ການກໍານົດຄ່າ"
 
 #. module: purchase
 #: model:ir.actions.server,name:purchase.model_purchase_order_action_share
@@ -2540,7 +2539,7 @@ msgstr "ແບ່ງປັນ"
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
 msgid "Show all records which has next action date is before today"
-msgstr "ສະແດງບັນທຶກທັງໝົດທີ່ມີວັນທີດຳເນີນການຄັ້ງຖັດໄປກ່ອນມື້ນີ້"
+msgstr "ສະແດງຂໍ້ມູນທັງໝົດທີ່ມີວັນທີດຳເນີນການຖັດໄປກ່ອນມື້ນີ້"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_bill_union__reference
@@ -2575,10 +2574,10 @@ msgid ""
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
-"ສະຖານະໂດຍອີງຕາມກິດຈະກຳ\n"
-"ກາຍກຳນົດ: ວັນທີກຳນົດໄດ້ຜ່ານໄປແລ້ວ\n"
+"ສະຖານະອີງຕາມກິດຈະກຳ\n"
+"ກາຍກຳນົດ: ວັນທີຄົບກຳນົດໄດ້ຜ່ານໄປແລ້ວ\n"
 "ມື້ນີ້: ວັນທີກິດຈະກຳແມ່ນມື້ນີ້\n"
-"ວາງແຜນໄວ້: ກິດຈະກຳໃນອະນາຄົດ."
+"ວາງແຜນ: ກິດຈະກຳໃນອະນາຄົດ."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__price_subtotal
@@ -2588,7 +2587,7 @@ msgstr "ລວມຍ່ອຍ"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_report_view_tree
 msgid "Sum of Qty Billed"
-msgstr "ຜົນລວມຂອງຈຳນວນທີ່ອອກໃບບິນແລ້ວ"
+msgstr "ຜົນລວມຂອງຈຳນວນທີ່ອອກໃບເກັບເງິນ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_report_view_tree
@@ -2598,7 +2597,7 @@ msgstr "ຜົນລວມຂອງຈຳນວນທີ່ສັ່ງຊື້
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_report_view_tree
 msgid "Sum of Qty Received"
-msgstr "ຜົນລວມຂອງຈຳນວນທີ່ໄດ້ຮັບແລ້ວ"
+msgstr "ຜົນລວມຂອງຈຳນວນທີ່ໄດ້ຮັບ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_report_view_tree
@@ -2608,81 +2607,81 @@ msgstr "ຜົນລວມທັງໝົດ"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_report_view_tree
 msgid "Sum of Untaxed Total"
-msgstr "ຜົນລວມທີ່ບໍ່ລວມພາສີທັງໝົດ"
+msgstr "ຜົນລວມທີ່ບໍ່ລວມອາກອນ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_res_partner__property_purchase_currency_id
 #: model:ir.model.fields,field_description:purchase.field_res_users__property_purchase_currency_id
 msgid "Supplier Currency"
-msgstr "ສະກຸນເງິນຂອງຜູ້ສະໜອງ"
+msgstr "ສະກຸນເງິນຜູ້ສະໜອງ"
 
 #. module: purchase
 #: model:ir.model,name:purchase.model_product_supplierinfo
 msgid "Supplier Pricelist"
-msgstr "ບັນຊີລາຄາຂອງຜູ້ສະໜອງ"
+msgstr "ໃບລາຄາຜູ້ສະໜອງ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__price_tax
 msgid "Tax"
-msgstr "ພາສີ"
+msgstr "ອາກອນ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__tax_country_id
 msgid "Tax Country"
-msgstr "ປະເທດທີ່ເສຍພາສີ"
+msgstr "ປະເທດທາງພາສີ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__tax_totals
 msgid "Tax Totals"
-msgstr "ຍອດລວມພາສີ"
+msgstr "ລວມອາກອນ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__tax_calculation_rounding_method
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__tax_calculation_rounding_method
 msgid "Tax calculation rounding method"
-msgstr "ວິທີການປັດເສດການຄິດໄລ່ພາສີ"
+msgstr "ວິທີການປັດເສດການຄິດໄລ່ອາກອນ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Tax excl."
-msgstr "ບໍ່ລວມພາສີ."
+msgstr "ບໍ່ລວມອາກອນ."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Tax excl.:"
-msgstr "ບໍ່ລວມພາສີ:"
+msgstr "ບໍ່ລວມອາກອນ:"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Tax incl."
-msgstr "ລວມພາສີ."
+msgstr "ລວມອາກອນ."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Tax incl.:"
-msgstr "ລວມພາສີ:"
+msgstr "ລວມອາກອນ:"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__amount_tax
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__taxes_id
 msgid "Taxes"
-msgstr "ພາສີຕ່າງໆ"
+msgstr "ອາກອນ"
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order_line__display_type
 msgid "Technical field for UX purpose."
-msgstr "ຟິວທາງເຕັກນິກສຳລັບຈຸດປະສົງ UX."
+msgstr "ຟິວທາງເຕັກນິກສຳລັບ UX."
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__tax_country_id
 msgid "Technical field to filter the available taxes depending on the fiscal country and fiscal position."
 msgstr ""
-"ຟິວທາງເຕັກນິກເພື່ອຕອງພາສີທີ່ມີຢູ່ ໂດຍອີງຕາມປະເທດທາງພາສີ ແລະ ສະຖານະທາງພາສີ."
+"ຟິວທາງເຕັກນິກເພື່ອຕອງອາກອນທີ່ໃຊ້ໄດ້ ໂດຍອີງຕາມປະເທດທາງພາສີ ແລະ ຖານະທາງພາສີ."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "Terms &amp; Conditions"
-msgstr "ເງື່ອນໄຂ ແລະ ຂໍ້ກຳນົດ"
+msgstr "ເງື່ອນໄຂ &amp; ຂໍ້ກຳນົດ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__notes
@@ -2696,13 +2695,13 @@ msgid ""
 "You can use this field for quick search."
 msgstr ""
 "ລະຫັດປະເທດ ISO ສອງຕົວອັກສອນ. \n"
-"ທ່ານສາມາດໃຊ້ຟິວນີ້ນຳໃຊ້ເພື່ອການຄົ້ນຫາແບບໄວ."
+"ທ່ານສາມາດໃຊ້ຟິວນີ້ເພື່ອການຄົ້ນຫາທີ່ວ່ອງໄວ."
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
 msgid "The order receipt has been acknowledged by %s."
-msgstr "ການຮັບເຄື່ອງຕາມໃບສັ່ງຊື້ໄດ້ຮັບຊາບໂດຍ %s ແລ້ວ."
+msgstr "ການຮັບໃບສັ່ງຊື້ໄດ້ຮັບການຕອບຮັບໂດຍ %s."
 
 #. module: purchase
 #: model_terms:ir.actions.act_window,help:purchase.act_res_partner_2_purchase_order
@@ -2712,8 +2711,8 @@ msgid ""
 "                    of the products and the vendor bill."
 msgstr ""
 "ໃບສະເໜີລາຄາແມ່ນຂັ້ນຕອນທຳອິດຂອງຂະບວນການຈັດຊື້. ເມື່ອ\n"
-"ປ່ຽນເປັນໃບສັ່ງຊື້ແລ້ວ, ທ່ານຈະສາມາດຄວບຄຸມການຮັບ\n"
-"ສິນຄ້າ ແລະ ໃບບິນຜູ້ສະໜອງໄດ້."
+"                    ປ່ຽນເປັນໃບສັ່ງຊື້ແລ້ວ, ທ່ານຈະສາມາດຄວບຄຸມການຮັບ\n"
+"                    ສິນຄ້າ ແລະ ໃບເກັບເງິນຜູ້ສະໜອງ."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_orders
@@ -2730,8 +2729,8 @@ msgstr "ປະຈຸບັນຍັງບໍ່ມີໃບສະເໜີລາ
 #: code:addons/purchase/models/purchase.py:0
 msgid "There is no invoiceable line. If a product has a control policy based on received quantity, please make sure that a quantity has been received."
 msgstr ""
-"ບໍ່ມີລາຍການທີ່ສາມາດອອກໃບບິນໄດ້. ຫາກສິນຄ້າມີນໂຍບາຍການກວດສອບໂດຍອີງຕາມຈຳນວນທີ່ໄດ້ຮັບ, ກະລຸນາກວດສ"
-"ອບໃຫ້ແນ່ໃຈວ່າໄດ້ມີການຮັບຈຳນວນສິນຄ້າແລ້ວ."
+"ບໍ່ມີລາຍການທີ່ສາມາດອອກໃບເກັບເງິນໄດ້. ຫາກສິນຄ້າມີນຳໂຍບາຍການຄວບຄຸມຕາມຈຳນວນທີ່ໄດ້ຮັບ, ກະລຸນາກວດສອ"
+"ບວ່າໄດ້ຮັບເຄື່ອງແລ້ວ."
 
 #. module: purchase
 #: model_terms:ir.actions.act_window,help:purchase.action_purchase_order_report_all
@@ -2739,23 +2738,22 @@ msgid ""
 "This analysis allows you to easily check and analyse your company purchase history and performance.\n"
 "                You can track your negotiation performance, the delivery performance of your vendors, etc"
 msgstr ""
-"ການວິເຄາະນີ້ຊ່ວຍໃຫ້ທ່ານກວດສອບ ແລະ ວິເຄາະປະຫວັດການຊື້ ແລະ ຜົນການດຳເນີນງານຂອງບໍລິສັດໄດ້ຢ່າງງ່າຍດາ"
-"ຍ.\n"
-"ທ່ານສາມາດຕິດຕາມຜົນການເຈລະຈາ, ປະສິດທິພາບການນຳສົ່ງຂອງຜູ້ສະໜອງ, ແລະ ອື່ນໆ"
+"ການວິເຄາະນີ້ຊ່ວຍໃຫ້ທ່ານກວດສອບ ແລະ ວິເຄາະປະຫວັດການຊື້ ແລະ ປະສິດທິພາບຂອງບໍລິສັດໄດ້ງ່າຍ.\n"
+"                ທ່ານສາມາດຕິດຕາມປະສິດທິພາບການຕໍ່ຮອງ, ປະສິດທິພາບການສົ່ງເຄື່ອງຂອງຜູ້ສະໜອງ, ແລ"
+"ະ ອື່ນໆ"
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_res_partner__property_purchase_currency_id
 #: model:ir.model.fields,help:purchase.field_res_users__property_purchase_currency_id
 msgid "This currency will be used, instead of the default one, for purchases from the current partner"
-msgstr ""
-"ສະກຸນເງິນນີ້ຈະຖືກນຳໃຊ້, ແທນທີ່ຈະເປັນສະກຸນເງິນເລີ່ມຕົ້ນ, ສຳລັບການຊື້ຈາກຄູ່ຄ້າຄົນນີ້"
+msgstr "ສະກຸນເງິນນີ້ຈະຖືກໃຊ້ແທນສະກຸນເງິນເລີ່ມຕົ້ນ ສຳລັບການຊື້ຈາກຄູ່ຄ້າລາຍນີ້"
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_res_config_settings__default_purchase_method
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "This default value is applied to any new product created. This can be changed in the product detail form."
 msgstr ""
-"ຄ່າເລີ່ມຕົ້ນນີ້ຈະຖືກນຳໃຊ້ກັບທຸກສິນຄ້າໃໝ່ທີ່ສ້າງຂຶ້ນ. ເຊິ່ງສາມາດປ່ຽນແປງໄດ້ໃນແບບຟອມລາຍລະອຽດສິນຄ້າ."
+"ຄ່າເລີ່ມຕົ້ນນີ້ຈະຖືກໃຊ້ກັບທຸກສິນຄ້າໃໝ່ທີ່ສ້າງຂຶ້ນ. ສາມາດແກ້ໄຂໄດ້ໃນແບບຟອມລາຍລະອຽດສິນຄ້າ."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_product_supplier_inherit
@@ -2767,55 +2765,54 @@ msgstr "ໝາຍເຫດນີ້ຈະຖືກເພີ່ມເຂົ້າ
 #: code:addons/purchase/models/purchase.py:0
 msgid "This product is packaged by %(pack_size).2f %(pack_name)s. You should purchase %(quantity).2f %(unit)s."
 msgstr ""
-"ສິນຄ້ານີ້ຖືກບັນຈຸພັນໂດຍ %(pack_size).2f %(pack_name)s. ທ່ານຄວນຊື້ %(quantity).2f %(unit)"
-"s."
+"ສິນຄ້ານີ້ຖືກຫຸ້ມຫໍ່ໂດຍ %(pack_size).2f %(pack_name)s. ທ່ານຄວນຊື້ %(quantity).2f %(unit)s."
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/account_invoice.py:0
 msgid "This vendor bill has been created from: %s"
-msgstr "ໃບບິນຜູ້ສະໜອງນີ້ຖືກສ້າງມາຈາກ: %s"
+msgstr "ໃບເກັບເງິນຜູ້ສະໜອງນີ້ຖືກສ້າງຂຶ້ນຈາກ: %s"
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/account_invoice.py:0
 msgid "This vendor bill has been modified from: %s"
-msgstr "ໃບບິນຜູ້ສະໜອງນີ້ຖືກແກ້ໄຂມາຈາກ: %s"
+msgstr "ໃບເກັບເງິນຜູ້ສະໜອງນີ້ຖືກແກ້ໄຂຈາກ: %s"
 
 #. module: purchase
 #: model_terms:ir.actions.act_window,help:purchase.act_res_partner_2_purchase_order
 msgid "This vendor has no purchase order. Create a new RfQ"
-msgstr "ຜູ້ສະໜອງຄົນນີ້ຍັງບໍ່ມີໃບສັ່ງຊື້ເທື່ອ. ສ້າງ RFQ ໃໝ່"
+msgstr "ຜູ້ສະໜອງລາຍນີ້ຍັງບໍ່ມີໃບສັ່ງຊື້. ສ້າງໃບສະເໜີລາຄາໃໝ່"
 
 #. module: purchase
 #: model:digest.tip,name:purchase.digest_tip_purchase_0
 #: model_terms:digest.tip,tip_description:purchase.digest_tip_purchase_0
 msgid "Tip: How to keep late receipts under control?"
-msgstr "ເຄັດລັບ: ວິທີຄວບຄຸມການຮັບເຄື່ອງທີ່ຊ້າກວ່າກຳນົດ?"
+msgstr "ເຄັດລັບ: ວິທີຄວບຄຸມການຮັບເຄື່ອງທີ່ລ່າຊ້າ?"
 
 #. module: purchase
 #: model:digest.tip,name:purchase.digest_tip_purchase_1
 #: model_terms:digest.tip,tip_description:purchase.digest_tip_purchase_1
 msgid "Tip: Never miss a purchase order"
-msgstr "ເຄັດລັບ: ບໍ່ພາດທຸກໃບສັ່ງຊື້"
+msgstr "ເຄັດລັບ: ບໍ່ໃຫ້ພາດໃບສັ່ງຊື້ໃດໆ"
 
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order__state__to_approve
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_report__state__to_approve
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
 msgid "To Approve"
-msgstr "ລໍຖ້າອະນຸມັດ"
+msgstr "ຖ້າອະນຸມັດ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__qty_to_invoice
 msgid "To Invoice Quantity"
-msgstr "ຈຳນວນທີ່ຈະອອກໃບບິນ"
+msgstr "ຈຳນວນທີ່ຈະອອກໃບເກັບເງິນ"
 
 #. module: purchase
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
 msgid "To Send"
-msgstr "ລໍຖ້າສົ່ງ"
+msgstr "ທີ່ຈະສົ່ງ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
@@ -2844,7 +2841,7 @@ msgstr "ຈຳນວນທັງໝົດ"
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_tree
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_tree
 msgid "Total Untaxed amount"
-msgstr "ມູນຄ່າລວມບໍ່ລວມພາສີ"
+msgstr "ມູນຄ່າທັງໝົດບໍ່ລວມອາກອນ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_kpis_tree
@@ -2856,12 +2853,12 @@ msgstr "ມູນຄ່າລວມທັງໝົດ"
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__mail_reception_confirmed
 msgid "True if PO reception is confirmed by the vendor."
-msgstr "ເປັນຈິງ ຫາກການຮັບ PO ຖືກຢືນຢັນໂດຍຜູ້ສະໜອງ."
+msgstr "ເປັນຈິງ ຫາກການຮັບໃບສັ່ງຊື້ໄດ້ຮັບການຢືນຢັນໂດຍຜູ້ສະໜອງ."
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__mail_reminder_confirmed
 msgid "True if the reminder email is confirmed by the vendor."
-msgstr "ເປັນຈິງ ຫາກອີເມວແຈ້ງເຕືອນຖືກຢືນຢັນໂດຍຜູ້ສະໜອງ."
+msgstr "ເປັນຈິງ ຫາກອີເມວເຕືອນໄດ້ຮັບການຢືນຢັນໂດຍຜູ້ສະໜອງ."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_partner_view_purchase_buttons
@@ -2872,25 +2869,25 @@ msgstr "ພິມຂໍ້ຄວາມ..."
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr "ປະເພດຂອງກິດຈະກຳທີ່ຍົກເວັ້ນໃນບັນທຶກ."
+msgstr "ປະເພດກິດຈະກຳທີ່ຍົກເວັ້ນໃນຂໍ້ມູນ."
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
 msgid "Unable to cancel this purchase order. You must first cancel the related vendor bills."
 msgstr ""
-"ບໍ່ສາມາດຍົກເລີກໃບສັ່ງຊື້ນີ້ໄດ້. ທ່ານຕ້ອງຍົກເລີກໃບບິນຜູ້ສະໜອງທີ່ກ່ຽວຂ້ອງກ່ອນ."
+"ບໍ່ສາມາດຍົກເລີກໃບສັ່ງຊື້ນີ້ໄດ້. ທ່ານຕ້ອງຍົກເລີກໃບເກັບເງິນຜູ້ສະໜອງທີ່ກ່ຽວຂ້ອງກ່ອນ."
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__price_unit
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "Unit Price"
-msgstr "ລາຄາຕໍ່ໜ່ວຍ"
+msgstr "ລາຄາຫົວໜ່ວຍ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 msgid "Unit Price:"
-msgstr "ລາຄາຕໍ່ໜ່ວຍ:"
+msgstr "ລາຄາຫົວໜ່ວຍ:"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_uom
@@ -2900,7 +2897,7 @@ msgstr "ຫົວໜ່ວຍວັດແທກ"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "Units Of Measure"
-msgstr "ຫົວໜ່ວຍວັດແທກຕ່າງໆ"
+msgstr "ຫົວໜ່ວຍວັດແທກ"
 
 #. module: purchase
 #: model:ir.ui.menu,name:purchase.menu_purchase_uom_form_action
@@ -2927,17 +2924,17 @@ msgstr "ປົດລັອກ"
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_tree
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_tree
 msgid "Untaxed"
-msgstr "ບໍ່ລວມພາສີ"
+msgstr "ບໍ່ລວມອາກອນ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__amount_untaxed
 msgid "Untaxed Amount"
-msgstr "ມູນຄ່າບໍ່ລວມພາສີ"
+msgstr "ມູນຄ່າບໍ່ລວມອາກອນ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__untaxed_total
 msgid "Untaxed Total"
-msgstr "ຍອດລວມບໍ່ລວມພາສີ"
+msgstr "ລວມບໍ່ລວມອາກອນ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
@@ -2953,7 +2950,7 @@ msgstr "ອັບເດດວັນທີ"
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order__priority__1
 msgid "Urgent"
-msgstr "ເລັ່ງດ່ວນ"
+msgstr "ດ່ວນ"
 
 #. module: purchase
 #: model:res.groups,name:purchase.group_purchase_user
@@ -2963,7 +2960,7 @@ msgstr "ຜູ້ໃຊ້"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "Variant Grid Entry"
-msgstr "ການປ້ອນຂໍ້ມູນຮູບແບບສິນຄ້າແບບຕາຕະລາງ"
+msgstr "ການປ້ອນຂໍ້ມູນສິນຄ້າຍ່ອຍແບບຕາຕະລາງ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_bill_union__partner_id
@@ -2980,7 +2977,7 @@ msgstr "ຜູ້ສະໜອງ"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_bill_union__vendor_bill_id
 msgid "Vendor Bill"
-msgstr "ໃບບິນຜູ້ສະໜອງ"
+msgstr "ໃບເກັບເງິນຜູ້ສະໜອງ"
 
 #. module: purchase
 #: model:ir.actions.act_window,name:purchase.act_res_partner_2_supplier_invoices
@@ -2988,17 +2985,17 @@ msgstr "ໃບບິນຜູ້ສະໜອງ"
 #: model_terms:ir.ui.view,arch_db:purchase.res_partner_view_purchase_account_buttons
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_bill_union_filter
 msgid "Vendor Bills"
-msgstr "ໃບບິນຜູ້ສະໜອງທັງໝົດ"
+msgstr "ໃບເກັບເງິນຜູ້ສະໜອງ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_search
 msgid "Vendor Country"
-msgstr "ປະເທດຜູ້ສະໜອງ"
+msgstr "ປະເທດຂອງຜູ້ສະໜອງ"
 
 #. module: purchase
 #: model:ir.ui.menu,name:purchase.menu_product_pricelist_action2_purchase
 msgid "Vendor Pricelists"
-msgstr "ບັນຊີລາຄາຜູ້ສະໜອງ"
+msgstr "ໃບລາຄາຜູ້ສະໜອງ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__partner_ref
@@ -3008,7 +3005,7 @@ msgstr "ເລກອ້າງອີງຜູ້ສະໜອງ"
 #. module: purchase
 #: model:ir.ui.menu,name:purchase.menu_procurement_management_supplier_name
 msgid "Vendors"
-msgstr "ຜູ້ສະໜອງທັງໝົດ"
+msgstr "ຜູ້ສະໜອງ"
 
 #. module: purchase
 #: model_terms:ir.actions.act_window,help:purchase.act_res_partner_2_supplier_invoices
@@ -3018,10 +3015,10 @@ msgid ""
 "                    you receive from your vendor according to the draft\n"
 "                    document in Odoo."
 msgstr ""
-"ໃບບິນຜູ້ສະໜອງສາມາດຖືກສ້າງໄວ້ລ່ວງໜ້າໂດຍອີງຕາມໃບສັ່ງຊື້\n"
-"ຫຼື ໃບບິນຮັບເຄື່ອງ. ສິ່ງນີ້ຊ່ວຍໃຫ້ທ່ານຄວບຄຸມໃບບິນ\n"
-"ທີ່ທ່ານໄດ້ຮັບຈາກຜູ້ສະໜອງຕາມເອກະສານຮ່າງ\n"
-"ໃນ Odoo."
+"ໃບເກັບເງິນຜູ້ສະໜອງສາມາດສ້າງລ່ວງໜ້າໄດ້ໂດຍອີງຕາມໃບສັ່ງຊື້\n"
+"                    ຫຼື ການຮັບເຄື່ອງ. ນີ້ຊ່ວຍໃຫ້ທ່ານຄວບຄຸມໃບເກັບເງິນ\n"
+"                    ທີ່ທ່ານໄດ້ຮັບຈາກຜູ້ສະໜອງຕາມເອກະສານຮ່າງ\n"
+"                    ໃນ Odoo."
 
 #. module: purchase
 #. odoo-python
@@ -3038,18 +3035,18 @@ msgstr "ບໍລິມາດ"
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
 msgid "Waiting"
-msgstr "ກຳລັງລໍຖ້າ"
+msgstr "ຖ້າ"
 
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order__invoice_status__to_invoice
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
 msgid "Waiting Bills"
-msgstr "ລໍຖ້າໃບບິນ"
+msgstr "ຖ້າໃບເກັບເງິນ"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
 msgid "Waiting RFQs"
-msgstr "ລໍຖ້າ RFQ"
+msgstr "ໃບສະເໜີລາຄາທີ່ຖ້າ"
 
 #. module: purchase
 #. odoo-python
@@ -3080,7 +3077,7 @@ msgstr "ຄຳເຕືອນເມື່ອຊື້ສິນຄ້ານີ້
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 #: model_terms:ir.ui.view,arch_db:purchase.view_purchase_order_filter
 msgid "Warnings"
-msgstr "ຄຳເຕືອນຕ່າງໆ"
+msgstr "ຄຳເຕືອນ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__website_message_ids
@@ -3090,38 +3087,38 @@ msgstr "ຂໍ້ຄວາມເວັບໄຊທ໌"
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__website_message_ids
 msgid "Website communication history"
-msgstr "ປະຫວັດການສື່ສານທາງເວັບໄຊທ໌"
+msgstr "ປະຫວັດການສື່ສານເວັບໄຊທ໌"
 
 #. module: purchase
 #: model_terms:digest.tip,tip_description:purchase.digest_tip_purchase_0
 msgid "When creating a purchase order, have a look at the vendor's <i>On Time Delivery</i> rate: the percentage of products shipped on time. If it is too low, activate the <i>automated reminders</i>. A few days before the due shipment, Odoo will send the vendor an email to ask confirmation of shipment dates and keep you informed in case of any delays. To get the vendor's performance statistics, click on the OTD rate."
 msgstr ""
-"ເມື່ອສ້າງໃບສັ່ງຊື້, ໃຫ້ເບິ່ງອັດຕາ <i>ການນຳສົ່ງກົງເວລາ</i> ຂອງຜູ້ສະໜອງ: ເປີເຊັນຂອງສິນຄ້າທີ່ຖືກສົ່ງກົງເວລ"
-"າ. ຫາກມັນຕ່ຳເກີນໄປ, ໃຫ້ເປີດໃຊ້ <i>ການແຈ້ງເຕືອນອັດຕະໂນມັດ</i>. ສອງສາມມື້ກ່ອນກຳນົດການນຳສົ່ງ, "
-"Odoo ຈະສົ່ງອີເມວຫາຜູ້ສະໜອງເພື່ອຂໍການຢືນຢັນວັນທີນຳສົ່ງ ແລະ ແຈ້ງໃຫ້ທ່ານຊາບໃນກໍລະນີທີ່ມີການຊັກຊ້າ. ເພື່ອເບິ່"
-"ງສະຖິຕິຜົນການດຳເນີນງານຂອງຜູ້ສະໜອງ, ໃຫ້ຄລິກທີ່ອັດຕາ OTD."
+"ເມື່ອສ້າງໃບສັ່ງຊື້, ໃຫ້ເບິ່ງອັດຕາ <i>ການສົ່ງເຄື່ອງກົງເວລາ</i> ຂອງຜູ້ສະໜອງ: ເປີເຊັນຂອງສິນຄ້າທີ່ສົ່ງກົງເວລ"
+"າ. ຫາກມັນຕ່ຳເກີນໄປ, ໃຫ້ເປີດໃຊ້ <i>ການແຈ້ງເຕືອນອັດຕະໂນມັດ</i>. ສອງສາມມື້ກ່ອນກຳນົດສົ່ງ, Odoo ຈະ"
+"ສົ່ງອີເມວຫາຜູ້ສະໜອງເພື່ອຂໍການຢືນຢັນວັນທີສົ່ງ ແລະ ແຈ້ງໃຫ້ທ່ານຊາບຫາກມີການລ່າຊ້າ. ເພື່ອເບິ່ງສະຖິຕິປະສິດທິພາບ"
+"ຂອງຜູ້ສະໜອງ, ໃຫ້ຄລິກທີ່ອັດຕາ OTD."
 
 #. module: purchase
 #: model_terms:digest.tip,tip_description:purchase.digest_tip_purchase_1
 msgid "When sending a purchase order by email, Odoo asks the vendor to acknowledge the reception of the order. When the vendor acknowledges the order by clicking on a button in the email, the information is added on the purchase order. Use filters to track orders that have not been acknowledged."
 msgstr ""
-"ເມື່ອສົ່ງໃບສັ່ງຊື້ທາງອີເມວ, Odoo ຈະຂໍໃຫ້ຜູ້ສະໜອງຢືນຢັນການຮັບການສັ່ງຊື້. ເມື່ອຜູ້ສະໜອງຢືນຢັນການສັ່ງຊື້ໂດຍການ"
-"ຄລິກປຸ່ມໃນອີເມວ, ຂໍ້ມູນຈະຖືກເພີ່ມເຂົ້າໃນໃບສັ່ງຊື້. ໃຊ້ຕົວຕອງເພື່ອຕິດຕາມການສັ່ງຊື້ທີ່ຍັງບໍ່ທັນໄດ້ຮັບການຢືນຢັນ."
+"ເມື່ອສົ່ງໃບສັ່ງຊື້ທາງອີເມວ, Odoo ຈະຂໍໃຫ້ຜູ້ສະໜອງຕອບຮັບການຮັບໃບສັ່ງຊື້. ເມື່ອຜູ້ສະໜອງຕອບຮັບໂດຍການຄລິກປຸ່ມ"
+"ໃນອີເມວ, ຂໍ້ມູນຈະຖືກເພີ່ມເຂົ້າໃນໃບສັ່ງຊື້. ໃຊ້ຕົວຕອງເພື່ອຕິດຕາມໃບສັ່ງຊື້ທີ່ຍັງບໍ່ທັນໄດ້ຮັບການຕອບຮັບ."
 
 #. module: purchase
 #: model:ir.model.fields,help:purchase.field_purchase_order__partner_id
 #: model:ir.model.fields,help:purchase.field_purchase_order_line__partner_id
 msgid "You can find a vendor by its Name, TIN, Email or Internal Reference."
 msgstr ""
-"ທ່ານສາມາດຄົ້ນຫາຜູ້ສະໜອງໄດ້ດ້ວຍ ຊື່, ເລກປະຈຳຕົວຜູ້ເສຍພາສີ (TIN), ອີເມວ ຫຼື ເລກອ້າງອີງພາຍໃນ."
+"ທ່ານສາມາດຄົ້ນຫາຜູ້ສະໜອງໄດ້ໂດຍ ຊື່, ເລກປະຈຳຕົວຜູ້ເສຍພາສີ, ອີເມວ ຫຼື ເລກອ້າງອີງພາຍໃນ."
 
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
 msgid "You cannot change the type of a purchase order line. Instead you should delete the current line and create a new line of the proper type."
 msgstr ""
-"ທ່ານບໍ່ສາມາດປ່ຽນປະເພດຂອງລາຍການໃບສັ່ງຊື້ໄດ້. ແທນທີ່ຈະເຮັດແນວນັ້ນ ທ່ານຄວນລົບລາຍການປະຈຸບັນອອກ ແລະ "
-"ສ້າງລາຍການໃໝ່ທີ່ມີປະເພດທີ່ຖືກຕ້ອງ."
+"ທ່ານບໍ່ສາມາດປ່ຽນປະເພດຂອງລາຍການໃບສັ່ງຊື້ໄດ້. ທ່ານຄວນລຶບລາຍການປະຈຸບັນ ແລະ ສ້າງລາຍການໃໝ່ດ້ວຍປະເພ"
+"ດທີ່ຖືກຕ້ອງແທນ."
 
 #. module: purchase
 #: model_terms:ir.actions.act_window,help:purchase.product_product_action
@@ -3129,8 +3126,8 @@ msgid ""
 "You must define a product for everything you sell or purchase,\n"
 "                whether it's a storable product, a consumable or a service."
 msgstr ""
-"ທ່ານຕ້ອງກຳນົດສິນຄ້າສຳລັບທຸກຢ່າງທີ່ທ່ານຂາຍ ຫຼື ຊື້, ບໍ່ວ່າຈະເປັນສິນຄ້າທີ່ເກັບໄວ້ໄດ້, ສິນຄ້າທີ່ໃຊ້ແລ້ວໝົດໄປ ຫຼື ກາ"
-"ນບໍລິການ."
+"ທ່ານຕ້ອງກຳນົດສິນຄ້າສຳລັບທຸກຢ່າງທີ່ທ່ານຂາຍ ຫຼື ຊື້,\n"
+"                ບໍ່ວ່າຈະເປັນສິນຄ້າທີ່ຈັດເກັບໄດ້, ສິນຄ້າບໍລິໂພກ ຫຼື ການບໍລິການ."
 
 #. module: purchase
 #: model_terms:ir.actions.act_window,help:purchase.product_normal_action_puchased
@@ -3138,8 +3135,8 @@ msgid ""
 "You must define a product for everything you sell or purchase,\n"
 "            whether it's a storable product, a consumable or a service."
 msgstr ""
-"ທ່ານຕ້ອງກຳນົດສິນຄ້າສຳລັບທຸກຢ່າງທີ່ທ່ານຂາຍ ຫຼື ຊື້, ບໍ່ວ່າຈະເປັນສິນຄ້າທີ່ເກັບໄວ້ໄດ້, ສິນຄ້າທີ່ໃຊ້ແລ້ວໝົດໄປ ຫຼື ກາ"
-"ນບໍລິການ."
+"ທ່ານຕ້ອງກຳນົດສິນຄ້າສຳລັບທຸກຢ່າງທີ່ທ່ານຂາຍ ຫຼື ຊື້,\n"
+"            ບໍ່ວ່າຈະເປັນສິນຄ້າທີ່ຈັດເກັບໄດ້, ສິນຄ້າບໍລິໂພກ ຫຼື ການບໍລິການ."
 
 #. module: purchase
 #. odoo-python
@@ -3150,7 +3147,7 @@ msgid ""
 msgstr ""
 "ໃບສະເໜີລາຄາຂອງທ່ານມີສິນຄ້າຈາກບໍລິສັດ %(product_company)s ໃນຂະນະທີ່ໃບສະເໜີລາຄາຂອງທ່ານເປັນຂອ"
 "ງບໍລິສັດ %(quote_company)s. \n"
-" ກະລຸນາປ່ຽນບໍລິສັດໃນໃບສະເໜີລາຄາຂອງທ່ານ ຫຼື ລົບສິນຄ້າຈາກບໍລິສັດອື່ນອອກ (%(bad_products)s)."
+" ກະລຸນາປ່ຽນບໍລິສັດໃນໃບສະເໜີລາຄາຂອງທ່ານ ຫຼື ເອົາສິນຄ້າຈາກບໍລິສັດອື່ນອອກ (%(bad_products)s)."
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
@@ -3168,4 +3165,4 @@ msgstr "ມື້ ກ່ອນໜ້າ"
 #: model:mail.template,subject:purchase.email_template_edi_purchase_reminder
 msgid "{{ object.company_id.name }} Order (Ref {{ object.name or 'n/a' }})"
 msgstr ""
-"{{ object.company_id.name }} ການສັ່ງຊື້ (ເລກອ້າງອີງ {{ object.name or 'n/a' }})"
+"{{ object.company_id.name }} ການສັ່ງຊື້ (ອ້າງອີງ {{ object.name or 'n/a' }})"

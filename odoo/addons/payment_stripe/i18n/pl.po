@@ -3,18 +3,20 @@
 # * payment_stripe
 #
 # Translators:
-# Wil Odoo, 2024
-#
-# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
-# "Marta (wacm)" <wacm@odoo.com>, 2026.
+# Martin Trigaux, 2019
+# Tadeusz Karpiński <tadeuszkarpinski@gmail.com>, 2019
+# Piotr Szlązak <szlazakpiotr@gmail.com>, 2019
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
+# "Marta (wacm)" <wacm@odoo.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~12.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:38+0000\n"
-"PO-Revision-Date: 2026-03-21 09:21+0000\n"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-02 18:18+0000\n"
 "Last-Translator: \"Marta (wacm)\" <wacm@odoo.com>\n"
-"Language-Team: Polish <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Polish <https://translate.odoo.com/projects/odoo-19/"
 "payment_stripe/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
@@ -23,11 +25,11 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && "
 "(n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && "
 "n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: payment_stripe
 #. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/payment_form.js:0
+#: code:addons/payment_stripe/static/src/interactions/payment_form.js:0
 msgid "Cannot display the payment form"
 msgstr "Nie można wyświetlić formularza płatności"
 
@@ -42,16 +44,17 @@ msgid "Connect Stripe"
 msgstr "Połącz Stripe"
 
 #. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_provider.py:0
-msgid "Could not establish the connection to the API."
-msgstr "Nie można nawiązać połączenia z interfejsem API."
-
-#. module: payment_stripe
 #. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/express_checkout_form.js:0
+#: code:addons/payment_stripe/static/src/interactions/express_checkout.js:0
 msgid "Delivery"
 msgstr "Dostawa"
+
+#. module: payment_stripe
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_provider__display_name
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_token__display_name
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_transaction__display_name
+msgid "Display Name"
+msgstr "Nazwa wyświetlana"
 
 #. module: payment_stripe
 #: model_terms:ir.ui.view,arch_db:payment_stripe.payment_provider_form
@@ -60,7 +63,7 @@ msgstr "Aktywuj Apple Pay"
 
 #. module: payment_stripe
 #. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/express_checkout_form.js:0
+#: code:addons/payment_stripe/static/src/interactions/express_checkout.js:0
 msgid "Free Shipping"
 msgstr "Darmowa dostawa"
 
@@ -75,6 +78,13 @@ msgid "Get your Secret and Publishable keys"
 msgstr "Uzyskaj swój tajny klucz i klucz do publikacji"
 
 #. module: payment_stripe
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_provider__id
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_token__id
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_transaction__id
+msgid "ID"
+msgstr "ID"
+
+#. module: payment_stripe
 #: model:ir.model.fields,help:payment_stripe.field_payment_provider__stripe_webhook_secret
 msgid ""
 "If a webhook is enabled on your Stripe account, this signing secret must be "
@@ -85,15 +95,9 @@ msgstr ""
 
 #. module: payment_stripe
 #. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/payment_form.js:0
+#: code:addons/payment_stripe/static/src/interactions/payment_form.js:0
 msgid "Incorrect payment details"
 msgstr "Niepoprawne dane płatności"
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_transaction.py:0
-msgid "No transaction found matching reference %s."
-msgstr "Nie znaleziono transakcji pasującej do referencji %s."
 
 #. module: payment_stripe
 #. odoo-python
@@ -123,7 +127,7 @@ msgstr "Transakcja płatnicza"
 
 #. module: payment_stripe
 #. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/payment_form.js:0
+#: code:addons/payment_stripe/static/src/interactions/payment_form.js:0
 msgid "Payment processing failed"
 msgstr "Przetwarzanie płatności nie powiodło się"
 
@@ -141,20 +145,14 @@ msgstr "Klucz do publikacji"
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
-msgid "Received data with invalid intent status: %s"
-msgstr "Otrzymano dane o nieprawidłowym statusie intencji: %s"
+msgid "Received data with invalid intent status: %s."
+msgstr "Otrzymano dane o nieprawidłowym statusie intencji: %s."
 
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
 msgid "Received data with missing intent status."
 msgstr "Otrzymano dane z brakującym statusem intencji."
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_transaction.py:0
-msgid "Received data with missing merchant reference"
-msgstr "Otrzymano dane z brakującym numerem sprzedawcy"
 
 #. module: payment_stripe
 #: model:ir.model.fields,field_description:payment_stripe.field_payment_provider__stripe_secret_key
@@ -188,37 +186,6 @@ msgstr "ID metody płatności Stripe"
 
 #. module: payment_stripe
 #. odoo-python
-#: code:addons/payment_stripe/models/payment_provider.py:0
-msgid "Stripe Proxy error: %(error)s"
-msgstr "Błąd proxy Stripe: %(error)s"
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_provider.py:0
-msgid "Stripe Proxy: An error occurred when communicating with the proxy."
-msgstr "Proxy Stripe: Wystąpił błąd podczas komunikacji z proxy."
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_provider.py:0
-msgid "Stripe Proxy: Could not establish the connection."
-msgstr "Stripe Proxy: Nie udało się nawiązać połączenia."
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_provider.py:0
-#: code:addons/payment_stripe/models/payment_transaction.py:0
-msgid ""
-"The communication with the API failed.\n"
-"Stripe gave us the following info about the problem:\n"
-"'%s'"
-msgstr ""
-"Komunikacja z API nie powiodła się.\n"
-"Stripe przekazał nam następujące informacje dotyczące problemu:\n"
-"'%s'"
-
-#. module: payment_stripe
-#. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
 msgid "The customer left the payment page."
 msgstr "Klient opuścił stronę płatności."
@@ -242,12 +209,6 @@ msgstr ""
 #: model:ir.model.fields,help:payment_stripe.field_payment_provider__code
 msgid "The technical code of this payment provider."
 msgstr "Kod techniczny tego dostawcy usług płatniczych."
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_transaction.py:0
-msgid "The transaction is not linked to a token."
-msgstr "Transakcja nie jest powiązana z tokenem."
 
 #. module: payment_stripe
 #. odoo-python
@@ -303,7 +264,7 @@ msgstr "Twój webhook Stripe jest już skonfigurowany."
 
 #. module: payment_stripe
 #. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/express_checkout_form.js:0
+#: code:addons/payment_stripe/static/src/interactions/express_checkout.js:0
 msgid "Your order"
 msgstr "Twoje zamówienie"
 
@@ -312,3 +273,9 @@ msgstr "Twoje zamówienie"
 #: code:addons/payment_stripe/models/payment_provider.py:0
 msgid "Your web domain was successfully verified."
 msgstr "Twoja domena internetowa została pomyślnie zweryfikowana."
+
+#~ msgid "Payment Acquirer"
+#~ msgstr "Beneficjent płatności"
+
+#~ msgid "Provider"
+#~ msgstr "Dostawca"

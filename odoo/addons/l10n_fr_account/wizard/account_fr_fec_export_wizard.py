@@ -10,15 +10,14 @@ from stdnum.fr import siren
 from odoo.modules.registry import Registry
 
 
-class FecExportWizard(models.TransientModel):
+class L10n_FrFecExportWizard(models.TransientModel):
     _name = 'l10n_fr.fec.export.wizard'
     _description = 'Fichier Echange Informatise'
 
-    date_from = fields.Date(string='Start Date', required=True, default=lambda self: self._context.get('report_dates', {}).get('date_from'))
-    date_to = fields.Date(string='End Date', required=True, default=lambda self: self._context.get('report_dates', {}).get('date_to'))
+    date_from = fields.Date(string='Start Date', required=True, default=lambda self: self.env.context.get('report_dates', {}).get('date_from'))
+    date_to = fields.Date(string='End Date', required=True, default=lambda self: self.env.context.get('report_dates', {}).get('date_to'))
     filename = fields.Char(string='Filename', size=256, readonly=True)
     test_file = fields.Boolean()
-    exclude_zero = fields.Boolean(string="Exclude lines at 0")
     export_type = fields.Selection([
         ('official', 'Official FEC report (posted entries only)'),
         ('nonofficial', 'Non-official FEC report (posted and unposted entries)'),
@@ -32,14 +31,12 @@ class FecExportWizard(models.TransientModel):
             self.export_type = 'official'
 
     def _get_base_domain(self):
-        domain = [('company_id', 'in', tuple(self.env.company._accessible_branches().ids))]
+        domain = [('company_id', 'in', tuple(self.env.company._accessible_branches().ids)), ('balance', '!=', 0.0)]
         # For official report: only use posted entries
         if self.export_type == "official":
             domain.append(('parent_state', '=', 'posted'))
         if self.excluded_journal_ids:
             domain.append(('journal_id', 'not in', self.excluded_journal_ids.ids))
-        if self.exclude_zero:
-            domain.append(('balance', '!=', 0.0))
         return domain
 
     def _do_query_unaffected_earnings(self):
@@ -62,7 +59,7 @@ class FecExportWizard(models.TransientModel):
                 '' AS CompAuxLib,
                 '-' AS PieceRef,
                 %(formatted_date_from)s AS PieceDate,
-                '/' AS EcritureLib,
+                'Balance initiale' AS EcritureLib,
                 replace(CASE WHEN COALESCE(sum(account_move_line.balance), 0) <= 0 THEN '0,00' ELSE to_char(SUM(account_move_line.balance), '000000000000000D99') END, '.', ',') AS Debit,
                 replace(CASE WHEN COALESCE(sum(account_move_line.balance), 0) >= 0 THEN '0,00' ELSE to_char(-SUM(account_move_line.balance), '000000000000000D99') END, '.', ',') AS Credit,
                 '' AS EcritureLet,
@@ -75,8 +72,8 @@ class FecExportWizard(models.TransientModel):
             formatted_date_from=fields.Date.to_string(self.date_from).replace('-', ''),
         ))
         self.env.flush_all()
-        self._cr.execute(sql_query)
-        return list(self._cr.fetchone())
+        self.env.cr.execute(sql_query)
+        return list(self.env.cr.fetchone())
 
     def _get_company_legal_data(self, company):
         """
@@ -89,8 +86,7 @@ class FecExportWizard(models.TransientModel):
         * Returns the siren if the company is french or an empty siren for dom-tom
         * For non-french companies -> returns the complete vat number
         """
-        dom_tom_group = self.env.ref('l10n_fr.dom-tom')
-        is_dom_tom = company.account_fiscal_country_id.code in dom_tom_group.country_ids.mapped('code')
+        is_dom_tom = company.account_fiscal_country_id and 'DOM-TOM' in company.account_fiscal_country_id.country_group_codes
         if not company.vat or is_dom_tom:
             return ''
         elif company.country_id.code == 'FR' and len(company.vat) >= 13 and siren.is_valid(company.vat[4:13]):
@@ -146,7 +142,7 @@ class FecExportWizard(models.TransientModel):
                 unaffected_earnings_account = self.env['account.account'].search([
                     *self.env['account.account']._check_company_domain(company),
                     ('account_type', '=', 'equity_unaffected'),
-                ], limit=1)
+                ], order='code desc', limit=1)
                 unaffected_earnings_line = True  # used to make sure that we add the unaffected earning initial balance only once
                 if unaffected_earnings_account:
                     # compute the benefit/loss of last year to add in the initial balance of the current year earnings account
@@ -171,7 +167,7 @@ class FecExportWizard(models.TransientModel):
                         '' AS CompAuxLib,
                         '-' AS PieceRef,
                         %(formatted_date_from)s AS PieceDate,
-                        '/' AS EcritureLib,
+                        'Balance initiale' AS EcritureLib,
                         replace(CASE WHEN sum(account_move_line.balance) <= 0 THEN '0,00' ELSE to_char(SUM(account_move_line.balance), '000000000000000D99') END, '.', ',') AS Debit,
                         replace(CASE WHEN sum(account_move_line.balance) >= 0 THEN '0,00' ELSE to_char(-SUM(account_move_line.balance), '000000000000000D99') END, '.', ',') AS Credit,
                         '' AS EcritureLet,
@@ -186,10 +182,10 @@ class FecExportWizard(models.TransientModel):
                     aa_code=aa_code,
                     aa_name=aa_name,
                 ))
-                self._cr.execute(SQL('%s GROUP BY account_move_line__account_id.id', sql_query))
+                self.env.cr.execute(SQL('%s GROUP BY account_move_line__account_id.id HAVING SUM(account_move_line.balance) != 0', sql_query))
 
                 currency_digits = 2
-                for row in self._cr.fetchall():
+                for row in self.env.cr.fetchall():
                     listrow = list(row)
                     account_id = listrow.pop()
                     if not unaffected_earnings_line:
@@ -218,7 +214,7 @@ class FecExportWizard(models.TransientModel):
                     # search an unaffected earnings account
                     unaffected_earnings_account = self.env['account.account'].search([
                         ('account_type', '=', 'equity_unaffected')
-                    ], limit=1)
+                    ], order='code desc', limit=1)
                     if unaffected_earnings_account:
                         unaffected_earnings_results[4] = unaffected_earnings_account.code
                         unaffected_earnings_results[5] = unaffected_earnings_account.name
@@ -244,7 +240,7 @@ class FecExportWizard(models.TransientModel):
                         COALESCE(replace(account_move_line__partner_id.name, '|', '/'), '') AS CompAuxLib,
                         '-' AS PieceRef,
                         %(formatted_date_from)s AS PieceDate,
-                        '/' AS EcritureLib,
+                        'Balance initiale' AS EcritureLib,
                         replace(CASE WHEN sum(account_move_line.balance) <= 0 THEN '0,00' ELSE to_char(SUM(account_move_line.balance), '000000000000000D99') END, '.', ',') AS Debit,
                         replace(CASE WHEN sum(account_move_line.balance) >= 0 THEN '0,00' ELSE to_char(-SUM(account_move_line.balance), '000000000000000D99') END, '.', ',') AS Credit,
                         '' AS EcritureLet,
@@ -259,9 +255,9 @@ class FecExportWizard(models.TransientModel):
                     aa_code=aa_code,
                     aa_name=aa_name,
                 ))
-                self._cr.execute(SQL('%s GROUP BY account_move_line__partner_id.id, account_move_line__account_id.id', sql_query))
+                self.env.cr.execute(SQL('%s GROUP BY account_move_line__partner_id.id, account_move_line__account_id.id HAVING SUM(account_move_line.balance) != 0', sql_query))
 
-                for row in self._cr.fetchall():
+                for row in self.env.cr.fetchall():
                     listrow = list(row)
                     listrow.pop()
                     yield format_row(listrow)
@@ -308,9 +304,25 @@ class FecExportWizard(models.TransientModel):
                             ELSE REGEXP_REPLACE(replace(%(move_alias)s.ref, '|', '/'), '[\\t\\r\\n]', ' ', 'g')
                         END AS PieceRef,
                         TO_CHAR(COALESCE(%(move_alias)s.invoice_date, %(move_alias)s.date), 'YYYYMMDD') AS PieceDate,
-                        CASE WHEN account_move_line.name IS NULL OR account_move_line.name = '' THEN '/'
-                            WHEN account_move_line.name SIMILAR TO '[\\t|\\s|\\n]*' THEN '/'
-                            ELSE REGEXP_REPLACE(replace(account_move_line.name, '|', '/'), '[\\t\\n\\r]', ' ', 'g') END AS EcritureLib,
+                        REGEXP_REPLACE(replace(
+                            CASE
+                                WHEN NULLIF(BTRIM(account_move_line.name, ' \t\n\r'), '') IS NOT NULL
+                                    THEN account_move_line.name
+                                WHEN %(account_alias)s.account_type IN ('asset_receivable', 'liability_payable')
+                                    THEN CONCAT_WS(' - ',
+                                        NULLIF(%(partner_alias)s.name, ''),
+                                        COALESCE(
+                                            NULLIF(%(move_alias)s.ref, ''),
+                                            %(move_alias)s.name
+                                        )
+                                    )
+                                ELSE
+                                    COALESCE(
+                                        NULLIF(%(move_alias)s.ref, ''),
+                                        %(move_alias)s.name
+                                    )
+                            END
+                        , '|', '/'), '[\\t\\n\\r]', ' ', 'g') AS EcritureLib,
                         replace(CASE WHEN account_move_line.debit = 0 THEN '0,00' ELSE to_char(account_move_line.debit, '000000000000000D99') END, '.', ',') AS Debit,
                         replace(CASE WHEN account_move_line.credit = 0 THEN '0,00' ELSE to_char(account_move_line.credit, '000000000000000D99') END, '.', ',') AS Credit,
                         CASE WHEN %(full_alias)s.id IS NULL THEN ''::text ELSE %(full_alias)s.id::text END AS EcritureLet,
@@ -334,10 +346,10 @@ class FecExportWizard(models.TransientModel):
                 )
                 has_more_results = True
                 while has_more_results:
-                    self._cr.execute(query.select(columns))
+                    self.env.cr.execute(query.select(columns))
                     query.offset += query_limit
-                    has_more_results = self._cr.rowcount > query_limit  # we load one more result than the limit to check if there is more
-                    query_results = self._cr.fetchall()
+                    has_more_results = self.env.cr.rowcount > query_limit  # we load one more result than the limit to check if there is more
+                    query_results = self.env.cr.fetchall()
                     for row in query_results[:query_limit]:
                         yield format_row(row)
 
@@ -383,9 +395,9 @@ class FecExportWizard(models.TransientModel):
             self.env.company.write({'fiscalyear_lock_date': self.date_to})
 
         return {
-            'file_name': f"{company_legal_data}FEC{end_date}{suffix}.csv",
+            'file_name': f"{company_legal_data}FEC{end_date}{suffix}.txt",
             'file_content': self._get_fec_stream(),
-            'file_type': 'csv'
+            'file_type': 'txt'
         }
 
     def create_fec_report_action(self):

@@ -1,6 +1,5 @@
-import { PosStore } from "@point_of_sale/app/store/pos_store";
+import { PosStore } from "@point_of_sale/app/services/pos_store";
 import { patch } from "@web/core/utils/patch";
-import { PosOrder } from "@point_of_sale/app/models/pos_order";
 import { Domain } from "@web/core/domain";
 
 patch(PosStore.prototype, {
@@ -12,17 +11,11 @@ patch(PosStore.prototype, {
                 new Domain([
                     ["company_id", "=", this.config.company_id.id],
                     ["state", "=", "draft"],
-                    "|",
-                    ["pos_reference", "ilike", "Kiosk"],
-                    ["pos_reference", "ilike", "Self-Order"],
-                    ["table_id", "=", false],
+                    ["source", "=", "kiosk"],
                 ]),
             ]);
         }
         return base;
-    },
-    _shouldLoadOrders() {
-        return super._shouldLoadOrders() || this.session._self_ordering;
     },
     async redirectToQrForm() {
         const user_data = await this.data.call("pos.config", "get_pos_qr_order_data", [
@@ -33,14 +26,5 @@ patch(PosStore.prototype, {
             tag: "pos_qr_stands",
             params: { data: user_data },
         });
-    },
-});
-
-patch(PosOrder.prototype, {
-    setup() {
-        super.setup(...arguments);
-        if (this.pos_reference?.startsWith("Self-Order")) {
-            this.tracking_number = "S" + this.tracking_number;
-        }
     },
 });

@@ -3,17 +3,19 @@
 # * sale_purchase
 #
 # Translators:
-# Wil Odoo, 2024
-#
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Jaroslav Bosansky <jaro.bosansky@ekoenergo.sk>, 2022
+# Rastislav Brencic <rastislav.brencic@azet.sk>, 2022
+# Martin Trigaux, 2022
+# Jan Prokop, 2022
+# Tomáš Píšek <Tomas.Pisek@seznam.cz>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-20 18:39+0000\n"
-"PO-Revision-Date: 2026-03-29 12:15+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Slovak <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-02 19:39+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Slovak <https://translate.odoo.com/projects/odoo-19/"
 "sale_purchase/sk/>\n"
 "Language: sk\n"
 "MIME-Version: 1.0\n"
@@ -21,7 +23,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && "
 "n >= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: sale_purchase
 #: model_terms:ir.ui.view,arch_db:sale_purchase.exception_purchase_on_sale_cancellation
@@ -34,37 +36,50 @@ msgstr ""
 "            Môže byť potrebný ručný zásah ."
 
 #. module: sale_purchase
-#: model_terms:ir.ui.view,arch_db:sale_purchase.sale_order_inherited_form_purchase
-msgid "<span class=\"o_stat_text\">Purchase</span>"
-msgstr ""
-
-#. module: sale_purchase
 #: model_terms:ir.ui.view,arch_db:sale_purchase.purchase_order_inherited_form_sale
 msgid "<span class=\"o_stat_text\">Sale</span>"
 msgstr "<span class=\"o_stat_text\">Predaj</span>"
 
 #. module: sale_purchase
+#: model:ir.model.fields,field_description:sale_purchase.field_product_template__display_name
+#: model:ir.model.fields,field_description:sale_purchase.field_purchase_order__display_name
+#: model:ir.model.fields,field_description:sale_purchase.field_purchase_order_line__display_name
+#: model:ir.model.fields,field_description:sale_purchase.field_sale_order__display_name
+#: model:ir.model.fields,field_description:sale_purchase.field_sale_order_line__display_name
+msgid "Display Name"
+msgstr "Zobrazovaný názov"
+
+#. module: sale_purchase
 #: model_terms:ir.ui.view,arch_db:sale_purchase.exception_sale_on_purchase_cancellation
 msgid "Exception(s) occurred on the purchase order(s):"
-msgstr "Výnimka(y) nastala(i) pri objednávke nákupu:"
+msgstr "Na nákupných objednávkach došlo k výnimkám:"
 
 #. module: sale_purchase
 #: model_terms:ir.ui.view,arch_db:sale_purchase.exception_purchase_on_sale_cancellation
 #: model_terms:ir.ui.view,arch_db:sale_purchase.exception_purchase_on_sale_quantity_decreased
 msgid "Exception(s) occurred on the sale order(s):"
-msgstr "Výnimka(y) nastala(i) pri objednávke predaja:"
+msgstr "Na predajných objednávkach došlo k výnimkám:"
 
 #. module: sale_purchase
 #: model_terms:ir.ui.view,arch_db:sale_purchase.exception_purchase_on_sale_cancellation
 #: model_terms:ir.ui.view,arch_db:sale_purchase.exception_purchase_on_sale_quantity_decreased
 #: model_terms:ir.ui.view,arch_db:sale_purchase.exception_sale_on_purchase_cancellation
 msgid "Exception(s):"
-msgstr "Výnimka(y)"
+msgstr "Výnimka(y):"
 
 #. module: sale_purchase
 #: model:ir.model.fields,field_description:sale_purchase.field_sale_order_line__purchase_line_ids
 msgid "Generated Purchase Lines"
 msgstr "Generované položky nákupu"
+
+#. module: sale_purchase
+#: model:ir.model.fields,field_description:sale_purchase.field_product_template__id
+#: model:ir.model.fields,field_description:sale_purchase.field_purchase_order__id
+#: model:ir.model.fields,field_description:sale_purchase.field_purchase_order_line__id
+#: model:ir.model.fields,field_description:sale_purchase.field_sale_order__id
+#: model:ir.model.fields,field_description:sale_purchase.field_sale_order_line__id
+msgid "ID"
+msgstr "ID"
 
 #. module: sale_purchase
 #: model:ir.model.fields,help:sale_purchase.field_product_product__service_to_purchase
@@ -74,9 +89,10 @@ msgid ""
 "automatically created to buy the product. Tip: don't forget to set a vendor "
 "on the product."
 msgstr ""
-"Ak je začiarknuté, pri každom predaji tohto produktu prostredníctvom SO sa "
-"automaticky vytvorí RfQ na zakúpenie produktu. Tip: Nezabudnite na produkt "
-"nastaviť dodávateľa."
+"Ak je táto možnosť zaškrtnutá, pri každom predaji tohto produktu "
+"prostredníctvom predajnej objednávky sa automaticky vytvorí žiadosť o cenovú "
+"ponuku na nákup tohto produktu. Tip: nezabudnite k produktu priradiť "
+"dodávateľa."
 
 #. module: sale_purchase
 #: model_terms:ir.ui.view,arch_db:sale_purchase.exception_purchase_on_sale_quantity_decreased
@@ -107,7 +123,7 @@ msgstr "Objednané množstvo pokleslo!"
 #. module: sale_purchase
 #: model:ir.model.fields,field_description:sale_purchase.field_purchase_order_line__sale_line_id
 msgid "Origin Sale Item"
-msgstr "Pôvodná položka predaja"
+msgstr "Zdrojová položka predaja"
 
 #. module: sale_purchase
 #. odoo-python
@@ -126,17 +142,19 @@ msgstr "Produkt"
 #. odoo-python
 #: code:addons/sale_purchase/models/product_template.py:0
 msgid "Product that is not a service can not create RFQ."
-msgstr "Produkt, ktorý nie je službou, tomu nemôže vytvoriť RFQ."
+msgstr ""
+"Pre produkt, ktorý nie je službou, nie je možné vytvoriť žiadosť o cenovú "
+"ponuku."
+
+#. module: sale_purchase
+#: model_terms:ir.ui.view,arch_db:sale_purchase.sale_order_inherited_form_purchase
+msgid "Purchase"
+msgstr "Nákup"
 
 #. module: sale_purchase
 #: model:ir.model,name:sale_purchase.model_purchase_order
 msgid "Purchase Order"
-msgstr "Objednávka"
-
-#. module: sale_purchase
-#: model:ir.model.fields,field_description:sale_purchase.field_sale_order_cancel__display_purchase_orders_alert
-msgid "Purchase Order Alert"
-msgstr ""
+msgstr "Nákupná objednávka"
 
 #. module: sale_purchase
 #: model:ir.model,name:sale_purchase.model_purchase_order_line
@@ -155,8 +173,8 @@ msgid ""
 "Purchase line generated by this Sales item on order confirmation, or when "
 "the quantity was increased."
 msgstr ""
-"Nákupný riadok vygenerovaný touto položkou Predaj pri potvrdení objednávky "
-"alebo pri zvýšení množstva."
+"Nákupný riadok vytvorený na základe tejto predajnej položky pri potvrdení "
+"objednávky alebo pri zvýšení množstva."
 
 #. module: sale_purchase
 #: model_terms:ir.ui.view,arch_db:sale_purchase.product_template_form_view_inherit
@@ -166,22 +184,17 @@ msgstr "Preobjednanie"
 #. module: sale_purchase
 #: model:ir.model.fields,field_description:sale_purchase.field_purchase_order_line__sale_order_id
 msgid "Sale Order"
-msgstr "Objednávka predaja"
+msgstr "Predajná objednávka"
 
 #. module: sale_purchase
 #: model:ir.model,name:sale_purchase.model_sale_order
 msgid "Sales Order"
-msgstr "Objednávka "
-
-#. module: sale_purchase
-#: model:ir.model,name:sale_purchase.model_sale_order_cancel
-msgid "Sales Order Cancel"
-msgstr ""
+msgstr "Predajná objednávka"
 
 #. module: sale_purchase
 #: model:ir.model,name:sale_purchase.model_sale_order_line
 msgid "Sales Order Line"
-msgstr "Položka objednávok"
+msgstr "Riadok predajnej objednávky"
 
 #. module: sale_purchase
 #. odoo-python
@@ -196,11 +209,12 @@ msgid "Subcontract Service"
 msgstr "Služba subdodávateľa"
 
 #. module: sale_purchase
-#: model_terms:ir.ui.view,arch_db:sale_purchase.sale_order_cancel_view_form
+#: model:ir.model.fields,field_description:sale_purchase.field_purchase_order__has_sale_order
 msgid ""
-"There are active purchase orders linked to this sale order that are not "
-"cancelled automatically! <br/>"
+"Technical field for whether the purchase order has associated sale orders"
 msgstr ""
+"Technické pole určujúce, či má nákupná objednávka priradené predajné "
+"objednávky"
 
 #. module: sale_purchase
 #. odoo-python
@@ -220,7 +234,7 @@ msgid ""
 "the purchase order if needed."
 msgstr ""
 "Znižujete objednané množstvo! V prípade potreby nezabudnite manuálne "
-"aktualizovať objednávku."
+"aktualizovať nákupnú objednávku."
 
 #. module: sale_purchase
 #: model_terms:ir.ui.view,arch_db:sale_purchase.exception_purchase_on_sale_cancellation

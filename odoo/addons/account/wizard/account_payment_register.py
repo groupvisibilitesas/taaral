@@ -144,7 +144,6 @@ class AccountPaymentRegister(models.TransientModel):
         comodel_name='account.account',
         string="Difference Account",
         copy=False,
-        domain="[('deprecated', '=', False)]",
         check_company=True,
     )
     writeoff_label = fields.Char(string='Journal Item Label', default='Write-Off',
@@ -639,7 +638,7 @@ class AccountPaymentRegister(models.TransientModel):
         for batch_result in batch_results:
             all_lines |= batch_result['lines']
         all_lines = all_lines.sorted(key=lambda line: (line.move_id, line.date_maturity or date.max))
-        for move, lines in all_lines.grouped('move_id').items():
+        for lines in all_lines.grouped('move_id').values():
             installments = lines._get_installments_data(payment_currency=self.currency_id, payment_date=self.payment_date, next_payment_date=next_payment_date)
             last_installment_mode = False
             for installment in installments:
@@ -771,16 +770,20 @@ class AccountPaymentRegister(models.TransientModel):
                 total_amount_values = wizard._get_total_amounts_to_pay(wizard.batches)
                 html_lines = []
                 if wizard.installments_mode == 'full':
-                    if (
+                    is_full_match = (
                         wizard.currency_id.is_zero(total_amount_values['full_amount'] - wizard.amount)
                         and wizard.currency_id.is_zero(total_amount_values['full_amount'] - total_amount_values['amount_by_default'])
-                    ):
-                        wizard.installments_switch_amount = 0.0
-                    else:
-                        wizard.installments_switch_amount = total_amount_values['amount_by_default']
+                    )
+                    wizard.installments_switch_amount = 0.0 if is_full_match else total_amount_values['amount_by_default']
+                    if not is_full_match and not wizard.currency_id.is_zero(wizard.amount):
+                        switch_message = (
+                            _("Consider paying the amount with %(btn_start)searly payment discount%(btn_end)s instead.")
+                            if total_amount_values['epd_applied']
+                            else _("Consider paying in %(btn_start)sinstallments%(btn_end)s instead.")
+                        )
                         html_lines += [
                             _("This is the full amount."),
-                            _("Consider paying in %(btn_start)sinstallments%(btn_end)s instead."),
+                            switch_message,
                         ]
                 elif wizard.installments_mode == 'overdue':
                     wizard.installments_switch_amount = total_amount_values['full_amount']
@@ -928,18 +931,18 @@ class AccountPaymentRegister(models.TransientModel):
     # -------------------------------------------------------------------------
 
     @api.model
-    def default_get(self, fields_list):
+    def default_get(self, fields):
         # OVERRIDE
-        res = super().default_get(fields_list)
+        res = super().default_get(fields)
 
-        if 'line_ids' in fields_list and 'line_ids' not in res:
+        if 'line_ids' in fields and 'line_ids' not in res:
 
             # Retrieve moves to pay from the context.
 
-            if self._context.get('active_model') == 'account.move':
-                lines = self.env['account.move'].browse(self._context.get('active_ids', [])).line_ids
-            elif self._context.get('active_model') == 'account.move.line':
-                lines = self.env['account.move.line'].browse(self._context.get('active_ids', []))
+            if self.env.context.get('active_model') == 'account.move':
+                lines = self.env['account.move'].browse(self.env.context.get('active_ids', [])).line_ids
+            elif self.env.context.get('active_model') == 'account.move.line':
+                lines = self.env['account.move.line'].browse(self.env.context.get('active_ids', []))
             else:
                 raise UserError(_(
                     "The register payment wizard should only be called on account.move or account.move.line records."
@@ -969,13 +972,15 @@ class AccountPaymentRegister(models.TransientModel):
 
             # Check.
             if not available_lines:
-                raise UserError(_("You can't register a payment because there is nothing left to pay on the selected journal items."))
+                raise UserError(_("There's nothing left to pay for the selected journal items, so no payment registration is necessary. You've got your finances under control like a boss!"))
             if len(lines.company_id.root_id) > 1:
                 raise UserError(_("You can't create payments for entries belonging to different companies."))
             if self._from_sibling_companies(lines) and lines.company_id.root_id not in self.env.user.company_ids:
                 raise UserError(_("You can't create payments for entries belonging to different branches without access to parent company."))
             if len(set(available_lines.mapped('account_type'))) > 1:
                 raise UserError(_("You can't register payments for both inbound and outbound moves at the same time."))
+            if any(move.payment_state == 'blocked' for move in available_lines.move_id):
+                raise UserError(self.env._("You cannot register payments for blocked invoices."))
 
             res['line_ids'] = [(6, 0, available_lines.ids)]
 
@@ -1206,7 +1211,6 @@ class AccountPaymentRegister(models.TransientModel):
                     .filtered_domain([
                         ('account_id', '=', account.id),
                         ('reconciled', '=', False),
-                        ('parent_state', '=', 'posted'),
                     ])\
                     .reconcile()
             lines.move_id.matched_payment_ids = [Command.link(payment.id)]
@@ -1252,17 +1256,22 @@ class AccountPaymentRegister(models.TransientModel):
                 # Don't group payments: Create one batch per move.
                 new_batches = []
                 for batch_result in batches:
+                    sub_batches = {}
                     for line in batch_result['lines']:
                         if line not in lines_to_pay:
                             continue
-                        new_batches.append({
-                            **batch_result,
-                            'payment_values': {
-                                **batch_result['payment_values'],
-                                'payment_type': 'inbound' if line.balance > 0 else 'outbound'
-                            },
-                            'lines': line,
-                        })
+                        if line.move_id.id in sub_batches:
+                            sub_batches[line.move_id.id]['lines'] += line
+                        else:
+                            sub_batches[line.move_id.id] = {
+                                **batch_result,
+                                'payment_values': {
+                                    **batch_result['payment_values'],
+                                    'payment_type': 'inbound' if line.balance > 0 else 'outbound'
+                                },
+                                'lines': line,
+                            }
+                    new_batches.extend(sub_batches.values())
                 batches = new_batches
 
             for batch_result in batches:
@@ -1278,7 +1287,7 @@ class AccountPaymentRegister(models.TransientModel):
         if from_sibling_companies and lines.company_id.root_id not in self.env.companies:
             # Payment made for sibling companies, we don't want to redirect to the payments
             # to avoid access error, as it will be created as parent company.
-            self.env.context = {**self.env.context, "dont_redirect_to_payments": True}
+            self.env(context={**self.env.context, "dont_redirect_to_payments": True})
 
         wizard = self.sudo() if from_sibling_companies else self
 
@@ -1301,7 +1310,7 @@ class AccountPaymentRegister(models.TransientModel):
             self.payment_difference_handling = 'open'
         payments = self._create_payments()
 
-        if self._context.get('dont_redirect_to_payments'):
+        if self.env.context.get('dont_redirect_to_payments'):
             return True
 
         action = {

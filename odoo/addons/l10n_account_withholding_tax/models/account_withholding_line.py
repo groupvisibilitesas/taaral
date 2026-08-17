@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from collections import defaultdict
 
-from odoo import Command, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
-from odoo.osv import expression
+from odoo.fields import Command, Domain
 from odoo.tools.misc import frozendict
 
 
@@ -320,7 +320,9 @@ class AccountWithholdingLine(models.AbstractModel):
         # We need to make sure that we use the actual amounts set on the line; in case of manual adjustment.
         manual_tax_amounts = {str(self.tax_id.id): {
             'base_amount_currency': self.base_amount,
+            'base_amount': company.currency_id.round(self.base_amount / conversion_rate) if conversion_rate else 0.0,
             'tax_amount_currency': -self.amount,
+            'tax_amount': company.currency_id.round(-self.amount / conversion_rate) if conversion_rate else 0.0,
         }}
         return self.env['account.tax']._prepare_base_line_for_taxes_computation(
             self,
@@ -334,6 +336,8 @@ class AccountWithholdingLine(models.AbstractModel):
             calculate_withholding_taxes=True,
             manual_tax_line_name=self.name,
             computation_key=str(self.id),
+            manual_total_excluded_currency=self.base_amount,
+            manual_total_excluded=company.currency_id.round(self.base_amount / conversion_rate) if conversion_rate else 0.0,
             manual_tax_amounts=manual_tax_amounts,
             is_refund=self._is_refund(),
         )
@@ -406,6 +410,8 @@ class AccountWithholdingLine(models.AbstractModel):
             aml_create_values_list.append({
                 **grouping_key,
                 'name': self.env._('WH Base: %(names)s', names=', '.join(amounts['names'])),
+                'tax_ids': [],
+                'tax_tag_ids': [],
                 'amount_currency': amounts['amount_currency'],
                 'balance': amounts['balance'],
                 'partner_id': self._get_comodel_partner().id,
@@ -413,8 +419,6 @@ class AccountWithholdingLine(models.AbstractModel):
             aml_create_values_list.append({
                 **grouping_key,
                 'name': self.env._('WH Base Counterpart: %(names)s', names=', '.join(amounts['names'])),
-                'tax_ids': [],
-                'tax_tag_ids': [],
                 'analytic_distribution': None,
                 'amount_currency': -amounts['amount_currency'],
                 'balance': -amounts['balance'],
@@ -428,7 +432,7 @@ class AccountWithholdingLine(models.AbstractModel):
         """ Construct and return a domain that will filter withholding taxes available for this company and payment type. """
         filter_domain = models.check_company_domain_parent_of(self, company)
         payment_type = 'purchase' if payment_type == 'outbound' else 'sale'
-        return expression.AND([filter_domain, [('type_tax_use', '=', payment_type), ('is_withholding_tax_on_payment', '=', True)]])
+        return Domain.AND([filter_domain, Domain('type_tax_use', '=', payment_type), Domain('is_withholding_tax_on_payment', '=', True)])
 
     def _need_update_withholding_lines_placeholder(self):
         """ Determines if the lines' placeholders needs update or not. """

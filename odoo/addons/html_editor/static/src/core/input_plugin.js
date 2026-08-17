@@ -1,5 +1,10 @@
 import { Plugin } from "../plugin";
 
+/**
+ * @typedef {((ev: InputEvent) => void)[]} beforeinput_handlers
+ * @typedef {((ev: InputEvent) => void)[]} input_handlers
+ */
+
 export class InputPlugin extends Plugin {
     static id = "input";
     static dependencies = ["history", "selection"];
@@ -36,11 +41,6 @@ export class InputPlugin extends Plugin {
     }
 
     onBeforeInput(ev) {
-        const selection = this.document.getSelection();
-        if (!this.editable.contains(selection?.anchorNode)) {
-            ev.preventDefault();
-            return;
-        }
         this.dependencies.history.stageSelection();
         this.dispatchTo("beforeinput_handlers", ev);
         this.dependencies.selection.setCachedSelection(null);

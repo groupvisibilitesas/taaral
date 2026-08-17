@@ -48,4 +48,4 @@ class TestMessageFormatPortal(common.TransactionCase):
             'body': 'Hello',
         })
         result = message.portal_message_format()
-        self.assertEqual(result[0]['author'], False)
+        self.assertEqual(result[0]['author_id'], False)

@@ -2,23 +2,15 @@
 # This file contains the translation of the following modules:
 # * website_sale_loyalty
 #
-# Translators:
-# Albena Mincheva <albena_vicheva@abv.bg>, 2024
-# aleksandar ivanov, 2024
-# Igor Sheludko <igor.sheludko@gmail.com>, 2024
-# Maria Boyadjieva <marabo2000@gmail.com>, 2024
-# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2024
-# Petko Karamotchev, 2024
-# Martin Dinovski, 2025
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:38+0000\n"
-"PO-Revision-Date: 2026-07-26 17:20+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-07 22:36+0000\n"
+"Last-Translator: Rosen Vladimirov <vladimirov.rosen@gmail.com>\n"
+"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-19/"
 "website_sale_loyalty/bg/>\n"
 "Language: bg\n"
 "MIME-Version: 1.0\n"
@@ -26,16 +18,6 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2026.6.1\n"
-
-#. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "<strong> - </strong>"
-msgstr "<strong> - </strong>"
-
-#. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "<strong>Coupons - </strong>"
-msgstr "<strong>Купони - </strong>"
 
 #. module: website_sale_loyalty
 #. odoo-python
@@ -83,11 +65,6 @@ msgid "Code:"
 msgstr "Код:"
 
 #. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "Costs"
-msgstr "Разходи"
-
-#. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.layout
 msgid "Could not apply the promo code:"
 msgstr "Промокодът не може да бъде приложен:"
@@ -96,6 +73,17 @@ msgstr "Промокодът не може да бъде приложен:"
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__coupon_id
 msgid "Coupon"
 msgstr "Купон"
+
+#. module: website_sale_loyalty
+#. odoo-javascript
+#: code:addons/website_sale_loyalty/static/src/website_builder/coupon_option_plugin.js:0
+msgid "Coupon Snippet Options"
+msgstr "Опции на блок „Купон“"
+
+#. module: website_sale_loyalty
+#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
+msgid "Coupons -"
+msgstr "Купони -"
 
 #. module: website_sale_loyalty
 #: model:ir.model,name:website_sale_loyalty.model_coupon_share
@@ -107,7 +95,7 @@ msgstr ""
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__create_uid
 msgid "Created by"
-msgstr "Създаден от"
+msgstr "Създадено от"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__create_date
@@ -117,12 +105,17 @@ msgstr "Създадено на"
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_sale_order__disabled_auto_rewards
 msgid "Disabled Auto Rewards"
-msgstr "Деактивирани автоматични награди."
+msgstr "Деактивирани автоматични награди"
 
 #. module: website_sale_loyalty
 #: model:ir.ui.menu,name:website_sale_loyalty.menu_discount_loyalty_type_config
 msgid "Discount & Loyalty"
-msgstr "Отстъпка & Лоялност"
+msgstr "Отстъпка & лоялност"
+
+#. module: website_sale_loyalty
+#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.reduction_coupon_code
+msgid "Discount code or gift card"
+msgstr "Код за отстъпка или карта за подарък"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.cart_discount
@@ -132,10 +125,16 @@ msgstr "Отстъпка:"
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.cart_discount
 msgid "Discounted amount"
-msgstr "Стойност на отстъпката."
+msgstr "Сума на отстъпката"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__display_name
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_loyalty_card__display_name
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_loyalty_program__display_name
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_loyalty_rule__display_name
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_product_product__display_name
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_sale_order__display_name
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_sale_order_line__display_name
 msgid "Display Name"
 msgstr "Име за показване"
 
@@ -162,12 +161,18 @@ msgstr "Карта за подарък или код за отстъпка..."
 #. module: website_sale_loyalty
 #: model:ir.ui.menu,name:website_sale_loyalty.menu_gift_ewallet_type_config
 msgid "Gift cards & eWallet"
-msgstr "Карти за подарък & електронен портфейл."
+msgstr "Карти за подарък и електронен портфейл"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__id
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_loyalty_card__id
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_loyalty_program__id
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_loyalty_rule__id
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_product_product__id
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_sale_order__id
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_sale_order_line__id
 msgid "ID"
-msgstr "ID"
+msgstr "Номер (ID)"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
@@ -192,7 +197,7 @@ msgstr "Лоялност"
 #. module: website_sale_loyalty
 #: model:ir.model,name:website_sale_loyalty.model_loyalty_card
 msgid "Loyalty Coupon"
-msgstr "Купони за лоялност"
+msgstr "Купон за лоялност"
 
 #. module: website_sale_loyalty
 #: model:ir.model,name:website_sale_loyalty.model_loyalty_program
@@ -202,7 +207,7 @@ msgstr "Програма за лоялност"
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.res_config_settings_view_form_inherit_website_sale_loyalty
 msgid "Loyalty Programs"
-msgstr "Програма за лоялност"
+msgstr "Програми за лоялност"
 
 #. module: website_sale_loyalty
 #: model:ir.model,name:website_sale_loyalty.model_loyalty_rule
@@ -210,9 +215,9 @@ msgid "Loyalty Rule"
 msgstr "Правило за лоялност"
 
 #. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "Pay with eWallet"
-msgstr "Плати с електронен портфейл."
+#: model:ir.model,name:website_sale_loyalty.model_product_product
+msgid "Product Variant"
+msgstr "Продуктов вариант"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__program_id
@@ -238,19 +243,19 @@ msgstr "Предоставете или купон, или програма."
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__redirect
 msgid "Redirect"
-msgstr "Пренасочен"
+msgstr "Пренасочване"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,help:website_sale_loyalty.field_coupon_share__program_website_id
 #: model:ir.model.fields,help:website_sale_loyalty.field_loyalty_program__website_id
 #: model:ir.model.fields,help:website_sale_loyalty.field_loyalty_rule__website_id
 msgid "Restrict to a specific website."
-msgstr "Ограничете до конкретен уебсайт."
+msgstr "Ограничаване до конкретен уебсайт."
 
 #. module: website_sale_loyalty
 #: model:ir.model,name:website_sale_loyalty.model_sale_order
 msgid "Sales Order"
-msgstr "Поръчка"
+msgstr "Поръчка за продажба"
 
 #. module: website_sale_loyalty
 #: model:ir.model,name:website_sale_loyalty.model_sale_order_line
@@ -269,7 +274,7 @@ msgstr "Споделете"
 #. odoo-python
 #: code:addons/website_sale_loyalty/wizard/coupon_share.py:0
 msgid "Share %s"
-msgstr "Сподели %s"
+msgstr "Споделяне на %s"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__share_link
@@ -282,9 +287,15 @@ msgid "Share Loyalty Card"
 msgstr "Сподели карта за лоялност"
 
 #. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.snippet_options
+#. odoo-javascript
+#: code:addons/website_sale_loyalty/static/src/website_builder/coupon_option.xml:0
 msgid "Show Discount in Subtotal"
 msgstr "Показване на отстъпката в междинната сума"
+
+#. module: website_sale_loyalty
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_loyalty_program__show_non_published_product_warning
+msgid "Show Non Published Product Warning"
+msgstr "Показване на предупреждение за непубликуван продукт"
 
 #. module: website_sale_loyalty
 #. odoo-python
@@ -312,6 +323,22 @@ msgid "The shared website should correspond to the website of the program."
 msgstr "Споделеният уебсайт трябва да кореспондира с уебсайтът на програмата."
 
 #. module: website_sale_loyalty
+#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.loyalty_program_view_form_inherit_website_sale_loyalty
+msgid ""
+"To be able to top up eWallet from the portal, eWallet products must be\n"
+"                     published."
+msgstr ""
+"За да можете да захранвате електронния портфейл от портала, продуктите за "
+"електронен портфейл трябва да бъдат\n"
+"                     публикувани."
+
+#. module: website_sale_loyalty
+#. odoo-javascript
+#: code:addons/website_sale_loyalty/static/src/js/portal_loyalty_card.xml:0
+msgid "Top Up"
+msgstr "Захранване"
+
+#. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
 msgid "Use"
 msgstr "Използване"
@@ -337,15 +364,5 @@ msgstr ""
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "You have"
-msgstr "Вие имате"
-
-#. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
 msgid "You have successfully applied the following code:"
 msgstr "Успешно сте приложили следният код:"
-
-#. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "in your ewallet"
-msgstr "Във вашият електронен портфейл"

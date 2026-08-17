@@ -1,5 +1,3 @@
-/** @odoo-module **/
-
 import { registry } from "@web/core/registry";
 import * as wsTourUtils from '@website_sale/js/tours/tour_utils';
 
@@ -13,8 +11,8 @@ registry.category("web_tour.tours").add('website_event_booth_tour', {
     run: "click",
     expectUnloadPage: true,
 }, {
-    content: 'Go to "Get A Booth" page',
-    trigger: 'li.nav-item a:has(span:contains("Get A Booth"))',
+    content: 'Go to "Booth" page',
+    trigger: 'a:contains("Become exhibitor")',
     run: "click",
     expectUnloadPage: true,
 }, {
@@ -41,6 +39,9 @@ registry.category("web_tour.tours").add('website_event_booth_tour', {
     trigger: 'button[type="submit"]',
     run: "click",
     expectUnloadPage: true,
+}, {
+    content: 'Order summary',
+    trigger: 'h4:contains("Order summary")',
 },
 ...wsTourUtils.assertCartAmounts({
     taxes: '20.00',
@@ -49,8 +50,8 @@ registry.category("web_tour.tours").add('website_event_booth_tour', {
 }),
 wsTourUtils.goToCheckout(),
 {
-    content: 'Confirm Order page',
-    trigger: 'h3:contains("Confirm order")',
+    content: 'Payment',
+    trigger: '.o_wizard [name=step_name].fw-bold:contains("Payment")',
 },
 ...wsTourUtils.assertCartAmounts({
     taxes: '20.00',

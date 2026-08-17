@@ -1,7 +1,7 @@
 from odoo import models
 
 
-class ThemeTreehouse(models.AbstractModel):
+class ThemeUtils(models.AbstractModel):
     _inherit = 'theme.utils'
 
     def _theme_treehouse_post_copy(self, mod):

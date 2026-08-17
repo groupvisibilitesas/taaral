@@ -2,19 +2,15 @@
 # This file contains the translation of the following modules:
 # * barcodes_gs1_nomenclature
 #
-# Translators:
-# Wil Odoo, 2024
-# Rasareeyar Lappiam, 2024
-#
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# "Tiffany Chang (tic)" <tic@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~18.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-06-22 17:17+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Thai <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-03 00:02+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Thai <https://translate.odoo.com/projects/odoo-19/"
 "barcodes_gs1_nomenclature/th/>\n"
 "Language: th\n"
 "MIME-Version: 1.0\n"
@@ -30,8 +26,6 @@ msgid ""
 "A GS1 barcode nomenclature pattern was matched. However, the barcode failed "
 "to be converted to a valid date: '%(error_message)s'"
 msgstr ""
-"ระบบตรวจพบรูปแบบบาร์โค้ดที่ตรงตามมาตรฐาน GS1 อย่างถูกต้อง แต่ไม่สามารถแปลงข้อมูลในบาร์โค้ดนั้"
-"นให้ออกมาเป็น 'วันที่' ที่ถูกต้องได้: '%(error_message)s'"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields.selection,name:barcodes_gs1_nomenclature.selection__barcode_rule__gs1_content_type__alpha
@@ -82,6 +76,13 @@ msgid "Destination location"
 msgstr "ตำแหน่งปลายทาง"
 
 #. module: barcodes_gs1_nomenclature
+#: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_barcode_nomenclature__display_name
+#: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_barcode_rule__display_name
+#: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_ir_http__display_name
+msgid "Display Name"
+msgstr "แสดงชื่อ"
+
+#. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_barcode_rule__encoding
 msgid "Encoding"
 msgstr "การเข้ารหัส"
@@ -110,6 +111,13 @@ msgstr "GS1-128"
 #: model:ir.model,name:barcodes_gs1_nomenclature.model_ir_http
 msgid "HTTP Routing"
 msgstr "การกำหนด HTTP"
+
+#. module: barcodes_gs1_nomenclature
+#: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_barcode_nomenclature__id
+#: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_barcode_rule__id
+#: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_ir_http__id
+msgid "ID"
+msgstr "ไอดี"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields,help:barcodes_gs1_nomenclature.field_barcode_rule__gs1_decimal_usage
@@ -187,13 +195,13 @@ msgid ""
 "The GS1 content type defines what kind of data the rule will process the "
 "barcode as:        * Date: the barcode will be converted into a Odoo "
 "datetime;        * Measure: the barcode's value is related to a specific "
-"UoM;        * Numeric Identifier: fixed length barcode following a specific "
+"unit;        * Numeric Identifier: fixed length barcode following a specific "
 "encoding;        * Alpha-Numeric Name: variable length barcode."
 msgstr ""
-"ประเภทเนื้อหา GS1 กำหนดประเภทของข้อมูลที่กฎจะประมวลผลบาร์โค้ดเป็น: * วันที่: "
-"บาร์โค้ดจะถูกแปลงเป็นวันที่และเวลาของ Odoo; * การวัด: "
-"ค่าของบาร์โค้ดเกี่ยวข้องกับหน่วยวัดเฉพาะ * ตัวระบุตัวเลข: "
-"บาร์โค้ดความยาวคงที่ตามการเข้ารหัสเฉพาะ * ชื่อตัวเลขอัลฟ่า: ตวามยาวตัวแปรบาร์โค้ด"
+"ประเภทเนื้อหา GS1 กำหนดว่ากฎจะประมวลผลบาร์โค้ดเป็นข้อมูลประเภทใด:            * วันที่: บ"
+"าร์โค้ดจะถูกแปลงเป็น datetime ของ Odoo;             * การวัด: ค่าของบาร์โค้ดมีความเกี่ยว"
+"ข้องกับหน่วยเฉพาะ;            * ตัวระบุตัวเลข: บาร์โค้ดความยาวคงที่ตามการเข้ารหัสเฉพา"
+"ะ;              * ชื่อตัวอักษรและตัวเลข: บาร์โค้ดความยาวไม่คงที่"
 
 #. module: barcodes_gs1_nomenclature
 #. odoo-python
@@ -224,10 +232,10 @@ msgid ""
 "value can't be casted as a measure."
 msgstr ""
 "มีบางอย่างผิดปกติกับรูปแบบของกฎบาร์โค้ด \"%s\" \n"
-"หากกฎนี้ใช้ทศนิยม "
-"ให้ตรวจสอบว่าไม่สามารถรับตัวเลขอื่นเป็นตัวอักษรตัวสุดท้ายสำหรับตัวระบุแอปพลิเคชันได้\n"
-"ตรวจสอบด้วยว่าค่าที่ตรงกันที่เป็นไปได้ต้องเป็นตัวเลขเท่านั้น ไม่เช่นนั้น "
-"จะไม่สามารถแปลงค่าเป็นหน่วยวัดได้"
+"หากกฎนี้ใช้ทศนิยม ให้ตรวจสอบว่าไม่สามารถรับตัวเลขอื่นเป็นตัวอักษรตัวสุดท้ายสำหรับตัวระบุแอปพลิเคชัน"
+"ได้\n"
+"ตรวจสอบด้วยว่าค่าที่ตรงกันที่เป็นไปได้ต้องเป็นตัวเลขเท่านั้น ไม่เช่นนั้น จะไม่สามารถแปลงค่าเป็นหน่วยวั"
+"ดได้"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields,help:barcodes_gs1_nomenclature.field_barcode_nomenclature__is_gs1_nomenclature
@@ -235,7 +243,8 @@ msgstr ""
 msgid ""
 "This Nomenclature use the GS1 specification, only GS1-128 encoding rules is "
 "accepted is this kind of nomenclature."
-msgstr "ระบบการตีความนี้ใช้ข้อกำหนด GS1 ซึ่งยอมรับกฎการเข้ารหัส GS1-128 เท่านั้น"
+msgstr ""
+"ระบบการตีความนี้ใช้ข้อกำหนด GS1 ซึ่งยอมรับกฎการเข้ารหัส GS1-128 เท่านั้น"
 
 #. module: barcodes_gs1_nomenclature
 #. odoo-javascript

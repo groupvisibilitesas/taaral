@@ -5,7 +5,7 @@ from odoo import api, fields, models
 from collections import defaultdict
 
 
-class Employee(models.Model):
+class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
     @api.model_create_multi
@@ -21,18 +21,9 @@ class Employee(models.Model):
         return employees
 
     def write(self, vals):
-        old_calendars = {}
-
         if vals.get('active'):
             inactive_emp = self.filtered(lambda e: not e.active)
-
-        if 'resource_calendar_id' in vals:
-            old_calendars = {
-                employee.id: employee.resource_calendar_id.id
-                for employee in self
-            }
-
-        result = super(Employee, self).write(vals)
+        result = super().write(vals)
         self_company = self.with_context(allowed_company_ids=self.company_id.ids)
         if 'active' in vals:
             if vals.get('active'):
@@ -44,16 +35,12 @@ class Employee(models.Model):
                 self_company._delete_future_public_holidays_timesheets()
         elif 'resource_calendar_id' in vals:
             # Update future holiday timesheets
-            changed = self_company.filtered(
-                lambda employee: old_calendars.get(employee.id) != employee.resource_calendar_id.id
-            )
-            if changed:
-                changed._delete_future_public_holidays_timesheets()
-                changed._create_future_public_holidays_timesheets(changed)
+            self_company._delete_future_public_holidays_timesheets()
+            self_company._create_future_public_holidays_timesheets(self_company)
         return result
 
     def _delete_future_public_holidays_timesheets(self):
-        future_timesheets = self.env['account.analytic.line'].sudo().search([('global_leave_id', '!=', False), ('date', '>=', fields.date.today()), ('employee_id', 'in', self.ids)])
+        future_timesheets = self.env['account.analytic.line'].sudo().search([('global_leave_id', '!=', False), ('date', '>=', fields.Date.today()), ('employee_id', 'in', self.ids)])
         future_timesheets.write({'global_leave_id': False})
         future_timesheets.unlink()
 

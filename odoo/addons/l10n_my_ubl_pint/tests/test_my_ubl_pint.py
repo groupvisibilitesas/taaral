@@ -15,7 +15,6 @@ class TestMyUBLPint(AccountTestInvoicingCommon):
     @AccountTestInvoicingCommon.setup_country('my')
     def setUpClass(cls):
         super().setUpClass()
-        cls.env['ir.config_parameter'].set_param('account_edi_ubl_cii.use_new_dict_to_xml_helpers', 'False')
 
         cls.other_currency = cls.setup_other_currency('EUR')
 
@@ -58,26 +57,36 @@ class TestMyUBLPint(AccountTestInvoicingCommon):
             self.get_xml_tree_from_string(expected_xml),
         )
 
-    def test_invoice_no_taxes_new(self):
-        self.env['ir.config_parameter'].set_param('account_edi_ubl_cii.use_new_dict_to_xml_helpers', 'True')
+    def test_invoice_import(self):
+        with file_open('l10n_my_ubl_pint/tests/expected_xmls/invoice_no_taxes.xml', 'rb') as f:
+            xml_attachment = self.env['ir.attachment'].create({
+                'mimetype': 'application/xml',
+                'name': 'test_invoice.xml',
+                'raw': f.read(),
+            })
 
-        invoice = self.init_invoice('out_invoice', products=self.product_a, taxes=[])
-        invoice.action_post()
+        imported_invoice = self.env['account.move'] \
+            .with_context(default_move_type='out_invoice') \
+            ._create_records_from_attachments(xml_attachment)
 
-        actual_xml, errors = self.env['account.edi.xml.pint_my']._export_invoice(invoice)
-        self.assertFalse(errors)
-
-        with file_open('l10n_my_ubl_pint/tests/expected_xmls/invoice_no_taxes_new.xml', 'rb') as f:
-            expected_xml = f.read()
-
-        self.assertXmlTreeEqual(
-            self.get_xml_tree_from_string(actual_xml),
-            self.get_xml_tree_from_string(expected_xml),
+        self.assertEqual(imported_invoice.move_type, 'out_invoice')
+        self.assertEqual(imported_invoice.partner_id, self.partner_a)
+        self.assertEqual(imported_invoice.currency_id, self.company_data['currency'])
+        self.assertEqual(
+            imported_invoice.invoice_date.strftime("%Y-%m-%d"),
+            "2019-01-01",
+        )
+        self.assertRecordValues(
+            imported_invoice,
+            [{
+                'amount_untaxed': 1000.0,
+                'amount_tax': 0.0,
+                'amount_total': 1000.0,
+            }],
         )
 
     def test_invoice_with_sst(self):
-        self.env['ir.config_parameter'].set_param('account_edi_ubl_cii.use_new_dict_to_xml_helpers', 'True')
-        invoice = self.init_invoice('out_invoice', currency=self.other_currency, products=self.product_a)
+        invoice = self.init_invoice('out_invoice', taxes=self.company_data['default_tax_sale'], currency=self.other_currency, products=self.product_a)
 
         invoice.write({
             'invoice_incoterm_id': self.env.ref('account.incoterm_CFR').id,

@@ -7,13 +7,8 @@ from odoo.tests import HttpCase, tagged
 @tagged('-at_install', 'post_install')
 class TestWishlistProcess(HttpCase):
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.env['product.template'].search([]).write({'website_published': False})
-        cls.env['res.config.settings'].create({'group_product_variant': True}).execute()
-
-    def _test_01_wishlist_tour(self):
+    def test_01_wishlist_tour(self):
+        self.env['product.template'].search([]).write({'website_published': False})
         # Setup attributes and attributes values
         attributes = self.env['product.attribute'].create([
             {
@@ -61,29 +56,4 @@ class TestWishlistProcess(HttpCase):
 
         self.env.ref('base.user_admin').name = 'Mitchell Admin'
 
-        # This tour is unreliable on runbot, because we do not wait for wish to be
-        # effectively removed from the wishlist before updating the page (see _removeWish)
         self.start_tour("/", 'shop_wishlist', timeout=120)
-
-    def test_02_wishlist_admin_tour(self):
-        attribute = self.env['product.attribute'].create({
-            'name': 'color',
-            'display_type': 'color',
-            'create_variant': 'always',
-            'value_ids': [
-                Command.create({'name': 'red'}),
-                Command.create({'name': 'blue'}),
-                Command.create({'name': 'black'}),
-            ]
-        })
-        self.env['product.template'].create({
-            'name': 'Rock',
-            'is_published': True,
-            'attribute_line_ids': [
-                Command.create({
-                    'attribute_id': attribute.id,
-                    'value_ids': [Command.set(attribute.value_ids.ids)],
-                }),
-            ],
-        })
-        self.start_tour("/", 'shop_wishlist_admin', login="admin")

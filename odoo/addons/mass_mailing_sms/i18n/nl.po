@@ -3,32 +3,33 @@
 # * mass_mailing_sms
 #
 # Translators:
-# Wil Odoo, 2024
-# Erwin van der Ploeg <erwin@odooexperts.nl>, 2024
-# Manon Rondou, 2025
+# Martin Trigaux, 2022
+# Jolien De Paepe, 2022
+# Erwin van der Ploeg <erwin@odooexperts.nl>, 2023
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# Bren Driesen <brdri@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
-# Bren Driesen <brdri@odoo.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-10 18:37+0000\n"
-"PO-Revision-Date: 2026-04-15 11:33+0000\n"
-"Last-Translator: Bren Driesen <brdri@odoo.com>\n"
-"Language-Team: Dutch <https://translate.odoo.com/projects/odoo-18/"
+"PO-Revision-Date: 2026-08-02 18:09+0000\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"Language-Team: Dutch <https://translate.odoo.com/projects/odoo-19/"
 "mass_mailing_sms/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: mass_mailing_sms
 #. odoo-javascript
 #: code:addons/mass_mailing_sms/static/src/components/sms_widget/fields_sms_widget.js:0
 msgid " (including link trackers and opt-out link)"
-msgstr "(inclusief link trackers en opt-out-link)"
+msgstr " (inclusief link trackers en opt-out-link)"
 
 #. module: mass_mailing_sms
 #. odoo-javascript
@@ -121,11 +122,6 @@ msgid "<span widget=\"statinfo\">Open Recipient</span>"
 msgstr "<span widget=\"statinfo\">Open ontvanger</span>"
 
 #. module: mass_mailing_sms
-#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_list_view_kanban
-msgid "<span>Valid SMS Recipients</span>"
-msgstr "<span>Geldige sms-ontvangers</span>"
-
-#. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
 msgid ""
 "<strong>\n"
@@ -150,6 +146,11 @@ msgstr ""
 "                           Het lijkt erop dat je sms-account niet is "
 "geregistreerd. Klik hier om je account aan te maken.\n"
 "                         </strong>"
+
+#. module: mass_mailing_sms
+#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.blacklist_number
+msgid "<strong>Mailing List</strong>"
+msgstr "<strong>Mailinglijst</strong>"
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_trace_view_form_sms
@@ -230,18 +231,13 @@ msgid ""
 "Blacklist through SMS Marketing unsubscribe (mailing ID: %(mailing_id)s - "
 "model: %(model)s)"
 msgstr ""
-"Blacklist via sms-marketing afmelden (mailing ID: %(mailing_id)s - model: %"
+"Blacklist via Sms-marketing afmelden (mailing ID: %(mailing_id)s - model: %"
 "(model)s)"
 
 #. module: mass_mailing_sms
 #: model:ir.model.fields.selection,name:mass_mailing_sms.selection__mailing_trace__failure_type__sms_blacklist
 msgid "Blacklisted"
 msgstr "Geblacklist"
-
-#. module: mass_mailing_sms
-#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_contact__mobile_blacklisted
-msgid "Blacklisted Phone Is Mobile"
-msgstr "Telefoon op blacklist is een mobiel nummer"
 
 #. module: mass_mailing_sms
 #: model:ir.ui.menu,name:mass_mailing_sms.phone_blacklist_menu
@@ -353,7 +349,17 @@ msgid "Discard"
 msgstr "Negeren"
 
 #. module: mass_mailing_sms
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_contact__display_name
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_list__display_name
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_mailing__display_name
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_sms_test__display_name
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_trace__display_name
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_res_users__display_name
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_sms_composer__display_name
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_sms_sms__display_name
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_sms_tracker__display_name
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_utm_campaign__display_name
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_utm_medium__display_name
 msgid "Display Name"
 msgstr "Schermnaam"
 
@@ -382,7 +388,7 @@ msgstr "Vervallen"
 #. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_trace__failure_type
 msgid "Failure type"
-msgstr "Soort mislukking"
+msgstr "Fouttype"
 
 #. module: mass_mailing_sms
 #: model:ir.model.fields,help:mass_mailing_sms.field_mailing_contact__phone_sanitized
@@ -437,7 +443,17 @@ msgid "Highest Click Rate"
 msgstr "Hoogste klikfrequentie"
 
 #. module: mass_mailing_sms
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_contact__id
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_list__id
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_mailing__id
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_sms_test__id
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_trace__id
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_res_users__id
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_sms_composer__id
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_sms_sms__id
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_sms_tracker__id
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_utm_campaign__id
+#: model:ir.model.fields,field_description:mass_mailing_sms.field_utm_medium__id
 msgid "ID"
 msgstr "ID"
 
@@ -481,17 +497,6 @@ msgid "Incorrect callback URL"
 msgstr "Foute omleidings-URL"
 
 #. module: mass_mailing_sms
-#: model:ir.model.fields,help:mass_mailing_sms.field_mailing_contact__mobile_blacklisted
-msgid ""
-"Indicates if a blacklisted sanitized phone number is a mobile number. Helps "
-"distinguish which number is blacklisted             when there is both a "
-"mobile and phone field in a model."
-msgstr ""
-"Geeft aan of een op de blacklist geplaatst telefoonnummer een mobiel nummer "
-"is. Helpt bij het onderscheiden welk nummer op de blacklist staat als het "
-"model zowel een mobiel als een telefoon veld bevat."
-
-#. module: mass_mailing_sms
 #: model:ir.model.fields,help:mass_mailing_sms.field_mailing_contact__phone_blacklisted
 msgid ""
 "Indicates if a blacklisted sanitized phone number is a phone number. Helps "
@@ -523,12 +528,6 @@ msgid "Invalid Destination"
 msgstr "Ongeldige bestemming"
 
 #. module: mass_mailing_sms
-#. odoo-python
-#: code:addons/mass_mailing_sms/controllers/main.py:0
-msgid "Invalid number %s"
-msgstr "Ongeldig nummer %s"
-
-#. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_contact__message_is_follower
 msgid "Is Follower"
 msgstr "Is een volger"
@@ -546,7 +545,7 @@ msgstr "Laatst bijgewerkt op"
 #. module: mass_mailing_sms
 #: model:ir.model,name:mass_mailing_sms.model_sms_tracker
 msgid "Link SMS to mailing/sms tracking models"
-msgstr "Koppel SMS aan mailing-/sms-trackingmodellen"
+msgstr "Sms koppelen aan mailing-/sms-trackingmodellen"
 
 #. module: mass_mailing_sms
 #: model:ir.ui.menu,name:mass_mailing_sms.link_tracker_menu
@@ -656,7 +655,7 @@ msgstr "Mobiel"
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_search_sms
 msgid "My SMS Marketing"
-msgstr "Mijn sms-marketing"
+msgstr "Mijn Sms-marketing"
 
 #. module: mass_mailing_sms
 #: model_terms:ir.actions.act_window,help:mass_mailing_sms.mailing_trace_report_action_sms
@@ -684,15 +683,8 @@ msgstr "Niet geleverd"
 
 #. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_trace__sms_number
-#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.blacklist_main
 msgid "Number"
 msgstr "Nummer"
-
-#. module: mass_mailing_sms
-#. odoo-python
-#: code:addons/mass_mailing_sms/controllers/main.py:0
-msgid "Number %s not found"
-msgstr "Nummer %s niet gevonden"
 
 #. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_contact__message_needaction_counter
@@ -734,6 +726,22 @@ msgstr ""
 "en zorgen ze voor een behoorlijke bzzzz!"
 
 #. module: mass_mailing_sms
+#. odoo-python
+#: code:addons/mass_mailing_sms/controllers/main.py:0
+msgid "Oops! Number not found"
+msgstr "Oeps! Nummer niet gevonden"
+
+#. module: mass_mailing_sms
+#. odoo-python
+#: code:addons/mass_mailing_sms/controllers/main.py:0
+msgid ""
+"Oops! The phone number seems to be incorrect. Please make sure to include "
+"the country code."
+msgstr ""
+"Oeps! Het telefoonnummer lijkt onjuist. Controleer of je het landnummer hebt "
+"toegevoegd."
+
+#. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_trace_view_tree_sms
 msgid "Open Recipient"
 msgstr "Ontvanger openen"
@@ -760,13 +768,13 @@ msgstr "Telefoon blacklist"
 
 #. module: mass_mailing_sms
 #: model:ir.model.fields,field_description:mass_mailing_sms.field_mailing_contact__phone_mobile_search
-msgid "Phone/Mobile"
-msgstr "Telefoon/mobiel"
+msgid "Phone Number"
+msgstr "Telefoonnummer"
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.blacklist_main
-msgid "Please enter your phone number"
-msgstr "Voer je mobiele telefoonnummer in"
+msgid "Please confirm your phone number to unsubscribe :"
+msgstr "Bevestig je telefoonnummer om je af te melden:"
 
 #. module: mass_mailing_sms
 #. odoo-python
@@ -850,7 +858,7 @@ msgstr "SMS-ID"
 #: model:ir.ui.menu,name:mass_mailing_sms.mass_mailing_sms_menu_root
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_tree_sms
 msgid "SMS Marketing"
-msgstr "SMS-Marketing"
+msgstr "Sms-marketing"
 
 #. module: mass_mailing_sms
 #: model:ir.actions.act_window,name:mass_mailing_sms.mailing_trace_report_action_sms
@@ -858,7 +866,6 @@ msgid "SMS Marketing Analysis"
 msgstr "sms-marketing analyse"
 
 #. module: mass_mailing_sms
-#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.blacklist_main
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.blacklist_number
 msgid "SMS Subscription"
 msgstr "SMS abonnement"
@@ -925,7 +932,7 @@ msgstr "Nu verzenden"
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_list_view_form
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.utm_campaign_view_form
 msgid "Send SMS"
-msgstr "SMS verzenden"
+msgstr "Sms verzenden"
 
 #. module: mass_mailing_sms
 #: model:ir.model,name:mass_mailing_sms.model_sms_composer
@@ -969,6 +976,16 @@ msgid "Status"
 msgstr "Status"
 
 #. module: mass_mailing_sms
+#: model:ir.model,website_form_label:mass_mailing_sms.model_mailing_contact
+msgid "Subscribe to Newsletter"
+msgstr "Abonneren op de nieuwsbrief"
+
+#. module: mass_mailing_sms
+#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_trace_view_form_sms
+msgid "Test"
+msgstr "Test"
+
+#. module: mass_mailing_sms
 #. odoo-python
 #: code:addons/mass_mailing_sms/models/mailing_mailing.py:0
 #: model:ir.actions.act_window,name:mass_mailing_sms.mailing_sms_test_action
@@ -983,9 +1000,16 @@ msgstr "Test SMS Mailing"
 #. module: mass_mailing_sms
 #. odoo-python
 #: code:addons/mass_mailing_sms/wizard/mailing_sms_test.py:0
-msgid "Test SMS could not be sent to %(destination)s: %(failure_reason)s"
+msgid "Test SMS could not be sent to %(destination)s: %(state)s"
+msgstr "De test-sms kon niet worden verzonden naar %(destination)s: %(state)s"
+
+#. module: mass_mailing_sms
+#. odoo-python
+#: code:addons/mass_mailing_sms/wizard/mailing_sms_test.py:0
+msgid "Test SMS skipped those numbers as they appear invalid: %(numbers)s"
 msgstr ""
-"Test-sms kon niet worden verzonden naar %(destination)s: %(failure_reason)s"
+"De test-sms heeft de volgende nummers overgeslagen omdat ze ongeldig lijken: "
+"%(numbers)s"
 
 #. module: mass_mailing_sms
 #. odoo-python
@@ -1004,13 +1028,7 @@ msgstr ""
 "een aantal belangrijke functionele stromen, zoals sms-marketing."
 
 #. module: mass_mailing_sms
-#. odoo-python
-#: code:addons/mass_mailing_sms/wizard/mailing_sms_test.py:0
-msgid "The following numbers are not correctly encoded: %s"
-msgstr "De volgende nummers zijn niet correct gecodeerd: %s"
-
-#. module: mass_mailing_sms
-#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.blacklist_number
+#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.blacklist_main
 msgid "There was an error when trying to unsubscribe"
 msgstr "Er was een fout tijdens het afmelden"
 
@@ -1068,7 +1086,7 @@ msgstr "Niet-geregistreerd account"
 
 #. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.blacklist_main
-msgid "Unsubscribe me"
+msgid "Unsubscribe"
 msgstr "Afmelden"
 
 #. module: mass_mailing_sms
@@ -1116,6 +1134,11 @@ msgid "Wrong Number Format"
 msgstr "Fout nummer formaat"
 
 #. module: mass_mailing_sms
+#: model_terms:ir.ui.view,arch_db:mass_mailing_sms.blacklist_main
+msgid "e.g. \"+1 (555) 123-4567\""
+msgstr "bijv. \"+1 (555) 123-4567\""
+
+#. module: mass_mailing_sms
 #: model_terms:ir.ui.view,arch_db:mass_mailing_sms.mailing_mailing_view_form_sms
 msgid "e.g. Black Friday SMS coupon"
 msgstr "bijv. Black Friday sms-kortingsbon"
@@ -1137,6 +1160,115 @@ msgstr "is succesvol verwijderd van"
 #~ "+32 495 85 85 77\n"
 #~ "+33 545 55 55 55"
 
-#~ msgid "Test SMS could not be sent to %(destination)s: %(state)s"
+#~ msgid ""
+#~ "<span name=\"canceled_text_sms\" attrs=\"{'invisible': [('mailing_type', "
+#~ "'!=', 'sms')]}\">SMS Text Message have been canceled and will not be sent."
+#~ "</span>"
 #~ msgstr ""
-#~ "De test-sms kon niet worden verzonden naar %(destination)s: %(state)s"
+#~ "<span name=\"canceled_text_sms\" attrs=\"{'invisible': [('mailing_type', "
+#~ "'!=', 'sms')]}\">Sms-bericht is geannuleerd en wordt niet verzonden.</"
+#~ "span>"
+
+#~ msgid ""
+#~ "<span name=\"failed_text_sms\" attrs=\"{'invisible': [('mailing_type', '!"
+#~ "=', 'sms')]}\">SMS Text Message could not be sent.</span>"
+#~ msgstr ""
+#~ "<span name=\"failed_text_sms\" attrs=\"{'invisible': [('mailing_type', '!"
+#~ "=', 'sms')]}\">Sms-bericht kon niet verzonden worden.</span>"
+
+#~ msgid ""
+#~ "<span name=\"next_departure_text\" attrs=\"{'invisible': "
+#~ "[('mailing_type', '!=', 'sms')]}\">This SMS marketing is scheduled for </"
+#~ "span>"
+#~ msgstr ""
+#~ "<span name=\"next_departure_text\" attrs=\"{'invisible': "
+#~ "[('mailing_type', '!=', 'sms')]}\">Deze sms-marketing is gepland voor </"
+#~ "span>"
+
+#~ msgid ""
+#~ "<span name=\"scheduled_text_sms\" attrs=\"{'invisible': [('mailing_type', "
+#~ "'!=', 'sms')]}\">SMS Text Message are in queue and will be sent soon.</"
+#~ "span>"
+#~ msgstr ""
+#~ "<span name=\"scheduled_text_sms\" attrs=\"{'invisible': [('mailing_type', "
+#~ "'!=', 'sms')]}\">Sms-bericht zit in wachtrij en wordt binnenkort "
+#~ "verstuurd.</span>"
+
+#~ msgid ""
+#~ "<span name=\"sent_sms\" attrs=\"{'invisible': [('mailing_type', '!=', "
+#~ "'sms')]}\">SMS Text Message have been sent.</span>"
+#~ msgstr ""
+#~ "<span name=\"sent_sms\" attrs=\"{'invisible': [('mailing_type', '!=', "
+#~ "'sms')]}\">Sms-bericht is verzonden.</span>"
+
+#~ msgid "<span>Valid SMS Recipients</span>"
+#~ msgstr "<span>Geldige sms-ontvangers</span>"
+
+#~ msgid "Bioutifoul SMS"
+#~ msgstr "Prachtige sms"
+
+#~ msgid ""
+#~ "Blacklist through SMS Marketing unsubscribe (mailing ID: %s - model: %s)"
+#~ msgstr "Blacklist via sms-marketing afmelden (mailing ID: %s - model: %s)"
+
+#~ msgid "Blacklisted Phone Is Mobile"
+#~ msgstr "Telefoon op blacklist is een mobiel nummer"
+
+#~ msgid "Cancel"
+#~ msgstr "Annuleren"
+
+#~ msgid ""
+#~ "Indicates if a blacklisted sanitized phone number is a mobile number. "
+#~ "Helps distinguish which number is blacklisted             when there is "
+#~ "both a mobile and phone field in a model."
+#~ msgstr ""
+#~ "Geeft aan of een op de blacklist geplaatst telefoonnummer een mobiel "
+#~ "nummer is. Helpt bij het onderscheiden welk nummer op de blacklist staat "
+#~ "als het model zowel een mobiel als een telefoon veld bevat."
+
+#~ msgid ""
+#~ "No need to import mailing lists, you can send SMS Text Messages to "
+#~ "contacts saved in other Odoo apps."
+#~ msgstr ""
+#~ "Je hoeft geen mailinglijsten te importeren, je kunt sms-tekstberichten "
+#~ "verzenden naar contacten die zijn opgeslagen in andere Odoo-apps."
+
+#~ msgid "Number %s not found"
+#~ msgstr "Nummer %s niet gevonden"
+
+#~ msgid "Number of messages which requires an action"
+#~ msgstr "Aantal berichten die actie vereisen"
+
+#~ msgid "Phone/Mobile"
+#~ msgstr "Telefoon/mobiel"
+
+#~ msgid "Please enter your phone number"
+#~ msgstr "Voer je mobiele telefoonnummer in"
+
+#~ msgid "SMS ID (tech)"
+#~ msgstr "SMS ID (technisch)"
+
+#~ msgid ""
+#~ "Send a sample SMS for testing purpose to the numbers below (carriage-"
+#~ "return-separated list)."
+#~ msgstr ""
+#~ "Stuur voor testdoeleinden een voorbeeld-sms naar de onderstaande nummers "
+#~ "(lijst met gescheiden rij- en retourzendingen)."
+
+#~ msgid "Test SMS Marketing"
+#~ msgstr "sms-marketing testen"
+
+#~ msgid "Test SMS could not be sent to %s:<br>%s"
+#~ msgstr "Test-sms kon niet worden verzonden naar %s:<br>%s"
+
+#~ msgid "Test SMS marketing"
+#~ msgstr "sms-marketing testen"
+
+#~ msgid "The following numbers are not correctly encoded: %s"
+#~ msgstr "De volgende nummers zijn niet correct gecodeerd: %s"
+
+#~ msgid "Unsubscribe me"
+#~ msgstr "Uitschrijven"
+
+#~ msgid "XMas Promo"
+#~ msgstr "Kerstmis promo"

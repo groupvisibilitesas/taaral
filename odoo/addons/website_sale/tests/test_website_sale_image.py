@@ -8,8 +8,10 @@ from PIL import Image
 from odoo.fields import Command
 from odoo.tests import HttpCase, tagged
 
+from odoo.addons.website.tests.common import HttpCaseWithWebsiteUser
 
-def _create_image(color: int | str = 0, dims=(1920, 1080), format='JPEG'):
+
+def _create_image(color='black', dims=(1920, 1080), format='JPEG'):
     f = io.BytesIO()
     Image.new('RGB', dims, color).save(f, format)  # type: ignore
     f.seek(0)
@@ -17,7 +19,7 @@ def _create_image(color: int | str = 0, dims=(1920, 1080), format='JPEG'):
 
 
 @tagged('post_install', '-at_install')
-class TestWebsiteSaleImage(HttpCase):
+class TestWebsiteSaleImage(HttpCaseWithWebsiteUser):
 
     # registry_test_mode = False  # uncomment to save the product to test in browser
 
@@ -199,9 +201,6 @@ class TestWebsiteSaleImage(HttpCase):
 
         # Make sure we have zoom on click
         self.env['ir.ui.view'].with_context(active_test=False).search(
-            [('key', 'in', ('website_sale.product_picture_magnify_hover', 'website_sale.product_picture_magnify_click', 'website_sale.product_picture_magnify_both'))]
-        ).write({'active': False})
-        self.env['ir.ui.view'].with_context(active_test=False).search(
             [('key', '=', 'website_sale.product_picture_magnify_click')]
         ).write({'active': True})
 
@@ -209,7 +208,7 @@ class TestWebsiteSaleImage(HttpCase):
         # This ensures that tours with triggers on the amounts will run properly.
         self.env['product.pricelist'].search([]).action_archive()
 
-        self.start_tour("/", 'shop_zoom', login="admin")
+        self.start_tour("/", 'shop_zoom', login="website_user")
 
         # CASE: unlink move image to fallback if fallback image empty
         template.image_1920 = False
@@ -312,7 +311,7 @@ class TestWebsiteSaleImage(HttpCase):
         # when there are no template image but there are variants, the image must be obtained from the first variant
         self.assertEqual(product_red, template._get_image_holder())
 
-        product_red.toggle_active()
+        product_red.action_archive()
 
         # but when some variants are not available, the image must be obtained from the first available variant
         self.assertEqual(product_green, template._get_image_holder())
@@ -339,12 +338,12 @@ class TestWebsiteSaleImage(HttpCase):
             ],
         })
 
-        self.env['website'].get_current_website().write({'product_page_image_layout': 'grid'})
-        self.env['ir.ui.view'].with_context(active_test=False).search([
-            ('key', '=', 'website_sale.product_picture_magnify_click')
-        ]).write({'active': True})
+        self.env['website'].get_current_website().write({
+            'product_page_image_layout': 'grid',
+            'product_page_image_ratio': 'auto',
+        })
 
-        self.start_tour(product.website_url, 'shop_zoom_grid_image_order')
+        self.start_tour(product.website_url, 'website_sale.zoom_grid_image_order')
 
 @tagged('post_install', '-at_install')
 class TestWebsiteSaleRemoveImage(HttpCase):

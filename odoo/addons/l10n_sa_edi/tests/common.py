@@ -57,8 +57,8 @@ class TestSaEdiCommon(AccountEdiTestCommon):
             # Saudi-specific fields
             'l10n_sa_edi_building_number': '1234',
             'l10n_sa_edi_plot_identification': '1234',
-            'l10n_sa_additional_identification_number': '2525252525252',
-            'l10n_sa_additional_identification_scheme': 'CRN',  # Commercial Registration Number
+            'l10n_sa_edi_additional_identification_number': '2525252525252',
+            'l10n_sa_edi_additional_identification_scheme': 'CRN',  # Commercial Registration Number
             **(defaults or {})
         }
 
@@ -94,8 +94,8 @@ class TestSaEdiCommon(AccountEdiTestCommon):
             'phone': '+966556666666',
             # Tax info
             'vat': '311111111111113',
-            'l10n_sa_additional_identification_scheme': 'CRN',
-            'l10n_sa_additional_identification_number': '353535353535353',
+            'l10n_sa_edi_additional_identification_scheme': 'CRN',
+            'l10n_sa_edi_additional_identification_number': '353535353535353',
             # Address
             'street': '4557 King Salman St',
             'street2': 'Neighbor!',
@@ -119,8 +119,8 @@ class TestSaEdiCommon(AccountEdiTestCommon):
             'country_id': cls.saudi_arabia.id,
             'state_id': cls.riyadh.id,
             # Simplified invoices use different ID schemes
-            'l10n_sa_additional_identification_scheme': 'MOM',  # Momra License
-            'l10n_sa_additional_identification_number': '3123123213131',
+            'l10n_sa_edi_additional_identification_scheme': 'MOM',  # Momra License
+            'l10n_sa_edi_additional_identification_number': '3123123213131',
         })
 
     @classmethod
@@ -197,9 +197,6 @@ class TestSaEdiCommon(AccountEdiTestCommon):
 
         # Credit note specific replacements
         cls.credit_note_applied_xpath = common_replacements + '''
-            <xpath expr="(//*[local-name()='OrderReference']/*[local-name()='ID'])[1]" position="replace">
-                <cbc:ID xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">___ignore___</cbc:ID>
-            </xpath>
             <xpath expr="(//*[local-name()='InvoiceDocumentReference']/*[local-name()='ID'])[1]" position="replace">
                 <cbc:ID xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">___ignore___</cbc:ID>
             </xpath>
@@ -216,9 +213,6 @@ class TestSaEdiCommon(AccountEdiTestCommon):
 
         # Debit note specific replacements
         cls.debit_note_applied_xpath = common_replacements + '''
-            <xpath expr="(//*[local-name()='OrderReference']/*[local-name()='ID'])[1]" position="replace">
-                <cbc:ID xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">___ignore___</cbc:ID>
-            </xpath>
             <xpath expr="(//*[local-name()='InvoiceDocumentReference']/*[local-name()='ID'])[1]" position="replace">
                 <cbc:ID xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">___ignore___</cbc:ID>
             </xpath>
@@ -254,7 +248,7 @@ class TestSaEdiCommon(AccountEdiTestCommon):
         return state
 
     # Helper methods for creating documents
-    def _create_invoice(
+    def _create_test_invoice(
         self,
         name="",
         move_type="out_invoice",
@@ -304,12 +298,12 @@ class TestSaEdiCommon(AccountEdiTestCommon):
         invoice_date_due='2025-01-01',
         currency_id=None,
         invoice_line_ids=[],
-        reason="Totes Forgot"):
+        reason="BR-KSA-17-reason-5"):
         """
         Create a draft debit note from the given invoice values.
         """
         # Create and post the original invoice
-        invoice = self._create_invoice(
+        invoice = self._create_test_invoice(
             name=name,
             move_type=move_type,
             company_id=company_id,
@@ -326,7 +320,7 @@ class TestSaEdiCommon(AccountEdiTestCommon):
             'active_model': 'account.move',
             'default_copy_lines': True
         }).create({
-            'reason': reason,
+            'l10n_sa_reason': reason,
         })
         res = debit_note_wizard.create_debit()
 
@@ -342,12 +336,12 @@ class TestSaEdiCommon(AccountEdiTestCommon):
         invoice_date_due='2025-01-01',
         currency_id=None,
         invoice_line_ids=[],
-        reason='Totes Forgot'):
+        reason='BR-KSA-17-reason-5'):
         """
         Create a draft credit note from the given invoice values.
         """
         # Create and post the original invoice
-        invoice = self._create_invoice(
+        invoice = self._create_test_invoice(
             name=name,
             move_type=move_type,
             company_id=company_id,
@@ -363,7 +357,7 @@ class TestSaEdiCommon(AccountEdiTestCommon):
             'active_model': 'account.move',
             'active_ids': invoice.ids
         }).create({
-            'reason': reason,
+            'l10n_sa_reason': reason,
             'journal_id': invoice.journal_id.id,
         })
         reversal = move_reversal.reverse_moves()

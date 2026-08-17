@@ -16,7 +16,7 @@ class TestAsset(TransactionCase):
         convert_file(
             self.env, 'base',
             file_path('base/tests/asset_tag.xml'),
-            {}, 'init', False, 'test'
+            {}, 'init', False,
         )
         active_keep_asset = self.env.ref('base.test_asset_tag_aaa')
         inactive_keep_asset = self.env.ref('base.test_asset_tag_iii')
@@ -61,7 +61,7 @@ class TestAsset(TransactionCase):
                 'base.test_asset_tag_iaa': inactive_switch_asset.id,
                 'base.test_asset_tag_prepend': prepend_asset.id,
                 'base.test_asset_tag_extra': asset_with_extra_field.id,
-            }, 'update', False, 'test'
+            }, 'update', False,
         )
 
         # Verify updated load

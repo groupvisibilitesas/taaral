@@ -3,26 +3,26 @@
 # * base_setup
 #
 # Translators:
-# Wil Odoo, 2024
-# Chloe Wang, 2024
-# 何彬 <vnsoft.he@gmail.com>, 2024
-# Raymond Yu <cl_yu@hotmail.com>, 2025
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Raymond Yu <cl_yu@hotmail.com>, 2022
+# Jeffery CHEN <jeffery9@gmail.com>, 2022
+# Martin Trigaux, 2023
+# "Tiffany Chang (tic)" <tic@odoo.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2025-11-21 02:26+0000\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-05 20:50+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://translate.odoo.com/"
-"projects/odoo-18/base_setup/zh_Hans/>\n"
+"projects/odoo-19/base_setup/zh_Hans/>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
@@ -105,6 +105,13 @@ msgstr "<strong>保存</strong> 此页面并返回此处进行 Cloudflare Turnst
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
+msgid ""
+"<strong>Save</strong> this page and come back here to set up Google Places "
+"API key"
+msgstr "<strong>保存</strong>此页面，然后返回此处设置 Google Places API 密钥"
+
+#. module: base_setup
+#: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid "<strong>Save</strong> this page and come back here to set up reCaptcha."
 msgstr "<strong>保存</strong> 此页面，然后返回此处设置 reCaptcha。"
 
@@ -175,13 +182,13 @@ msgstr "允许在多币别环境中使用"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
-msgid "Automatically enrich your contact base with company data"
-msgstr "自动使用公司数据填写您的联系方式"
+msgid "Autocomplete partner addresses with Google Places"
+msgstr "使用 Google Places 自动填写合作伙伴地址"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
-msgid "Automatically generate counterpart documents in recipient companies"
-msgstr "自动生成接收公司的对应文件"
+msgid "Automatically enrich your contact base with company data"
+msgstr "自动使用公司数据填写您的联系方式"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
@@ -250,12 +257,23 @@ msgid "Contacts"
 msgstr "联系人"
 
 #. module: base_setup
+#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__company_country_group_codes
+msgid "Country Group Codes"
+msgstr "国家/地区组代码"
+
+#. module: base_setup
+#: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
+msgid ""
+"Create corresponding in/out orders and bills when you sell/buy between your "
+"companies"
+msgstr "当您在公司之间进行买卖时，创建相应的出/入库单和账单"
+
+#. module: base_setup
 #: model:ir.model.fields,field_description:base_setup.field_res_config_settings__report_footer
 msgid "Custom Report Footer"
 msgstr "自定义报表页脚"
 
 #. module: base_setup
-#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__user_default_rights
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid "Default Access Rights"
 msgstr "默认访问权限"
@@ -263,8 +281,16 @@ msgstr "默认访问权限"
 #. module: base_setup
 #. odoo-python
 #: code:addons/base_setup/models/res_config_settings.py:0
-msgid "Default User Template not found."
-msgstr "没有找到默认的用户模板。"
+msgid "Default access for new users"
+msgstr "新用户的默认访问权限"
+
+#. module: base_setup
+#: model:ir.model.fields,field_description:base_setup.field_ir_http__display_name
+#: model:ir.model.fields,field_description:base_setup.field_kpi_provider__display_name
+#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:base_setup.field_res_users__display_name
+msgid "Display Name"
+msgstr "显示名称"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
@@ -280,6 +306,12 @@ msgstr "单据模板"
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid "Edit Layout"
 msgstr "编辑布局"
+
+#. module: base_setup
+#. odoo-python
+#: code:addons/base_setup/models/res_config_settings.py:0
+msgid "Edit new user default group"
+msgstr "编辑新用户默认组"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
@@ -320,14 +352,22 @@ msgid "Geolocation"
 msgstr "地理位置"
 
 #. module: base_setup
-#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_product_images
-msgid "Get product pictures using barcode"
-msgstr "使用条形码获取产品图片"
+#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_google_address_autocomplete
+msgid "Google Address Autocomplete"
+msgstr "Google 地址自动完成"
 
 #. module: base_setup
 #: model:ir.model,name:base_setup.model_ir_http
 msgid "HTTP Routing"
 msgstr "HTTP 路由"
+
+#. module: base_setup
+#: model:ir.model.fields,field_description:base_setup.field_ir_http__id
+#: model:ir.model.fields,field_description:base_setup.field_kpi_provider__id
+#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__id
+#: model:ir.model.fields,field_description:base_setup.field_res_users__id
+msgid "ID"
+msgstr "ID"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
@@ -357,7 +397,7 @@ msgstr "是母公司"
 #. module: base_setup
 #: model:ir.model,name:base_setup.model_kpi_provider
 msgid "KPI Provider"
-msgstr "KPI提供者"
+msgstr ""
 
 #. module: base_setup
 #: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_auth_ldap
@@ -451,6 +491,11 @@ msgid "Permissions"
 msgstr "权限"
 
 #. module: base_setup
+#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_voip
+msgid "Phone"
+msgstr "电话"
+
+#. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid "Preview Document"
 msgstr "预览文档"
@@ -474,6 +519,12 @@ msgstr "保护您的表格不被垃圾邮件和滥用。"
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid "Protect your forms with CF Turnstile."
 msgstr "使用 CF Turnstile 保护您的表单。"
+
+#. module: base_setup
+#. odoo-javascript
+#: code:addons/base_setup/static/src/views/module_views.xml:0
+msgid "Reset Updating States"
+msgstr ""
 
 #. module: base_setup
 #: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_sms
@@ -563,11 +614,6 @@ msgid "VAT"
 msgstr "增值税"
 
 #. module: base_setup
-#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_voip
-msgid "VoIP"
-msgstr "网络电话"
-
-#. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid ""
 "When populating your address book, Odoo provides a list of matching "
@@ -587,3 +633,48 @@ msgstr "您必须安装 Discuss 应用程序才能使用此功能。"
 #: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_google_recaptcha
 msgid "reCAPTCHA"
 msgstr "验证码"
+
+#~ msgid "Asterisk (VoIP)"
+#~ msgstr "Asterisk (开源VoIP平台)"
+
+#~ msgid ""
+#~ "Automatically generate counterpart documents for orders/invoices between "
+#~ "companies"
+#~ msgstr "自动产生公司间订单/结算单的对应文档"
+
+#~ msgid ""
+#~ "By default, new users get highest access rights for all installed apps."
+#~ msgstr "默认情况下，新用户获得所有安装的应用程序的最高访问权限。"
+
+#~ msgid "Default User Template not found."
+#~ msgstr "没有找到默认的用户模板。"
+
+#~ msgid "Documentation"
+#~ msgstr "文档"
+
+#~ msgid "Geo Localization"
+#~ msgstr "地理定位"
+
+#~ msgid "GeoLocalize your partners"
+#~ msgstr "定位您的合作伙伴"
+
+#~ msgid "Get product pictures using barcode"
+#~ msgstr "使用条形码获取产品图片"
+
+#~ msgid "Google Calendar"
+#~ msgstr "Google日历"
+
+#~ msgid "On Apple Store"
+#~ msgstr "在苹果应用商店"
+
+#~ msgid "On Google Play"
+#~ msgstr "在谷歌应用市场"
+
+#~ msgid "Outlook Calendar"
+#~ msgstr "Outlook日历"
+
+#~ msgid "Synchronize your calendar with Google Calendar"
+#~ msgstr "将日历与Google日历同步"
+
+#~ msgid "Synchronize your calendar with Outlook"
+#~ msgstr "将日历与 Outlook 同步"

@@ -2,7 +2,7 @@
 {
     'name': 'Brazilian - Accounting',
     'version': '1.1',
-    'website': 'https://www.odoo.com/documentation/master/applications/finance/fiscal_localizations/brazil.html',
+    'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations/brazil.html',
     'icon': '/account/static/description/l10n.png',
     'countries': ['br'],
     'category': 'Accounting/Localizations/Account Charts',
@@ -70,6 +70,7 @@ Create electronic sales invoices with Avatax.
         'views/account_view.xml',
         'views/account_fiscal_position_views.xml',
         'views/ir_ui_menu_brazil.xml',
+        'views/portal_address_templates.xml',
         'views/res_company_views.xml',
         'views/account_journal_views.xml',
         'views/res_bank_views.xml',
@@ -77,5 +78,10 @@ Create electronic sales invoices with Avatax.
     'demo': [
         'demo/demo_company.xml',
     ],
+    'assets': {
+        'web.assets_frontend': [
+            'l10n_br/static/src/interactions/**/*',
+        ],
+    },
     'license': 'LGPL-3',
 }

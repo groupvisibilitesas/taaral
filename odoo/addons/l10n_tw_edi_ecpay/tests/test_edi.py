@@ -30,11 +30,10 @@ class L10nTWITestEdi(TestAccountMoveSendCommon, HttpCase):
             'phone': '+886 123 456 781',
         })
         cls.partner_a.write({
-            'mobile': '+886 987 654 321',
             'phone': '+886 123 456 789',
             'street': 'street七美',
             'city': '中正區',
-            'state_id': cls.env.ref('l10n_tw.state_tw_tpc').id,
+            'state_id': cls.env.ref('base.state_tw_tpc').id,
             'country_id': cls.env.ref('base.tw').id,
             'company_type': 'person',
         })
@@ -42,14 +41,14 @@ class L10nTWITestEdi(TestAccountMoveSendCommon, HttpCase):
             'phone': '+886 123 456 789',
             'street': 'street七美',
             'city': '信義區',
-            'state_id': cls.env.ref('l10n_tw.state_tw_klc').id,
+            'state_id': cls.env.ref('base.state_tw_klc').id,
             'country_id': cls.env.ref('base.tw').id,
             'vat': '24153791',
             'company_type': 'company',
         })
         # We can reuse this invoice for the flow tests.
         cls.basic_invoice = cls.init_invoice(
-            'out_invoice', partner=cls.partner_a, products=cls.product_a,
+            'out_invoice', partner=cls.partner_a, products=cls.product_a, taxes=cls.tax_sale_a,
         )
         cls.basic_invoice.action_post()
         cls.basic_invoice_b2b = cls.init_invoice(
@@ -70,42 +69,13 @@ class L10nTWITestEdi(TestAccountMoveSendCommon, HttpCase):
         self.assertEqual(json_data.get("MerchantID"), "1234")
         self.assertEqual(json_data.get("CustomerName"), "partner_a")
         self.assertEqual(json_data.get("CustomerEmail"), "partner_a@tsointsoin")
-        self.assertEqual(json_data.get("CustomerPhone"), "0987654321")  # mobile
+        self.assertEqual(json_data.get("CustomerPhone"), "0123456789")
         self.assertEqual(json_data.get("SalesAmount"), 1050.0)
         self.assertEqual(json_data.get("CustomerAddr"), "street七美, 中正區 TPC, Taiwan")
 
         self.basic_invoice.write({'ref': 'Test Reference'})
         json_data_with_ref = self.basic_invoice._l10n_tw_edi_generate_invoice_json()
         self.assertEqual(json_data_with_ref.get("InvoiceRemark"), "Test Reference")
-
-        # B2C has both phone and mobile (mobile is prioritized)
-        mobile_and_phone_json_data = self.init_invoice(
-            "out_invoice", partner=self.partner_a, products=self.product_a,
-        )._l10n_tw_edi_generate_invoice_json()
-        self.assertEqual(mobile_and_phone_json_data.get("CustomerPhone"), "0987654321")
-
-        # B2C has no 'mobile' but has 'phone'
-        self.partner_a.mobile = ""
-        no_mobile_json_data = self.init_invoice(
-            "out_invoice", partner=self.partner_a, products=self.product_a,
-        )._l10n_tw_edi_generate_invoice_json()
-        self.assertEqual(no_mobile_json_data.get("CustomerPhone"), "0123456789")
-
-        # B2B uses 'phone' and not mobile
-        self.partner_b.mobile = "+886 987 654 321"
-        b2b_json_data = self.init_invoice(
-            "out_invoice", partner=self.partner_b, products=self.product_b,
-        )._l10n_tw_edi_generate_invoice_json()
-        self.assertEqual(b2b_json_data.get("CustomerPhone"), "0123456789")
-
-        # B2B only has mobile field
-        self.partner_b.mobile = "+886 987 654 321"
-        self.partner_b.email = ""
-        self.partner_b.phone = ""
-        with self.assertRaises(UserError):
-            b2b_json_data = self.init_invoice(
-                "out_invoice", partner=self.partner_b, products=self.product_b,
-            )._l10n_tw_edi_generate_invoice_json()
 
     @freeze_time("2025-01-06 15:00:00")
     def test_02_basic_submission(self):
@@ -248,11 +218,11 @@ class L10nTWITestEdi(TestAccountMoveSendCommon, HttpCase):
             'phone': '+886 123 456 789',
             'street': 'street七美',
             'city': '中正區',
-            'state_id': self.env.ref('l10n_tw.state_tw_tpc').id,
+            'state_id': self.env.ref('base.state_tw_tpc').id,
             'company_type': 'company',
         })
         invoice_a = self.init_invoice(
-            'out_invoice', partner=test_partner, products=self.product_a,
+            'out_invoice', partner=test_partner, products=self.product_a, taxes=self.tax_sale_a,
         )
         invoice_a.action_post()
         send_and_print = self.create_send_and_print(invoice_a)
@@ -262,7 +232,7 @@ class L10nTWITestEdi(TestAccountMoveSendCommon, HttpCase):
         # the partner is b2b and has an invalid tax id
         test_partner.vat = '1234567A'
         invoice_b = self.init_invoice(
-            'out_invoice', partner=test_partner, products=self.product_a,
+            'out_invoice', partner=test_partner, products=self.product_a, taxes=self.tax_sale_a,
         )
         invoice_b.action_post()
         send_and_print = self.create_send_and_print(invoice_b)
@@ -273,7 +243,7 @@ class L10nTWITestEdi(TestAccountMoveSendCommon, HttpCase):
         test_partner.vat = '12345678'
         test_partner.phone = '123+456+789'
         invoice_c = self.init_invoice(
-            'out_invoice', partner=test_partner, products=self.product_a,
+            'out_invoice', partner=test_partner, products=self.product_a, taxes=self.tax_sale_a,
         )
         invoice_c.action_post()
         send_and_print = self.create_send_and_print(invoice_c)
@@ -282,7 +252,7 @@ class L10nTWITestEdi(TestAccountMoveSendCommon, HttpCase):
         # the invoice type is invalid
         test_partner.phone = '+886 123 456 789'
         invoice_d = self.init_invoice(
-            'out_invoice', partner=test_partner, products=self.product_a,
+            'out_invoice', partner=test_partner, products=self.product_a, taxes=self.tax_sale_a,
         )
         invoice_d.l10n_tw_edi_invoice_type = '08'
         invoice_d.action_post()
@@ -293,7 +263,7 @@ class L10nTWITestEdi(TestAccountMoveSendCommon, HttpCase):
     def test_08_invoice_with_downpayment(self):
         """Ensure downpayment with -ve quantity is normalized for ECPay JSON."""
         invoice = self.init_invoice(
-            'out_invoice', partner=self.partner_a, products=self.product_a,
+            'out_invoice', partner=self.partner_a, products=self.product_a, taxes=self.tax_sale_a,
         )
         invoice.write({
             "invoice_line_ids": [
@@ -448,7 +418,7 @@ class L10nTWITestEdi(TestAccountMoveSendCommon, HttpCase):
         passes validation regardless of the gap. (not covered here)
         """
         seven_days_ago = datetime.now() - timedelta(days=7)
-        invoice = self.init_invoice("out_invoice", partner=self.partner_b, products=self.product_a)
+        invoice = self.init_invoice("out_invoice", partner=self.partner_b, products=self.product_a, taxes=self.tax_sale_a)
         invoice.write({
             "invoice_date": seven_days_ago.date(),
             "l10n_tw_edi_invoice_create_date": seven_days_ago,
@@ -484,7 +454,7 @@ class L10nTWITestEdi(TestAccountMoveSendCommon, HttpCase):
 
         Ensure the convert_utc_time_to_tw_time function works to convert the 'InvoiceDate' in the allowance JSON to TW date
         """
-        invoice = self.init_invoice("out_invoice", partner=self.partner_a, products=self.product_a)
+        invoice = self.init_invoice("out_invoice", partner=self.partner_a, products=self.product_a, taxes=self.tax_sale_a)
         invoice.write({
             "l10n_tw_edi_invoice_create_date": datetime(2026, 1, 5, 18, 0, 0),
             "l10n_tw_edi_ecpay_invoice_id": "AB11100099"  # simulate it was already sent

@@ -1,7 +1,5 @@
-import { expect, test } from "@odoo/hoot";
-import { mockUserAgent } from "@odoo/hoot-mock";
+import { LONG_PRESS_DELAY } from "@mail/utils/common/hooks";
 import {
-    assertSteps,
     click,
     contains,
     defineMailModels,
@@ -9,9 +7,11 @@ import {
     openFormView,
     start,
     startServer,
-    step,
 } from "@mail/../tests/mail_test_helpers";
-import { serverState } from "@web/../tests/web_test_helpers";
+import { expect, test } from "@odoo/hoot";
+import { pointerDown } from "@odoo/hoot-dom";
+import { advanceTime, mockTouch, mockUserAgent } from "@odoo/hoot-mock";
+import { asyncStep, serverState, waitForSteps } from "@web/../tests/web_test_helpers";
 
 defineMailModels();
 
@@ -26,7 +26,7 @@ test("Toggle display of original/translated version of chatter message", async (
         res_id: partnerId,
     });
     onRpcBefore("/mail/message/translate", () => {
-        step("Request");
+        asyncStep("Request");
         return { body: "To bad weather, good face.", lang_name: "Spanish", error: null };
     });
     await start();
@@ -44,7 +44,7 @@ test("Toggle display of original/translated version of chatter message", async (
     await contains(".o-mail-Message", { text: "Al mal tiempo, buena cara." });
     await click("[title='Translate']");
     // The translation button should not trigger more than one external request for a single message.
-    await assertSteps(["Request"]);
+    await waitForSteps(["Request"]);
 });
 
 test.tags("desktop");
@@ -58,9 +58,11 @@ test("translation of email message", async () => {
         author_id: partnerId,
         res_id: partnerId,
     });
-    onRpcBefore("/mail/message/translate", (args) => {
-        return { body: "To bad weather, good face.", lang_name: "Spanish", error: null };
-    });
+    onRpcBefore("/mail/message/translate", (args) => ({
+        body: "To bad weather, good face.",
+        lang_name: "Spanish",
+        error: null,
+    }));
     await start();
     await openFormView("res.partner", partnerId);
     await contains("span", {
@@ -68,7 +70,7 @@ test("translation of email message", async () => {
         parent: [".o-mail-Message-body > div", { shadowRoot: true }],
     });
     await click("button[title='Expand']");
-    await click("span[title='Translate']");
+    await click(".o-dropdown-item:contains('Translate')");
     await contains("span", {
         text: "To bad weather, good face.",
         parent: [".o-mail-Message-body > div", { shadowRoot: true }],
@@ -77,7 +79,7 @@ test("translation of email message", async () => {
         text: "(Translated from: Spanish)",
     });
     await click("button[title='Expand']");
-    await click("span[title='Revert']");
+    await click(".o-dropdown-item:contains('Revert')");
     await contains("span", {
         text: "Al mal tiempo, buena cara.",
         parent: [".o-mail-Message-body > div", { shadowRoot: true }],
@@ -131,14 +133,19 @@ test("Toggle message translation on mobile", async () => {
         author_id: serverState.odoobotId,
         res_id: partnerId,
     });
-    onRpcBefore("/mail/message/translate", () => {
-        return { body: "To bad weather, good face.", lang_name: "Spanish", error: null };
-    });
+    onRpcBefore("/mail/message/translate", () => ({
+        body: "To bad weather, good face.",
+        lang_name: "Spanish",
+        error: null,
+    }));
+    mockTouch(true);
     mockUserAgent("android");
     await start();
     await openFormView("res.partner", partnerId);
-    await click("button[title='Expand']");
-    await click("span", { text: "Translate" });
+    await contains(".o-mail-Message");
+    await pointerDown(".o-mail-Message");
+    await advanceTime(LONG_PRESS_DELAY);
+    await click("button:contains('Translate')");
     await contains(".o-mail-Message-body", {
         text: "To bad weather, good face.(Translated from: Spanish)",
     });

@@ -4,6 +4,7 @@
 from odoo import _, fields, models
 from odoo.exceptions import UserError
 
+
 class PosConfig(models.Model):
     _inherit = 'pos.config'
 
@@ -17,6 +18,7 @@ class PosConfig(models.Model):
             '|', ('date_from', '=', False), ('date_from', '<=', today),
             '|', ('date_to', '=', False), ('date_to', '>=', today),
             '|', ('pricelist_ids', '=', False), ('pricelist_ids', 'in', self._get_available_pricelists().ids),
+            ('currency_id', '=', self.currency_id.id)
         ]).filtered(lambda p: not p.limit_usage or p.sudo().total_order_count < p.max_usage)
 
     def _check_before_creating_new_session(self):
@@ -47,7 +49,7 @@ class PosConfig(models.Model):
 
         if invalid_reward_products_msg:
             prefix_error_msg = _("To continue, make the following reward products available in Point of Sale.")
-            raise UserError(f"{prefix_error_msg}\n{invalid_reward_products_msg}")
+            raise UserError(f"{prefix_error_msg}\n{invalid_reward_products_msg}")  # pylint: disable=missing-gettext
         if gift_card_programs:
             for gc_program in gift_card_programs:
                 # Do not allow a gift card program with more than one rule or reward, and check that they make sense
@@ -120,6 +122,7 @@ class PosConfig(models.Model):
                 'coupon_id': coupon.id,
                 'coupon_partner_id': coupon.partner_id.id,
                 'points': coupon.points,
+                'points_display': coupon.points_display,
                 'has_source_order': coupon._has_source_order(),
             },
         }

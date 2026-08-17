@@ -2,23 +2,16 @@
 # This file contains the translation of the following modules:
 # * barcodes_gs1_nomenclature
 #
-# Translators:
-# 0ba0ac30481a756f36528ba6f9a4317e_6443a87 <52eefe24349934c364624ef40611b7a3_1010754>, 2024
-# Karolina Tonković <karolina.tonkovic@storm.hr>, 2024
-# Martin Trigaux, 2024
-# Ivica Dimjašević <ivica.dimjasevic@storm.hr>, 2024
-# Bole <bole@dajmi5.com>, 2024
-# Luka Carević <luka@uvid.hr>, 2025
-# Karlo Mikešić <karlo@uvid.hr>, 2025.
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Boris Peko <boris.peko@ecodica.eu>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~18.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-05-17 05:48+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Croatian <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-02 11:29+0000\n"
+"Last-Translator: Boris Peko <boris.peko@ecodica.eu>\n"
+"Language-Team: Croatian <https://translate.odoo.com/projects/odoo-19/"
 "barcodes_gs1_nomenclature/hr/>\n"
 "Language: hr\n"
 "MIME-Version: 1.0\n"
@@ -26,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.17\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: barcodes_gs1_nomenclature
 #. odoo-python
@@ -60,7 +53,7 @@ msgstr "Povezana JM"
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model,name:barcodes_gs1_nomenclature.model_barcode_nomenclature
 msgid "Barcode Nomenclature"
-msgstr "Barkod nomenklatura"
+msgstr "Nomenklatura barkoda"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model,name:barcodes_gs1_nomenclature.model_barcode_rule
@@ -80,12 +73,19 @@ msgstr "Datum"
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_barcode_rule__gs1_decimal_usage
 msgid "Decimal"
-msgstr "Decimala"
+msgstr "Decimalno"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields.selection,name:barcodes_gs1_nomenclature.selection__barcode_rule__type__location_dest
 msgid "Destination location"
 msgstr "Odredišna lokacija"
+
+#. module: barcodes_gs1_nomenclature
+#: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_barcode_nomenclature__display_name
+#: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_barcode_rule__display_name
+#: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_ir_http__display_name
+msgid "Display Name"
+msgstr "Naziv za prikaz"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_barcode_rule__encoding
@@ -116,6 +116,13 @@ msgstr "GS1-128"
 #: model:ir.model,name:barcodes_gs1_nomenclature.model_ir_http
 msgid "HTTP Routing"
 msgstr "HTTP usmjeravanje"
+
+#. module: barcodes_gs1_nomenclature
+#: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_barcode_nomenclature__id
+#: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_barcode_rule__id
+#: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_ir_http__id
+msgid "ID"
+msgstr "ID"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields,help:barcodes_gs1_nomenclature.field_barcode_rule__gs1_decimal_usage
@@ -151,7 +158,7 @@ msgstr "Lokacija"
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields.selection,name:barcodes_gs1_nomenclature.selection__barcode_rule__type__lot
 msgid "Lot"
-msgstr "Lot"
+msgstr "Serija"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields.selection,name:barcodes_gs1_nomenclature.selection__barcode_rule__gs1_content_type__measure
@@ -176,7 +183,7 @@ msgstr "Paket"
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields.selection,name:barcodes_gs1_nomenclature.selection__barcode_rule__type__package_type
 msgid "Package Type"
-msgstr "Tip pakiranja"
+msgstr "Tip paketa"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields.selection,name:barcodes_gs1_nomenclature.selection__barcode_rule__type__quantity
@@ -195,9 +202,15 @@ msgid ""
 "The GS1 content type defines what kind of data the rule will process the "
 "barcode as:        * Date: the barcode will be converted into a Odoo "
 "datetime;        * Measure: the barcode's value is related to a specific "
-"UoM;        * Numeric Identifier: fixed length barcode following a specific "
+"unit;        * Numeric Identifier: fixed length barcode following a specific "
 "encoding;        * Alpha-Numeric Name: variable length barcode."
 msgstr ""
+"Vrsta GS1 sadržaja definira koju vrstu podataka će pravilo obrađivati iz "
+"barkoda:        * Datum: barkod će se pretvoriti u Odoo datum i "
+"vrijeme;        * Mjera: vrijednost barkoda povezana je s određenom "
+"jedinicom;        * Brojčani identifikator: barkod fiksne duljine koji "
+"slijedi određeno kodiranje;        * Alfanumerički naziv: barkod promjenjive "
+"duljine."
 
 #. module: barcodes_gs1_nomenclature
 #. odoo-python
@@ -260,8 +273,7 @@ msgstr "Ovaj barkod ne može biti djelomično ili potpuno analiziran."
 msgid ""
 "This rule will apply only if the barcode is encoded with the specified "
 "encoding"
-msgstr ""
-"Ovo pravilo će se primjeniti jedino ako je barcod u specifičnom formatu"
+msgstr "Ovo pravilo će se primjeniti jedino ako je barcod u specifičnom formatu"
 
 #. module: barcodes_gs1_nomenclature
 #: model:ir.model.fields,field_description:barcodes_gs1_nomenclature.field_barcode_rule__type

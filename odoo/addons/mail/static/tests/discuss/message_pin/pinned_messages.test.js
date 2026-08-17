@@ -14,8 +14,8 @@ describe.current.tags("desktop");
 defineMailModels();
 
 async function assertPinnedPanelUnpinCount(expectedCount) {
-    await contains("[title='Unpin']", { count: expectedCount });
-    await click(".o-mail-Discuss-header button[title='Pinned Messages']");
+    await contains(".dropdown-item", { text: "Unpin", count: expectedCount });
+    await click(".o-mail-DiscussContent-header button[title='Pinned Messages']");
     await contains(".o-discuss-PinnedMessagesPanel .o-mail-Message", {
         text: "Test pinned message",
     });
@@ -32,7 +32,8 @@ test("Pin message", async () => {
     });
     await start();
     await openDiscuss(channelId);
-    await click(".o-mail-Discuss-header button[title='Pinned Messages']");
+    await contains(".o-discuss-ChannelMemberList"); // wait for auto-open of this panel
+    await click(".o-mail-DiscussContent-header button[title='Pinned Messages']");
     await contains(".o-discuss-PinnedMessagesPanel p", {
         text: "This channel doesn't have any pinned messages.",
     });
@@ -53,31 +54,12 @@ test("Unpin message", async () => {
     });
     await start();
     await openDiscuss(channelId);
-    await click(".o-mail-Discuss-header button[title='Pinned Messages']");
+    await contains(".o-discuss-ChannelMemberList"); // wait for auto-open of this panel
+    await click(".o-mail-DiscussContent-header button[title='Pinned Messages']");
     await contains(".o-discuss-PinnedMessagesPanel .o-mail-Message");
     await click(".o-mail-Message [title='Expand']");
     await click(".dropdown-item", { text: "Unpin" });
     await click(".modal-footer button", { text: "Yes, remove it please" });
-    await contains(".o-discuss-PinnedMessagesPanel .o-mail-Message", { count: 0 });
-});
-
-test("Deleted messages are not pinned", async () => {
-    const pyEnv = await startServer();
-    const channelId = pyEnv["discuss.channel"].create({ name: "General" });
-    pyEnv["mail.message"].create({
-        body: "Hello world!",
-        message_type: "comment",
-        model: "discuss.channel",
-        res_id: channelId,
-        pinned_at: "2023-03-30 11:27:11",
-    });
-    await start();
-    await openDiscuss(channelId);
-    await click(".o-mail-Discuss-header button[title='Pinned Messages']");
-    await contains(".o-discuss-PinnedMessagesPanel .o-mail-Message");
-    await click(".o-mail-Message [title='Expand']");
-    await click(".dropdown-item", { text: "Delete" });
-    await click("button", { text: "Confirm" });
     await contains(".o-discuss-PinnedMessagesPanel .o-mail-Message", { count: 0 });
 });
 
@@ -119,7 +101,8 @@ test("Jump to message", async () => {
     }
     await start();
     await openDiscuss(channelId);
-    await click(".o-mail-Discuss-header button[title='Pinned Messages']");
+    await contains(".o-discuss-ChannelMemberList"); // wait for auto-open of this panel
+    await click(".o-mail-DiscussContent-header button[title='Pinned Messages']");
     await click(".o-discuss-PinnedMessagesPanel a[role='button']", { text: "Jump" });
     await contains(".o-mail-Thread .o-mail-Message-body", { text: "Hello world!", visible: true });
 });
@@ -151,6 +134,26 @@ test("Jump to message from notification", async () => {
     await contains(".o-mail-Thread", { scroll: "bottom" });
     await click(".o_mail_notification a", { text: "message" });
     await contains(".o-mail-Thread", { count: 0, scroll: "bottom" });
+});
+
+test("can add reactions from pinned panel", async () => {
+    const pyEnv = await startServer();
+    const channelId = pyEnv["discuss.channel"].create({ name: "General" });
+    pyEnv["mail.message"].create({
+        body: "Hello world!",
+        model: "discuss.channel",
+        res_id: channelId,
+        pinned_at: "2025-10-09 11:15:04",
+    });
+    await start();
+    await openDiscuss(channelId);
+    await click(".o-mail-Message-actions [title='Add a Reaction']");
+    await click(".o-mail-QuickReactionMenu button", { text: "👍" });
+    await contains(".o-mail-MessageReaction", { text: "👍1" });
+    await click(".o-mail-DiscussContent-header button[title='Pinned Messages']");
+    await click(".o-discuss-PinnedMessagesPanel .o-mail-Message [title='Add a Reaction']");
+    await click(".o-mail-QuickReactionMenu button", { text: "👍" });
+    await contains(".o-mail-MessageReaction", { count: 0 });
 });
 
 test("Guest user cannot see unpin button", async () => {

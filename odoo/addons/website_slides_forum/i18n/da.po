@@ -3,18 +3,18 @@
 # * website_slides_forum
 #
 # Translators:
-# Sanne Kristensen <sanne@vkdata.dk>, 2024
-# Martin Trigaux, 2024
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
-# "Kira Petersen François (peti)" <peti@odoo.com>, 2026.
+# Martin Trigaux, 2022
+#
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
+# "Kira Petersen François (peti)" <peti@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:38+0000\n"
-"PO-Revision-Date: 2026-06-23 16:29+0000\n"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-03 03:06+0000\n"
 "Last-Translator: \"Kira Petersen François (peti)\" <peti@odoo.com>\n"
-"Language-Team: Danish <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Danish <https://translate.odoo.com/projects/odoo-19/"
 "website_slides_forum/da/>\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
@@ -28,6 +28,16 @@ msgstr ""
 #: model_terms:forum.forum,faq:website_slides_forum.forum_forum_demo_channel_2
 msgid "(The above section was adapted from Stackoverflow’s FAQ.)"
 msgstr "(Ovenstående afsnit er tilpasset fra Stackoverflow's FAQ.)"
+
+#. module: website_slides_forum
+#: model_terms:forum.forum,welcome_message:website_slides_forum.forum_forum_demo_channel_0
+#: model_terms:forum.forum,welcome_message:website_slides_forum.forum_forum_demo_channel_2
+msgid ""
+"<a class=\"btn btn-primary forum_register_url o_translate_inline\" href=\"/"
+"web/login\">Sign up</a>"
+msgstr ""
+"<a class=\"btn btn-primary forum_register_url o_translate_inline\" href=\"/"
+"web/login\">Tilmeld dig</a>"
 
 #. module: website_slides_forum
 #: model_terms:forum.forum,faq:website_slides_forum.forum_forum_demo_channel_0
@@ -233,6 +243,12 @@ msgid "Dismiss message"
 msgstr "Afvis besked"
 
 #. module: website_slides_forum
+#: model:ir.model.fields,field_description:website_slides_forum.field_forum_forum__display_name
+#: model:ir.model.fields,field_description:website_slides_forum.field_slide_channel__display_name
+msgid "Display Name"
+msgstr "Visningsnavn"
+
+#. module: website_slides_forum
 #: model:ir.model.fields,help:website_slides_forum.field_forum_forum__slide_channel_ids
 msgid "Edit the course linked to this forum on the course form."
 msgstr "Redigér kurset knyttet til dette forum i kursusformularen."
@@ -266,11 +282,6 @@ msgid "Forum"
 msgstr "Forum"
 
 #. module: website_slides_forum
-#: model_terms:ir.ui.view,arch_db:website_slides_forum.snippet_options
-msgid "Forum Page"
-msgstr "Forumside"
-
-#. module: website_slides_forum
 #: model:ir.actions.act_window,name:website_slides_forum.forum_post_action_channel
 #: model_terms:ir.ui.view,arch_db:website_slides_forum.website_slides_forum_channel_inherit_view_form
 msgid "Forum Posts"
@@ -299,6 +310,12 @@ msgstr ""
 #: model_terms:forum.forum,faq:website_slides_forum.forum_forum_demo_channel_2
 msgid "Here a table with the privileges and the karma level"
 msgstr "Her er en tabel med privilegier og karmniveau"
+
+#. module: website_slides_forum
+#: model:ir.model.fields,field_description:website_slides_forum.field_forum_forum__id
+#: model:ir.model.fields,field_description:website_slides_forum.field_slide_channel__id
+msgid "ID"
+msgstr "ID"
 
 #. module: website_slides_forum
 #: model_terms:forum.forum,faq:website_slides_forum.forum_forum_demo_channel_0
@@ -361,7 +378,8 @@ msgid "Posts"
 msgstr "Indlæg"
 
 #. module: website_slides_forum
-#: model_terms:ir.ui.view,arch_db:website_slides_forum.snippet_options
+#. odoo-javascript
+#: code:addons/website_slides_forum/static/src/website_builder/slides_forum_page_option.xml:0
 msgid "Separate Courses"
 msgstr "Separate kurser"
 
@@ -382,10 +400,10 @@ msgid "Show Course To"
 msgstr "Vis kursus til"
 
 #. module: website_slides_forum
-#: model_terms:forum.forum,welcome_message:website_slides_forum.forum_forum_demo_channel_0
-#: model_terms:forum.forum,welcome_message:website_slides_forum.forum_forum_demo_channel_2
-msgid "Sign up"
-msgstr "Tilmeld dig"
+#. odoo-javascript
+#: code:addons/website_slides_forum/static/src/website_builder/slides_forum_page_option_plugin.js:0
+msgid "Slides Forum Snippet Options"
+msgstr "Kodestykkeindstillinger for slides i forummet"
 
 #. module: website_slides_forum
 #: model_terms:forum.forum,faq:website_slides_forum.forum_forum_demo_channel_0
@@ -552,3 +570,39 @@ msgid ""
 msgstr ""
 "dit svar gives sammen med spørgsmålet, og du forventer flere svar: \"Jeg "
 "bruger _____ til ____. Hvad bruger du?\""
+
+#~ msgid "<b>What kinds of questions can I ask here?</b>"
+#~ msgstr "<b>Hvad slags spørgsmål kan jeg stille her?</b>"
+
+#~ msgid "<b>What should I avoid in my answers?</b>"
+#~ msgstr "<b>Hvad bør jeg undgå i mine svar?</b>"
+
+#~ msgid "<b>What should I avoid in my questions?</b>"
+#~ msgstr "<b>Hvad bør jeg undgå i mine spørgsmål?</b>"
+
+#~ msgid "<b>Why can other people edit my questions/answers?</b>"
+#~ msgstr "<b>Hvorfor kan andre redigere mine spørgsmål/svar?</b>"
+
+#~ msgid "<i class=\"fa fa-home\"/> Course"
+#~ msgstr "<i class=\"fa fa-home\"/> Kursus"
+
+#~ msgid "Courses Discussions"
+#~ msgstr "Kurser diskussioner"
+
+#~ msgid "Description"
+#~ msgstr "Beskrivelse"
+
+#~ msgid "Forum Page"
+#~ msgstr "Forumside"
+
+#~ msgid "Hide Intro"
+#~ msgstr "Skjul intro"
+
+#~ msgid "Register"
+#~ msgstr "Tilmeld"
+
+#~ msgid "Reviews"
+#~ msgstr "Anmeldelser"
+
+#~ msgid "See all Courses"
+#~ msgstr "Se alle kurser"

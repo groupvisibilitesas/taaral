@@ -15,8 +15,6 @@ class AccountChartTemplate(models.AbstractModel):
             'property_account_expense_id': 'om_account_500101',
             'property_account_income_id': 'om_account_400101',
             'property_stock_valuation_account_id': 'om_account_100502',
-            'property_stock_account_input_categ_id': 'om_account_100503',
-            'property_stock_account_output_categ_id': 'om_account_100504',
             'property_stock_account_production_cost_id': 'om_account_100505',
             'code_digits': '6',
         }
@@ -39,5 +37,18 @@ class AccountChartTemplate(models.AbstractModel):
                 'default_cash_difference_expense_account_id': 'om_account_500909',
                 'deferred_expense_account_id': 'om_account_100416',
                 'deferred_revenue_account_id': 'om_account_200401',
+                'income_account_id': 'om_account_400101',
+                'expense_account_id': 'om_account_500101',
+                'account_stock_journal_id': 'inventory_valuation',
+                'account_stock_valuation_id': 'om_account_100502',
+            },
+        }
+
+    @template('om', 'account.account')
+    def _get_om_account_account(self):
+        return {
+            'om_account_100502': {
+                'account_stock_expense_id': 'om_account_500907',
+                'account_stock_variation_id': 'om_account_500905',
             },
         }

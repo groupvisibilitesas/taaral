@@ -219,7 +219,6 @@ class TestArCommon(AccountTestInvoicingCommon):
         cls.product_iva_21 = cls.env['product.product'].create({
             'name': 'Large Cabinet (VAT 21)',
             'uom_id': uom_unit.id,
-            'uom_po_id': uom_unit.id,
             'lst_price': 320.0,
             'standard_price': 800.0,
             'type': "consu",
@@ -229,7 +228,6 @@ class TestArCommon(AccountTestInvoicingCommon):
             # demo 'product_product_telefonia'
             'name': 'Telephone service (VAT 27)',
             'uom_id': uom_unit.id,
-            'uom_po_id': uom_unit.id,
             'lst_price': 130.0,
             'standard_price': 250.0,
             'type': 'service',
@@ -240,7 +238,6 @@ class TestArCommon(AccountTestInvoicingCommon):
             # demo 'product_product_cero'
             'name': 'Non-industrialized animals and vegetables (VAT Zero)',
             'uom_id': uom_unit.id,
-            'uom_po_id': uom_unit.id,
             'list_price': 160.0,
             'standard_price': 200.0,
             'type': 'consu',
@@ -251,7 +248,6 @@ class TestArCommon(AccountTestInvoicingCommon):
             # demo 'product.product_product_27'
             'name': 'Laptop Customized (VAT 10,5)',
             'uom_id': uom_unit.id,
-            'uom_po_id': uom_unit.id,
             'standard_price': 4500.0,
             'type': 'consu',
             'default_code': '10,5',
@@ -261,7 +257,6 @@ class TestArCommon(AccountTestInvoicingCommon):
             # demo data product.product_product_2
             'name': 'Virtual Home Staging (VAT 21)',
             'uom_id': uom_hour.id,
-            'uom_po_id': uom_hour.id,
             'list_price': 38.25,
             'standard_price': 45.5,
             'type': 'service',
@@ -272,7 +267,6 @@ class TestArCommon(AccountTestInvoicingCommon):
             # demo data product_product_no_gravado
             'name': 'Untaxed concepts (VAT NT)',
             'uom_id': uom_unit.id,
-            'uom_po_id': uom_unit.id,
             'list_price': 40.00,
             'standard_price': 50.0,
             'type': 'consu',
@@ -283,7 +277,6 @@ class TestArCommon(AccountTestInvoicingCommon):
             # product.product_product_25
             "name": "Laptop E5023 (VAT 10,5)",
             'uom_id': uom_unit.id,
-            'uom_po_id': uom_unit.id,
             "standard_price": 3280.0,
             'type': 'consu',
             'default_code': '10,5',
@@ -294,7 +287,6 @@ class TestArCommon(AccountTestInvoicingCommon):
             # demo product_product_exento
             'name': 'Book: Development in Odoo (VAT Exempt)',
             'uom_id': uom_unit.id,
-            'uom_po_id': uom_unit.id,
             'standard_price': 100.0,
             "list_price": 80.0,
             'type': 'consu',
@@ -306,16 +298,14 @@ class TestArCommon(AccountTestInvoicingCommon):
             'name': 'Service WO TAX',
             'type': 'service',
             'uom_id': uom_unit.id,
-            'uom_po_id': uom_unit.id,
-            'default_code': 'AFIP_DESPACHO',
+            'default_code': 'ARCA_DESPACHO',
         })
         cls.service_iva_no_gravado = cls.env['product.product'].create({
             # demo product_product_arancel
             'name': 'Server VAT Untaxed',
             'type': 'service',
             'uom_id': uom_unit.id,
-            'uom_po_id': uom_unit.id,
-            'default_code': 'AFIP_ARANCEL',
+            'default_code': 'ARCA_ARANCEL',
             "supplier_taxes_id": [(6, 0, (cls.tax_no_gravado_purchase).ids)],
         })
 
@@ -630,8 +620,8 @@ class TestArCommon(AccountTestInvoicingCommon):
 
     @classmethod
     def _create_journal(cls, afip_ws, data=None):
-        """ Create a journal of a given AFIP ws type.
-        If there is a problem because we are using a AFIP certificate that is already been in use then change the certificate and try again """
+        """ Create a journal of a given ARCA ws type.
+        If there is a problem because we are using a ARCA certificate that is already been in use then change the certificate and try again """
         data = data or {}
         afip_ws = afip_ws.upper()
         pos_number = str(random.randint(0, 99999))
@@ -675,7 +665,7 @@ class TestArCommon(AccountTestInvoicingCommon):
 
     def _prepare_multicurrency_values(self):
         # Enable multi currency
-        self.env.user.write({'groups_id': [(4, self.env.ref('base.group_multi_currency').id)]})
+        self.env.user.write({'group_ids': [(4, self.env.ref('base.group_multi_currency').id)]})
         # Set ARS as main currency
         self._set_today_rate(self.env.ref('base.ARS'), 1.0)
         # Set Rates for USD currency

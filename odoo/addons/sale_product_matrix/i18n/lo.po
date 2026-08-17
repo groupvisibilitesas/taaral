@@ -2,16 +2,15 @@
 # This file contains the translation of the following modules:
 # * sale_product_matrix
 #
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
 # Bone NI <bounkirdni@gmail.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-06-06 12:06+0000\n"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-05 04:45+0000\n"
 "Last-Translator: Bone NI <bounkirdni@gmail.com>\n"
-"Language-Team: Lao <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Lao <https://translate.odoo.com/projects/odoo-19/"
 "sale_product_matrix/lo/>\n"
 "Language: lo\n"
 "MIME-Version: 1.0\n"
@@ -35,8 +34,15 @@ msgid ""
 "Configurator: choose attribute values to add the matching product variant to the order.\n"
 "Grid: add several variants at once from the grid of attribute values"
 msgstr ""
-"ຕົວຕັ້ງຄ່າ: ເລືອກຄ່າຄຸນລັກສະນະເພື່ອເພີ່ມຮູບແບບສິນຄ້າທີ່ກົງກັນເຂົ້າໃນໃບສັ່ງຂາຍ.\n"
-"ຕາຕະລາງ: ເພີ່ມຫຼາຍຮູບແບບພ້ອມກັນຈາກຕາຕະລາງຄ່າຄຸນລັກສະນະ"
+"ຕົວຕັ້ງຄ່າ: ເລືອກຄ່າຄຸນລັກສະນະເພື່ອເພີ່ມລຸ້ນສິນຄ້າທີ່ກົງກັນເຂົ້າໃນການສັ່ງຊື້.\n"
+"ຕາຕະລາງ: ເພີ່ມຫຼາຍລຸ້ນສິນຄ້າພ້ອມກັນຈາກຕາຕະລາງຄ່າຄຸນລັກສະນະ"
+
+#. module: sale_product_matrix
+#: model:ir.model.fields,field_description:sale_product_matrix.field_product_template__display_name
+#: model:ir.model.fields,field_description:sale_product_matrix.field_sale_order__display_name
+#: model:ir.model.fields,field_description:sale_product_matrix.field_sale_order_line__display_name
+msgid "Display Name"
+msgstr "ຊື່ສະແດງ"
 
 #. module: sale_product_matrix
 #: model:ir.model.fields,field_description:sale_product_matrix.field_sale_order__grid_product_tmpl_id
@@ -49,19 +55,26 @@ msgid "Grid Update"
 msgstr "ອັບເດດຕາຕະລາງ"
 
 #. module: sale_product_matrix
+#: model:ir.model.fields,field_description:sale_product_matrix.field_product_template__id
+#: model:ir.model.fields,field_description:sale_product_matrix.field_sale_order__id
+#: model:ir.model.fields,field_description:sale_product_matrix.field_sale_order_line__id
+msgid "ID"
+msgstr "ໄອດີ"
+
+#. module: sale_product_matrix
 #: model:ir.model.fields,field_description:sale_product_matrix.field_sale_order__grid
 msgid "Matrix local storage"
-msgstr "ບ່ອນເກັບຂໍ້ມູນມາຕຣິກພາຍໃນ"
+msgstr "ບ່ອນເກັບຂໍ້ມູນເມທຣິກສ໌ພາຍໃນ"
 
 #. module: sale_product_matrix
 #: model:ir.model.fields.selection,name:sale_product_matrix.selection__product_template__product_add_mode__matrix
 msgid "Order Grid Entry"
-msgstr "ການປ້ອນຂໍ້ມູນຕາຕະລາງໃບສັ່ງຂາຍ"
+msgstr "ການປ້ອນຂໍ້ມູນຕາຕະລາງການສັ່ງຊື້"
 
 #. module: sale_product_matrix
 #: model:ir.model.fields,field_description:sale_product_matrix.field_sale_order__report_grids
 msgid "Print Variant Grids"
-msgstr "ພິມຕາຕະລາງຮູບແບບສິນຄ້າ"
+msgstr "ພິມຕາຕະລາງລຸ້ນສິນຄ້າ"
 
 #. module: sale_product_matrix
 #: model:ir.model,name:sale_product_matrix.model_product_template
@@ -86,7 +99,7 @@ msgstr "ລາຍການໃບສັ່ງຂາຍ"
 #. module: sale_product_matrix
 #: model_terms:ir.ui.view,arch_db:sale_product_matrix.product_template_grid_view_form
 msgid "Sales Variant Selection"
-msgstr "ການເລືອກຮູບແບບສິນຄ້າຂາຍ"
+msgstr "ການເລືອກລຸ້ນສິນຄ້າຂາຍ"
 
 #. module: sale_product_matrix
 #: model:ir.model.fields,help:sale_product_matrix.field_sale_order__grid
@@ -95,13 +108,13 @@ msgid ""
 "If grid_update, will be loaded on the SO.\n"
 "If not, represents the matrix to open."
 msgstr ""
-"ບ່ອນເກັບຂໍ້ມູນທາງເຕັກນິກຂອງຕາຕະລາງ. \n"
-"ຖ້າຫາກມີການອັບເດດຕາຕະລາງ, ມັນຈະຖືກໂຫລດເຂົ້າໃນໃບສັ່ງຂາຍ.\n"
-"ຖ້າບໍ່ແມ່ນ, ມັນຈະສະແດງມາຕຣິກທີ່ຈະເປີດ."
+"ບ່ອນເກັບຂໍ້ມູນທາງເຕັກນິກຂອງຕາຕະລາງ.\n"
+"ຖ້າຫາກເປັນ grid_update, ມັນຈະຖືກໂຫຼດເຂົ້າໃນໃບສັ່ງຂາຍ (SO).\n"
+"ຖ້າບໍ່ແມ່ນ, ຈະສະແດງເປັນເມທຣິກສ໌ເພື່ອເປີດ."
 
 #. module: sale_product_matrix
 #. odoo-python
 #: code:addons/sale_product_matrix/models/sale_order.py:0
 msgid ""
 "You cannot change the quantity of a product present in multiple sale lines."
-msgstr "ທ່ານບໍ່ສາມາດປ່ຽນແປງຈຳນວນຂອງສິນຄ້າທີ່ມີຢູ່ໃນຫຼາຍລາຍການຂາຍ."
+msgstr "ທ່ານບໍ່ສາມາດປ່ຽນແປງຈຳນວນຂອງສິນຄ້າທີ່ມີຢູ່ໃນຫຼາຍລາຍການຂາຍໄດ້."

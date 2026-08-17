@@ -1,7 +1,4 @@
-/** @odoo-module **/
-
 import { _t } from "@web/core/l10n/translation";
-import { sprintf } from "@web/core/utils/strings";
 
 import * as spreadsheet from "@odoo/o-spreadsheet";
 import { EvaluationError } from "@odoo/o-spreadsheet";
@@ -130,10 +127,8 @@ export function parseAccountingDate(dateRange, locale) {
         );
     } catch {
         throw new EvaluationError(
-            sprintf(
-                _t(
-                    `'%s' is not a valid period. Supported formats are "21/12/2022", "Q1/2022", "12/2022", and "2022".`
-                ),
+            _t(
+                `'%s' is not a valid period. Supported formats are "21/12/2022", "Q1/2022", "12/2022", and "2022".`,
                 dateRange?.value
             )
         );
@@ -434,6 +429,54 @@ functionRegistry.add("ODOO.PARTNER.BALANCE", {
                 _companyId,
                 _includeUnposted,
                 _partnerIds
+            ),
+            format: this.getters.getCompanyCurrencyFormat(_companyId) || "#,##0.00",
+        };
+    },
+});
+
+functionRegistry.add("ODOO.BALANCE.TAG", {
+    description: _t("Return the balance of accounts for the specified tag(s) and period"),
+    args: [
+        arg("account_tag_ids (string)", _t("The tag ids (separated by a comma).")),
+        arg(
+            "date_range (string, date, optional)",
+            _t(
+                `The date range. Supported formats are "21/12/2022", "Q1/2022", "12/2022", and "2022".`
+            )
+        ),
+        YEAR_OFFSET_ARG,
+        COMPANY_ARG,
+        POSTED_ARG,
+    ],
+    category: "Odoo",
+    returns: ["NUMBER"],
+    compute: function (
+        accountTagIds,
+        dateRange,
+        offset = { value: 0 },
+        companyId = { value: null },
+        includeUnposted = { value: false }
+    ) {
+        const _accountTagIds = toString(accountTagIds)
+            .split(",")
+            .map((accountTagId) => toNumber(accountTagId, this.locale))
+            .sort();
+        const _offset = toNumber(offset, this.locale);
+
+        if (!dateRange?.value) {
+            dateRange = { value: new Date().getFullYear() };
+        }
+        const _dateRange = parseAccountingDate(dateRange, this.locale);
+        const _companyId = toNumber(companyId, this.locale);
+        const _includeUnposted = toBoolean(includeUnposted);
+        return {
+            value: this.getters.getAccountTagData(
+                _accountTagIds,
+                _dateRange,
+                _offset,
+                _companyId,
+                _includeUnposted
             ),
             format: this.getters.getCompanyCurrencyFormat(_companyId) || "#,##0.00",
         };

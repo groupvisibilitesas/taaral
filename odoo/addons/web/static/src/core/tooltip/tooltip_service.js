@@ -53,6 +53,18 @@ export const tooltipService = {
         const elementsWithTooltips = new WeakMap();
 
         /**
+         * Detect if the current node is the `sup` tooltip node
+         * @param {HTMLElement} el
+         * @return {boolean}
+         */
+        function isHelpNode(el) {
+            return (
+                el.textContent === "?" &&
+                (el.hasAttribute("data-tooltip") || el.hasAttribute("data-tooltip-template"))
+            );
+        }
+
+        /**
          * Closes the currently opened tooltip if any, or prevent it from opening.
          */
         function cleanup() {
@@ -102,6 +114,9 @@ export const tooltipService = {
             }
 
             target = el;
+            // Prevent title from showing on a parent at the same time
+            target.title = "";
+            const timeoutDelay = isHelpNode(el) ? 0 : delay;
             openTooltipTimeout = browser.setTimeout(() => {
                 // verify that the element is still in the DOM
                 if (target.isConnected) {
@@ -111,10 +126,8 @@ export const tooltipService = {
                         { tooltip, template, info },
                         { position }
                     );
-                    // Prevent title from showing on a parent at the same time
-                    target.title = "";
                 }
-            }, delay);
+            }, timeoutDelay);
         }
 
         /**
@@ -164,6 +177,18 @@ export const tooltipService = {
             openElementsTooltip(ev.target);
         }
 
+        /**
+         * Check whether there is a tooltip registered on the event target, and if there is,
+         * cleanup it.
+         * @param {MouseEvent} ev a "click" event
+         */
+        function onClick(ev) {
+            if (isHelpNode(ev.target)) {
+                ev.preventDefault();
+            }
+            cleanupTooltip(ev);
+        }
+
         function cleanupTooltip(ev) {
             if (target == ev.target) {
                 cleanup();
@@ -178,10 +203,10 @@ export const tooltipService = {
          */
         function onTouchStart(ev) {
             cleanup();
-
+            const timeoutDelay = isHelpNode(ev.target) ? 0 : SHOW_AFTER_DELAY;
             showTimer = browser.setTimeout(() => {
                 openElementsTooltip(ev.target);
-            }, SHOW_AFTER_DELAY);
+            }, timeoutDelay);
         }
 
         whenReady(() => {
@@ -196,6 +221,10 @@ export const tooltipService = {
                 document.body.addEventListener("touchstart", onTouchStart);
 
                 document.body.addEventListener("touchend", (ev) => {
+                    if (isHelpNode(ev.target)) {
+                        ev.preventDefault();
+                        return;
+                    }
                     if (ev.target.closest("[data-tooltip], [data-tooltip-template]")) {
                         if (!ev.target.dataset.tooltipTouchTapToShow) {
                             browser.clearTimeout(showTimer);
@@ -204,6 +233,10 @@ export const tooltipService = {
                     }
                 });
                 document.body.addEventListener("touchcancel", (ev) => {
+                    if (isHelpNode(ev.target)) {
+                        ev.preventDefault();
+                        return;
+                    }
                     if (ev.target.closest("[data-tooltip], [data-tooltip-template]")) {
                         if (!ev.target.dataset.tooltipTouchTapToShow) {
                             browser.clearTimeout(showTimer);
@@ -217,7 +250,7 @@ export const tooltipService = {
             document.body.addEventListener("mouseenter", onMouseenter, { capture: true });
             // Listen (using event delegation) to "mouseleave" events to close the tooltip if any
             document.body.addEventListener("mouseleave", cleanupTooltip, { capture: true });
-            document.body.addEventListener("click", cleanupTooltip, { capture: true });
+            document.body.addEventListener("click", onClick, { capture: true });
         });
 
         return {

@@ -7,7 +7,7 @@ from odoo import _, fields, models, tools
 from odoo.tools.misc import file_open
 
 
-class TestMassMailing(models.TransientModel):
+class MailingMailingTest(models.TransientModel):
     _name = 'mailing.mailing.test'
     _description = 'Sample Mail Wizard'
     # allow mailing.mailing.test records to live for 10h (instead of 1h default)
@@ -74,7 +74,7 @@ class TestMassMailing(models.TransientModel):
                 'body_html': self.env['ir.qweb']._render('mass_mailing.mass_mailing_mail_layout', {
                     'body': full_body,
                     'mailing_style': Markup(f'<style>{styles}</style>'),
-                }, minimal_qcontext=True, preserve_comments=True),
+                }, minimal_qcontext=True),
                 'is_notification': False,
                 'mailing_id': mailing.id,
                 'attachment_ids': [(4, attachment.id) for attachment in mailing.attachment_ids],

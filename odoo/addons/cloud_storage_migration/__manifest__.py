@@ -13,5 +13,6 @@
         "views/cloud_storage_migration_report_views.xml",
         "views/res_config_settings.xml",
     ],
+    "author": "Odoo S.A.",
     "license": "LGPL-3",
 }

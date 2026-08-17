@@ -3,18 +3,18 @@
 # * base_setup
 #
 # Translators:
-# Wil Odoo, 2024
-# Marianna Ciofani, 2025
-# Sergio Zanchetta <primes2h@gmail.com>, 2025
-# "Marianna Ciofani (cima)" <cima@odoo.com>, 2025.
+# Sergio Zanchetta <primes2h@gmail.com>, 2022
+# Martin Trigaux, 2023
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# "Marianna Ciofani (cima)" <cima@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2025-09-15 07:44+0000\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-06 15:00+0000\n"
 "Last-Translator: \"Marianna Ciofani (cima)\" <cima@odoo.com>\n"
-"Language-Team: Italian <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Italian <https://translate.odoo.com/projects/odoo-19/"
 "base_setup/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == "
 "0) ? 1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
@@ -110,6 +110,15 @@ msgstr ""
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
+msgid ""
+"<strong>Save</strong> this page and come back here to set up Google Places "
+"API key"
+msgstr ""
+"<strong>Salva</strong> questa pagina e torna qui per configurare la chiave "
+"API di Google Places"
+
+#. module: base_setup
+#: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid "<strong>Save</strong> this page and come back here to set up reCaptcha."
 msgstr ""
 "<strong>Salvare</strong> la pagina e ritornare qui per impostare reCAPTCHA."
@@ -185,15 +194,13 @@ msgstr "Consente di lavorare in un ambiente multi valuta"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
-msgid "Automatically enrich your contact base with company data"
-msgstr "Arricchisce automaticamente il contatto base usando i dati aziendali"
+msgid "Autocomplete partner addresses with Google Places"
+msgstr "Completa automaticamente gli indirizzi dei partner con Google Places"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
-msgid "Automatically generate counterpart documents in recipient companies"
-msgstr ""
-"Genera automaticamente i documenti della controparte per le aziende di "
-"destinazione"
+msgid "Automatically enrich your contact base with company data"
+msgstr "Arricchisce automaticamente il contatto base usando i dati aziendali"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
@@ -265,12 +272,25 @@ msgid "Contacts"
 msgstr "Contatti"
 
 #. module: base_setup
+#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__company_country_group_codes
+msgid "Country Group Codes"
+msgstr "Codici raggruppamenti nazioni"
+
+#. module: base_setup
+#: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
+msgid ""
+"Create corresponding in/out orders and bills when you sell/buy between your "
+"companies"
+msgstr ""
+"Crea ordini e fatture fornitore corrispondenti in entrata e in uscita quando "
+"vendi/acquisti tra le tue aziende"
+
+#. module: base_setup
 #: model:ir.model.fields,field_description:base_setup.field_res_config_settings__report_footer
 msgid "Custom Report Footer"
 msgstr "Piè di pagina personalizzato del documento"
 
 #. module: base_setup
-#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__user_default_rights
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid "Default Access Rights"
 msgstr "Diritti di accesso predefiniti"
@@ -278,8 +298,16 @@ msgstr "Diritti di accesso predefiniti"
 #. module: base_setup
 #. odoo-python
 #: code:addons/base_setup/models/res_config_settings.py:0
-msgid "Default User Template not found."
-msgstr "Modello utente predefinito non trovato."
+msgid "Default access for new users"
+msgstr "Accesso predefinito per nuovi utenti"
+
+#. module: base_setup
+#: model:ir.model.fields,field_description:base_setup.field_ir_http__display_name
+#: model:ir.model.fields,field_description:base_setup.field_kpi_provider__display_name
+#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:base_setup.field_res_users__display_name
+msgid "Display Name"
+msgstr "Nome visualizzato"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
@@ -295,6 +323,12 @@ msgstr "Modello documento"
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid "Edit Layout"
 msgstr "Modifica struttura"
+
+#. module: base_setup
+#. odoo-python
+#: code:addons/base_setup/models/res_config_settings.py:0
+msgid "Edit new user default group"
+msgstr "Modifica il gruppo predefinito del nuovo utente"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
@@ -337,14 +371,22 @@ msgid "Geolocation"
 msgstr "Geolocalizzazione"
 
 #. module: base_setup
-#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_product_images
-msgid "Get product pictures using barcode"
-msgstr "Ottieni immagini di prodotti usando il codice a barre"
+#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_google_address_autocomplete
+msgid "Google Address Autocomplete"
+msgstr "Completamento automatico indirizzo Google"
 
 #. module: base_setup
 #: model:ir.model,name:base_setup.model_ir_http
 msgid "HTTP Routing"
 msgstr "Instradamento HTTP"
+
+#. module: base_setup
+#: model:ir.model.fields,field_description:base_setup.field_ir_http__id
+#: model:ir.model.fields,field_description:base_setup.field_kpi_provider__id
+#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__id
+#: model:ir.model.fields,field_description:base_setup.field_res_users__id
+msgid "ID"
+msgstr "ID"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
@@ -468,6 +510,11 @@ msgid "Permissions"
 msgstr "Permessi"
 
 #. module: base_setup
+#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_voip
+msgid "Phone"
+msgstr "Telefono"
+
+#. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid "Preview Document"
 msgstr "Anteprima documento"
@@ -491,6 +538,12 @@ msgstr "Protegge i moduli da spam e abusi."
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid "Protect your forms with CF Turnstile."
 msgstr "Proteggi i tuoi moduli con CF Turnstile."
+
+#. module: base_setup
+#. odoo-javascript
+#: code:addons/base_setup/static/src/views/module_views.xml:0
+msgid "Reset Updating States"
+msgstr "Reimposta stati aggiornamento"
 
 #. module: base_setup
 #: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_sms
@@ -582,11 +635,6 @@ msgid "VAT"
 msgstr "Partita IVA"
 
 #. module: base_setup
-#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_voip
-msgid "VoIP"
-msgstr "VOIP"
-
-#. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid ""
 "When populating your address book, Odoo provides a list of matching "
@@ -608,3 +656,52 @@ msgstr ""
 #: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_google_recaptcha
 msgid "reCAPTCHA"
 msgstr "reCAPTCHA"
+
+#~ msgid "Asterisk (VoIP)"
+#~ msgstr "Asterisk (VoIP)"
+
+#~ msgid ""
+#~ "Automatically generate counterpart documents for orders/invoices between "
+#~ "companies"
+#~ msgstr ""
+#~ "Genera automaticamente i documenti della controparte per ordini/fatture "
+#~ "tra aziende"
+
+#~ msgid ""
+#~ "By default, new users get highest access rights for all installed apps."
+#~ msgstr ""
+#~ "Per impostazione predefinita, i nuovi utenti ottengono i diritti di "
+#~ "accesso più elevati per tutte le app installate."
+
+#~ msgid "Default User Template not found."
+#~ msgstr "Modello utente predefinito non trovato."
+
+#~ msgid "Documentation"
+#~ msgstr "Documentazione"
+
+#~ msgid "Geo Localization"
+#~ msgstr "Geolocalizzazione"
+
+#~ msgid "GeoLocalize your partners"
+#~ msgstr "Geolocalizzazione dei partner"
+
+#~ msgid "Get product pictures using barcode"
+#~ msgstr "Ottieni immagini di prodotti usando il codice a barre"
+
+#~ msgid "Google Calendar"
+#~ msgstr "Calendario Google"
+
+#~ msgid "On Apple Store"
+#~ msgstr "Su Apple Store"
+
+#~ msgid "On Google Play"
+#~ msgstr "Su Google Play"
+
+#~ msgid "Outlook Calendar"
+#~ msgstr "Calendario Outlook"
+
+#~ msgid "Synchronize your calendar with Google Calendar"
+#~ msgstr "Sincronizzazione del calendario con Google Calendar"
+
+#~ msgid "Synchronize your calendar with Outlook"
+#~ msgstr "Sincronizzazione del calendario con Outlook"

@@ -15,6 +15,13 @@ class TestLeadConvertMass(crm_common.TestLeadConvertMassCommon):
         cls.leads = cls.lead_1 + cls.lead_w_partner + cls.lead_w_email_lost
         cls.assign_users = cls.user_sales_manager + cls.user_sales_leads_convert + cls.user_sales_salesman
 
+    def setUp(self):
+        super().setUp()
+        # patch registry to simulate a ready environment
+        self.patch(self.env.registry, 'ready', True)
+        # we don't use mock_mail_gateway thus want to mock smtp to test the stack
+        self._mock_smtplib_connection()
+
     @users('user_sales_manager')
     def test_assignment_salesmen(self):
         test_leads = self._create_leads_batch(count=50, user_ids=[False])
@@ -24,7 +31,7 @@ class TestLeadConvertMass(crm_common.TestLeadConvertMassCommon):
         with self.assertQueryCount(user_sales_manager=0):
             test_leads = self.env['crm.lead'].browse(test_leads.ids)
 
-        with self.assertQueryCount(user_sales_manager=605):  # crm 605 / com 605 / ent 605
+        with self.assertQueryCount(user_sales_manager=531):  # crm 605 / com 605 / ent 605
             test_leads._handle_salesmen_assignment(user_ids=user_ids, team_id=False)
 
         self.assertEqual(test_leads.team_id, self.sales_team_convert | self.sales_team_1)
@@ -42,7 +49,7 @@ class TestLeadConvertMass(crm_common.TestLeadConvertMassCommon):
         with self.assertQueryCount(user_sales_manager=0):
             test_leads = self.env['crm.lead'].browse(test_leads.ids)
 
-        with self.assertQueryCount(user_sales_manager=584):  # crm 543 / com 545 / ent 584
+        with self.assertQueryCount(user_sales_manager=483):  # crm 544 / com 546 / ent 585
             test_leads._handle_salesmen_assignment(user_ids=user_ids, team_id=team_id)
 
         self.assertEqual(test_leads.team_id, self.sales_team_convert)
@@ -89,7 +96,7 @@ class TestLeadConvertMass(crm_common.TestLeadConvertMassCommon):
                 self.assertEqual(new_partner.name, 'Amy Wong')
                 self.assertEqual(new_partner.email, 'amy.wong@test.example.com')
 
-        # test unforced assignation
+        # test unforced assignment
         mass_convert.write({
             'user_ids': self.user_sales_salesman.ids,
         })
@@ -167,7 +174,7 @@ class TestLeadConvertMass(crm_common.TestLeadConvertMassCommon):
         user_ids = self.assign_users.ids
 
         # randomness: at least 1 query
-        with self.assertQueryCount(user_sales_manager=1805):  # crm 1503 / com 1790 / ent 1800
+        with self.assertQueryCount(user_sales_manager=1444):  # crm ??
             mass_convert = self.env['crm.lead2opportunity.partner.mass'].with_context({
                 'active_model': 'crm.lead',
                 'active_ids': test_leads.ids,

@@ -147,8 +147,8 @@ class TestQwebFieldMany2Many(common.TransactionCase):
         return self.env['ir.qweb.field.many2many'].value_to_html(value, options)
 
     def test_many2many_empty(self):
-        user = self.env['res.users'].create({'name': 'UserTest', 'login': 'usertest@example.com', 'groups_id': None})
-        self.assertFalse(self.value_to_html(user.groups_id))
+        user = self.env['res.users'].create({'name': 'UserTest', 'login': 'usertest@example.com', 'group_ids': None})
+        self.assertFalse(self.value_to_html(user.group_ids))
 
     def test_many2many_with_values(self):
         user = self.env['res.users'].create({
@@ -156,8 +156,8 @@ class TestQwebFieldMany2Many(common.TransactionCase):
             'login': 'user2@example.com',
         })
         self.assertEqual(
-            self.value_to_html(user.groups_id[:2]),
-            'Technical / Access to export feature, Extra Rights / Contact Creation'
+            self.value_to_html(user.all_group_ids[:2].sorted()),
+            'Role / User, Technical Features',
         )
 
 

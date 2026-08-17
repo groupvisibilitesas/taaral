@@ -44,10 +44,10 @@ patch(Composer.prototype, {
         }
         this.state.active = false;
         const data = await rpc("/website/rating/comment", {
-            rating_id: this.message.rating.id,
-            publisher_comment: this.props.composer.text.trim(),
+            rating_id: this.message.rating_id.id,
+            publisher_comment: this.props.composer.composerText.trim(),
         });
-        this.message.rating = data;
+        this.message.rating_id = data;
         this.props.onPostCallback();
     },
 

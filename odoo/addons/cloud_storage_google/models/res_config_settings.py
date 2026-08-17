@@ -5,11 +5,7 @@ import json
 import requests
 from datetime import datetime, timezone
 
-try:
-    from google.oauth2 import service_account
-    from google.auth.transport.requests import Request
-except ImportError:
-    service_account = Request = None
+from google.auth.transport.requests import Request
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
@@ -17,7 +13,7 @@ from odoo.exceptions import ValidationError, UserError
 from .ir_attachment import get_cloud_storage_google_credential
 
 
-class CloudStorageSettings(models.TransientModel):
+class ResConfigSettings(models.TransientModel):
     """
     Instructions:
     cloud_storage_google_bucket_name: if changed and the old bucket name
@@ -43,6 +39,7 @@ class CloudStorageSettings(models.TransientModel):
         config_parameter='cloud_storage_google_account_info',
     )
 
+    @api.model
     def get_values(self):
         res = super().get_values()
         if account_info := self.env['ir.config_parameter'].get_param('cloud_storage_google_account_info'):

@@ -1,5 +1,3 @@
-/** @odoo-module **/
-
 import { onWillStart } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { useOpenChat } from "@mail/core/web/open_chat_hook";
@@ -10,6 +8,7 @@ export class AvatarCardResourcePopover extends AvatarCardPopover {
 
     static props = {
         ...AvatarCardPopover.props,
+        model: { type: String, optional: true },
         recordModel: {
             type: String,
             optional: true,
@@ -39,10 +38,11 @@ export class AvatarCardResourcePopover extends AvatarCardPopover {
     }
 
     get fieldNames() {
-        const excludedFields = new Set(["partner_id"]);
-        return super.fieldNames
-            .concat(["user_id", "resource_type"])
-            .filter((field) => !excludedFields.has(field));
+        return ["email", "im_status", "name", "phone", "resource_type", "share", "user_id"];
+    }
+
+    get name() {
+        return this.record.name;
     }
 
     get email() {
@@ -63,5 +63,10 @@ export class AvatarCardResourcePopover extends AvatarCardPopover {
 
     get userId() {
         return this.record.user_id[0];
+    }
+
+    onSendClick() {
+        this.openChat(this.userId);
+        this.props.close();
     }
 }

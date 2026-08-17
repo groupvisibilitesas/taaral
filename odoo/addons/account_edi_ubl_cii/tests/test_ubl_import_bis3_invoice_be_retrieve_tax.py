@@ -179,6 +179,21 @@ class TestUblImportBis3InvoiceBERetrieveTax(TestUblImportBis3InvoiceBE):
             ],
         )
 
+    def test_import_foreign_tax(self):
+        domestic = self.env['account.chart.template'].ref('template_generic_domestic_fiscal_position')
+        foreign_trade = self.env['account.chart.template'].ref('template_generic_export_fiscal_position')
+        tax_21 = self.percent_tax(21.0, type_tax_use='sale')
+        tax_21_foreign = self.percent_tax(21.0, type_tax_use='sale', fiscal_position_ids=foreign_trade)
+
+        bill = self._import_invoice_as_attachment_on(test_name='test_partial_import_tax_manual_tax_amounts', journal=self.company_data["default_journal_sale"])
+        partner = bill.partner_id
+        self.assertEqual(bill.line_ids.tax_ids, tax_21_foreign)
+
+        partner.property_account_position_id = domestic
+        bill = self._import_invoice_as_attachment_on(test_name='test_partial_import_tax_manual_tax_amounts', journal=self.company_data["default_journal_sale"])
+        partner = bill.partner_id
+        self.assertEqual(bill.line_ids.tax_ids, tax_21)
+
     def test_partial_import_tax_from_predicted_account_default_tax(self):
         tax_21_1 = self.percent_tax(21.0)
         tax_21_2 = self.percent_tax(21.0)
@@ -225,34 +240,6 @@ class TestUblImportBis3InvoiceBERetrieveTax(TestUblImportBis3InvoiceBE):
                 },
             ],
         )
-
-    def test_import_foreign_tax(self):
-        tax_21 = self.percent_tax(21.0, type_tax_use='sale')
-        tax_21_foreign = self.percent_tax(21.0, type_tax_use='sale')
-
-        domestic = self.env['account.fiscal.position'].create({
-            'name': 'Domestic',
-            'company_id': self.company_data['company'].id,
-        })
-        foreign_trade = self.env['account.fiscal.position'].create({
-            'name': 'Foreign Trade',
-            'company_id': self.company_data['company'].id,
-            'tax_ids': [Command.create({'tax_src_id': tax_21.id, 'tax_dest_id': tax_21_foreign.id})],
-        })
-
-        self.partner_be.property_account_position_id = foreign_trade
-        bill = self._import_invoice_as_attachment_on(
-            test_name='test_partial_import_tax_manual_tax_amounts',
-            journal=self.company_data['default_journal_sale'],
-        )
-        self.assertEqual(bill.invoice_line_ids.tax_ids, tax_21_foreign)
-
-        self.partner_be.property_account_position_id = domestic
-        bill = self._import_invoice_as_attachment_on(
-            test_name='test_partial_import_tax_manual_tax_amounts',
-            journal=self.company_data['default_journal_sale'],
-        )
-        self.assertEqual(bill.invoice_line_ids.tax_ids, tax_21)
 
     def test_partial_import_tax_included_invoice(self):
         tax_21 = self.percent_tax(21.0, price_include_override='tax_included')

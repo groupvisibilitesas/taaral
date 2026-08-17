@@ -179,7 +179,7 @@ class TestAccountPaymentRegister(AccountTestInvoicingCommon, PaymentCommon):
         cls.user_branch = cls.env['res.users'].create({
             'name': 'Branch User',
             'login': 'user_branch',
-            'groups_id': [
+            'group_ids': [
                 Command.link(cls.env.ref('base.group_user').id),
                 Command.link(cls.env.ref('account.group_account_user').id),
                 Command.link(cls.env.ref('account.group_account_manager').id),
@@ -206,7 +206,7 @@ class TestAccountPaymentRegister(AccountTestInvoicingCommon, PaymentCommon):
         })._create_payments()
 
         self.assertRecordValues(payments, [{
-            'memo': Like(f'BATCH/{self.current_year}/...'),
+            'memo': Like(f'GROUP/{self.current_year}/...'),
             'payment_method_line_id': self.inbound_payment_method_line.id,
         }])
         self.assertRecordValues(payments.move_id.line_ids.sorted('balance'), [
@@ -239,7 +239,7 @@ class TestAccountPaymentRegister(AccountTestInvoicingCommon, PaymentCommon):
         })._create_payments()
 
         self.assertRecordValues(payments, [{
-            'memo': Like(f'BATCH/{self.current_year}/...'),
+            'memo': Like(f'GROUP/{self.current_year}/...'),
             'payment_method_line_id': self.inbound_payment_method_line.id,
         }])
         self.assertRecordValues(payments.move_id.line_ids.sorted('balance'), [
@@ -299,7 +299,7 @@ class TestAccountPaymentRegister(AccountTestInvoicingCommon, PaymentCommon):
         })._create_payments()
 
         self.assertRecordValues(payments, [{
-            'memo': Like(f'BATCH/{self.current_year}/...'),
+            'memo': Like(f'GROUP/{self.current_year}/...'),
             'payment_method_line_id': self.inbound_payment_method_line.id,
         }])
         self.assertRecordValues(payments.move_id.line_ids.sorted('balance'), [
@@ -342,7 +342,7 @@ class TestAccountPaymentRegister(AccountTestInvoicingCommon, PaymentCommon):
         })._create_payments()
 
         self.assertRecordValues(payments, [{
-            'memo': Like(f'BATCH/{self.current_year}/...'),
+            'memo': Like(f'GROUP/{self.current_year}/...'),
             'payment_method_line_id': self.inbound_payment_method_line.id,
         }])
         self.assertRecordValues(payments.move_id.line_ids.sorted('balance'), [
@@ -883,13 +883,33 @@ class TestAccountPaymentRegister(AccountTestInvoicingCommon, PaymentCommon):
             },
         ])
 
+    def test_cannot_register_payment_on_blocked_invoices(self):
+        blocked_invoice = self.init_invoice('out_invoice', products=self.product_a, post=True)
+        blocked_invoice.action_toggle_block_payment()
+
+        invoice_1 = self.init_invoice('out_invoice', products=self.product_a, post=True)
+        invoice_2 = self.init_invoice('out_invoice', products=self.product_a, post=True)
+
+        with self.assertRaisesRegex(UserError, "blocked invoices"):
+            blocked_invoice.action_force_register_payment()
+
+        with self.assertRaisesRegex(UserError, "blocked invoices"):
+            (blocked_invoice + invoice_1 + invoice_2).action_force_register_payment()
+
+        receivable_lines = (blocked_invoice + invoice_1 + invoice_2).line_ids.filtered(
+            lambda line: line.account_type == 'asset_receivable'
+        )
+
+        with self.assertRaisesRegex(UserError, "blocked invoices"):
+            Form.from_action(self.env, receivable_lines.action_register_payment())
+
     def test_register_payment_constraints(self):
         # Test to register a payment for an already fully reconciled journal entry.
         self.env['account.payment.register']\
             .with_context(active_model='account.move', active_ids=self.out_invoice_2.ids)\
             .create({})\
             ._create_payments()
-        with self.assertRaises(UserError), self.cr.savepoint():
+        with self.assertRaises(UserError):
             self.env['account.payment.register']\
                 .with_context(active_model='account.move', active_ids=self.out_invoice_2.ids)\
                 .create({})
@@ -1964,7 +1984,7 @@ class TestAccountPaymentRegister(AccountTestInvoicingCommon, PaymentCommon):
                     available_journals = self.get_wizard_available_journals(wizard)
                     self.assertEqual(available_journals.company_id, expected_companies)
                     if should_raise:
-                        with self.assertRaisesRegex(UserError, 'Incompatible companies on records:'):
+                        with self.assertRaisesRegex(UserError, 'got some company inconsistencies here:'):
                             wizard._create_payments()
                     else:
                         payments = wizard._create_payments()
@@ -2167,6 +2187,49 @@ class TestAccountPaymentRegister(AccountTestInvoicingCommon, PaymentCommon):
             {'amount_currency': 300, 'date_maturity': fields.Date.from_string('2017-01-06')},
             {'amount_currency': 600, 'date_maturity': fields.Date.from_string('2017-01-11')},
         ])
+
+    def test_payment_register_misc_different_batches(self):
+        """ Tests that payments that should be in different batches stay in different ones """
+        move1 = self.env['account.move'].create({
+            'move_type': 'entry',
+            'journal_id': self.company_data['default_journal_misc'].id,
+            'date': '2025-01-01',
+            'line_ids': [
+                Command.create({
+                    'account_id': self.company_data['default_account_receivable'].id,
+                    'partner_id': self.partner_a.id,
+                    'balance': 100.0,
+                }),
+                Command.create({
+                    'account_id': self.company_data['default_account_receivable'].id,
+                    'partner_id': self.partner_b.id,
+                    'balance': 100.0,
+                }),
+                Command.create({
+                    'account_id': self.company_data['default_account_revenue'].id,
+                    'balance': -200.0,
+                }),
+            ],
+        })
+        move2 = self.env['account.move'].create({
+            'move_type': 'entry',
+            'journal_id': self.company_data['default_journal_misc'].id,
+            'date': '2025-01-01',
+            'line_ids': [
+                Command.create({
+                    'account_id': self.company_data['default_account_receivable'].id,
+                    'partner_id': self.partner_a.id,
+                    'balance': 100.0,
+                }),
+                Command.create({
+                    'account_id': self.company_data['default_account_revenue'].id,
+                    'balance': -100.0,
+                }),
+            ],
+        })
+
+        payments = self._register_payment(move1 + move2, group_payment=False)
+        self.assertEqual(len(payments), 3, "We should get 2 payments from the first move and 1 for the second one")
 
     def test_group_payment_multi_partner_with_installments(self):
         """

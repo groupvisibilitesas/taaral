@@ -2,18 +2,16 @@
 # This file contains the translation of the following modules:
 # * pos_stripe
 #
-# Translators:
-# Maria Boyadjieva <marabo2000@gmail.com>, 2024
-# Petko Karamotchev, 2024
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~18.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-03 17:38+0000\n"
-"PO-Revision-Date: 2026-08-05 16:41+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-07-03 17:36+0000\n"
+"PO-Revision-Date: 2026-08-02 17:35+0000\n"
+"Last-Translator: Rosen Vladimirov <vladimirov.rosen@gmail.com>\n"
+"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-19/"
 "pos_stripe/bg/>\n"
 "Language: bg\n"
 "MIME-Version: 1.0\n"
@@ -29,16 +27,21 @@ msgid "Capture Payment"
 msgstr "Приемане на плащане"
 
 #. module: pos_stripe
-#. odoo-python
-#: code:addons/pos_stripe/models/pos_payment_method.py:0
-msgid "Complete the Stripe onboarding for company %s."
-msgstr ""
+#: model:ir.model.fields,field_description:pos_stripe.field_pos_payment_method__display_name
+msgid "Display Name"
+msgstr "Име за показване"
 
 #. module: pos_stripe
 #. odoo-python
 #: code:addons/pos_stripe/models/pos_payment_method.py:0
 msgid "Do not have access to fetch token from Stripe"
 msgstr "Няма достъп за получаване на токен от Stripe"
+
+#. module: pos_stripe
+#. odoo-python
+#: code:addons/pos_stripe/models/pos_payment_method.py:0
+msgid "Do not have access to refund Stripe payment"
+msgstr "Няма достъп за връщане на плащане през Stripe"
 
 #. module: pos_stripe
 #: model_terms:ir.ui.view,arch_db:pos_stripe.pos_payment_method_view_form_inherit_pos_stripe
@@ -71,6 +74,11 @@ msgstr "Извличане на таен ключ"
 #: code:addons/pos_stripe/static/src/app/payment_stripe.js:0
 msgid "Fetch Token"
 msgstr "Извличане на токен"
+
+#. module: pos_stripe
+#: model:ir.model.fields,field_description:pos_stripe.field_pos_payment_method__id
+msgid "ID"
+msgstr "ID"
 
 #. module: pos_stripe
 #. odoo-javascript
@@ -132,6 +140,12 @@ msgid ""
 msgstr ""
 "Терминал %(terminal)s вече се използва за начин на плащане %(payment_method)"
 "s."
+
+#. module: pos_stripe
+#. odoo-javascript
+#: code:addons/pos_stripe/static/src/app/payment_stripe.js:0
+msgid "You cannot refund a non-Stripe payment via Stripe"
+msgstr "Не можете да върнете не-Stripe плащане през Stripe"
 
 #. module: pos_stripe
 #: model:ir.model.fields,help:pos_stripe.field_pos_payment_method__stripe_serial_number

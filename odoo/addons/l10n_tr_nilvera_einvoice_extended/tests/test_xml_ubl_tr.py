@@ -1,8 +1,8 @@
 from freezegun import freeze_time
 
+from odoo.addons.l10n_tr_nilvera_einvoice.tests.test_xml_ubl_tr_common import TestUBLTRCommon
 from odoo.tests import tagged
 from odoo.tools import file_open
-from odoo.addons.l10n_tr_nilvera_einvoice.tests.test_xml_ubl_tr_common import TestUBLTRCommon
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
@@ -89,6 +89,35 @@ class TestUBLTR(TestUBLTRCommon):
             expected_xml = expected_xml_file.read()
 
         self.assertXmlTreeEqual(self.get_xml_tree_from_string(generated_xml), self.get_xml_tree_from_string(expected_xml))
+
+    def test_xml_invoice_exchange_rate_eur_try_with_usd_company_currency(self):
+        with freeze_time('2025-03-05'):
+            company = self.company_data['company']
+            usd = self.env.ref('base.USD')
+            eur = self.env.ref('base.EUR')
+            eur.active = True
+            try_currency = self.env.ref('base.TRY')
+            company.currency_id = usd
+            usd.rate_ids.unlink()
+            # The rate of 1 EUR = 1.25 USD is meant to simplify tests
+            self.env['res.currency.rate'].create({
+                'name': '2025-03-03',
+                'rate': 0.8,
+                'currency_id': eur.id,
+                'company_id': company.id,
+            })
+            self.env['res.currency.rate'].create({
+                'name': '2025-03-03',
+                'rate': 40.0,
+                'currency_id': try_currency.id,
+                'company_id': company.id,
+            })
+            generated_xml = self._generate_invoice_xml(partner_id=self.einvoice_partner, currency_id=eur.id)
+
+        xml_tree = self.get_xml_tree_from_string(generated_xml)
+        pricing_exchange_rate = xml_tree.find('.//{*}PricingExchangeRate/{*}CalculationRate')
+        self.assertIsNotNone(pricing_exchange_rate, 'PricingExchangeRate node was not generated')
+        self.assertAlmostEqual(float(pricing_exchange_rate.text), 50.0)
 
     def test_xml_invoice_export_earchive(self):
         with freeze_time('2025-03-05'):

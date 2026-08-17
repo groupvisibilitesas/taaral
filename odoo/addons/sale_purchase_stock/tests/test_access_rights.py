@@ -20,7 +20,7 @@ class TestAccessRights(TestCommonSalePurchaseNoChart):
             'name': 'Le Grand Jojo User',
             'login': 'grand.jojo',
             'email': 'grand.jojo@chansonbelge.com',
-            'groups_id': [(6, 0, [group_sale_user.id])]
+            'group_ids': [(6, 0, [group_sale_user.id])]
         })
 
     def test_access_saleperson_decreases_qty(self):
@@ -36,15 +36,14 @@ class TestAccessRights(TestCommonSalePurchaseNoChart):
         mto_route.active = True
 
         vendor = self.env['res.partner'].create({'name': 'vendor'})
-        seller = self.env['product.supplierinfo'].create({
-            'partner_id': vendor.id,
-            'price': 8,
-        })
 
         product = self.env['product.product'].create({
             'name': 'SuperProduct',
             'is_storable': True,
-            'seller_ids': [(6, 0, seller.ids)],
+            'seller_ids': [Command.create({
+                'partner_id': vendor.id,
+                'price': 8,
+            })],
             'route_ids': [(6, 0, (mto_route + buy_route).ids)]
         })
 
@@ -56,9 +55,8 @@ class TestAccessRights(TestCommonSalePurchaseNoChart):
             'name': product.name,
             'product_id': product.id,
             'product_uom_qty': 1,
-            'product_uom': product.uom_id.id,
             'price_unit': product.list_price,
-            'tax_id': False,
+            'tax_ids': False,
             'order_id': so.id,
         }, {
             'name': 'Super Section',
@@ -84,20 +82,19 @@ class TestAccessRights(TestCommonSalePurchaseNoChart):
         then creates a sale order, so the PO will be generated. After creating a second SO,
         the PO should be updated since it has not been confirmed yet.
         """
-        seller = self.env['product.supplierinfo'].create({
-            'partner_id': self.partner_a.id,
-            'price': 8,
-        })
         product = self.env['product.product'].create({
             'name': 'SuperProduct',
             'is_storable': True,
-            'seller_ids': [(6, 0, seller.ids)],
+            'seller_ids': [Command.create({
+                'partner_id': self.partner_a.id,
+                'price': 8,
+            })],
         })
         self.env['stock.warehouse.orderpoint'].create({
             'name': 'orderpoint test',
             'product_id': product.id,
             'product_min_qty': 0,
-            'product_max_qty': 1,
+            'product_max_qty': 0,
             'route_id': self.env.ref('purchase_stock.route_warehouse0_buy').id,
         })
         # Create a SO that will automatically generate a PO since we have an orderpoint"
@@ -108,20 +105,18 @@ class TestAccessRights(TestCommonSalePurchaseNoChart):
                 (0, 0, {
                     'product_id': product.id,
                     'product_uom_qty': 10,
-                    'product_uom': product.uom_id.id,
                     'price_unit': product.list_price,
                 })]
         })
         so.action_confirm()
-        # Create a second SO, and since a PO has already been created but not yet validated, it will be updated.
-        so_2 = so.copy()
-        # Find the PO that will be updated in order to invalidate its cache,
-        # so the fields will be reloaded with the sales user.
         po = self.env['purchase.order'].search([('partner_id', '=', self.partner_a.id)])
-        self.assertEqual(po.order_line[0].product_qty, 11)
-        po.order_line[0].invalidate_recordset()
-        # Confirm the second SO and verify if PO has been updated.
-        so_2.action_confirm()
+        self.assertEqual(po.order_line[0].product_qty, 10)
+        so.order_line = [Command.create({
+            'product_id': product.id,
+            'product_uom_qty': 11,
+            'price_unit': product.list_price,
+        })]
+
         self.assertEqual(po.order_line[0].product_qty, 21)
         po.button_confirm()
         self.assertEqual(po.state, 'purchase')
@@ -136,7 +131,7 @@ class TestAccessRights(TestCommonSalePurchaseNoChart):
                 'name': 'test',
                 'product_id': self.product.id,
                 'product_qty': 1,
-                'product_uom': self.product.uom_id.id,
+                'product_uom_id': self.product.uom_id.id,
             })]
         })
         # This PO belongs to a different company, it should not be shown
@@ -147,7 +142,7 @@ class TestAccessRights(TestCommonSalePurchaseNoChart):
                 'name': 'test',
                 'product_id': self.product.id,
                 'product_qty': 2,
-                'product_uom': self.product.uom_id.id,
+                'product_uom_id': self.product.uom_id.id,
             })]
         })
         # (POs are not confirmed, to keep the lines in the 'draft' state)
@@ -161,8 +156,8 @@ class TestAccessRights(TestCommonSalePurchaseNoChart):
         # No exception was raised, but user is not allowed to edit pickings
         self.assertEqual(report_values['docs']['user_can_edit_pickings'], False)
         # The data in the report includes only the first PO
-        self.assertEqual(report_values['docs']['draft_purchase_qty'], 1)
-        self.assertEqual(report_values['docs']['draft_purchase_orders'], [{'id': po.id, 'name': po.name}])
+        self.assertEqual(report_values['docs']['product'][self.product.id]['draft_purchase_qty']['in'], 1)
+        self.assertEqual(report_values['docs']['product'][self.product.id]['draft_purchase_orders'], [{'id': po.id, 'name': po.name}])
         # A sales user cannot access the PO directly, despite viewing it's info in the report
         with self.assertRaises(AccessError, msg='Sales user is not allowed to access a PO'):
             po.with_user(self.user_salesperson).button_confirm()

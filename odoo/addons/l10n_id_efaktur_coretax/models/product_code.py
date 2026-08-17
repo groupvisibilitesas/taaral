@@ -1,7 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models
-from odoo.osv import expression
+from odoo.fields import Domain
 
 class EfakturProductCode(models.Model):
     _name = "l10n_id_efaktur_coretax.product.code"
@@ -24,13 +24,13 @@ class EfakturProductCode(models.Model):
         parts = name.split(' - ')
         if len(parts) == 2:
             name_domain = [('code', operator, parts[0]), ('description', operator, parts[1])]
-            return self._search(expression.AND([name_domain, domain]), limit=limit)
+            return self._search(Domain.AND([name_domain, domain]), limit=limit)
 
         if name and operator == 'ilike':
             name_domain = ['|',
                 ('code', operator, name),
                 ('description', operator, name),
             ]
-            return self._search(expression.AND([name_domain, domain]), limit=limit)
+            return self._search(Domain.AND([name_domain, domain]), limit=limit)
 
         return super()._name_search(name=name, domain=domain, operator=operator, limit=limit, order=order)

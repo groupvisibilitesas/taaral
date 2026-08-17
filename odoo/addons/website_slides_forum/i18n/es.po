@@ -3,18 +3,19 @@
 # * website_slides_forum
 #
 # Translators:
-# Wil Odoo, 2024
-# Larissa Manderfeld, 2024
-#
+# Martin Trigaux, 2022
+# Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2022
+# Pedro M. Baeza <pedro.baeza@tecnativa.com>, 2023
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
 # "Noemi Pla Garcia (nopl)" <nopl@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:38+0000\n"
-"PO-Revision-Date: 2026-07-30 15:49+0000\n"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-05 05:01+0000\n"
 "Last-Translator: \"Noemi Pla Garcia (nopl)\" <nopl@odoo.com>\n"
-"Language-Team: Spanish <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Spanish <https://translate.odoo.com/projects/odoo-19/"
 "website_slides_forum/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -31,6 +32,16 @@ msgid "(The above section was adapted from Stackoverflow’s FAQ.)"
 msgstr ""
 "(La sección anterior fue adaptada de las preguntas frecuentes de "
 "Stackoverflow.)"
+
+#. module: website_slides_forum
+#: model_terms:forum.forum,welcome_message:website_slides_forum.forum_forum_demo_channel_0
+#: model_terms:forum.forum,welcome_message:website_slides_forum.forum_forum_demo_channel_2
+msgid ""
+"<a class=\"btn btn-primary forum_register_url o_translate_inline\" href=\"/"
+"web/login\">Sign up</a>"
+msgstr ""
+"<a class=\"btn btn-primary forum_register_url o_translate_inline\" href=\"/"
+"web/login\">Registrarse</a>"
 
 #. module: website_slides_forum
 #: model_terms:forum.forum,faq:website_slides_forum.forum_forum_demo_channel_0
@@ -100,8 +111,8 @@ msgid ""
 "information."
 msgstr ""
 "<b>Las respuestas no deben simplemente referirse a otras preguntas</b>. "
-"Mejor añada un comentario en el que se indique <i>\"Posible duplicado de..."
-"\"</i>. Sin embargo, está bien incluir enlaces a otras preguntas o "
+"Mejor añada un comentario en el que se indique <i>\"Posible duplicado "
+"de...\"</i>. Sin embargo, está bien incluir enlaces a otras preguntas o "
 "respuestas que proporcionen información adicional relevante."
 
 #. module: website_slides_forum
@@ -147,15 +158,16 @@ msgid ""
 "<i class=\"fa fa-comments\"/><span class=\"ms-1 d-none d-md-inline-"
 "block\">Forum</span>"
 msgstr ""
-"<i class=\"fa fa-comments\"/><span class=\"ms-1 d-none d-md-inline-"
-"block\">Foro</span>"
+"<i class=\"fa fa-comments\"/><span class=\"ms-1 d-none d-md-inline-block\">"
+"Foro</span>"
 
 #. module: website_slides_forum
 #: model_terms:forum.forum,faq:website_slides_forum.forum_forum_demo_channel_0
 #: model_terms:forum.forum,faq:website_slides_forum.forum_forum_demo_channel_2
 msgid ""
 "<span class=\"flex-grow-1\">What kind of questions can I ask here?</span>"
-msgstr "<span class=\"flex-grow-1\">¿Qué tipo de preguntas puedo hacer?</span>"
+msgstr ""
+"<span class=\"flex-grow-1\">¿Qué tipo de preguntas puedo hacer aquí?</span>"
 
 #. module: website_slides_forum
 #: model_terms:forum.forum,faq:website_slides_forum.forum_forum_demo_channel_0
@@ -235,6 +247,12 @@ msgid "Dismiss message"
 msgstr "Descartar mensaje"
 
 #. module: website_slides_forum
+#: model:ir.model.fields,field_description:website_slides_forum.field_forum_forum__display_name
+#: model:ir.model.fields,field_description:website_slides_forum.field_slide_channel__display_name
+msgid "Display Name"
+msgstr "Nombre para mostrar"
+
+#. module: website_slides_forum
 #: model:ir.model.fields,help:website_slides_forum.field_forum_forum__slide_channel_ids
 msgid "Edit the course linked to this forum on the course form."
 msgstr "Edite el curso vinculado a este foro en el formulario del curso."
@@ -269,11 +287,6 @@ msgid "Forum"
 msgstr "Foro"
 
 #. module: website_slides_forum
-#: model_terms:ir.ui.view,arch_db:website_slides_forum.snippet_options
-msgid "Forum Page"
-msgstr "Página del foro"
-
-#. module: website_slides_forum
 #: model:ir.actions.act_window,name:website_slides_forum.forum_post_action_channel
 #: model_terms:ir.ui.view,arch_db:website_slides_forum.website_slides_forum_channel_inherit_view_form
 msgid "Forum Posts"
@@ -302,6 +315,12 @@ msgstr "Los foros permiten a sus asistentes hacer preguntas a su comunidad."
 #: model_terms:forum.forum,faq:website_slides_forum.forum_forum_demo_channel_2
 msgid "Here a table with the privileges and the karma level"
 msgstr "Aquí una tabla con los privilegios y el nivel de karma."
+
+#. module: website_slides_forum
+#: model:ir.model.fields,field_description:website_slides_forum.field_forum_forum__id
+#: model:ir.model.fields,field_description:website_slides_forum.field_slide_channel__id
+msgid "ID"
+msgstr "ID"
 
 #. module: website_slides_forum
 #: model_terms:forum.forum,faq:website_slides_forum.forum_forum_demo_channel_0
@@ -363,7 +382,8 @@ msgid "Posts"
 msgstr "Publicaciones"
 
 #. module: website_slides_forum
-#: model_terms:ir.ui.view,arch_db:website_slides_forum.snippet_options
+#. odoo-javascript
+#: code:addons/website_slides_forum/static/src/website_builder/slides_forum_page_option.xml:0
 msgid "Separate Courses"
 msgstr "Separar cursos"
 
@@ -374,20 +394,20 @@ msgid ""
 "Share and discuss the best content and new marketing ideas, build your "
 "professional profile and become a better marketer together."
 msgstr ""
-"Comparta y comente el mejor contenido y las mejores ideas de marketing. "
-"Construya su perfil profesional y conviértase en un profesional del "
+"Comparte y comenta el mejor contenido y las mejores ideas de marketing. "
+"Construye tu perfil profesional y conviértete en un profesional del "
 "marketing junto a la comunidad."
 
 #. module: website_slides_forum
 #: model:ir.model.fields,field_description:website_slides_forum.field_forum_forum__visibility
 msgid "Show Course To"
-msgstr "Mostrar curso a "
+msgstr "Mostrar curso a"
 
 #. module: website_slides_forum
-#: model_terms:forum.forum,welcome_message:website_slides_forum.forum_forum_demo_channel_0
-#: model_terms:forum.forum,welcome_message:website_slides_forum.forum_forum_demo_channel_2
-msgid "Sign up"
-msgstr "Inscribirse"
+#. odoo-javascript
+#: code:addons/website_slides_forum/static/src/website_builder/slides_forum_page_option_plugin.js:0
+msgid "Slides Forum Snippet Options"
+msgstr "Opciones del snippet del foro de diapositivas"
 
 #. module: website_slides_forum
 #: model_terms:forum.forum,faq:website_slides_forum.forum_forum_demo_channel_0
@@ -558,3 +578,40 @@ msgid ""
 msgstr ""
 "su respuesta se proporciona junto con la pregunta, y espera más respuestas: "
 "\"Yo uso ______ para ______, ¿qué usáis vosotros?\""
+
+#~ msgid "<b>What kinds of questions can I ask here?</b>"
+#~ msgstr "<b>¿Qué tipo de preguntas puedo hacer aquí?</b>"
+
+#~ msgid "<b>What should I avoid in my answers?</b>"
+#~ msgstr "<b>¿Qué debo evitar en mis respuestas?</b>"
+
+#~ msgid "<b>What should I avoid in my questions?</b>"
+#~ msgstr "<b>¿Qué debo evitar en mis preguntas?</b>"
+
+#~ msgid "<b>Why can other people edit my questions/answers?</b>"
+#~ msgstr ""
+#~ "<b>¿Por qué otras personas pueden editar mis preguntas / respuestas?</b>"
+
+#~ msgid "<i class=\"fa fa-home\"/> Course"
+#~ msgstr "<i class=\"fa fa-home\"/>Curso"
+
+#~ msgid "Courses Discussions"
+#~ msgstr "Discusiones de Cursos"
+
+#~ msgid "Description"
+#~ msgstr "Descripción"
+
+#~ msgid "Forum Page"
+#~ msgstr "Página del foro"
+
+#~ msgid "Hide Intro"
+#~ msgstr "Ocultar introducción"
+
+#~ msgid "Register"
+#~ msgstr "Registro"
+
+#~ msgid "Reviews"
+#~ msgstr "Reseñas"
+
+#~ msgid "See all Courses"
+#~ msgstr "Ver todos los Cursos"

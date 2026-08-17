@@ -71,7 +71,7 @@
                     domain="[
                         '&amp;', ('active', '=', True),
                         '&amp;', ('program_id.active', '=', True),
-                        '|', ('expiration_date', '>=', context_today().strftime('%Y-%m-%d 00:00:00')), ('expiration_date', '=', False)
+                        '|', ('expiration_date', '>=', 'today'), ('expiration_date', '=', False)
                     ]"
                 />
                 <filter
@@ -79,7 +79,7 @@
                     string="Inactive"
                     domain="[
                         '|', ('active', '=', False),
-                        '|', ('program_id.active', '=', False), ('expiration_date', '&lt;', context_today().strftime('%Y-%m-%d 23:59:59'))
+                        '|', ('program_id.active', '=', False), ('expiration_date', '&lt;', 'today')
                     ]"
                 />
             </search>

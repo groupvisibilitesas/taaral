@@ -2,31 +2,25 @@
 # This file contains the translation of the following modules:
 # * certificate
 #
-# Translators:
-# Ediz Duman <neps1192@gmail.com>, 2024
-# Levent Karakaş <levent@mektup.at>, 2024
-# Martin Trigaux, 2024
-# Umur Akın <umura@projetgrup.com>, 2024
-# Murat Kaplan <muratk@projetgrup.com>, 2024
-# Ramiz Deniz Öner <deniz@denizoner.com>, 2024
-# emre oktem, 2024
-# Deniz Guvener_Odoo <degu@odoo.com>, 2025
-# "Deniz Guvener Unal (degu)" <degu@odoo.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# DeepL <noreply-mt-deepl@weblate.org>, 2025.
+# Odoo Turkish Import <dyki+tr@odoo.com>, 2025, 2026.
+# "Deniz Guvener Unal (degu)" <degu@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-03 17:39+0000\n"
-"PO-Revision-Date: 2026-04-11 09:03+0000\n"
-"Last-Translator: \"Deniz Guvener Unal (degu)\" <degu@odoo.com>\n"
-"Language-Team: Turkish <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-07-10 17:36+0000\n"
+"PO-Revision-Date: 2026-08-02 18:27+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Turkish <https://translate.odoo.com/projects/odoo-19/"
 "certificate/tr/>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Weblate 5.16.2\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: certificate
 #. odoo-python
@@ -232,6 +226,14 @@ msgid "Make sure to use a private key to sign documents."
 msgstr "Belgeleri imzalamak için özel anahtar kullandığınızdan emin olun."
 
 #. module: certificate
+#. odoo-python
+#: code:addons/certificate/models/key.py:0
+msgid "Make sure to use a public key to verify the signature of documents."
+msgstr ""
+"Belgelerin imzasını doğrulamak için bir açık anahtar kullandığınızdan emin "
+"olun."
+
+#. module: certificate
 #: model_terms:ir.ui.view,arch_db:certificate.res_config_settings_view_form
 msgid "Manage your certificates"
 msgstr "Sertifikalarınızı yönetin"
@@ -337,8 +339,8 @@ msgid ""
 "The ISO country code in two chars. \n"
 "You can use this field for quick search."
 msgstr ""
-"İki karakterde ISO ülke kodu.\n"
-"Hızlı arama için bu alanı kullanabilirsiniz."
+"İki karakterlik ISO ülke kodu. \n"
+"Hızlı arama yapmak için bu alanı kullanabilirsiniz."
 
 #. module: certificate
 #. odoo-python
@@ -354,13 +356,13 @@ msgstr "Sertifika ile açık anahtar uyumlu değil."
 
 #. module: certificate
 #: model:ir.model.fields,help:certificate.field_certificate_certificate__date_end
-msgid "The date on which the certificate expires (UTC)"
-msgstr "Sertifikanın sona erdiği tarih (UTC)"
+msgid "The date on which the certificate expires"
+msgstr "Sertifikanın süresinin dolduğu tarih"
 
 #. module: certificate
 #: model:ir.model.fields,help:certificate.field_certificate_certificate__date_start
-msgid "The date on which the certificate starts to be valid (UTC)"
-msgstr "Sertifikanın geçerli olmaya başladığı tarih (UTC)"
+msgid "The date on which the certificate starts to be valid"
+msgstr "Sertifikanın geçerli olmaya başladığı tarih"
 
 #. module: certificate
 #. odoo-python
@@ -446,6 +448,16 @@ msgid ""
 msgstr ""
 "Desteklenmeyen asimetrik kriptografi algoritması '%s'. Şu anda imza için "
 "desteklenenler: EC ve RSA."
+
+#. module: certificate
+#. odoo-python
+#: code:addons/certificate/models/key.py:0
+msgid ""
+"Unsupported asymmetric cryptography algorithm '%s'. Currently supported for "
+"signature: ED25519, EC and RSA."
+msgstr ""
+"Desteklenmeyen asimetrik kriptografi algoritması '%s'. Şu anda imza için "
+"desteklenmektedir: ED25519, EC ve RSA."
 
 #. module: certificate
 #. odoo-python

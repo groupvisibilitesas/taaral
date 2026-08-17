@@ -463,7 +463,7 @@ class TestAccessFeatures(common.SlidesCase):
 
     @mute_logger('odoo.models', 'odoo.addons.base.models.ir_rule')
     def test_channel_auto_subscription(self):
-        user_employees = self.env['res.users'].search([('groups_id', 'in', self.ref('base.group_user'))])
+        user_employees = self.env['res.users'].search([('all_group_ids', 'in', self.ref('base.group_user'))])
 
         channel = self.env['slide.channel'].with_user(self.user_officer).create({
             'name': 'Test',
@@ -477,7 +477,7 @@ class TestAccessFeatures(common.SlidesCase):
         new_user = self.env['res.users'].create({
             'name': 'NewUser',
             'login': 'NewUser',
-            'groups_id': [(6, 0, [self.ref('base.group_user')])]
+            'group_ids': [(6, 0, [self.ref('base.group_user')])]
         })
         channel.invalidate_model()
         self.assertEqual(channel.partner_ids, user_employees.mapped('partner_id') | new_user.partner_id)
@@ -485,22 +485,22 @@ class TestAccessFeatures(common.SlidesCase):
         new_user_2 = self.env['res.users'].create({
             'name': 'NewUser2',
             'login': 'NewUser2',
-            'groups_id': [(5, 0)]
+            'group_ids': [(5, 0)]
         })
         channel.invalidate_model()
         self.assertEqual(channel.partner_ids, user_employees.mapped('partner_id') | new_user.partner_id)
-        new_user_2.write({'groups_id': [(4, self.ref('base.group_user'))]})
+        new_user_2.write({'group_ids': [(4, self.ref('base.group_user'))]})
         channel.invalidate_model()
         self.assertEqual(channel.partner_ids, user_employees.mapped('partner_id') | new_user.partner_id | new_user_2.partner_id)
 
         new_user_3 = self.env['res.users'].create({
             'name': 'NewUser3',
             'login': 'NewUser3',
-            'groups_id': [(5, 0)]
+            'group_ids': [(5, 0)]
         })
         channel.invalidate_model()
         self.assertEqual(channel.partner_ids, user_employees.mapped('partner_id') | new_user.partner_id | new_user_2.partner_id)
-        self.env.ref('base.group_user').write({'users': [(4, new_user_3.id)]})
+        self.env.ref('base.group_user').write({'user_ids': [(4, new_user_3.id)]})
         channel.invalidate_model()
         self.assertEqual(channel.partner_ids, user_employees.mapped('partner_id') | new_user.partner_id | new_user_2.partner_id | new_user_3.partner_id)
 
@@ -515,7 +515,7 @@ class TestAccessFeatures(common.SlidesCase):
         self.assertFalse(channel_portal.can_publish)
 
         # allow employees to upload
-        channel_manager.write({'upload_group_ids': [(4, self.ref('base.group_user'))]})
+        channel_manager.sudo().write({'upload_group_ids': [(4, self.ref('base.group_user'))]})
         self.assertTrue(channel_emp.can_upload)
         self.assertFalse(channel_emp.can_publish)
         self.assertFalse(channel_portal.can_upload)
@@ -529,12 +529,12 @@ class TestAccessFeatures(common.SlidesCase):
         self.assertTrue(channel_officer.can_upload)
         self.assertTrue(channel_officer.can_publish)
 
-        channel_officer.write({'upload_group_ids': [(4, self.ref('base.group_system'))]})
+        channel_officer.sudo().write({'upload_group_ids': [(4, self.ref('base.group_system'))]})
         self.assertTrue(channel_officer.can_upload)
         self.assertTrue(channel_officer.can_publish)
 
         channel_manager = self.channel.with_user(self.user_manager)
-        channel_manager.write({
+        channel_manager.sudo().write({
             'upload_group_ids': [(5, 0)],
             'user_id': self.user_manager.id
         })
@@ -550,7 +550,7 @@ class TestAccessFeatures(common.SlidesCase):
         self.assertTrue(channel_manager.can_publish)
 
         # test upload group limitation: member of group_system OR responsible OR manager
-        channel_manager.write({'upload_group_ids': [(4, self.ref('base.group_system'))]})
+        channel_manager.sudo().write({'upload_group_ids': [(4, self.ref('base.group_system'))]})
         self.assertFalse(channel_manager.can_upload)
         self.assertFalse(channel_manager.can_publish)
         channel_manager.write({'user_id': self.user_manager.id})
@@ -558,7 +558,7 @@ class TestAccessFeatures(common.SlidesCase):
         self.assertTrue(channel_manager.can_publish)
 
         # Needs the manager to write on channel as user_officer is not the responsible anymore
-        channel_manager.write({'upload_group_ids': [(5, 0)]})
+        channel_manager.sudo().write({'upload_group_ids': [(5, 0)]})
         self.assertTrue(channel_manager.can_upload)
         self.assertTrue(channel_manager.can_publish)
         channel_manager.write({'user_id': self.user_officer.id})
@@ -642,7 +642,7 @@ class TestReview(common.SlidesCase, HttpCase):
     def test_channel_multiple_reviews(self):
         self.authenticate("admin", "admin")
 
-        res1 = self.opener.post(
+        res1 = self.url_open(
             url="%s/mail/message/post" % self.base_url(),
             json={
                 "params": {
@@ -659,8 +659,7 @@ class TestReview(common.SlidesCase, HttpCase):
         )
         self.assertIn("My first review :)", res1.text)
 
-
-        res2 = self.opener.post(
+        res2 = self.url_open(
             url="%s/mail/message/post" % self.base_url(),
             json={
                 "params": {

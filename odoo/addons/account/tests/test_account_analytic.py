@@ -13,27 +13,8 @@ class TestAccountAnalyticAccount(AccountTestInvoicingCommon, AnalyticCommon):
         super().setUpClass()
         cls.company_data_2 = cls.setup_other_company()
 
-        cls.env.user.groups_id += cls.env.ref('analytic.group_analytic_accounting')
-
         # By default, tests are run with the current user set on the first company.
         cls.env.user.company_id = cls.company_data['company']
-
-        cls.default_plan = cls.env['account.analytic.plan'].create({'name': 'Default'})
-        cls.analytic_account_a = cls.env['account.analytic.account'].create({
-            'name': 'analytic_account_a',
-            'plan_id': cls.default_plan.id,
-            'company_id': False,
-        })
-        cls.analytic_account_b = cls.env['account.analytic.account'].create({
-            'name': 'analytic_account_b',
-            'plan_id': cls.default_plan.id,
-            'company_id': False,
-        })
-        cls.analytic_account_d = cls.env['account.analytic.account'].create({
-            'name': 'analytic_account_d',
-            'plan_id': cls.default_plan.id,
-            'company_id': False,
-        })
 
         cls.cross_plan = cls.env['account.analytic.plan'].create({'name': 'Cross'})
         cls.analytic_account_5 = cls.env['account.analytic.account'].create({
@@ -69,7 +50,7 @@ class TestAccountAnalyticAccount(AccountTestInvoicingCommon, AnalyticCommon):
         })
 
         # Set a different company on the analytic account.
-        with self.assertRaises(UserError), self.cr.savepoint():
+        with self.assertRaises(UserError):
             self.analytic_account_3.company_id = self.company_data_2['company']
 
         # Making the analytic account not company dependent is allowed.
@@ -146,7 +127,7 @@ class TestAccountAnalyticAccount(AccountTestInvoicingCommon, AnalyticCommon):
                 'product_id': self.product_a.id,
                 'price_unit': 2.00,
                 'analytic_distribution': {
-                    self.analytic_account_a.id: 100,
+                    self.analytic_account_1.id: 100,
                 },
                 'currency_id': self.env.ref('base.PYG').id,
             })],
@@ -158,7 +139,7 @@ class TestAccountAnalyticAccount(AccountTestInvoicingCommon, AnalyticCommon):
         # Will not show up if the wrong currency is used to round the amount.
         self.assertRecordValues(self.get_analytic_lines(out_invoice), [{
             'amount': 0.02,
-            self.default_plan._column_name(): self.analytic_account_a.id,
+            self.analytic_plan_1._column_name(): self.analytic_account_1.id,
         }])
 
     def test_analytic_lines_rounding(self):
@@ -179,10 +160,10 @@ class TestAccountAnalyticAccount(AccountTestInvoicingCommon, AnalyticCommon):
                 'product_id': self.product_a.id,
                 'price_unit': 182.25,
                 'analytic_distribution': {
-                    self.analytic_account_a.id: 94,
-                    self.analytic_account_b.id: 2,
-                    self.analytic_account_5.id: 2,
-                    self.analytic_account_d.id: 2,
+                    self.analytic_account_1.id: 94,
+                    self.analytic_account_2.id: 2,
+                    self.analytic_account_3.id: 2,
+                    self.analytic_account_4.id: 2,
                 },
             })]
         }])
@@ -192,23 +173,23 @@ class TestAccountAnalyticAccount(AccountTestInvoicingCommon, AnalyticCommon):
         self.assertRecordValues(self.get_analytic_lines(out_invoice), [
             {
                 'amount': 3.64,
-                self.default_plan._column_name(): self.analytic_account_b.id,
-                self.cross_plan._column_name(): None,
+                self.analytic_plan_1._column_name(): self.analytic_account_2.id,
+                self.analytic_plan_2._column_name(): None,
             },
             {
                 'amount': 3.65,
-                self.default_plan._column_name(): self.analytic_account_d.id,
-                self.cross_plan._column_name(): None,
+                self.analytic_plan_1._column_name(): None,
+                self.analytic_plan_2._column_name(): self.analytic_account_4.id,
             },
             {
                 'amount': 3.65,
-                self.default_plan._column_name(): None,
-                self.cross_plan._column_name(): self.analytic_account_5.id,
+                self.analytic_plan_1._column_name(): None,
+                self.analytic_plan_2._column_name(): self.analytic_account_3.id,
             },
             {
                 'amount': 171.31,
-                self.default_plan._column_name(): self.analytic_account_a.id,
-                self.cross_plan._column_name(): None,
+                self.analytic_plan_1._column_name(): self.analytic_account_1.id,
+                self.analytic_plan_2._column_name(): None,
             },
         ])
 
@@ -218,33 +199,33 @@ class TestAccountAnalyticAccount(AccountTestInvoicingCommon, AnalyticCommon):
         # 45.56 * 4 = 182.24
         # we add 0.01 to one of the line to counter the rounding errors.
         out_invoice.invoice_line_ids[0].analytic_distribution = {
-            self.analytic_account_a.id: 25,
-            self.analytic_account_b.id: 25,
-            self.analytic_account_5.id: 25,
-            self.analytic_account_d.id: 25,
+            self.analytic_account_1.id: 25,
+            self.analytic_account_2.id: 25,
+            self.analytic_account_3.id: 25,
+            self.analytic_account_4.id: 25,
         }
         out_invoice.action_post()
 
         self.assertRecordValues(self.get_analytic_lines(out_invoice), [
             {
                 'amount': 45.56,
-                self.default_plan._column_name(): self.analytic_account_d.id,
-                self.cross_plan._column_name(): None,
+                self.analytic_plan_1._column_name(): None,
+                self.analytic_plan_2._column_name(): self.analytic_account_4.id,
             },
             {
                 'amount': 45.56,
-                self.default_plan._column_name(): None,
-                self.cross_plan._column_name(): self.analytic_account_5.id,
+                self.analytic_plan_1._column_name(): None,
+                self.analytic_plan_2._column_name(): self.analytic_account_3.id,
             },
             {
                 'amount': 45.56,
-                self.default_plan._column_name(): self.analytic_account_b.id,
-                self.cross_plan._column_name(): None,
+                self.analytic_plan_1._column_name(): self.analytic_account_2.id,
+                self.analytic_plan_2._column_name(): None,
             },
             {
                 'amount': 45.57,
-                self.default_plan._column_name(): self.analytic_account_a.id,
-                self.cross_plan._column_name(): None,
+                self.analytic_plan_1._column_name(): self.analytic_account_1.id,
+                self.analytic_plan_2._column_name(): None,
             },
         ])
 
@@ -629,10 +610,11 @@ class TestAccountAnalyticAccount(AccountTestInvoicingCommon, AnalyticCommon):
         """
         Test that the line syncs, especially the tax line, keep the analytic distribution when saving the move
         """
-        account_with_tax = self.company_data['default_account_revenue'].copy({'tax_ids': [Command.set(self.company_data['default_tax_sale'].ids)]})
+        sale_tax = self.company_data['default_tax_sale']
+        account_with_tax = self.company_data['default_account_revenue'].copy({'tax_ids': [Command.set(sale_tax.ids)]})
         move = self.env['account.move'].create({
             'move_type': 'entry',
-            'line_ids': [Command.create({'account_id': account_with_tax.id, 'debit': 100})]
+            'line_ids': [Command.create({'account_id': account_with_tax.id, 'debit': 100, 'tax_ids': [Command.set(sale_tax.ids)]})]
         })
 
         move.line_ids.write({'analytic_distribution': {self.analytic_account_1.id: 100}})
@@ -1041,7 +1023,7 @@ class TestAccountAnalyticAccount(AccountTestInvoicingCommon, AnalyticCommon):
                     'credit': 0.0,
                     'analytic_line_ids': [Command.create({
                         'name': 'Analytic Line 1',
-                        'account_id': self.analytic_account_a.id,
+                        'account_id': self.analytic_account_2.id,
                         'amount': -2000,
                         self.analytic_plan_1._column_name(): self.analytic_account_1.id,
                         self.analytic_plan_2._column_name(): self.analytic_account_3.id,
@@ -1054,7 +1036,7 @@ class TestAccountAnalyticAccount(AccountTestInvoicingCommon, AnalyticCommon):
                     'credit': 2000.0,
                     'analytic_line_ids': [Command.create({
                         'name': 'Analytic Line 2',
-                        'account_id': self.analytic_account_a.id,
+                        'account_id': self.analytic_account_2.id,
                         'amount': 2000.0,
                         self.analytic_plan_1._column_name(): False,
                         self.analytic_plan_2._column_name(): False,
@@ -1069,9 +1051,9 @@ class TestAccountAnalyticAccount(AccountTestInvoicingCommon, AnalyticCommon):
         # Confirm that the analytic distribution was correctly set based on the analytic_line_ids values
         self.assertRecordValues(journal_entry.line_ids, [
             {'analytic_distribution': {
-                f"{self.analytic_account_a.id},{self.analytic_account_1.id},{self.analytic_account_3.id}": 100.0,
+                f"{self.analytic_account_2.id},{self.analytic_account_1.id},{self.analytic_account_3.id}": 100.0,
             }},
-            {'analytic_distribution': {f"{self.analytic_account_a.id}": 100.0}},
+            {'analytic_distribution': {f"{self.analytic_account_2.id}": 100.0}},
         ])
 
         # Write to an existing draft move, with a command to create analytic lines
@@ -1091,7 +1073,7 @@ class TestAccountAnalyticAccount(AccountTestInvoicingCommon, AnalyticCommon):
         # Confirm that the analytic distribution is correct
         self.assertRecordValues(journal_entry.line_ids, [
             {'analytic_distribution': {f"{self.analytic_account_1.id}": 100.0}},
-            {'analytic_distribution': {f"{self.analytic_account_a.id}": 100.0}},
+            {'analytic_distribution': {f"{self.analytic_account_2.id}": 100.0}},
         ])
 
         # After posting the move, the analytic line should be created as usual
@@ -1155,12 +1137,12 @@ class TestAccountAnalyticAccount(AccountTestInvoicingCommon, AnalyticCommon):
         self.company_data['company'].account_discount_expense_allocation_id = self.company_data['default_account_expense']
 
         distrib_1 = {
-            self.analytic_account_a.id: 60,
-            self.analytic_account_b.id: 40,
+            self.analytic_account_1.id: 60,
+            self.analytic_account_2.id: 40,
         }
         distrib_2 = {
-            self.analytic_account_5.id: 80,
-            self.analytic_account_d.id: 20,
+            self.analytic_account_3.id: 80,
+            self.analytic_account_4.id: 20,
         }
         invoice = self._create_invoice(invoice_line_ids=[
             self._prepare_invoice_line(
@@ -1184,10 +1166,10 @@ class TestAccountAnalyticAccount(AccountTestInvoicingCommon, AnalyticCommon):
             {
                 'balance': 400.0,
                 'analytic_distribution': {
-                    str(self.analytic_account_a.id): 30,
-                    str(self.analytic_account_b.id): 20,
-                    str(self.analytic_account_5.id): 40,
-                    str(self.analytic_account_d.id): 10,
+                    str(self.analytic_account_1.id): 30,
+                    str(self.analytic_account_2.id): 20,
+                    str(self.analytic_account_3.id): 40,
+                    str(self.analytic_account_4.id): 10,
                 },
             },
         ])
@@ -1198,10 +1180,10 @@ class TestAccountAnalyticAccount(AccountTestInvoicingCommon, AnalyticCommon):
         """
         invoice = self.create_invoice(self.partner_a, self.product_a)
         invoice.invoice_line_ids.analytic_distribution = {
-            str(self.analytic_account_a.id): 100,
+            str(self.analytic_account_1.id): 100,
         }
         # Archive analytic account
-        self.analytic_account_a.active = False
+        self.analytic_account_1.active = False
         with self.assertRaisesRegex(UserError, "archived analytic account"):
             invoice._post()
 
@@ -1215,8 +1197,9 @@ class TestAccountAnalyticAccount(AccountTestInvoicingCommon, AnalyticCommon):
         self.env['account.analytic.applicability'].create({
             'business_domain': 'general',
             'applicability': 'mandatory',
-            'analytic_plan_id': self.default_plan.id,
+            'analytic_plan_id': self.analytic_plan_2.id,
         })
+        account_analytic = self.env['account.analytic.account'].search([('plan_id', '=', self.analytic_plan_2.id)], limit=1)
 
         # Create an invoice in foreign currency
         invoice = self.env['account.move'].create({
@@ -1228,7 +1211,7 @@ class TestAccountAnalyticAccount(AccountTestInvoicingCommon, AnalyticCommon):
                 'name': 'test line',
                 'quantity': 1,
                 'price_unit': 100,
-                'analytic_distribution': {self.analytic_account_a.id: 100},
+                'analytic_distribution': {account_analytic.id: 100},
             })],
         })
         invoice.action_post()

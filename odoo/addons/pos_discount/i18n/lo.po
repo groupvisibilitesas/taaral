@@ -5,12 +5,12 @@
 # Bone NI <bounkirdni@gmail.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-20 18:37+0000\n"
-"PO-Revision-Date: 2026-06-06 10:46+0000\n"
+"POT-Creation-Date: 2026-03-20 18:35+0000\n"
+"PO-Revision-Date: 2026-08-02 14:16+0000\n"
 "Last-Translator: Bone NI <bounkirdni@gmail.com>\n"
-"Language-Team: Lao <https://translate.odoo.com/projects/odoo-18/pos_discount/"
+"Language-Team: Lao <https://translate.odoo.com/projects/odoo-19/pos_discount/"
 "lo/>\n"
 "Language: lo\n"
 "MIME-Version: 1.0\n"
@@ -26,12 +26,12 @@ msgid ""
 "A discount product is needed to use the Global Discount feature. Go to Point"
 " of Sale > Configuration > Settings to set it."
 msgstr ""
-"ຕ້ອງມີສິນຄ້າສ່ວນຫຼຸດເພື່ອໃຊ້ຟີເຈີສ່ວນຫຼຸດທົ່ວໄປ. ໄປທີ່ ຈຸດຂາຍ > ການຕັ້ງຄ່າ > ການຕັ້ງຄ່າ ເພື່ອກຳນົດຄ່າ."
+"ຈຳເປັນຕ້ອງມີສິນຄ້າສ່ວນຫຼຸດເພື່ອໃຊ້ຟີເຈີສ່ວນຫຼຸດທົ່ວໄປ. ໄປທີ່ ຈຸດຂາຍ > ການຕັ້ງຄ່າ > ການຕັ້ງຄ່າ ເພື່ອກຳນົດມັນ."
 
 #. module: pos_discount
 #: model:ir.model.fields,help:pos_discount.field_pos_config__iface_discount
 msgid "Allow the cashier to give discounts on the whole order."
-msgstr "ອະນຸຍາດໃຫ້ພະນັກງານຂາຍໃຫ້ສ່ວນຫຼຸດທັງໝົດຂອງໃບບິນ."
+msgstr "ອະນຸຍາດໃຫ້ພະນັກງານຂາຍໃຫ້ສ່ວນຫຼຸດໃນທັງໝົດລາຍການສັ່ງຊື້."
 
 #. module: pos_discount
 #: model:ir.model,name:pos_discount.model_res_config_settings
@@ -40,7 +40,7 @@ msgstr "ການຕັ້ງຄ່າລະບົບ"
 
 #. module: pos_discount
 #. odoo-javascript
-#: code:addons/pos_discount/static/src/overrides/components/control_buttons/control_buttons.xml:0
+#: code:addons/pos_discount/static/src/app/screens/product_screen/control_buttons/control_buttons.xml:0
 #: model:product.template,name:pos_discount.product_product_consumable_product_template
 msgid "Discount"
 msgstr "ສ່ວນຫຼຸດ"
@@ -52,7 +52,7 @@ msgstr "ສ່ວນຫຼຸດ %"
 
 #. module: pos_discount
 #. odoo-javascript
-#: code:addons/pos_discount/static/src/overrides/components/control_buttons/control_buttons.js:0
+#: code:addons/pos_discount/static/src/app/screens/product_screen/control_buttons/control_buttons.js:0
 #: model:ir.model.fields,field_description:pos_discount.field_pos_config__discount_pc
 #: model:ir.model.fields,field_description:pos_discount.field_res_config_settings__pos_discount_pc
 msgid "Discount Percentage"
@@ -65,20 +65,42 @@ msgid "Discount Product"
 msgstr "ສິນຄ້າສ່ວນຫຼຸດ"
 
 #. module: pos_discount
-#: model:ir.model,name:pos_discount.model_account_move_line
-msgid "Journal Item"
-msgstr "ລາຍການປຶ້ມບັນຊີ"
+#: model:ir.model.fields,field_description:pos_discount.field_account_move_line__display_name
+#: model:ir.model.fields,field_description:pos_discount.field_pos_config__display_name
+#: model:ir.model.fields,field_description:pos_discount.field_product_template__display_name
+#: model:ir.model.fields,field_description:pos_discount.field_res_config_settings__display_name
+msgid "Display Name"
+msgstr "ຊື່ທີ່ສະແດງ"
 
 #. module: pos_discount
 #. odoo-javascript
-#: code:addons/pos_discount/static/src/overrides/components/control_buttons/control_buttons.js:0
+#: code:addons/pos_discount/static/src/app/screens/ticket_screen/ticket_screen.js:0
+msgid "Error"
+msgstr "ຂໍ້ຜິດພາດ"
+
+#. module: pos_discount
+#: model:ir.model.fields,field_description:pos_discount.field_account_move_line__id
+#: model:ir.model.fields,field_description:pos_discount.field_pos_config__id
+#: model:ir.model.fields,field_description:pos_discount.field_product_template__id
+#: model:ir.model.fields,field_description:pos_discount.field_res_config_settings__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pos_discount
+#: model:ir.model,name:pos_discount.model_account_move_line
+msgid "Journal Item"
+msgstr "ລາຍການບັນຊີປະຈຳວັນ"
+
+#. module: pos_discount
+#. odoo-javascript
+#: code:addons/pos_discount/static/src/app/services/pos_store.js:0
 msgid "No discount product found"
 msgstr "ບໍ່ພົບສິນຄ້າສ່ວນຫຼຸດ"
 
 #. module: pos_discount
 #: model:ir.model.fields,field_description:pos_discount.field_pos_config__iface_discount
 msgid "Order Discounts"
-msgstr "ສ່ວນຫຼຸດຄຳສັ່ງຊື້"
+msgstr "ສ່ວນຫຼຸດລາຍການສັ່ງຊື້"
 
 #. module: pos_discount
 #: model:ir.model,name:pos_discount.model_pos_config
@@ -91,9 +113,9 @@ msgid "Pos Discount Product"
 msgstr "ສິນຄ້າສ່ວນຫຼຸດ POS"
 
 #. module: pos_discount
-#: model:ir.model,name:pos_discount.model_product_product
-msgid "Product Variant"
-msgstr "ຮູບແບບສິນຄ້າ"
+#: model:ir.model,name:pos_discount.model_product_template
+msgid "Product"
+msgstr "ສິນຄ້າ"
 
 #. module: pos_discount
 #: model:ir.model.fields,help:pos_discount.field_pos_config__discount_pc
@@ -103,15 +125,21 @@ msgstr "ເປີເຊັນສ່ວນຫຼຸດເລີ່ມຕົ້ນ
 
 #. module: pos_discount
 #. odoo-javascript
-#: code:addons/pos_discount/static/src/overrides/components/control_buttons/control_buttons.js:0
+#: code:addons/pos_discount/static/src/app/services/pos_store.js:0
 msgid ""
 "The discount product seems misconfigured. Make sure it is flagged as 'Can be"
 " Sold' and 'Available in Point of Sale'."
 msgstr ""
-"ສິນຄ້າສ່ວນຫຼຸດເບິ່ງຄືວ່າຕັ້ງຄ່າບໍ່ຖືກຕ້ອງ. ໃຫ້ແນ່ໃຈວ່າມັນຖືກໝາຍເປັນ 'ສາມາດຂາຍໄດ້' ແລະ 'ມີໃຫ້ໃຊ້ໃນຈຸດຂາ"
-"ຍ'."
+"ສິນຄ້າສ່ວນຫຼຸດເບິ່ງຄືວ່າຖືກຕັ້ງຄ່າບໍ່ຖືກຕ້ອງ. ກະລຸນາກວດສອບໃຫ້ແນ່ໃຈວ່າໄດ້ໝາຍເອົາ 'ສາມາດຂາຍໄດ້' ແລະ 'ມີໃ"
+"ຫ້ໃຊ້ໃນຈຸດຂາຍ'."
 
 #. module: pos_discount
 #: model:ir.model.fields,help:pos_discount.field_pos_config__discount_product_id
 msgid "The product used to apply the discount on the ticket."
-msgstr "ສິນຄ້າທີ່ໃຊ້ເພື່ອໃຊ້ສ່ວນຫຼຸດໃນໃບບິນ."
+msgstr "ສິນຄ້າທີ່ໃຊ້ເພື່ອນຳໃຊ້ສ່ວນຫຼຸດໃນໃບບິນ."
+
+#. module: pos_discount
+#. odoo-javascript
+#: code:addons/pos_discount/static/src/app/screens/ticket_screen/ticket_screen.js:0
+msgid "You cannot edit a discount line."
+msgstr "ທ່ານບໍ່ສາມາດແກ້ໄຂລາຍການສ່ວນຫຼຸດໄດ້."

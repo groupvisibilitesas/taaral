@@ -3,20 +3,19 @@
 # * account_check_printing
 #
 # Translators:
-# Sanne Kristensen <sanne@vkdata.dk>, 2024
-# Martin Trigaux, 2024
-# Mads Søndergaard, 2024
-# Wil Odoo, 2025
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Martin Trigaux, 2022
+#
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
+# Weblate <noreply-mt-weblate@weblate.org>, 2026.
 # "Kira Petersen François (peti)" <peti@odoo.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-06-23 16:02+0000\n"
-"Last-Translator: \"Kira Petersen François (peti)\" <peti@odoo.com>\n"
-"Language-Team: Danish <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-07 06:44+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Danish <https://translate.odoo.com/projects/odoo-19/"
 "account_check_printing/da/>\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
@@ -30,6 +29,12 @@ msgstr ""
 #: code:addons/account_check_printing/models/account_journal.py:0
 msgid "%(journal)s: Check Number Sequence"
 msgstr "%(journal)s: Checknummersekvens"
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "%(number)s in journal %(journal)s"
+msgstr "%(number)s i journal %(journal)s"
 
 #. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.account_journal_dashboard_kanban_view_inherited
@@ -172,7 +177,12 @@ msgid "Default"
 msgstr "Standard"
 
 #. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_account_journal__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment_method__display_name
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_res_company__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr "Visningsnavn"
 
@@ -183,7 +193,17 @@ msgid "Go to the configuration panel"
 msgstr "Gå til konfigurationspanel"
 
 #. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment__check_layout_available
+msgid "Has Check Layout"
+msgstr "Har checklayout"
+
+#. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_account_journal__id
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment__id
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment_method__id
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__id
+#: model:ir.model.fields,field_description:account_check_printing.field_res_company__id
+#: model:ir.model.fields,field_description:account_check_printing.field_res_config_settings__id
 msgid "ID"
 msgstr "ID"
 
@@ -229,22 +249,12 @@ msgid ""
 "submitting a batch deposit to your bank. Module account_batch_payment is "
 "necessary.\n"
 "SEPA Credit Transfer: Pay in the SEPA zone by submitting a SEPA Credit "
-"Transfer file to your bank. Module account_sepa is necessary.\n"
+"Transfer file to your bank. Module account_iso20022 is necessary.\n"
 "SEPA Direct Debit: Get paid in the SEPA zone thanks to a mandate your "
-"partner will have granted to you. Module account_sepa is necessary.\n"
+"partner will have granted to you. Module account_iso20022 is necessary.\n"
+"U.S. ISO20022: Pay in the US by submitting an ISO20022 file to your bank. "
+"Module account_iso20022 is necessary.\n"
 msgstr ""
-"Manuel: Betal eller modtag betaling via enhver metode uden for Odoo.\n"
-"Betalingsydere: Hver betalingsudbyder har sin egen betalingsmåde. Anmod om "
-"en transaktion til eller fra et kort ved hjælp af et betalingstoken, som "
-"partneren har gemt under et online køb eller abonnement.\n"
-"Check: Betal regninger med check, og udskriv den direkte fra Odoo.\n"
-"Samlet indbetaling: Indsaml flere kundechecks på én gang, og generér samt "
-"indsend en samlet indbetalingsfil til banken. Kræver modulet "
-"account_batch_payment.\n"
-"SEPA-kreditoverførsel: Betal inden for SEPA-zonen ved at indsende en SEPA-"
-"kreditoverførselsfil til din bank. Kræver modulet account_sepa.\n"
-"SEPA-direkte debitering: Modtag betalinger inden for SEPA-zonen ved hjælp af "
-"et mandat, som din partner har givet dig. Kræver modulet account_sepa.\n"
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_res_company__account_check_printing_multi_stub
@@ -469,3 +479,43 @@ msgid ""
 msgstr ""
 "Du skal vælge et checklayout. Det gør du i indstillingerne Fakturering/"
 "Regnskab. Søg efter 'Checklayout', og vælg et layout."
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "check_number"
+msgstr "check_number"
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "out_refund"
+msgstr "out_refund"
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "sep"
+msgstr "sep"
+
+#~ msgid "Contact"
+#~ msgstr "Kontakt"
+
+#~ msgid "Journal Entry"
+#~ msgstr "Postering"
+
+#~ msgid "Preferred Payment Method"
+#~ msgstr "Foretrukket Betalingsmetode"
+
+#~ msgid ""
+#~ "Preferred payment method when paying this vendor. This is used to filter "
+#~ "vendor bills by preferred payment method to register payments in mass. "
+#~ "Use cases: create bank files for batch wires, check runs."
+#~ msgstr ""
+#~ "Foretrukket betalingsmetode når denne leverandør betales. Dette anvendes "
+#~ "til at filtrere leverandørregninger ud fra foretrukket betalingsmetode, "
+#~ "for at registrere betalinger i partier. Brugs eksempler: opret bank filer "
+#~ "for parti overførsler, check kørsler."
+
+#~ msgid "Register Payment"
+#~ msgstr "Registrer betaling"

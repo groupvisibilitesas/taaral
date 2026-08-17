@@ -1,11 +1,28 @@
-import { applyInheritance } from "@web/core/template_inheritance";
+import {
+    applyContextToTextNode,
+    applyInheritance,
+    deepClone,
+} from "@web/core/template_inheritance";
 
+/**
+ * @param {Node} template
+ */
 function getClone(template) {
-    const c = template.cloneNode(true);
+    const c = deepClone(template);
     new Document().append(c); // => c is the documentElement of its ownerDocument
     return c;
 }
 
+/**
+ * @param {Iterable<unknown>} args
+ */
+function getKey(args) {
+    return JSON.stringify([...args]);
+}
+
+/**
+ * @param {string} templateString
+ */
 function getParsedTemplate(templateString) {
     const doc = parser.parseFromString(templateString, "text/xml");
     for (const processor of templateProcessors) {
@@ -14,6 +31,10 @@ function getParsedTemplate(templateString) {
     return doc.firstChild;
 }
 
+/**
+ * @param {string} name
+ * @param {number | null} [blockId]
+ */
 function _getTemplate(name, blockId = null) {
     if (!(name in parsedTemplates)) {
         if (!(name in templates)) {
@@ -21,6 +42,11 @@ function _getTemplate(name, blockId = null) {
         }
         const templateString = templates[name];
         parsedTemplates[name] = getParsedTemplate(templateString);
+        const inheritFrom = parsedTemplates[name].getAttribute("t-inherit");
+        if (!inheritFrom) {
+            const addon = info[name].url.split("/")[1];
+            parsedTemplates[name].setAttribute("t-translation-context", addon);
+        }
     }
     let processedTemplate = parsedTemplates[name];
 
@@ -46,6 +72,7 @@ function _getTemplate(name, blockId = null) {
         }
     }
 
+    let cloned = false;
     for (const otherBlockId in templateExtensions[name] || {}) {
         if (blockId && otherBlockId > blockId) {
             break;
@@ -66,28 +93,20 @@ function _getTemplate(name, blockId = null) {
             if (!urlFilters.every((filter) => filter(url))) {
                 continue;
             }
-            processedTemplate = applyInheritance(
-                inheritFrom ? processedTemplate : getClone(processedTemplate),
-                getClone(template),
-                url
-            );
+            if (!inheritFrom && !cloned) {
+                cloned = true;
+                processedTemplate = getClone(processedTemplate);
+            }
+            processedTemplate = applyInheritance(processedTemplate, getClone(template), url);
         }
     }
 
     return processedTemplate;
 }
 
-function isRegistered(...args) {
-    const key = JSON.stringify([...args]);
-    if (registered.has(key)) {
-        return true;
-    }
-    registered.add(key);
-    return false;
-}
-
 const info = Object.create(null);
 const parsedTemplateExtensions = Object.create(null);
+/** @type {Record<string, Element>} */
 const parsedTemplates = Object.create(null);
 const parser = new DOMParser();
 /** @type {Map<string, Element>} */
@@ -104,6 +123,9 @@ let blockId = 0;
 /** @type {((url: string) => boolean)[]} */
 let urlFilters = [];
 
+/**
+ * @param {string[]} namesToCheck
+ */
 export function checkPrimaryTemplateParents(namesToCheck) {
     const missing = new Set(namesToCheck.filter((name) => !(name in templates)));
     if (missing.size) {
@@ -121,14 +143,22 @@ export function clearProcessedTemplates() {
 export function getTemplate(name) {
     if (!processedTemplates.has(name)) {
         processedTemplates.set(name, _getTemplate(name));
+        applyContextToTextNode();
     }
     return processedTemplates.get(name);
 }
 
+/**
+ * @param {string} name
+ * @param {string} url
+ * @param {string} templateString
+ */
 export function registerTemplate(name, url, templateString) {
-    if (isRegistered(...arguments)) {
+    const key = getKey(arguments);
+    if (registered.has(key)) {
         return;
     }
+    registered.add(key);
     if (blockType !== "templates") {
         blockType = "templates";
         blockId++;
@@ -138,12 +168,28 @@ export function registerTemplate(name, url, templateString) {
     }
     templates[name] = templateString;
     info[name] = { blockId, url };
+
+    return function unregisterTemplate() {
+        delete templates[name];
+        delete info[name];
+        delete parsedTemplates[name];
+        delete parsedTemplateExtensions[name];
+        processedTemplates.delete(name);
+        registered.delete(key);
+    };
 }
 
+/**
+ * @param {string} inheritFrom
+ * @param {string} url
+ * @param {string} templateString
+ */
 export function registerTemplateExtension(inheritFrom, url, templateString) {
-    if (isRegistered(...arguments)) {
+    const key = getKey(arguments);
+    if (registered.has(key)) {
         return;
     }
+    registered.add(key);
     if (blockType !== "extensions") {
         blockType = "extensions";
         blockId++;
@@ -158,6 +204,16 @@ export function registerTemplateExtension(inheritFrom, url, templateString) {
         templateString,
         url,
     });
+
+    return function unregisterTemplateExtension() {
+        const index = templateExtensions[inheritFrom]?.[blockId]?.findIndex(
+            (ext) => ext.templateString === templateString && ext.url === url
+        );
+        if (Number.isInteger(index) && index > -1) {
+            templateExtensions[inheritFrom][blockId].splice(index, 1);
+        }
+        registered.delete(key);
+    };
 }
 
 /**
@@ -171,5 +227,9 @@ export function registerTemplateProcessor(processor) {
  * @param {typeof urlFilters} filters
  */
 export function setUrlFilters(filters) {
+    const prev = urlFilters;
     urlFilters = filters;
+    return function restoreUrlFilters() {
+        urlFilters = prev;
+    };
 }

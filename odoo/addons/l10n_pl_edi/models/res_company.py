@@ -41,6 +41,3 @@ class ResCompany(models.Model):
                 _logger.info("Successfully renewed KSeF tokens for company %s via cron.", company.name)
             except Exception:
                 _logger.exception("Failed to renew KSeF token for company %s", company.name)
-
-    def l10n_pl_edi_has_access_to_ksef(self):
-        return bool(self.sudo().l10n_pl_edi_access_token)

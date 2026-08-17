@@ -1,7 +1,7 @@
 from odoo import models
 
 
-class ThemeAnelusia(models.AbstractModel):
+class ThemeUtils(models.AbstractModel):
     _inherit = 'theme.utils'
 
     def _theme_anelusia_post_copy(self, mod):

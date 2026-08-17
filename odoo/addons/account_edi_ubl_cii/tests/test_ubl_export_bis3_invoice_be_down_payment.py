@@ -16,7 +16,7 @@ class TestUblExportBis3InvoiceBEDownPayment(TestUblExportBis3BE):
         # This runs during the super.setUpClass() call, we didn't make sure (yet) that the module exists.
         cls.ensure_installed('sale')
         groups = super().get_default_groups()
-        return groups | cls.env.ref('sales_team.group_sale_manager')
+        return groups | cls.quick_ref('sales_team.group_sale_manager')
 
     def test_sale_order_down_payment(self):
         tax_21 = self.percent_tax(21.0)

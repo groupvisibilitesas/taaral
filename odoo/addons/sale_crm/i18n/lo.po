@@ -2,16 +2,15 @@
 # This file contains the translation of the following modules:
 # * sale_crm
 #
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
 # Bone NI <bounkirdni@gmail.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-06-06 10:04+0000\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-02 18:02+0000\n"
 "Last-Translator: Bone NI <bounkirdni@gmail.com>\n"
-"Language-Team: Lao <https://translate.odoo.com/projects/odoo-18/sale_crm/lo/>"
+"Language-Team: Lao <https://translate.odoo.com/projects/odoo-19/sale_crm/lo/>"
 "\n"
 "Language: lo\n"
 "MIME-Version: 1.0\n"
@@ -23,7 +22,7 @@ msgstr ""
 #. module: sale_crm
 #: model_terms:ir.ui.view,arch_db:sale_crm.crm_case_form_view_oppor
 msgid "<span class=\"o_stat_text\"> Orders</span>"
-msgstr "<span class=\"o_stat_text\"> ການສັ່ງຊື້</span>"
+msgstr "<span class=\"o_stat_text\"> ໃບສັ່ງຊື້</span>"
 
 #. module: sale_crm
 #: model:ir.model.fields,field_description:sale_crm.field_crm_quotation_partner__lead_id
@@ -46,9 +45,14 @@ msgid "Create a new customer"
 msgstr "ສ້າງລູກຄ້າໃໝ່"
 
 #. module: sale_crm
+#: model:ir.model,website_form_label:sale_crm.model_crm_lead
+msgid "Create an Opportunity"
+msgstr "ສ້າງໂອກາດ"
+
+#. module: sale_crm
 #: model:ir.model,name:sale_crm.model_crm_quotation_partner
 msgid "Create new or use existing Customer on new Quotation"
-msgstr "ສ້າງໃໝ່ ຫຼື ໃຊ້ລູກຄ້າທີ່ມີຢູ່ແລ້ວໃນໃບສະເໜີລາຄາໃໝ່"
+msgstr "ສ້າງໃໝ່ ຫຼື ໃຊ້ລູກຄ້າທີ່ມີຢູ່ແລ້ວ ໃນໃບສະເໜີລາຄາໃໝ່"
 
 #. module: sale_crm
 #: model_terms:ir.ui.view,arch_db:sale_crm.crm_case_form_view_oppor
@@ -71,7 +75,10 @@ msgid "Customer"
 msgstr "ລູກຄ້າ"
 
 #. module: sale_crm
+#: model:ir.model.fields,field_description:sale_crm.field_crm_lead__display_name
 #: model:ir.model.fields,field_description:sale_crm.field_crm_quotation_partner__display_name
+#: model:ir.model.fields,field_description:sale_crm.field_crm_team__display_name
+#: model:ir.model.fields,field_description:sale_crm.field_sale_order__display_name
 msgid "Display Name"
 msgstr "ຊື່ທີ່ສະແດງ"
 
@@ -84,17 +91,15 @@ msgstr "ບໍ່ຕ້ອງເຊື່ອມໂຍງກັບລູກຄ້
 #. odoo-python
 #: code:addons/sale_crm/models/crm_lead.py:0
 msgid "Expected revenue has been updated based on the linked Sales Orders."
-msgstr "ລາຍຮັບທີ່ຄາດໄວ້ໄດ້ຮັບການອັບເດດໂດຍອີງຕາມໃບສັ່ງຊື້ທີ່ເຊື່ອມໂຍງ."
+msgstr "ລາຍຮັບທີ່ຄາດໄວ້ໄດ້ຖືກອັບເດດໂດຍອີງຕາມໃບສັ່ງຊື້ທີ່ເຊື່ອມໂຍງ."
 
 #. module: sale_crm
+#: model:ir.model.fields,field_description:sale_crm.field_crm_lead__id
 #: model:ir.model.fields,field_description:sale_crm.field_crm_quotation_partner__id
+#: model:ir.model.fields,field_description:sale_crm.field_crm_team__id
+#: model:ir.model.fields,field_description:sale_crm.field_sale_order__id
 msgid "ID"
-msgstr "ລະຫັດ"
-
-#. module: sale_crm
-#: model:ir.model.fields,field_description:sale_crm.field_res_users__target_sales_invoiced
-msgid "Invoiced in Sales Orders Target"
-msgstr "ຈຳນວນທີ່ອອກໃບແຈ້ງໜີ້ໃນເປົ້າໝາຍໃບສັ່ງຊື້"
+msgstr "ໄອດີ"
 
 #. module: sale_crm
 #: model:ir.model.fields,field_description:sale_crm.field_crm_quotation_partner__write_uid
@@ -108,8 +113,8 @@ msgstr "ອັບເດດຫຼ້າສຸດເມື່ອ"
 
 #. module: sale_crm
 #: model:ir.model,name:sale_crm.model_crm_lead
-msgid "Lead/Opportunity"
-msgstr "ຜູ້ສົນໃຈ/ໂອກາດ"
+msgid "Lead"
+msgstr "ຜູ້ສົນໃຈ"
 
 #. module: sale_crm
 #: model:ir.model.fields.selection,name:sale_crm.selection__crm_quotation_partner__action__exist
@@ -146,7 +151,7 @@ msgstr "ໂອກາດ"
 #. module: sale_crm
 #: model:ir.model.fields,field_description:sale_crm.field_crm_lead__order_ids
 msgid "Orders"
-msgstr "ການສັ່ງຊື້"
+msgstr "ໃບສັ່ງຊື້"
 
 #. module: sale_crm
 #: model:ir.actions.act_window,name:sale_crm.sale_action_quotations_new
@@ -185,28 +190,17 @@ msgid "Sales Team"
 msgstr "ທີມງານຂາຍ"
 
 #. module: sale_crm
-#. odoo-python
-#: code:addons/sale_crm/models/crm_team.py:0
-msgid "Sales: Untaxed Total"
-msgstr "ການຂາຍ: ຍອດລວມບໍ່ລວມພາສີ"
-
-#. module: sale_crm
 #: model:ir.model.fields,field_description:sale_crm.field_crm_lead__sale_amount_total
 msgid "Sum of Orders"
-msgstr "ຍອດລວມຂອງການສັ່ງຊື້"
+msgstr "ຍອດລວມຂອງໃບສັ່ງຊື້"
 
 #. module: sale_crm
 #: model:ir.model.fields,help:sale_crm.field_crm_lead__sale_amount_total
 msgid "Untaxed Total of Confirmed Orders"
-msgstr "ຍອດລວມບໍ່ລວມພາສີຂອງໃບສັ່ງຊື້ທີ່ຢືນຢັນແລ້ວ"
-
-#. module: sale_crm
-#: model:ir.model,name:sale_crm.model_res_users
-msgid "User"
-msgstr "ຜູ້ໃຊ້"
+msgstr "ຍອດລວມກ່ອນພາສີຂອງໃບສັ່ງຊື້ທີ່ຢືນຢັນແລ້ວ"
 
 #. module: sale_crm
 #. odoo-python
 #: code:addons/sale_crm/wizard/crm_opportunity_to_quotation.py:0
 msgid "You can only apply this action from a lead."
-msgstr "ທ່ານສາມາດນຳໃຊ້ການດຳເນີນການນີ້ຈາກຜູ້ສົນໃຈເທົ່ານັ້ນ."
+msgstr "ທ່ານສາມາດໃຊ້ຄຳສັ່ງນີ້ໄດ້ຈາກລາຍຊື່ຜູ້ສົນໃຈເທົ່ານັ້ນ."

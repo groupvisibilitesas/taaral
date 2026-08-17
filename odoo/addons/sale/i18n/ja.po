@@ -3,20 +3,24 @@
 # * sale
 #
 # Translators:
-# Ryoko Tsuda <ryoko@quartile.co>, 2024, 2025, 2026.
-# Junko Augias, 2025
-# Wil Odoo, 2025
+# Martin Trigaux, 2022
+# 江口和志 <sandwhale1010@gmail.com>, 2023
+# Andy Yiu, 2023
+# Ryoko Tsuda <ryoko@quartile.co>, 2023, 2025, 2026.
+# Yoshi Tashiro (Quartile) <tashiro@roomsfor.hk>, 2023
+# Tatsuki Kanda, 2023
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
 # "Junko Augias (juau)" <juau@odoo.com>, 2025, 2026.
-# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025.
 # Yoshi Tashiro <tashiro@quartile.co>, 2025.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 18:38+0000\n"
-"PO-Revision-Date: 2026-07-09 08:48+0000\n"
-"Last-Translator: \"Junko Augias (juau)\" <juau@odoo.com>\n"
-"Language-Team: Japanese <https://translate.odoo.com/projects/odoo-18/sale/"
+"POT-Creation-Date: 2026-07-10 17:37+0000\n"
+"PO-Revision-Date: 2026-08-03 00:58+0000\n"
+"Last-Translator: Ryoko Tsuda <ryoko@quartile.co>\n"
+"Language-Team: Japanese <https://translate.odoo.com/projects/odoo-19/sale/"
 "ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -26,9 +30,24 @@ msgstr ""
 "X-Generator: Weblate 2026.6.1\n"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_payment_provider_onboarding_wizard___data_fetched
-msgid " Data Fetched"
-msgstr " フェッチされたデータ"
+#. odoo-javascript
+#: code:addons/sale/static/src/views/sale_file_upload_kanban/sale_file_upload_kanban_renderer.js:0
+#: code:addons/sale/static/src/views/sale_file_upload_list/sale_file_upload_list_renderer.js:0
+msgid ""
+"\n"
+"            If your customer runs on Odoo 18 or higher, customer data and "
+"sales order lines\n"
+"            will be automatically created. Any other pdf containing an "
+"attached\n"
+"            UBL-RequestForQuotation file will work as well.\n"
+"        "
+msgstr ""
+"\n"
+"            お客様がOdoo 18 以上をご利用の場合、顧客情報および\n"
+"            販売オーダ明細が自動的に作成されます。\n"
+"            また、UBL-RequestForQuotation ファイルが添付された他の PDF でも動"
+"作します。\n"
+"        "
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_crm_team__sale_order_count
@@ -65,7 +84,7 @@ msgstr "&amp;nbsp;"
 #. module: sale
 #: model:ir.actions.report,print_report_name:sale.action_report_pro_forma_invoice
 msgid "'PRO-FORMA - %s' % (object.name)"
-msgstr "プロフォーマ - %s' % (object.name)"
+msgstr "プロフォーマ -%s % (object.name)"
 
 #. module: sale
 #: model:ir.actions.report,print_report_name:sale.action_report_saleorder
@@ -73,8 +92,15 @@ msgid ""
 "(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or "
 "'Order - %s' % (object.name)"
 msgstr ""
-"(object.state in ('draft', 'sent') and '見積 - %s' % (object.name)) or 'オー"
-"ダ - %s' % (object.name)"
+"(object.state in ('draft', 'sent') and '見積 - %s' % (object.name)) or "
+"'オーダ - %s' % (object.name)"
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+msgid ""
+", it's 100% free! You'll save time creating beautiful quotations and track "
+"sales."
+msgstr "100％無料です！きれいな見積書を作成し、販売を追跡する時間を節約できます。"
 
 #. module: sale
 #. odoo-javascript
@@ -136,11 +162,10 @@ msgid ""
 "        Do not hesitate to contact us if you have any questions.\n"
 "        <t t-if=\"not is_html_empty(object.user_id.signature)\" data-o-mail-"
 "quote-container=\"1\">\n"
-"            <br/><br/>\n"
-"            <t t-out=\"object.user_id.signature or ''\" data-o-mail-"
-"quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/><t t-"
+"out=\"object.user_id.signature or ''\" data-o-mail-quote=\"1\">Mitchell "
+"Admin</t></div>\n"
 "        </t>\n"
-"        <br/><br/>\n"
 "    </p>\n"
 "</div>\n"
 "            "
@@ -149,33 +174,32 @@ msgstr ""
 "    <p style=\"margin: 0px; padding: 0px; font-size: 12px;\">\n"
 "        <t t-set=\"transaction_sudo\" t-"
 "value=\"object.get_portal_last_transaction()\"/>\n"
-"        こんにちは。\n"
+"       いつもお世話になっております。\n"
 "        <br/><br/>\n"
-"        参照番号\n"
+"        参照番号:\n"
 "        <span style=\"font-weight:bold;\" t-out=\"transaction_sudo.reference "
 "or ''\">SOOO49</span>\n"
 "        金額\n"
-"        <span style=\"font-weight:bold;\" t-"
-"out=\"format_amount(transaction_sudo.amount, object.currency_id) or ''\">$ "
-"10.00</span>\n"
-"        オーダ番号:\n"
-"        <span style=\"font-weight:bold;\" t-out=\"object.name or "
-"''\">S00049</span>\n"
-"        <t t-if=\"transaction_sudo and transaction_sudo.state == "
-"'pending'\">\n"
-"            の支払が保留になっています。\n"
+"        <span style=\"font-weight:bold;\" t-out=\"format_amount"
+"(transaction_sudo.amount, object.currency_id) or ''\">$ 10.00</span>\n"
+"        ご注文番号:\n"
+"        <span style=\"font-weight:bold;\" t-out=\"object.name or ''\">"
+"S00049</span>\n"
+"        <t t-if=\"transaction_sudo and transaction_sudo.state == 'pending'\">"
+"\n"
+"            は現在、保留中です。\n"
 "            <br/>\n"
 "            <t t-if=\"object.currency_id.compare_amounts(object.amount_paid "
 "+ transaction_sudo.amount, object.amount_total) &gt;= 0 and object.state in "
 "('draft', 'sent')\">\n"
-"                お支払いが確認でき次第、お客様のご注文を確定致します。\n"
+"                お支払いが確認でき次第、ご注文が確定となります。\n"
 "            </t>\n"
 "            <t t-else=\"\">\n"
-"                確定後、\n"
-"                <span style=\"font-weight:bold;\" t-"
-"out=\"format_amount(object.amount_total - object.amount_paid - "
-"transaction_sudo.amount, object.currency_id) or ''\">$ 10.00</span>\n"
-"                をお支払い下さい。\n"
+"                確定後\n"
+"                <span style=\"font-weight:bold;\" t-out=\"format_amount"
+"(object.amount_total - object.amount_paid - transaction_sudo.amount, "
+"object.currency_id) or ''\">$ 10.00</span>\n"
+"                のお支払いをお願いいたします。\n"
 "            </t>\n"
 "        </t>\n"
 "        <t t-else=\"\">\n"
@@ -183,23 +207,23 @@ msgstr ""
 "            <t t-if=\"object.currency_id.compare_amounts(object.amount_paid, "
 "object.amount_total) &lt; 0\">\n"
 "                <br/>\n"
-"                <span style=\"font-weight:bold;\" t-"
-"out=\"format_amount(object.amount_total - object.amount_paid, "
-"object.currency_id) or ''\">$ 10.00</span>\n"
-"                が未払いです。\n"
+"                <span style=\"font-weight:bold;\" t-out=\"format_amount"
+"(object.amount_total - object.amount_paid, object.currency_id) or ''\">$ "
+"10.00</span>\n"
+"                のお支払いが確認できておりません。\n"
 "            </t>\n"
 "        </t>\n"
 "        <br/><br/>\n"
-"        宜しくお願い致します。\n"
+"        何卒よろしくお願いいたします。\n"
 "        <br/>\n"
-"        ご不明な点がございましたら、お問合せ下さい。\n"
+"        ご不明な点がございましたら、お問合せ下さい。よろしくお願いいたします"
+"。\n"
 "        <t t-if=\"not is_html_empty(object.user_id.signature)\" data-o-mail-"
 "quote-container=\"1\">\n"
-"            <br/><br/>\n"
-"            <t t-out=\"object.user_id.signature or ''\" data-o-mail-"
-"quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/><t t-"
+"out=\"object.user_id.signature or ''\" data-o-mail-quote=\"1\">Mitchell "
+"Admin</t></div>\n"
 "        </t>\n"
-"        <br/><br/>\n"
 "    </p>\n"
 "</div>\n"
 "            "
@@ -233,7 +257,7 @@ msgid ""
 "        <t t-set=\"documents\" t-value=\"object._get_product_documents()\"/"
 ">\n"
 "        <t t-if=\"documents\">\n"
-"            <br/> \n"
+"            <br/>\n"
 "            <t t-if=\"len(documents)&gt;1\">\n"
 "                Here are some additional documents that may interest you:\n"
 "            </t>\n"
@@ -254,11 +278,10 @@ msgid ""
 "        Do not hesitate to contact us if you have any questions.\n"
 "        <t t-if=\"not is_html_empty(object.user_id.signature)\" data-o-mail-"
 "quote-container=\"1\">\n"
-"            <br/><br/>\n"
-"            <t t-out=\"object.user_id.signature or ''\" data-o-mail-"
-"quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/><t t-"
+"out=\"object.user_id.signature or ''\" data-o-mail-quote=\"1\">Mitchell "
+"Admin</t></div>\n"
 "        </t>\n"
-"        <br/><br/>\n"
 "    </p>\n"
 "<t t-if=\"hasattr(object, 'website_id') and object.website_id\">\n"
 "    <div style=\"margin: 0px; padding: 0px;\">\n"
@@ -272,9 +295,8 @@ msgid ""
 "weight:bold;\">Quantity</span></td>\n"
 "                <td width=\"20%\" align=\"right\">\n"
 "                    <span style=\"font-weight:bold;\">\n"
-"                        <t t-"
-"if=\"object.website_id.show_line_subtotals_tax_selection == "
-"'tax_excluded'\">\n"
+"                        <t t-if=\"hasattr(object, 'website_id') and "
+"object.website_id.show_line_subtotals_tax_selection == 'tax_excluded'\">\n"
 "                            Tax Excl.\n"
 "                        </t>\n"
 "                        <t t-else=\"\">\n"
@@ -287,7 +309,7 @@ msgid ""
 "        <t t-set=\"current_subtotal\" t-value=\"0\"/>\n"
 "        <t t-foreach=\"object.order_line\" t-as=\"line\">\n"
 "            <t t-set=\"line_subtotal\" t-value=\"                     "
-"line.price_subtotal                     if "
+"line.price_subtotal                     if hasattr(object, 'website_id') and "
 "object.website_id.show_line_subtotals_tax_selection == "
 "'tax_excluded'                     else line.price_total                 \"/"
 ">\n"
@@ -295,8 +317,8 @@ msgid ""
 "line_subtotal\"/>\n"
 "            <t t-if=\"(not hasattr(line, 'is_delivery') or not "
 "line.is_delivery) and (                     line.display_type in "
-"['line_section', 'line_note']                     or line.product_type == "
-"'combo'                 )\">\n"
+"['line_section', 'line_subsection', 'line_note']                     or "
+"line.product_type == 'combo'                 )\">\n"
 "                <table width=\"100%\" style=\"color: #454748; font-size: "
 "12px; border-collapse: collapse;\">\n"
 "                    <t t-set=\"loop_cycle_number\" t-"
@@ -306,9 +328,10 @@ msgid ""
 "                        <t t-set=\"loop_cycle_number\" t-"
 "value=\"loop_cycle_number + 1\"/>\n"
 "                        <td colspan=\"4\">\n"
-"                            <t t-if=\"line.display_type == 'line_section' or "
-"line.product_type == 'combo'\">\n"
-"                                <span style=\"font-weight:bold;\" t-"
+"                            <t t-if=\"line.display_type in ('line_section', "
+"'line_subsection') or line.product_type == 'combo'\">\n"
+"                                <span t-att-style=\"'font-weight:bold;' if "
+"line.display_type == 'line_subsection' else 'font-weight:bolder;'\" t-"
 "out=\"line.name or ''\">Taking care of Trees Course</span>\n"
 "                                <t t-set=\"current_section\" t-"
 "value=\"line\"/>\n"
@@ -335,8 +358,10 @@ msgid ""
 "value=\"loop_cycle_number + 1\"/>\n"
 "                        <td style=\"width: 150px;\">\n"
 "                            <img t-attf-src=\"/web/image/product.product/"
-"{{ line.product_id.id }}/image_128\" style=\"width: 64px; height: 64px; "
-"object-fit: contain;\" alt=\"Product image\"/>\n"
+"{{ line.product_id.id }}/image_128\" t-attf-style=\"width: 64px; height: "
+"{{hasattr(object, 'website_id') and object.website_id and "
+"object.website_id._get_product_image_ratio_height() or '64px'}}; object-fit: "
+"cover; object-position: center;\" alt=\"Product image\"/>\n"
 "                        </td>\n"
 "                        <td align=\"left\" t-out=\"line.product_id.name or "
 "''\">\tTaking care of Trees Course</td>\n"
@@ -344,9 +369,8 @@ msgid ""
 "out=\"line.product_uom_qty or ''\">1</td>\n"
 "                        <td width=\"20%\" align=\"right\"><span style=\"font-"
 "weight:bold; white-space: nowrap;\">\n"
-"                        <t t-"
-"if=\"object.website_id.show_line_subtotals_tax_selection == "
-"'tax_excluded'\">\n"
+"                        <t t-if=\"hasattr(object, 'website_id') and "
+"object.website_id.show_line_subtotals_tax_selection == 'tax_excluded'\">\n"
 "                            <t t-"
 "out=\"format_amount(line.price_reduce_taxexcl, object.currency_id) or ''\">$ "
 "10.00</t>\n"
@@ -362,8 +386,8 @@ msgid ""
 "            </t>\n"
 "            <t t-if=\"current_section and "
 "(                     line_last                     or "
-"object.order_line[line_index+1].display_type == "
-"'line_section'                     or "
+"object.order_line[line_index+1].display_type in ('line_section', "
+"'line_subsection')                     or "
 "object.order_line[line_index+1].product_type == 'combo'                     "
 "or (                         line.combo_item_id                         and "
 "not "
@@ -481,8 +505,9 @@ msgid ""
 "            </tr>\n"
 "        </table>\n"
 "    </div>\n"
-"    <div t-if=\"object.partner_shipping_id and not object.only_services\" "
-"style=\"margin: 0px; padding: 0px;\">\n"
+"    <div t-if=\"hasattr(object, 'only_services') and "
+"object.partner_shipping_id and not object.only_services\" style=\"margin: "
+"0px; padding: 0px;\">\n"
 "        <table width=\"100%\" style=\"color: #454748; font-size: 12px;\">\n"
 "            <tr>\n"
 "                <td>\n"
@@ -530,36 +555,36 @@ msgid ""
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
 "    <p style=\"margin: 0px; padding: 0px; font-size: 12px;\">\n"
-"        こんにちは。\n"
+"        いつもお世話になっております。\n"
 "        <br/><br/>\n"
 "        <t t-set=\"tx_sudo\" t-value=\"object.get_portal_last_transaction()"
 "\"/>\n"
-"        お客様のオーダ <span style=\"font-weight:bold;\" t-out=\"object.name "
-"or ''\">S00049</span> 金額 <span style=\"font-weight:bold;\" t-"
+"        お客様のご注文 <span style=\"font-weight:bold;\" t-out=\"object.name "
+"or ''\">S00049</span> 金額： <span style=\"font-weight:bold;\" t-"
 "out=\"format_amount(object.amount_total, object.currency_id) or ''\">$ "
 "10.00</span>\n"
 "        <t t-if=\"object.state == 'sale' or (tx_sudo and tx_sudo.state in "
 "('done', 'authorized'))\">\n"
-"            が確定致しました。<br/>\n"
-"            ご愛顧頂きありがとうございます。\n"
+"            が確定いたしました。<br/>\n"
+"            ご利用いただきありがとうございました。\n"
 "        </t>\n"
 "        <t t-elif=\"tx_sudo and tx_sudo.state == 'pending'\">\n"
-"            は保留中です。お支払いが確認でき次第、確定致します。\n"
+"            は保留中です。ご入金が確認できましたら、確定されます。\n"
 "            <t t-if=\"object.reference\">\n"
-"                お支払い番号は <span style=\"font-weight:bold;\" t-"
-"out=\"object.reference or ''\"/>です。\n"
+"                お支払い参照番号： <span style=\"font-weight:bold;\" t-"
+"out=\"object.reference or ''\"/>.\n"
 "            </t>\n"
 "        </t>\n"
 "        <br/>\n"
-"        <t t-set=\"documents\" t-value=\"object._get_product_documents()\"/"
-">\n"
+"        <t t-set=\"documents\" t-value=\"object._get_product_documents()\"/>"
+"\n"
 "        <t t-if=\"documents\">\n"
-"            <br/> \n"
+"            <br/>\n"
 "            <t t-if=\"len(documents)&gt;1\">\n"
-"                ご参考までに追加ドキュメントをお送りします:\n"
+"                ご参考までに追加のドキュメントをお送りいたします：\n"
 "            </t>\n"
 "            <t t-else=\"\">\n"
-"                ご参考までに追加ドキュメントをお送りします:\n"
+"                ご参考までに追加のドキュメントをお送りいたします：\n"
 "            </t>\n"
 "            <ul style=\"margin-bottom: 0;\">\n"
 "                <t t-foreach=\"documents\" t-as=\"document\">\n"
@@ -572,34 +597,33 @@ msgstr ""
 "            </ul>\n"
 "        </t>\n"
 "        <br/>\n"
-"        ご質問がございましたらお気軽にお問合せ下さい。\n"
+"        何かご不明な点がございましたら、お気軽にお問い合わせください。よろし"
+"くおねがいいたします。\n"
 "        <t t-if=\"not is_html_empty(object.user_id.signature)\" data-o-mail-"
 "quote-container=\"1\">\n"
-"            <br/><br/>\n"
-"            <t t-out=\"object.user_id.signature or ''\" data-o-mail-"
-"quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/><t t-"
+"out=\"object.user_id.signature or ''\" data-o-mail-quote=\"1\">Mitchell "
+"Admin</t></div>\n"
 "        </t>\n"
-"        <br/><br/>\n"
 "    </p>\n"
 "<t t-if=\"hasattr(object, 'website_id') and object.website_id\">\n"
 "    <div style=\"margin: 0px; padding: 0px;\">\n"
 "        <table width=\"100%\" style=\"color: #454748; font-size: 12px; "
 "border-collapse: collapse; white-space: nowrap;\">\n"
 "            <tr style=\"border-bottom: 2px solid #dee2e6;\">\n"
-"                <td style=\"width: 150px;\"><span style=\"font-weight:bold;"
-"\">プロダクト</span></td>\n"
+"                <td style=\"width: 150px;\"><span style=\"font-"
+"weight:bold;\">プロダクト</span></td>\n"
 "                <td/>\n"
 "                <td width=\"15%\" align=\"center\"><span style=\"font-"
 "weight:bold;\">数量</span></td>\n"
 "                <td width=\"20%\" align=\"right\">\n"
 "                    <span style=\"font-weight:bold;\">\n"
-"                        <t t-"
-"if=\"object.website_id.show_line_subtotals_tax_selection == "
-"'tax_excluded'\">\n"
-"                            税抜\n"
+"                        <t t-if=\"hasattr(object, 'website_id') and "
+"object.website_id.show_line_subtotals_tax_selection == 'tax_excluded'\">\n"
+"                            税抜き\n"
 "                        </t>\n"
 "                        <t t-else=\"\">\n"
-"                            税込\n"
+"                            税込み\n"
 "                        </t>\n"
 "                    </span>\n"
 "                </td>\n"
@@ -608,16 +632,16 @@ msgstr ""
 "        <t t-set=\"current_subtotal\" t-value=\"0\"/>\n"
 "        <t t-foreach=\"object.order_line\" t-as=\"line\">\n"
 "            <t t-set=\"line_subtotal\" t-value=\"                     "
-"line.price_subtotal                     if "
+"line.price_subtotal                     if hasattr(object, 'website_id') and "
 "object.website_id.show_line_subtotals_tax_selection == "
-"'tax_excluded'                     else line.price_total                 \"/"
-">\n"
+"'tax_excluded'                     else line.price_total                 \"/>"
+"\n"
 "            <t t-set=\"current_subtotal\" t-value=\"current_subtotal + "
 "line_subtotal\"/>\n"
 "            <t t-if=\"(not hasattr(line, 'is_delivery') or not "
 "line.is_delivery) and (                     line.display_type in "
-"['line_section', 'line_note']                     or line.product_type == "
-"'combo'                 )\">\n"
+"['line_section', 'line_subsection', 'line_note']                     or "
+"line.product_type == 'combo'                 )\">\n"
 "                <table width=\"100%\" style=\"color: #454748; font-size: "
 "12px; border-collapse: collapse;\">\n"
 "                    <t t-set=\"loop_cycle_number\" t-"
@@ -627,18 +651,19 @@ msgstr ""
 "                        <t t-set=\"loop_cycle_number\" t-"
 "value=\"loop_cycle_number + 1\"/>\n"
 "                        <td colspan=\"4\">\n"
-"                            <t t-if=\"line.display_type == 'line_section' or "
-"line.product_type == 'combo'\">\n"
-"                                <span style=\"font-weight:bold;\" t-"
-"out=\"line.name or ''\">樹木の手入れコース</span>\n"
+"                            <t t-if=\"line.display_type in ('line_section', "
+"'line_subsection') or line.product_type == 'combo'\">\n"
+"                                <span t-att-style=\"'font-weight:bold;' if "
+"line.display_type == 'line_subsection' else 'font-weight:bolder;'\" t-"
+"out=\"line.name or ''\">Taking care of Trees Course</span>\n"
 "                                <t t-set=\"current_section\" t-"
 "value=\"line\"/>\n"
-"                                <t t-set=\"current_subtotal\" t-value=\"0\"/"
-">\n"
+"                                <t t-set=\"current_subtotal\" t-value=\"0\"/>"
+"\n"
 "                            </t>\n"
 "                            <t t-elif=\"line.display_type == 'line_note'\">\n"
-"                                <i t-out=\"line.name or ''\">樹木の手入れコー"
-"ス</i>\n"
+"                                <i t-out=\"line.name or ''\">樹木の手入れ"
+"コース</i>\n"
 "                            </t>\n"
 "                        </td>\n"
 "                    </tr>\n"
@@ -655,9 +680,11 @@ msgstr ""
 "                        <t t-set=\"loop_cycle_number\" t-"
 "value=\"loop_cycle_number + 1\"/>\n"
 "                        <td style=\"width: 150px;\">\n"
-"                            <img t-attf-src=\"/web/image/product.product/"
-"{{ line.product_id.id }}/image_128\" style=\"width: 64px; height: 64px; "
-"object-fit: contain;\" alt=\"Product image\"/>\n"
+"                            <img t-attf-src=\"/web/image/product.product/{{ "
+"line.product_id.id }}/image_128\" t-attf-style=\"width: 64px; height: {"
+"{hasattr(object, 'website_id') and object.website_id and "
+"object.website_id._get_product_image_ratio_height() or '64px'}}; object-fit: "
+"cover; object-position: center;\" alt=\"Product image\"/>\n"
 "                        </td>\n"
 "                        <td align=\"left\" t-out=\"line.product_id.name or "
 "''\">\t樹木の手入れコース</td>\n"
@@ -665,31 +692,26 @@ msgstr ""
 "out=\"line.product_uom_qty or ''\">1</td>\n"
 "                        <td width=\"20%\" align=\"right\"><span style=\"font-"
 "weight:bold; white-space: nowrap;\">\n"
-"                        <t t-"
-"if=\"object.website_id.show_line_subtotals_tax_selection == "
-"'tax_excluded'\">\n"
-"                            <t t-"
-"out=\"format_amount(line.price_reduce_taxexcl, object.currency_id) or ''\">$ "
-"10.00</t>\n"
+"                        <t t-if=\"hasattr(object, 'website_id') and "
+"object.website_id.show_line_subtotals_tax_selection == 'tax_excluded'\">\n"
+"                            <t t-out=\"format_amount"
+"(line.price_reduce_taxexcl, object.currency_id) or ''\">$ 10.00</t>\n"
 "                        </t>\n"
 "                        <t t-else=\"\">\n"
-"                            <t t-"
-"out=\"format_amount(line.price_reduce_taxinc, object.currency_id) or ''\">$ "
-"10.00</t>\n"
+"                            <t t-out=\"format_amount"
+"(line.price_reduce_taxinc, object.currency_id) or ''\">$ 10.00</t>\n"
 "                        </t>\n"
 "                        </span></td>\n"
 "                    </tr>\n"
 "                </table>\n"
 "            </t>\n"
-"            <t t-if=\"current_section and "
-"(                     line_last                     or "
-"object.order_line[line_index+1].display_type == "
-"'line_section'                     or "
+"            <t t-if=\"current_section and (                     line_last"
+"                     or object.order_line[line_index+1].display_type in "
+"('line_section', 'line_subsection')                     or "
 "object.order_line[line_index+1].product_type == 'combo'                     "
 "or (                         line.combo_item_id                         and "
-"not "
-"object.order_line[line_index+1].combo_item_id                     )                 ) "
-"and not line.is_downpayment\">\n"
+"not object.order_line[line_index+1].combo_item_id                     )"
+"                 ) and not line.is_downpayment\">\n"
 "                <t t-set=\"current_section\" t-value=\"None\"/>\n"
 "                <table width=\"100%\" style=\"color: #454748; font-size: "
 "12px; border-collapse: collapse;\">\n"
@@ -716,7 +738,7 @@ msgstr ""
 "            <tr>\n"
 "                <td style=\"width: 60%\"/>\n"
 "                <td style=\"width: 30%; border-top: 1px solid #dee2e6;\" "
-"align=\"right\"><span style=\"font-weight:bold;\">配送:</span></td>\n"
+"align=\"right\"><span style=\"font-weight:bold;\">配送料:</span></td>\n"
 "                <td style=\"width: 10%; border-top: 1px solid #dee2e6;\" "
 "align=\"right\" t-out=\"format_amount(object.amount_delivery, "
 "object.currency_id) or ''\">$ 0.00</td>\n"
@@ -724,7 +746,7 @@ msgstr ""
 "            <tr>\n"
 "                <td style=\"width: 60%\"/>\n"
 "                <td style=\"width: 30%;\" align=\"right\"><span style=\"font-"
-"weight:bold;\">税抜価格:</span></td>\n"
+"weight:bold;\">税抜金額:</span></td>\n"
 "                <td style=\"width: 10%;\" align=\"right\" t-"
 "out=\"format_amount(object.amount_untaxed, object.currency_id) or ''\">$ "
 "10.00</td>\n"
@@ -737,7 +759,7 @@ msgstr ""
 "            <tr>\n"
 "                <td style=\"width: 60%\"/>\n"
 "                <td style=\"width: 30%; border-top: 1px solid #dee2e6;\" "
-"align=\"right\"><span style=\"font-weight:bold;\">税抜価格:</span></td>\n"
+"align=\"right\"><span style=\"font-weight:bold;\">税抜金額:</span></td>\n"
 "                <td style=\"width: 10%; border-top: 1px solid #dee2e6;\" "
 "align=\"right\" t-out=\"format_amount(object.amount_untaxed, "
 "object.currency_id) or ''\">$ 10.00</td>\n"
@@ -790,8 +812,8 @@ msgstr ""
 "                        <t t-out=\"tx_sudo.token_id.display_name or ''\"/>\n"
 "                    </t>\n"
 "                    <t t-else=\"\">\n"
-"                        <t t-out=\"tx_sudo.provider_id.sudo().name or ''\"/"
-">\n"
+"                        <t t-out=\"tx_sudo.provider_id.sudo().name or ''\"/>"
+"\n"
 "                    </t>\n"
 "                    (<t t-out=\"format_amount(tx_sudo.amount, "
 "object.currency_id) or ''\">$ 10.00</t>)\n"
@@ -799,15 +821,16 @@ msgstr ""
 "            </tr>\n"
 "        </table>\n"
 "    </div>\n"
-"    <div t-if=\"object.partner_shipping_id and not object.only_services\" "
-"style=\"margin: 0px; padding: 0px;\">\n"
+"    <div t-if=\"hasattr(object, 'only_services') and "
+"object.partner_shipping_id and not object.only_services\" style=\"margin: "
+"0px; padding: 0px;\">\n"
 "        <table width=\"100%\" style=\"color: #454748; font-size: 12px;\">\n"
 "            <tr>\n"
 "                <td>\n"
 "                    <br/>\n"
 "                    <span style=\"font-weight:bold;\">配送先:</span>\n"
-"                    <t t-out=\"object.partner_shipping_id.street or "
-"''\">1201 S Figueroa St</t>\n"
+"                    <t t-out=\"object.partner_shipping_id.street or ''\">"
+"1201 S Figueroa St</t>\n"
 "                    <t t-out=\"object.partner_shipping_id.city or ''\">Los "
 "Angeles</t>\n"
 "                    <t t-out=\"object.partner_shipping_id.state_id.name or "
@@ -826,7 +849,7 @@ msgstr ""
 "                    <span style=\"font-weight:bold;\">配送方法:</span>\n"
 "                    <t t-out=\"object.carrier_id.name or ''\"/>\n"
 "                    <t t-if=\"object.amount_delivery == 0.0\">\n"
-"                        (Free)\n"
+"                        (無料)\n"
 "                    </t>\n"
 "                    <t t-else=\"\">\n"
 "                        (<t t-out=\"format_amount(object.amount_delivery, "
@@ -836,7 +859,7 @@ msgstr ""
 "            </tr>\n"
 "            <tr t-if=\"object.carrier_id.carrier_description\">\n"
 "                <td>\n"
-"                    <strong>配送説明:</strong>\n"
+"                    <strong>配送詳細:</strong>\n"
 "                    <t t-out=\"object.carrier_id.carrier_description\"/>\n"
 "                </td>\n"
 "            </tr>\n"
@@ -854,34 +877,19 @@ msgid ""
 "('draft', 'sent') else 'order'\"/>\n"
 "        Hello,\n"
 "        <br/><br/>\n"
-"        Your\n"
-"        <t t-if=\"ctx.get('proforma')\">\n"
-"            Pro forma invoice for <t t-out=\"doc_name or ''\">quotation</t> "
-"<span style=\"font-weight: bold;\" t-out=\"object.name or ''\">S00052</"
-"span>\n"
-"            <t t-if=\"object.origin\">\n"
-"                (with reference: <t t-out=\"object.origin or ''\"/> )\n"
-"            </t>\n"
-"            amounting in <span style=\"font-weight: bold;\" t-"
-"out=\"format_amount(object.amount_total, object.currency_id) or ''\">$ "
-"10.00</span> is available.\n"
+"        Your <t t-out=\"doc_name or ''\">quotation</t> <span style=\"font-"
+"weight: bold;\" t-out=\"object.name or ''\"/>\n"
+"        <t t-if=\"object.origin\">\n"
+"            (with reference: <t t-out=\"object.origin or ''\">S00052</t> )\n"
 "        </t>\n"
-"        <t t-else=\"\">\n"
-"            <t t-out=\"doc_name or ''\">quotation</t> <span style=\"font-"
-"weight: bold;\" t-out=\"object.name or ''\">S00052</span>\n"
-"            <t t-if=\"object.origin\">\n"
-"                (with reference: <t t-out=\"object.origin or ''\">S00052</"
-"t> )\n"
-"            </t>\n"
-"            amounting in <span style=\"font-weight: bold;\" t-"
+"        amounting in <span style=\"font-weight: bold;\" t-"
 "out=\"format_amount(object.amount_total, object.currency_id) or ''\">$ "
 "10.00</span> is ready for review.\n"
-"        </t>\n"
 "        <br/>\n"
 "        <t t-set=\"documents\" t-value=\"object._get_product_documents()\"/"
 ">\n"
 "        <t t-if=\"documents\">\n"
-"            <br/> \n"
+"            <br/>\n"
 "            <t t-if=\"len(documents)&gt;1\">\n"
 "                Here are some additional documents that may interest you:\n"
 "            </t>\n"
@@ -902,11 +910,10 @@ msgid ""
 "        Do not hesitate to contact us if you have any questions.\n"
 "        <t t-if=\"not is_html_empty(object.user_id.signature)\" data-o-mail-"
 "quote-container=\"1\">\n"
-"            <br/><br/>\n"
-"            <t t-out=\"object.user_id.signature or ''\" data-o-mail-"
-"quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/><t t-"
+"out=\"object.user_id.signature or ''\" data-o-mail-quote=\"1\">Mitchell "
+"Admin</t></div>\n"
 "        </t>\n"
-"        <br/><br/>\n"
 "    </p>\n"
 "</div>\n"
 "            "
@@ -915,39 +922,26 @@ msgstr ""
 "    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "        <t t-set=\"doc_name\" t-value=\"'quotation' if object.state in "
 "('draft', 'sent') else 'order'\"/>\n"
-"        お世話になっております。\n"
+"        いつもご利用いただきありがとうございます。\n"
 "        <br/><br/>\n"
-"        お客様の\n"
-"        <t t-if=\"ctx.get('proforma')\">\n"
-"            仮請求書 <t t-out=\"doc_name or ''\">見積書</t> <span "
-"style=\"font-weight: bold;\" t-out=\"object.name or ''\">S00052</span>\n"
-"            <t t-if=\"object.origin\">\n"
-"                (参照番号: <t t-out=\"object.origin or ''\"/> )\n"
-"            </t>\n"
-"            金額 <span style=\"font-weight: bold;\" t-"
-"out=\"format_amount(object.amount_total, object.currency_id) or ''\">$ "
-"10.00</span> がご用意できました。\n"
+"        <t t-out=\"doc_name or ''\">見積書</t> <span style=\"font-weight: "
+"bold;\" t-out=\"object.name or ''\"/>\n"
+"        <t t-if=\"object.origin\">\n"
+"            (参照番号: <t t-out=\"object.origin or ''\">S00052</t> )\n"
 "        </t>\n"
-"        <t t-else=\"\">\n"
-"            <t t-out=\"doc_name or ''\">見積書</t> <span style=\"font-"
-"weight: bold;\" t-out=\"object.name or ''\">S00052</span>\n"
-"            <t t-if=\"object.origin\">\n"
-"                (参照番号: <t t-out=\"object.origin or ''\">S00052</t> )\n"
-"            </t>\n"
-"            金額 <span style=\"font-weight: bold;\" t-"
-"out=\"format_amount(object.amount_total, object.currency_id) or ''\">$ "
-"10.00</span> をご確認頂けます。\n"
-"        </t>\n"
+"        金額： <span style=\"font-weight: bold;\" t-out=\"format_amount"
+"(object.amount_total, object.currency_id) or ''\">$ 10.00</span>のご用意がで"
+"きました。ご確認をお願いたします。\n"
 "        <br/>\n"
-"        <t t-set=\"documents\" t-value=\"object._get_product_documents()\"/"
-">\n"
+"        <t t-set=\"documents\" t-value=\"object._get_product_documents()\"/>"
+"\n"
 "        <t t-if=\"documents\">\n"
-"            <br/> \n"
+"            <br/>\n"
 "            <t t-if=\"len(documents)&gt;1\">\n"
-"                ご参考までに以下のドキュメントをお送りします:\n"
+"                追加で関連ドキュメントをお送りいたします:\n"
 "            </t>\n"
 "            <t t-else=\"\">\n"
-"                ご参考までに以下のドキュメントをお送りします:\n"
+"                追加で関連ドキュメントをお送りいたします:\n"
 "            </t>\n"
 "            <ul style=\"margin-bottom: 0;\">\n"
 "                <t t-foreach=\"documents\" t-as=\"document\">\n"
@@ -960,69 +954,79 @@ msgstr ""
 "            </ul>\n"
 "        </t>\n"
 "        <br/>\n"
-"        ご不明な点がございましたら、お問合せ下さい。\n"
+"        何かご不明な点がございましたら、お気軽にお問い合わせください。よろし"
+"くお願いいたします。\n"
 "        <t t-if=\"not is_html_empty(object.user_id.signature)\" data-o-mail-"
 "quote-container=\"1\">\n"
-"            <br/><br/>\n"
-"            <t t-out=\"object.user_id.signature or ''\" data-o-mail-"
-"quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/><t t-"
+"out=\"object.user_id.signature or ''\" data-o-mail-quote=\"1\">Mitchell "
+"Admin</t></div>\n"
 "        </t>\n"
-"        <br/><br/>\n"
 "    </p>\n"
 "</div>\n"
 "            "
 
 #. module: sale
-#: model:mail.template,body_html:sale.mail_template_sale_cancellation
+#: model:mail.template,body_html:sale.email_template_proforma
 msgid ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
 "    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"        <t t-set=\"doc_name\" t-value=\"object.type_name\"/>\n"
-"        Dear <t t-out=\"object.partner_id.name or ''\">user</t>,\n"
+"        <t t-set=\"doc_name\" t-value=\"'quotation' if object.state in "
+"('draft', 'sent') else 'order'\"/>\n"
+"        Hello,\n"
 "        <br/><br/>\n"
-"        Please be advised that your\n"
-"        <t t-out=\"doc_name or ''\">quotation</t> <strong t-"
-"out=\"object.name or ''\">S00052</strong>\n"
+"        Your Pro forma invoice for <t t-out=\"doc_name or ''\">quotation</t> "
+"<span style=\"font-weight: bold;\" t-out=\"object.name or ''\">S00052</"
+"span>\n"
 "        <t t-if=\"object.origin\">\n"
-"            (with reference: <t t-out=\"object.origin or ''\">S00052</t> )\n"
+"            (with reference: <t t-out=\"object.origin or ''\"/> )\n"
 "        </t>\n"
-"        has been cancelled. Therefore, you should not be charged further for "
-"this order.\n"
-"        If any refund is necessary, this will be executed at best "
-"convenience.\n"
+"        amounting in <span style=\"font-weight: bold;\" t-"
+"out=\"format_amount(object.amount_total, object.currency_id) or ''\">$ "
+"10.00</span> is available.\n"
 "        <br/><br/>\n"
 "        Do not hesitate to contact us if you have any questions.\n"
-"        <br/>\n"
+"        <t t-if=\"not is_html_empty(object.user_id.signature)\" data-o-mail-"
+"quote-container=\"1\">\n"
+"            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/><t t-"
+"out=\"object.user_id.signature or ''\" data-o-mail-quote=\"1\">Mitchell "
+"Admin</t></div>\n"
+"        </t>\n"
 "    </p>\n"
 "</div>\n"
 "            "
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
 "    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"        <t t-set=\"doc_name\" t-value=\"object.type_name\"/>\n"
-"        <t t-out=\"object.partner_id.name or ''\">user</t>様、\n"
+"        <t t-set=\"doc_name\" t-value=\"'quotation' if object.state in "
+"('draft', 'sent') else 'order'\"/>\n"
+"        いつもお世話になっております。\n"
 "        <br/><br/>\n"
-"        あなたの\n"
-"        <t t-out=\"doc_name or ''\">見積書</t> <strong t-out=\"object.name "
-"or ''\">S00052</strong>\n"
+"        <t t-out=\"doc_name or ''\">見積書</t> <span style=\"font-weight: "
+"bold;\" t-out=\"object.name or ''\">S00052</span>\n"
 "        <t t-if=\"object.origin\">\n"
-"            (登録番号: <t t-out=\"object.origin or ''\">S00052</t> )\n"
+"            (参照番号: <t t-out=\"object.origin or ''\"/> )\n"
 "        </t>\n"
-"        がキャンセルされました。そのため、このご注文に関して今後の請求は発生"
-"しません。\n"
-"        払戻しが必要な場合は、早急に対応させて頂きます。\n"
+"        金額 <span style=\"font-weight: bold;\" t-out=\"format_amount"
+"(object.amount_total, object.currency_id) or ''\">$ 10.00</span> の仮請求書の"
+"ご用意ができました。ご確認をお願いいたします。\n"
 "        <br/><br/>\n"
-"        ご質問がございましたら、お問合せ下さい。\n"
-"        <br/>\n"
-"    </p>\n"
+"         ご不明な点がございましたら、お気軽にお問合せ下さい。よろしくお願いい"
+"たします。\n"
+"        <t t-if=\"not is_html_empty(object.user_id.signature)\" data-o-mail-"
+"quote-container=\"1\">\n"
+"                      <div data-o-mail-quote=\"1\">--<br data-o-mail-"
+"quote=\"1\"/><t t-out=\"object.user_id.signature or ''\" data-o-mail-"
+"quote=\"1\">Mitchell Admin</t></div>\n"
+"        </t>\n"
+"   </p>\n"
 "</div>\n"
 "            "
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
 msgid "<i class=\"fa fa-comment\"/> Contact us to get a new quotation."
-msgstr ""
-"<i class=\"fa fa-comment\"/> 新しくお見積が必要な場合はお知らせください。"
+msgstr "<i class=\"fa fa-comment\"/> 新しくお見積が必要な場合はお知らせください。"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
@@ -1042,7 +1046,7 @@ msgstr "<i class=\"fa fa-fw fa-check\"/> 支払済"
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_content
 msgid "<i class=\"fa fa-fw fa-check\"/> Reversed"
-msgstr "<i class=\"fa fa-fw fa-check\"/> 予約済"
+msgstr "<i class=\"fa fa-fw fa-check\"/> 逆仕訳済"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.portal_my_quotations
@@ -1064,7 +1068,7 @@ msgstr ""
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.portal_my_quotations
 msgid "<i class=\"fa fa-fw fa-remove\"/> Cancelled"
-msgstr "<i class=\"fa fa-fw fa-remove\"/> 取消済"
+msgstr "<i class=\"fa fa-fw fa-remove\"/> キャンセル済"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
@@ -1084,15 +1088,6 @@ msgstr "<i class=\"fa fa-print me-1\"/>詳細を表示"
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
 msgid "<i class=\"fa fa-times\"/> Reject"
 msgstr "<i class=\"fa fa-times\"/> 拒否"
-
-#. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.crm_lead_partner_kanban_view
-msgid ""
-"<i class=\"fa fa-usd me-1\" role=\"img\" aria-label=\"Sale orders\" "
-"title=\"Sales orders\"/>"
-msgstr ""
-"<i class=\"fa fa-usd me-1\" role=\"img\" aria-label=\"Sale orders\" "
-"title=\"Sales orders\"/>"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
@@ -1141,28 +1136,9 @@ msgid "<span class=\"o_stat_text\">Sold</span>"
 msgstr "<span class=\"o_stat_text\">販売</span>"
 
 #. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
-msgid ""
-"<span id=\"o_sale_portal_use_amount_total\">\n"
-"                                                By paying,\n"
-"                                            </span>"
-msgstr ""
-"<span id=\"o_sale_portal_use_amount_total\">\n"
-"                                                支払うことで、\n"
-"                                            </span>"
-
-#. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.view_sale_advance_payment_inv
-msgid ""
-"<span invisible=\"1\" class=\"oe_inline text-danger\" title=\"The Down "
-"Payment is greater than the amount remaining to be invoiced.\">\n"
-"                            <i class=\"fa fa-warning\"/>\n"
-"                        </span>"
-msgstr ""
-"<span invisible=\"1\" class=\"oe_inline text-danger\" title=\"The Down "
-"Payment is greater than the amount remaining to be invoiced.\">\n"
-"                            <i class=\"fa fa-warning\"/>\n"
-"                        </span>"
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_pay_modal
+msgid "<span id=\"o_sale_portal_use_amount_total\">By paying,</span>"
+msgstr "<span id=\"o_sale_portal_use_amount_total\">支払いを行うことで、</span>"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.view_sale_advance_payment_inv
@@ -1172,6 +1148,12 @@ msgid ""
 msgstr ""
 "<span invisible=\"advance_payment_method != 'percentage'\" "
 "class=\"oe_inline\">% </span>"
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.report_saleorder_document
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_content
+msgid "<span>1.00 Units</span>"
+msgstr "<span>1.00 単位</span>"
 
 #. module: sale
 #: model_terms:web_tour.tour,rainbow_man_message:sale.sale_tour
@@ -1191,23 +1173,6 @@ msgid "<span>Amount</span>"
 msgstr "<span>金額</span>"
 
 #. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.sale_order_cancel_view_form
-msgid ""
-"<span>Are you sure you want to cancel this order? <br/></span>\n"
-"                        <span id=\"display_invoice_alert\" invisible=\"not "
-"display_invoice_alert\">\n"
-"                            Draft invoices for this order will be cancelled. "
-"<br/>\n"
-"                        </span>"
-msgstr ""
-"<span>このオーダを本当にキャンセルしますか？<br/></span>\n"
-"                        <span id=\"display_invoice_alert\" invisible=\"not "
-"display_invoice_alert\">\n"
-"                            このオーダの請求書ドラフトはキャンセルされます。 "
-"<br/>\n"
-"                        </span>"
-
-#. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.report_saleorder_document
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_content
 msgid "<span>Disc.%</span>"
@@ -1219,6 +1184,7 @@ msgid "<span>Sales visibility</span>"
 msgstr "<span>販売可視性</span>"
 
 #. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.report_saleorder_document
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_content
 msgid "<span>Taxes</span>"
 msgstr "<span>税金</span>"
@@ -1226,8 +1192,7 @@ msgstr "<span>税金</span>"
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
 msgid "<span>Warning: This quote contains archived product(s)</span>"
-msgstr ""
-"<span>警告:この見積もりには アーカイブプロダクトが含まれています。</span>"
+msgstr "<span>警告:この見積もりには アーカイブプロダクトが含まれています。</span>"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
@@ -1241,9 +1206,8 @@ msgstr "<strong class=\"d-block mt-3\">配送先</strong>"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.report_saleorder_document
-#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_content
-msgid "<strong class=\"mr16\">Subtotal</strong>"
-msgstr "<strong class=\"mr16\">小計</strong>"
+msgid "<strong>Delivery Date</strong>"
+msgstr "<strong>納品予定日</strong>"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.report_saleorder_document
@@ -1278,7 +1242,7 @@ msgstr "<strong>このオファーは期限切れです。</strong>"
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
 msgid "<strong>This quotation has been cancelled.</strong>"
-msgstr "<strong>この見積は取消されました。</strong>"
+msgstr "<strong>この見積はキャンセルされました。</strong>"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.report_saleorder_document
@@ -1289,12 +1253,6 @@ msgstr "<strong>参照番号</strong>"
 #: model:ir.model.constraint,message:sale.constraint_sale_order_date_order_conditional_required
 msgid "A confirmed sales order requires a confirmation date."
 msgstr "確認済みの販売注文には確認日が必要です。"
-
-#. module: sale
-#. odoo-python
-#: code:addons/sale/models/sale_order.py:0
-msgid "A line on these orders missing a product, you cannot confirm it."
-msgstr "これらのオーダの明細にプロダクトが抜けている場合、確定できません。"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.report_saleorder_document
@@ -1331,22 +1289,13 @@ msgid ""
 "invoicing,according to their invoicing policy (based on ordered or delivered "
 "quantity)."
 msgstr ""
-"請求ポリシー(オーダ数量または配送済数量に基づく)に従い、請求書発行の準備が"
-"整った全オーダ明細と標準請求書を発行します。"
+"請求ポリシー(オーダ数量または配送済数量に基づく)に従い、請求書発行の準備が整"
+"った全オーダ明細と標準請求書を発行します。"
 
 #. module: sale
 #: model:res.groups,name:sale.group_warning_sale
 msgid "A warning can be set on a product or a customer (Sale)"
 msgstr "プロダクトまたは取引先に警告設定可(販売)"
-
-#. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
-msgid ""
-"Ability to select a package type in sales orders and to force a quantity "
-"that is a multiple of the number of units per package."
-msgstr ""
-"販売オーダにて梱包タイプを選択することで、梱包入数の倍数の数量を強制できるに"
-"なります。"
 
 #. module: sale
 #. odoo-python
@@ -1387,8 +1336,8 @@ msgid ""
 "this sale line\n"
 "  - Stock Moves: the quantity comes from confirmed pickings\n"
 msgstr ""
-"プロダクト構成に応じて、配送済数量はメカニズムによって自動的に計算されま"
-"す：\n"
+"プロダクト構成に応じて、配送済数量はメカニズムによって自動的に計算されます"
+"：\n"
 "  - 手動：数量を明細上で手動で設定します\n"
 "  - 費用からの分析： 数量は計上された費用からの合計数量です\n"
 "  - タイムシート：数量は、この売上明細にリンクされたタスクに記録された時間の"
@@ -1401,12 +1350,8 @@ msgid "Account Chart Template"
 msgstr "勘定科目表テンプレート"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_payment_provider_onboarding_wizard__acc_number
-msgid "Account Number"
-msgstr "口座番号"
-
-#. module: sale
 #: model:ir.actions.act_window,name:sale.action_accrued_revenue_entry
+#: model:ir.actions.act_window,name:sale.action_accrued_revenue_entry_sale_order_line
 msgid "Accrued Revenue Entry"
 msgstr "未収収益仕訳"
 
@@ -1416,9 +1361,24 @@ msgid "Action Needed"
 msgstr "要アクション"
 
 #. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
+msgid "Activate"
+msgstr "有効化"
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
+msgid "Activate Stripe"
+msgstr "Stripeを有効化"
+
+#. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__activity_ids
 #: model:ir.ui.menu,name:sale.sale_menu_config_activities
 msgid "Activities"
+msgstr "活動"
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.view_sales_order_filter
+msgid "Activities of"
 msgstr "活動"
 
 #. module: sale
@@ -1434,7 +1394,7 @@ msgstr "活動計画"
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__activity_state
 msgid "Activity State"
-msgstr "活動状態"
+msgstr "活動ステータス"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__activity_type_icon
@@ -1455,8 +1415,13 @@ msgid ""
 "up\", ...)"
 msgstr ""
 "活動計画は、数回のクリックで活動リストを割当てます。\n"
-"                (例: \"配送スケジュール\"、 \"オーダ支払フォローアップ"
-"\"、 ...)"
+"                (例: \"配送スケジュール\"、 \"オーダ支払フォローアップ\"、 "
+"...)"
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.view_sales_order_filter
+msgid "Activity type"
+msgstr "活動タイプ"
 
 #. module: sale
 #. odoo-javascript
@@ -1512,6 +1477,22 @@ msgid "Add several variants to an order from a grid"
 msgstr "グリッドビューからオーダに複数のバリアントを追加"
 
 #. module: sale
+#. odoo-javascript
+#: code:addons/sale/static/src/js/combo_configurator_dialog/combo_configurator_dialog.xml:0
+msgid "Add to order"
+msgstr "オーダに追加"
+
+#. module: sale
+#: model:ir.actions.act_window,name:sale.mail_followers_edit_action_from_sale
+msgid "Add/Remove Followers"
+msgstr "フォロワーを追加/削除"
+
+#. module: sale
+#: model:ir.model.fields,field_description:sale.field_sale_order_line__allowed_uom_ids
+msgid "Allowed Uom"
+msgstr "許可された単位"
+
+#. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "Allows you to send Pro-Forma Invoice to your customers"
 msgstr "顧客に見積送状を送る"
@@ -1540,12 +1521,12 @@ msgstr ""
 "販売内で顧客とドキュメントを共有できます。\n"
 "このドキュメントを販売顧客と共有したくない場合は、空のままにして下さい。\n"
 "見積時:ドキュメントは顧客に送信され、顧客はいつでもアクセスできます。\n"
-"例: このオプションはプロダクト説明ファイルを共有するのに便利です。\n"
-"オーダ確認時: ドキュメントは顧客に送信され、顧客はアクセスできます。\n"
+"例: このオプションは製品説明書などを共有するのに便利です。\n"
+"注文確定時: ドキュメントは顧客に送信され、アクセス可能になります。\n"
 "例: このオプションはユーザマニュアルやeコマースで購入したデジタルコンテンツを"
-"共有するのに便利です。\n"
-"見積書内:ドキュメントはヘッダページと見積テーブルの間の見積書\n"
-"と販売オーダのPDFに含まれます。"
+"共有するのに適しています。\n"
+"見積書内:ドキュメントは、見積書および販売注文書のPDFにおいて、ヘッダーページ"
+"と見積テーブルの間に挿入されます。 "
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_payment_link_wizard__amount_paid
@@ -1565,6 +1546,7 @@ msgstr "Amazon連携"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_discount__discount_amount
+#: model:ir.model.fields,field_description:sale.field_sale_order_line__amount_to_invoice_at_date
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_line_view_form_readonly
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
 msgid "Amount"
@@ -1576,14 +1558,14 @@ msgid "Amount Before Discount"
 msgstr "割引前の金額"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_crm_team__quotations_amount
-msgid "Amount of quotations to invoice"
-msgstr "請求対象見積金額"
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+msgid "Amount paid:"
+msgstr "支払金額:"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_advance_payment_inv__amount_to_invoice
-msgid "Amount to invoice"
-msgstr "請求予定金額"
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_pay_modal
+msgid "Amount:"
+msgstr "金額:"
 
 #. module: sale
 #: model_terms:ir.actions.act_window,help:sale.action_orders_upselling
@@ -1592,8 +1574,8 @@ msgid ""
 "            ordered quantities, and the invoicing policy is based on ordered "
 "quantities."
 msgstr ""
-"納品数量が当初のオーダ数量を上回り、かつ、請求基準がオーダ数量に基づく場合"
-"に、オーダはアップセルされます。"
+"納品数量が当初のオーダ数量を上回り、かつ、請求基準がオーダ数量に基づく場合に"
+"、オーダはアップセルされます。"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__analytic_distribution
@@ -1641,13 +1623,17 @@ msgstr ""
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.mass_cancel_orders_view_form
-msgid "Are you sure you want to cancel the"
-msgstr "以下を本当に取消しますか？："
+msgid "Are you sure you want to cancel the selected item?"
+msgstr "選択した項目を本当にキャンセルしますか?"
 
 #. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.mass_cancel_orders_view_form
-msgid "Are you sure you want to cancel the selected item?"
-msgstr "選択した項目を本当に取消しますか?"
+#: model_terms:ir.ui.view,arch_db:sale.view_order_form
+msgid ""
+"Are you sure you want to cancel this order? This may affect related "
+"documents or processes."
+msgstr ""
+"このオーダを本当にキャンセルしますか？ 関連ドキュメントや処理に影響が及ぶ可能"
+"性があります。"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
@@ -1664,6 +1650,18 @@ msgid ""
 msgstr ""
 "例えば、サービス時間を前払いで販売する場合、オーダされた時間がすべて消費され"
 "た時点で追加時間を販売することをOdooは推奨しています。"
+
+#. module: sale
+#. odoo-python
+#: code:addons/sale/models/product_product.py:0
+msgid ""
+"As other units of measure (ex : %(problem_uom)s) than %(uom)s have already "
+"been used for this product, the change of unit of measure can not be done.If "
+"you want to change it, please archive the product and create a new one."
+msgstr ""
+"このプロダクトでは、すでに例:%(problem_uom)sなど、他の測定単位(%(uom)sではな"
+"く) が使用されているため、測定単位の変更はできません。変更する場合は、"
+"プロダクトをアーカイブし、新しいプロダクトを作成して下さい。"
 
 #. module: sale
 #: model:ir.model.fields.selection,name:sale.selection__product_template__expense_policy__cost
@@ -1687,11 +1685,6 @@ msgid "Attributes"
 msgstr "属性"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_order_cancel__author_id
-msgid "Author"
-msgstr "作成者"
-
-#. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__authorized_transaction_ids
 msgid "Authorized Transactions"
 msgstr "承認された取引"
@@ -1712,14 +1705,9 @@ msgid "Bacon Burger"
 msgstr "ベーコンバーガー"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_payment_provider_onboarding_wizard__journal_name
-msgid "Bank Name"
-msgstr "銀行名"
-
-#. module: sale
 #: model:ir.model.fields.selection,name:sale.selection__payment_provider__so_reference_type__partner
 msgid "Based on Customer ID"
-msgstr "Client IDに基づく"
+msgstr "クライアントIDに基づく"
 
 #. module: sale
 #: model:ir.model.fields.selection,name:sale.selection__payment_provider__so_reference_type__so_name
@@ -1733,24 +1721,12 @@ msgid "Beat competitors with stunning quotations!"
 msgstr "魅力的な見積で競合他社に打ち勝ちましょう!"
 
 #. module: sale
-#: model:ir.model.fields.selection,name:sale.selection__product_template__sale_line_warn__block
-#: model:ir.model.fields.selection,name:sale.selection__res_partner__sale_warn__block
-msgid "Blocking Message"
-msgstr "ブロッキングメッセージ"
-
-#. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_order_cancel__body_has_template_value
-msgid "Body content is the same as the template"
-msgstr "本文はテンプレートと同じです。"
-
-#. module: sale
 #: model_terms:ir.actions.act_window,help:sale.action_quotations
 #: model_terms:ir.actions.act_window,help:sale.action_quotations_with_onboarding
 msgid ""
 "Boost sales with online payments or signatures, upsells, and a great "
 "customer portal."
-msgstr ""
-"オンライン決済やサイン、アップセル、優れた顧客ポータルで販売を促進します。"
+msgstr "オンライン決済やサイン、アップセル、優れた顧客ポータルで販売を促進します。"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
@@ -1761,9 +1737,8 @@ msgid ""
 "products."
 msgstr ""
 "クーポン、プロモーション、ギフトカード、ロイヤリティなど、様々なキャンペーン"
-"で売上を向上させます。特定な条件を設定できます (プロダクト、顧客、最低購入"
-"数、期間)。リワードとしては、値引 (%又は値引額)や無料プロダクトを提供できま"
-"す。"
+"で売上を向上させます。特定な条件を設定できます (プロダクト、顧客、最低購入数"
+"、期間)。リワードとしては、値引 (%又は値引額)や無料プロダクトを提供できます。"
 
 #. module: sale
 #. odoo-javascript
@@ -1772,17 +1747,17 @@ msgid "Build your first quotation right here!"
 msgstr "最初の見積もりはこちらから！"
 
 #. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_pay_modal
 msgid "By paying a <u>down payment</u> of"
 msgstr "次の<u>前受金</u> を支払うことで:"
 
 #. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_pay_modal
 msgid "By paying,"
 msgstr "支払うことで、"
 
 #. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_sign_modal
 msgid "By signing, you confirm acceptance on behalf of"
 msgstr "署名することにより、以下の代理人として承諾したものとみなされます。"
 
@@ -1795,11 +1770,6 @@ msgid "Campaign"
 msgstr "キャンペーン"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_order_cancel__can_edit_body
-msgid "Can Edit Body"
-msgstr "本文編集可"
-
-#. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__product_updatable
 msgid "Can Edit Product"
 msgstr "プロダクトを編集できます"
@@ -1810,18 +1780,11 @@ msgstr "プロダクトを編集できます"
 #: code:addons/sale/static/src/js/product_configurator_dialog/product_configurator_dialog.xml:0
 #: model:ir.actions.act_window,name:sale.action_mass_cancel_orders
 #: model_terms:ir.ui.view,arch_db:sale.mass_cancel_orders_view_form
-#: model_terms:ir.ui.view,arch_db:sale.sale_order_cancel_view_form
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
 #: model_terms:ir.ui.view,arch_db:sale.view_sale_advance_payment_inv
 msgid "Cancel"
 msgstr "キャンセル"
-
-#. module: sale
-#. odoo-python
-#: code:addons/sale/models/sale_order.py:0
-msgid "Cancel %s"
-msgstr "キャンセル %s"
 
 #. module: sale
 #: model:ir.model,name:sale.model_sale_mass_cancel_orders
@@ -1837,7 +1800,7 @@ msgstr "見積書をキャンセル"
 #: model:ir.model.fields.selection,name:sale.selection__sale_order__state__cancel
 #: model:ir.model.fields.selection,name:sale.selection__sale_report__state__cancel
 msgid "Cancelled"
-msgstr "取消済"
+msgstr "キャンセル済"
 
 #. module: sale
 #. odoo-python
@@ -1871,7 +1834,7 @@ msgstr ""
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
 msgid "Capture Transaction"
-msgstr "取引をキャプチャする"
+msgstr "取引を確定する"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
@@ -1879,9 +1842,9 @@ msgid "Catalog"
 msgstr "カタログ"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_order_line__product_uom_category_id
-msgid "Category"
-msgstr "カテゴリー"
+#: model:ir.ui.menu,name:sale.menu_product_categories
+msgid "Categories"
+msgstr "カテゴリ"
 
 #. module: sale
 #: model:product.template,name:sale.product_product_1_product_template
@@ -1913,14 +1876,32 @@ msgstr "ここをクリックして見積にプロダクトやサービスを追
 
 #. module: sale
 #. odoo-javascript
+#: code:addons/sale/static/src/js/product_card/product_card.xml:0
+msgid "Click to configure"
+msgstr "クリックして設定"
+
+#. module: sale
+#. odoo-javascript
 #: code:addons/sale/static/src/xml/sales_team_progress_bar_template.xml:0
 msgid "Click to define an invoicing target"
 msgstr "クリックして請求目標を定義します"
 
 #. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_pay_modal
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_sign_modal
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
 msgid "Close"
 msgstr "閉じる"
+
+#. module: sale
+#: model:ir.model.fields,field_description:sale.field_sale_order_line__collapse_composition
+msgid "Collapse Composition"
+msgstr "構成を折りたたむ"
+
+#. module: sale
+#: model:ir.model.fields,field_description:sale.field_sale_order_line__collapse_prices
+msgid "Collapse Prices"
+msgstr "価格を折りたたむ"
 
 #. module: sale
 #: model:ir.ui.menu,name:sale.menu_product_combos
@@ -1931,6 +1912,12 @@ msgstr "コンボの選択肢"
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__combo_item_id
 msgid "Combo Item"
 msgstr "コンボアイテム"
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.report_saleorder_document
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_content
+msgid "Combo Product"
+msgstr "コンボプロダクト"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_res_config_settings__module_sale_commission
@@ -1983,6 +1970,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "Compute shipping costs and ship with Easypost"
 msgstr "Easypostで配送費用計算し出荷"
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
+msgid "Compute shipping costs and ship with Envia.com"
+msgstr "Envia.comで送料を計算し、発送する"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
@@ -2045,11 +2037,16 @@ msgstr "オーダで配送費用を計算"
 #. module: sale
 #: model:ir.model,name:sale.model_res_config_settings
 msgid "Config Settings"
-msgstr "コンフィグ設定"
+msgstr "構成設定"
 
 #. module: sale
 #: model:ir.ui.menu,name:sale.menu_sale_config
 msgid "Configuration"
+msgstr "設定"
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
+msgid "Configure"
 msgstr "設定"
 
 #. module: sale
@@ -2060,7 +2057,6 @@ msgstr "プロダクトを設定する"
 
 #. module: sale
 #. odoo-javascript
-#: code:addons/sale/static/src/js/combo_configurator_dialog/combo_configurator_dialog.xml:0
 #: code:addons/sale/static/src/js/product_configurator_dialog/product_configurator_dialog.xml:0
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
 msgid "Confirm"
@@ -2072,9 +2068,14 @@ msgid "Confirmation Message"
 msgstr "確認メッセージ"
 
 #. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+msgid "Connect with your software!"
+msgstr "自社のシステムと連携"
+
+#. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "Connectors"
-msgstr "コネクタ"
+msgstr "コネクター"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_advance_payment_inv__consolidated_billing
@@ -2087,18 +2088,9 @@ msgid "Contact"
 msgstr "連絡先"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_order_cancel__body
-msgid "Contents"
-msgstr "内容"
-
-#. module: sale
-#: model:ir.model.fields,help:sale.field_sale_order_line__product_uom_category_id
-msgid ""
-"Conversion between Units of Measure can only occur if they belong to the "
-"same category. The conversion will be made based on the ratios."
-msgstr ""
-"単位間の変換は同じカテゴリに属している場合のみ可能です。変換は比率に基づいて"
-"行われます。"
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+msgid "Copy"
+msgstr "コピー"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__country_code
@@ -2130,6 +2122,11 @@ msgstr "請求書作成"
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_tree
 msgid "Create Invoices"
 msgstr "請求書作成"
+
+#. module: sale
+#: model:ir.model,website_form_label:sale.model_res_partner
+msgid "Create a Customer"
+msgstr "顧客を作成する"
 
 #. module: sale
 #: model_terms:ir.actions.act_window,help:sale.mail_activity_plan_action_sale_order
@@ -2176,29 +2173,26 @@ msgstr "オーダ時に作成"
 #. module: sale
 #: model:ir.model.fields,help:sale.field_sale_advance_payment_inv__consolidated_billing
 msgid ""
-"Create one invoice for all orders related to same customer and same "
-"invoicing address"
+"Create one invoice for all orders related to same customer, same invoicing "
+"address and same delivery address."
 msgstr ""
-"同じ顧客、同じ請求先に関連する全てのオーダに対して1つの請求書を作成します。"
+"同じ顧客、請求先、配送先に関連するすべてのオーダについて、1つの顧客請求書を作"
+"成します。"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_advance_payment_inv__create_uid
 #: model:ir.model.fields,field_description:sale.field_sale_mass_cancel_orders__create_uid
 #: model:ir.model.fields,field_description:sale.field_sale_order__create_uid
-#: model:ir.model.fields,field_description:sale.field_sale_order_cancel__create_uid
 #: model:ir.model.fields,field_description:sale.field_sale_order_discount__create_uid
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__create_uid
-#: model:ir.model.fields,field_description:sale.field_sale_payment_provider_onboarding_wizard__create_uid
 msgid "Created by"
 msgstr "作成者"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_advance_payment_inv__create_date
 #: model:ir.model.fields,field_description:sale.field_sale_mass_cancel_orders__create_date
-#: model:ir.model.fields,field_description:sale.field_sale_order_cancel__create_date
 #: model:ir.model.fields,field_description:sale.field_sale_order_discount__create_date
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__create_date
-#: model:ir.model.fields,field_description:sale.field_sale_payment_provider_onboarding_wizard__create_date
 msgid "Created on"
 msgstr "作成日"
 
@@ -2216,11 +2210,6 @@ msgid ""
 msgstr "ドラフト/送信済み注文の作成日、確認済オーダの確認日。"
 
 #. module: sale
-#: model:ir.model.fields.selection,name:sale.selection__sale_payment_provider_onboarding_wizard__payment_method__stripe
-msgid "Credit & Debit card (via Stripe)"
-msgstr "クレジット＆デビットカード（Stripe経由）"
-
-#. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_advance_payment_inv__currency_id
 #: model:ir.model.fields,field_description:sale.field_sale_order__currency_id
 #: model:ir.model.fields,field_description:sale.field_sale_order_discount__currency_id
@@ -2236,23 +2225,11 @@ msgid "Currency Rate"
 msgstr "為替レート"
 
 #. module: sale
-#: model:product.attribute.value,name:sale.product_attribute_value_7
-msgid "Custom"
-msgstr "カスタム"
-
-#. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__product_custom_attribute_value_ids
 msgid "Custom Values"
 msgstr "カスタム値"
 
 #. module: sale
-#: model:ir.model.fields.selection,name:sale.selection__sale_payment_provider_onboarding_wizard__payment_method__manual
-msgid "Custom payment instructions"
-msgstr "カスタム支払案内"
-
-#. module: sale
-#. odoo-python
-#: code:addons/sale/models/sale_order.py:0
 #: model:ir.model.fields,field_description:sale.field_sale_order__partner_id
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__order_partner_id
 #: model:ir.model.fields,field_description:sale.field_sale_report__partner_id
@@ -2302,12 +2279,6 @@ msgstr "顧客ステータス"
 #: model:ir.model.fields,field_description:sale.field_sale_report__partner_zip
 msgid "Customer ZIP"
 msgstr "顧客郵便番号"
-
-#. module: sale
-#. odoo-python
-#: code:addons/sale/wizard/payment_link_wizard.py:0
-msgid "Customer needs to pay at least %(amount)s to confirm the order."
-msgstr "オーダを確定するには顧客は少なくとも%(amount)s支払う必要があります。"
 
 #. module: sale
 #: model:ir.ui.menu,name:sale.menu_reporting_customer
@@ -2377,8 +2348,8 @@ msgid ""
 "Default period during which the quote is valid and can still be accepted by "
 "the customer. The default can be changed per order or template."
 msgstr ""
-"見積が有効で、顧客が受諾可能なデフォルト期間。デフォルトはオーダまたはテンプ"
-"レートごとに変更できます。"
+"見積が有効で、顧客が受諾可能なデフォルト期間。デフォルトはオーダまたは"
+"テンプレートごとに変更できます。"
 
 #. module: sale
 #: model:ir.model.fields,help:sale.field_res_company__sale_discount_product_id
@@ -2386,11 +2357,18 @@ msgid "Default product used for discounts"
 msgstr "値引に使用されるデフォルトプロダクト"
 
 #. module: sale
+#. odoo-javascript
+#: code:addons/sale/static/src/js/sale_order_line_field/sale_order_line_field.xml:0
+msgid "Delete"
+msgstr "削除"
+
+#. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "Deliver Content by Email"
 msgstr "Eメールで内容を配信"
 
 #. module: sale
+#: model:ir.model.fields,field_description:sale.field_sale_order_line__qty_delivered_at_date
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
 msgid "Delivered"
 msgstr "配送済"
@@ -2415,7 +2393,7 @@ msgstr "配送先"
 #: model:ir.model.fields,field_description:sale.field_sale_order__commitment_date
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
 msgid "Delivery Date"
-msgstr "配送日"
+msgstr "納品予定日"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_content
@@ -2463,7 +2441,6 @@ msgstr "値引率"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.mass_cancel_orders_view_form
-#: model_terms:ir.ui.view,arch_db:sale.sale_order_cancel_view_form
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_line_wizard_form
 msgid "Discard"
 msgstr "破棄"
@@ -2492,7 +2469,7 @@ msgstr "割引 %(percent)s%%"
 #. odoo-python
 #: code:addons/sale/wizard/sale_order_discount.py:0
 msgid "Discount %(percent)s%%- On products with the following taxes %(taxes)s"
-msgstr "割引 %(percent)s%%- 対象:以下の税のプロダクト %(taxes)s"
+msgstr "値引 %(percent)s%%- 対象:以下の税のプロダクト %(taxes)s"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__discount
@@ -2528,7 +2505,7 @@ msgstr "明細の割引"
 #. odoo-python
 #: code:addons/sale/wizard/sale_order_discount.py:0
 msgid "Discount- On products with the following taxes %(taxes)s"
-msgstr " 割引 - 対象:以下の税のプロダクト: %(taxes)s"
+msgstr "割引 - 対象:以下の税のプロダクト: %(taxes)s"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
@@ -2537,6 +2514,7 @@ msgstr "割引:"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_res_config_settings__group_discount_per_so_line
+#: model_terms:ir.ui.view,arch_db:sale.view_order_form
 msgid "Discounts"
 msgstr "割引"
 
@@ -2546,19 +2524,34 @@ msgid "Display Draft Invoice Warning"
 msgstr "請求書ドラフトの警告を表示する"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_advance_payment_inv__display_invoice_amount_warning
-msgid "Display Invoice Amount Warning"
-msgstr "請求書の警告を表示する"
-
-#. module: sale
+#: model:ir.model.fields,field_description:sale.field_account_analytic_applicability__display_name
+#: model:ir.model.fields,field_description:sale.field_account_analytic_line__display_name
+#: model:ir.model.fields,field_description:sale.field_account_chart_template__display_name
+#: model:ir.model.fields,field_description:sale.field_account_invoice_report__display_name
+#: model:ir.model.fields,field_description:sale.field_account_move__display_name
+#: model:ir.model.fields,field_description:sale.field_account_move_line__display_name
+#: model:ir.model.fields,field_description:sale.field_base_document_layout__display_name
+#: model:ir.model.fields,field_description:sale.field_crm_team__display_name
+#: model:ir.model.fields,field_description:sale.field_ir_actions_report__display_name
+#: model:ir.model.fields,field_description:sale.field_ir_config_parameter__display_name
+#: model:ir.model.fields,field_description:sale.field_payment_link_wizard__display_name
+#: model:ir.model.fields,field_description:sale.field_payment_provider__display_name
+#: model:ir.model.fields,field_description:sale.field_payment_transaction__display_name
+#: model:ir.model.fields,field_description:sale.field_product_attribute_custom_value__display_name
+#: model:ir.model.fields,field_description:sale.field_product_document__display_name
+#: model:ir.model.fields,field_description:sale.field_product_pricelist_item__display_name
+#: model:ir.model.fields,field_description:sale.field_product_product__display_name
+#: model:ir.model.fields,field_description:sale.field_product_template__display_name
+#: model:ir.model.fields,field_description:sale.field_res_company__display_name
+#: model:ir.model.fields,field_description:sale.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:sale.field_res_partner__display_name
 #: model:ir.model.fields,field_description:sale.field_sale_advance_payment_inv__display_name
 #: model:ir.model.fields,field_description:sale.field_sale_mass_cancel_orders__display_name
 #: model:ir.model.fields,field_description:sale.field_sale_order__display_name
-#: model:ir.model.fields,field_description:sale.field_sale_order_cancel__display_name
 #: model:ir.model.fields,field_description:sale.field_sale_order_discount__display_name
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__display_name
-#: model:ir.model.fields,field_description:sale.field_sale_payment_provider_onboarding_wizard__display_name
 #: model:ir.model.fields,field_description:sale.field_sale_report__display_name
+#: model:ir.model.fields,field_description:sale.field_utm_campaign__display_name
 msgid "Display Name"
 msgstr "表示名"
 
@@ -2575,12 +2568,12 @@ msgstr "分配分析勘定"
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "Documentation"
-msgstr "ドキュメント"
+msgstr "ドキュメンテーション"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_content
 msgid "Documents"
-msgstr "書類"
+msgstr "ドキュメント"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_account_analytic_applicability__business_domain
@@ -2599,7 +2592,7 @@ msgstr "前受金"
 #. odoo-python
 #: code:addons/sale/models/sale_order_line.py:0
 msgid "Down Payment (Cancelled)"
-msgstr "前払 (取消済)"
+msgstr "前払 (キャンセル済)"
 
 #. module: sale
 #. odoo-python
@@ -2626,6 +2619,11 @@ msgid "Down Payments"
 msgstr "前受金"
 
 #. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+msgid "Down payment"
+msgstr "前受金"
+
+#. module: sale
 #: model:ir.model.fields.selection,name:sale.selection__sale_advance_payment_inv__advance_payment_method__fixed
 msgid "Down payment (fixed amount)"
 msgstr "前受金 (固定金額)"
@@ -2636,7 +2634,7 @@ msgid "Down payment (percentage)"
 msgstr "前受金 (パーセント)"
 
 #. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_pay_modal_amount_selector
 msgid "Down payment <br/>"
 msgstr "頭金<br/>"
 
@@ -2662,7 +2660,8 @@ msgstr ""
 "らはコピーされません。"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_product_category__property_account_downpayment_categ_id
+#: model:ir.model.fields,field_description:sale.field_res_company__downpayment_account_id
+#: model:ir.model.fields,field_description:sale.field_res_config_settings__downpayment_account_id
 msgid "Downpayment Account"
 msgstr "前受金勘定"
 
@@ -2672,6 +2671,15 @@ msgstr "前受金勘定"
 #: model_terms:ir.ui.view,arch_db:sale.view_sale_advance_payment_inv
 msgid "Draft Invoices"
 msgstr "ドラフト請求書"
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+msgid ""
+"Drag and drop the request for quotation PDF file into your list of "
+"quotations in Odoo. Enjoy the automation!"
+msgstr ""
+"見積依頼のPDFファイルをOdooの見積一覧にドラッグ&ドロップします。自動処理をご"
+"活用下さい!"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
@@ -2695,19 +2703,9 @@ msgid "Edit Configuration"
 msgstr "構成の編集"
 
 #. module: sale
-#: model:ir.model.fields.selection,name:sale.selection__sale_payment_provider_onboarding_wizard__payment_method__digital_signature
-msgid "Electronic signature"
-msgstr "電子署名"
-
-#. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_payment_provider_onboarding_wizard__paypal_email_account
-msgid "Email"
-msgstr "メール"
-
-#. module: sale
-#: model:ir.model,name:sale.model_mail_compose_message
-msgid "Email composition wizard"
-msgstr "メール作成アシスタント"
+#: model:ir.model.fields,field_description:sale.field_res_config_settings__invoice_mail_template_id
+msgid "Email Template"
+msgstr "メールテンプレート"
 
 #. module: sale
 #: model:ir.model.fields,help:sale.field_res_config_settings__invoice_mail_template_id
@@ -2721,12 +2719,9 @@ msgid "Enter a customized value"
 msgstr "カスタム値を入力"
 
 #. module: sale
-#. odoo-python
-#: code:addons/sale/models/sale_order.py:0
-msgid ""
-"Error importing attachment '%(file_name)s' as order (decoder=%(decoder)s)"
-msgstr ""
-"オーダとして添付 '%(file_name)s' インポート中のエラー (デコーダ=%(decoder)s)"
+#: model:ir.model.fields,field_description:sale.field_res_config_settings__module_delivery_envia
+msgid "Envia.com Connector"
+msgstr "Envia.com コネクタ"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__expected_date
@@ -2751,12 +2746,12 @@ msgstr "有効期限"
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_content
 msgid "Expiration Date:"
-msgstr "有効期日"
+msgstr "有効期限日:"
 
 #. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.view_order_product_search
-msgid "Extended Filters"
-msgstr "拡張フィルタ"
+#: model:ir.model.fields,field_description:sale.field_sale_order_line__extra_tax_data
+msgid "Extra Tax Data"
+msgstr "追加税データ"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__product_no_variant_attribute_value_ids
@@ -2770,7 +2765,7 @@ msgid "Extra line with %s"
 msgstr "%sの追加明細"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_res_config_settings__module_delivery_fedex
+#: model:ir.model.fields,field_description:sale.field_res_config_settings__module_delivery_fedex_rest
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "FedEx Connector"
 msgstr "FedExコネクター"
@@ -2815,6 +2810,15 @@ msgid "Font awesome icon e.g. fa-tasks"
 msgstr "Font awesomeのアイコン 例. fa-tasks"
 
 #. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.product_pricelist_item_form
+msgid ""
+"For formula or fixed pricing, the original price isn’t shown in\n"
+"                                sale orders."
+msgstr ""
+"定価または固定価格の場合、販売オーダには元の\n"
+"                                価格は表示されません。"
+
+#. module: sale
 #: model:ir.model.constraint,message:sale.constraint_sale_order_line_non_accountable_null_fields
 msgid "Forbidden values on non-accountable sale order line"
 msgstr "説明責任のない販売注文明細の禁止値"
@@ -2826,12 +2830,12 @@ msgid ""
 "customer. The search tool can also be used to personalise your Invoices "
 "reports and so, match this analysis to your needs."
 msgstr ""
-"このレポートから、お客様に請求される金額の概要を知ることができます。 検索ツー"
-"ルを使用して請求書のレポートをパーソナライズすることもできます。この分析を要"
-"件に合わせることができます。"
+"このレポートから、お客様に請求される金額の概要を知ることができます。 検索"
+"ツールを使用して請求書のレポートをパーソナライズすることもできます。この分析"
+"を要件に合わせることができます。"
 
 #. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_pay_modal_amount_selector
 msgid "Full amount <br/>"
 msgstr "全額<br/>"
 
@@ -2848,6 +2852,11 @@ msgstr "全額請求済"
 #: model_terms:ir.ui.view,arch_db:sale.view_sales_order_filter
 msgid "Future Activities"
 msgstr "今後の活動"
+
+#. module: sale
+#: model:ir.model.fields,field_description:sale.field_res_config_settings__module_sale_gelato
+msgid "Gelato"
+msgstr "Gelato"
 
 #. module: sale
 #: model:ir.model,name:sale.model_payment_link_wizard
@@ -2906,13 +2915,6 @@ msgid "Gross Weight"
 msgstr "総重量"
 
 #. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.view_order_product_search
-#: model_terms:ir.ui.view,arch_db:sale.view_sales_order_filter
-#: model_terms:ir.ui.view,arch_db:sale.view_sales_order_line_filter
-msgid "Group By"
-msgstr "グループ化"
-
-#. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__has_active_pricelist
 msgid "Has Active Pricelist"
 msgstr "有効な価格表あり"
@@ -2921,6 +2923,11 @@ msgstr "有効な価格表あり"
 #: model:ir.model.fields,field_description:sale.field_sale_order__has_archived_products
 msgid "Has Archived Products"
 msgstr "アーカイブ済プロダクトあり"
+
+#. module: sale
+#: model:ir.model.fields,field_description:sale.field_sale_order__has_authorized_transaction_ids
+msgid "Has Authorized Transactions"
+msgstr "承認済み取引あり"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_mass_cancel_orders__has_confirmed_order
@@ -2953,14 +2960,34 @@ msgid "Hidden"
 msgstr "非表示"
 
 #. module: sale
+#: model:ir.model.fields,field_description:sale.field_account_analytic_applicability__id
+#: model:ir.model.fields,field_description:sale.field_account_analytic_line__id
+#: model:ir.model.fields,field_description:sale.field_account_chart_template__id
+#: model:ir.model.fields,field_description:sale.field_account_invoice_report__id
+#: model:ir.model.fields,field_description:sale.field_account_move__id
+#: model:ir.model.fields,field_description:sale.field_account_move_line__id
+#: model:ir.model.fields,field_description:sale.field_base_document_layout__id
+#: model:ir.model.fields,field_description:sale.field_crm_team__id
+#: model:ir.model.fields,field_description:sale.field_ir_actions_report__id
+#: model:ir.model.fields,field_description:sale.field_ir_config_parameter__id
+#: model:ir.model.fields,field_description:sale.field_payment_link_wizard__id
+#: model:ir.model.fields,field_description:sale.field_payment_provider__id
+#: model:ir.model.fields,field_description:sale.field_payment_transaction__id
+#: model:ir.model.fields,field_description:sale.field_product_attribute_custom_value__id
+#: model:ir.model.fields,field_description:sale.field_product_document__id
+#: model:ir.model.fields,field_description:sale.field_product_pricelist_item__id
+#: model:ir.model.fields,field_description:sale.field_product_product__id
+#: model:ir.model.fields,field_description:sale.field_product_template__id
+#: model:ir.model.fields,field_description:sale.field_res_company__id
+#: model:ir.model.fields,field_description:sale.field_res_config_settings__id
+#: model:ir.model.fields,field_description:sale.field_res_partner__id
 #: model:ir.model.fields,field_description:sale.field_sale_advance_payment_inv__id
 #: model:ir.model.fields,field_description:sale.field_sale_mass_cancel_orders__id
 #: model:ir.model.fields,field_description:sale.field_sale_order__id
-#: model:ir.model.fields,field_description:sale.field_sale_order_cancel__id
 #: model:ir.model.fields,field_description:sale.field_sale_order_discount__id
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__id
-#: model:ir.model.fields,field_description:sale.field_sale_payment_provider_onboarding_wizard__id
 #: model:ir.model.fields,field_description:sale.field_sale_report__id
+#: model:ir.model.fields,field_description:sale.field_utm_campaign__id
 msgid "ID"
 msgstr "ID"
 
@@ -2983,7 +3010,7 @@ msgstr "チェックした場合は、新しいメッセージに注意が必要
 #: model:ir.model.fields,help:sale.field_sale_order__message_has_error
 #: model:ir.model.fields,help:sale.field_sale_order__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr "チェックした場合は、一部のメッセージに配信エラーが発生されました。"
+msgstr "有効にすると、一部のメッセージに配信エラーが発生します。"
 
 #. module: sale
 #: model:ir.model.fields,help:sale.field_sale_order__journal_id
@@ -3000,13 +3027,8 @@ msgid ""
 "If the sale is locked, you can not modify it anymore. However, you will "
 "still be able to invoice or deliver."
 msgstr ""
-"販売がロックされている場合は、これ以上編集できません。ただし、請求や出荷は引"
-"き続き可能です。"
-
-#. module: sale
-#: model:ir.model.fields,help:sale.field_product_packaging__sales
-msgid "If true, the packaging can be used for sales orders"
-msgstr "Trueの場合、パッケージングを販売オーダに使用できます"
+"販売がロックされている場合は、これ以上修正することはできません。 ただし、引き"
+"続き請求や配達が可能です。"
 
 #. module: sale
 #: model:ir.model.fields,help:sale.field_sale_order__pricelist_id
@@ -3024,10 +3046,37 @@ msgid "Import Amazon orders and sync deliveries"
 msgstr "Amazonオーダインポートおよび運送同期"
 
 #. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
+msgid "Import Shopee orders and sync deliveries"
+msgstr "Shopeeオーダインポートと配送同期"
+
+#. module: sale
 #. odoo-python
 #: code:addons/sale/models/product_template.py:0
 msgid "Import Template for Products"
 msgstr "プロダクトテンプレートをインポート"
+
+#. module: sale
+#. odoo-python
+#: code:addons/sale/models/sale_order.py:0
+msgid "Import Template for Quotations"
+msgstr "見積もり用テンプレートをインポート"
+
+#. module: sale
+#. odoo-javascript
+#: code:addons/sale/static/src/views/sale_file_upload_kanban/sale_file_upload_kanban_renderer.js:0
+#: code:addons/sale/static/src/views/sale_file_upload_list/sale_file_upload_list_renderer.js:0
+msgid "Import a request for quotation from a customer"
+msgstr "顧客からの見積申請をインポート"
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.product_pricelist_item_form
+msgid ""
+"In sale order line original price is unit price and discount is in\n"
+"                                discount column."
+msgstr ""
+"販売オーダの明細では、元価格は単価、\n"
+"                                割引は割引列になります。"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.product_view_search_catalog
@@ -3038,6 +3087,19 @@ msgstr "オーダ内で"
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
 msgid "Incl. tax)"
 msgstr "税込)"
+
+#. module: sale
+#. odoo-javascript
+#: code:addons/sale/static/src/js/combo_configurator_dialog/combo_configurator_dialog.xml:0
+msgid "Included"
+msgstr "込み"
+
+#. module: sale
+#: model:ir.model.fields,help:sale.field_account_bank_statement_line__sale_warning_text
+#: model:ir.model.fields,help:sale.field_account_move__sale_warning_text
+#: model:ir.model.fields,help:sale.field_sale_order__sale_warning_text
+msgid "Internal warning for the partner or the products as set by the user."
+msgstr "ユーザが設定した取引先またはプロダクトに対する内部警告です。"
 
 #. module: sale
 #. odoo-python
@@ -3069,34 +3131,24 @@ msgid "Invoice Address"
 msgstr "請求先"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_order_cancel__display_invoice_alert
-msgid "Invoice Alert"
-msgstr "請求書アラート"
-
-#. module: sale
-#: model:mail.message.subtype,name:sale.mt_salesteam_invoice_confirmed
-msgid "Invoice Confirmed"
-msgstr "請求書確認済"
-
-#. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__invoice_count
 msgid "Invoice Count"
 msgstr "請求書数"
 
 #. module: sale
-#: model:mail.message.subtype,name:sale.mt_salesteam_invoice_created
-msgid "Invoice Created"
-msgstr "請求書作成済"
-
-#. module: sale
-#: model:ir.model.fields,field_description:sale.field_res_config_settings__invoice_mail_template_id
-msgid "Invoice Email Template"
-msgstr "請求書メールテンプレート"
-
-#. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__invoice_lines
 msgid "Invoice Lines"
 msgstr "請求明細"
+
+#. module: sale
+#: model:mail.message.subtype,name:sale.mt_salesteam_invoice_paid
+msgid "Invoice Paid"
+msgstr "請求書が支払われました"
+
+#. module: sale
+#: model:mail.message.subtype,name:sale.mt_salesteam_invoice_posted
+msgid "Invoice Posted"
+msgstr "請求書が計上されました"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.view_sale_advance_payment_inv
@@ -3129,8 +3181,8 @@ msgid ""
 "has invoiced this month. It is used to compute the progression ratio of the "
 "current and target revenue on the kanban view."
 msgstr ""
-"今月の請求書収入。これは、販売チャネルが今月請求した金額です。これは、カンバ"
-"ンビューでの現在の収益と目標収益の進行率を計算するために使用されます。"
+"今月の請求書収入。これは、販売チャネルが今月請求した金額です。これは、"
+"カンバンビューでの現在の収益と目標収益の進行率を計算するために使用されます。"
 
 #. module: sale
 #: model:ir.model.fields.selection,name:sale.selection__res_config_settings__default_invoice_policy__delivery
@@ -3143,6 +3195,7 @@ msgid "Invoice what is ordered"
 msgstr "オーダ済数量を請求"
 
 #. module: sale
+#: model:ir.model.fields,field_description:sale.field_sale_order_line__qty_invoiced_at_date
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
 msgid "Invoiced"
 msgstr "請求済"
@@ -3192,7 +3245,6 @@ msgid "Invoices Statistics"
 msgstr "請求書の統計情報"
 
 #. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.crm_team_view_kanban_dashboard
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
 msgid "Invoicing"
@@ -3233,11 +3285,6 @@ msgid "Is Downpayment"
 msgstr "前受金である"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_order_cancel__is_mail_template_editor
-msgid "Is Editor"
-msgstr "編集者である"
-
-#. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__is_expired
 msgid "Is Expired"
 msgstr "期限切れである"
@@ -3245,7 +3292,7 @@ msgstr "期限切れである"
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__message_is_follower
 msgid "Is Follower"
-msgstr "フォロー中　"
+msgstr "フォロー中"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__is_product_archived
@@ -3296,11 +3343,6 @@ msgid "Journal Item"
 msgstr "仕訳明細"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_order_cancel__lang
-msgid "Language"
-msgstr "言語"
-
-#. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_content
 msgid "Last Invoices"
 msgstr "最終請求書"
@@ -3309,10 +3351,8 @@ msgstr "最終請求書"
 #: model:ir.model.fields,field_description:sale.field_sale_advance_payment_inv__write_uid
 #: model:ir.model.fields,field_description:sale.field_sale_mass_cancel_orders__write_uid
 #: model:ir.model.fields,field_description:sale.field_sale_order__write_uid
-#: model:ir.model.fields,field_description:sale.field_sale_order_cancel__write_uid
 #: model:ir.model.fields,field_description:sale.field_sale_order_discount__write_uid
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__write_uid
-#: model:ir.model.fields,field_description:sale.field_sale_payment_provider_onboarding_wizard__write_uid
 msgid "Last Updated by"
 msgstr "最終更新者"
 
@@ -3320,10 +3360,8 @@ msgstr "最終更新者"
 #: model:ir.model.fields,field_description:sale.field_sale_advance_payment_inv__write_date
 #: model:ir.model.fields,field_description:sale.field_sale_mass_cancel_orders__write_date
 #: model:ir.model.fields,field_description:sale.field_sale_order__write_date
-#: model:ir.model.fields,field_description:sale.field_sale_order_cancel__write_date
 #: model:ir.model.fields,field_description:sale.field_sale_order_discount__write_date
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__write_date
-#: model:ir.model.fields,field_description:sale.field_sale_payment_provider_onboarding_wizard__write_date
 msgid "Last Updated on"
 msgstr "最終更新日"
 
@@ -3385,29 +3423,25 @@ msgid "Locked orders cannot be modified."
 msgstr "ロックされたオーダは修正できません。"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_order_cancel__template_id
-msgid "Mail Template"
-msgstr "メールテンプレート"
-
-#. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid ""
 "Make your quote attractive by adding header pages, product descriptions and "
 "footer pages to your quote."
 msgstr ""
 "見積書にヘッダーページ、プロダクト説明、フッターページを追加して、魅力的な見"
-"積書を作成しましょう。"
+"積書を作成しましょう"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "Manage Promotions, Coupons, Loyalty cards, Gift cards & eWallet"
 msgstr ""
-"プロモーション、クーポン、ロイヤリティカード、ギフトカードや電子財布を管理"
+"プロモーション、クーポン、ロイヤリティカード、ギフトカードや電子財布を管理し"
+"ます"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "Manage Sales & teams targets and commissions"
-msgstr "販売 & チーム目標およコミッション管理"
+msgstr "販売 & チーム目標およびコミッションを管理します"
 
 #. module: sale
 #: model:ir.model.fields.selection,name:sale.selection__sale_order_line__qty_delivered_method__manual
@@ -3449,7 +3483,7 @@ msgstr "マージン"
 #. module: sale
 #: model:ir.actions.server,name:sale.model_sale_order_action_quotation_sent
 msgid "Mark Quotation as Sent"
-msgstr "見積を送信済としてマーク"
+msgstr "見積を送信済とする"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.account_invoice_form
@@ -3462,13 +3496,7 @@ msgstr "マーケティング"
 #: model:ir.model.fields,field_description:sale.field_sale_order__medium_id
 #: model:ir.model.fields,field_description:sale.field_sale_report__medium_id
 msgid "Medium"
-msgstr "媒体"
-
-#. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.product_template_form_view
-#: model_terms:ir.ui.view,arch_db:sale.res_partner_view_buttons
-msgid "Message"
-msgstr "メッセージ"
+msgstr "中"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__message_has_error
@@ -3482,25 +3510,19 @@ msgid "Message for Sales Order"
 msgstr "販売オーダのメッセージ"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_product_product__sale_line_warn_msg
-#: model:ir.model.fields,field_description:sale.field_product_template__sale_line_warn_msg
-msgid "Message for Sales Order Line"
-msgstr "販売オーダ明細のメッセージ"
-
-#. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__message_ids
 msgid "Messages"
 msgstr "メッセージ"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_payment_provider_onboarding_wizard__manual_name
-msgid "Method"
-msgstr "方法"
-
-#. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__qty_delivered_method
 msgid "Method to update delivered qty"
 msgstr "納品数量を更新する方法"
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.product_pricelist_item_form
+msgid "Min Qty"
+msgstr "最小数量"
 
 #. module: sale
 #: model:ir.model.constraint,message:sale.constraint_sale_order_line_accountable_required_fields
@@ -3511,6 +3533,23 @@ msgstr "説明責任のある販売注文明細に必須フィールドがあり
 #: model_terms:ir.ui.view,arch_db:sale.report_saleorder_document
 msgid "Mitchell Admin"
 msgstr "Mitchell Admin"
+
+#. module: sale
+#. odoo-javascript
+#: code:addons/sale/static/src/js/sale_order_line_field/sale_order_line_field.xml:0
+msgid "Move Down"
+msgstr "下へ移動"
+
+#. module: sale
+#. odoo-javascript
+#: code:addons/sale/static/src/js/sale_order_line_field/sale_order_line_field.xml:0
+msgid "Move Up"
+msgstr "上へ移動"
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.view_sales_order_filter
+msgid "My Activities"
+msgstr "自分の活動"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__my_activity_date_deadline
@@ -3569,12 +3608,6 @@ msgid "No"
 msgstr "いいえ"
 
 #. module: sale
-#: model:ir.model.fields.selection,name:sale.selection__product_template__sale_line_warn__no-message
-#: model:ir.model.fields.selection,name:sale.selection__res_partner__sale_warn__no-message
-msgid "No Message"
-msgstr "メッセージなし"
-
-#. module: sale
 #. odoo-python
 #: code:addons/sale/models/sale_order.py:0
 msgid "No attachment was provided"
@@ -3583,12 +3616,12 @@ msgstr "添付がありません"
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.report_saleorder_document
 msgid "No further requirements for this payment"
-msgstr "この支払に関する追加条件はありません。"
+msgstr "この支払に関する追加条件はありません"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "No longer edit orders once confirmed"
-msgstr "確認済オーダは編集しない"
+msgstr "一度確定されたオーダは編集できなくなります"
 
 #. module: sale
 #: model_terms:ir.actions.act_window,help:sale.action_orders_to_invoice
@@ -3598,7 +3631,12 @@ msgstr "請求対象オーダがありません"
 #. module: sale
 #: model_terms:ir.actions.act_window,help:sale.action_orders_upselling
 msgid "No orders to upsell found."
-msgstr "アップセルの注文は見つかりませんでした。"
+msgstr "アップセルするオーダは見つかりませんでした"
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+msgid "Not using Odoo?"
+msgstr "Odooを使用していませんか？"
 
 #. module: sale
 #: model:ir.model.fields.selection,name:sale.selection__sale_order_line__display_type__line_note
@@ -3629,7 +3667,7 @@ msgstr "アクション数"
 msgid ""
 "Number of days between the order confirmation and the shipping of the "
 "products to the customer"
-msgstr "オーダ確認と顧客へのプロダクトの出荷までの日数"
+msgstr "オーダ確定と顧客へのプロダクトの出荷までの日数"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__message_has_error_counter
@@ -3639,7 +3677,7 @@ msgstr "エラー数"
 #. module: sale
 #: model:ir.model.fields,help:sale.field_sale_order__message_needaction_counter
 msgid "Number of messages requiring action"
-msgstr "アクションを必要とするメッセージの数"
+msgstr "対応が必要なメッセージ数"
 
 #. module: sale
 #: model:ir.model.fields,help:sale.field_sale_order__message_has_error_counter
@@ -3647,29 +3685,24 @@ msgid "Number of messages with delivery error"
 msgstr "配信エラーが発生されたメッセージ数"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_crm_team__quotations_count
-msgid "Number of quotations to invoice"
-msgstr "請求対象見積数"
-
-#. module: sale
-#: model:ir.model.fields,field_description:sale.field_crm_team__sales_to_invoice_count
-msgid "Number of sales to invoice"
-msgstr "請求対象販売数"
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+msgid "Odoo"
+msgstr "Odoo"
 
 #. module: sale
 #: model:product.template,description_sale:sale.product_product_1_product_template
-msgid "Office chairs can harm your floor: protect it."
-msgstr "オフィスチェアで床が傷つくことがあります:床を守りましょう。"
+msgid "Office chairs can harm your floor: protect it"
+msgstr "オフィスチェアで床が傷つくことがあります:床を保護しましょう"
 
 #. module: sale
 #: model:ir.model.fields.selection,name:sale.selection__sale_order_discount__discount_type__sol_discount
 msgid "On All Order Lines"
-msgstr "全てのオーダ明細上で"
+msgstr "すべてのオーダ明細上で"
 
 #. module: sale
 #: model:ir.model.fields.selection,name:sale.selection__product_document__attached_on_sale__sale_order
 msgid "On confirmed order"
-msgstr "確認済オーダ内"
+msgstr "確定済オーダ内"
 
 #. module: sale
 #: model:ir.model.fields.selection,name:sale.selection__product_document__attached_on_sale__quotation
@@ -3705,8 +3738,8 @@ msgid ""
 "Once the quotation is confirmed, it becomes a sales order.<br> You will be "
 "able to create an invoice and collect the payment."
 msgstr ""
-"見積が確定すると、受注となります。<br>請求書を作成し、支払いを回収することが"
-"できます。"
+"見積が確定すると、販売オーダとなります。<br>請求書を作成し、支払いを回収する"
+"ことができます"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_res_company__portal_confirmation_pay
@@ -3744,7 +3777,7 @@ msgstr "確認済の前払のみが考慮されます"
 #. odoo-python
 #: code:addons/sale/models/sale_order.py:0
 msgid "Only draft orders can be marked as sent directly."
-msgstr "送信済として直接マークできるのはドラフトオーダのみです。"
+msgstr "送信済として直接マークできるのはドラフトオーダのみです"
 
 #. module: sale
 #: model:ir.model.constraint,message:sale.constraint_product_attribute_custom_value_sol_custom_value_unique
@@ -3754,21 +3787,9 @@ msgstr "受注明細ごとの属性値ごとに許可されるカスタム値は
 
 #. module: sale
 #. odoo-python
-#: code:addons/sale/models/product_product.py:0
-msgid "Operation not supported"
-msgstr "操作はサポートされていません"
-
-#. module: sale
-#. odoo-python
 #: code:addons/sale/models/sale_order_line.py:0
 msgid "Option for: %s"
 msgstr "次のもの用のオプション: %s"
-
-#. module: sale
-#. odoo-python
-#: code:addons/sale/models/sale_order_line.py:0
-msgid "Option: %s"
-msgstr "オプション: %s"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_product_product__optional_product_ids
@@ -3784,19 +3805,7 @@ msgid ""
 "(cross-sell strategy, e.g. for computers: warranty, software, etc.)."
 msgstr ""
 "オプションプロダクトは、*カートに入れる*(クロスセル戦略、たとえばコンピュータ"
-"の場合：保証、ソフトウェアなど)をクリックするたびに表示されます。"
-
-#. module: sale
-#: model:ir.model.fields,help:sale.field_sale_order_cancel__lang
-msgid ""
-"Optional translation language (ISO code) to select when sending out an "
-"email. If not set, the english version will be used. This should usually be "
-"a placeholder expression that provides the appropriate language, e.g. "
-"{{ object.partner_id.lang }}."
-msgstr ""
-"メールを送信時に、オプションで選択可能な翻訳言語 (ISOコード)。セットしてない"
-"場合は、英語版が使われます。これは通常、適切な言語を提供するプレースホルダ式"
-"であります、例: {{ object.partner_id.lang }}"
+"の場合：保証、ソフトウェアなど)をクリックするたびに表示されます"
 
 #. module: sale
 #. odoo-python
@@ -3865,20 +3874,10 @@ msgid "Order Status"
 msgstr "オーダステータス"
 
 #. module: sale
-#: model:mail.activity.type,name:sale.mail_act_sale_upsell
-msgid "Order Upsell"
-msgstr "オーダアップセル"
-
-#. module: sale
 #. odoo-python
 #: code:addons/sale/controllers/portal.py:0
 msgid "Order signed by %s"
 msgstr "%sにより署名されたオーダ"
-
-#. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.crm_team_view_kanban_dashboard
-msgid "Order to Invoice"
-msgstr "請求対象オーダ"
 
 #. module: sale
 #. odoo-python
@@ -3910,7 +3909,6 @@ msgstr "オーダ"
 #. module: sale
 #: model:ir.actions.act_window,name:sale.action_orders_to_invoice
 #: model:ir.ui.menu,name:sale.menu_sale_order_invoice
-#: model_terms:ir.ui.view,arch_db:sale.crm_team_view_kanban_dashboard
 msgid "Orders to Invoice"
 msgstr "請求対象オーダ"
 
@@ -3947,14 +3945,15 @@ msgid "PRO-FORMA Invoice"
 msgstr "仮請求書"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_order_line__product_packaging_id
+#. odoo-javascript
+#: code:addons/sale/static/src/js/product/product.js:0
 msgid "Packaging"
 msgstr "パッケージング"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_order_line__product_packaging_qty
-msgid "Packaging Quantity"
-msgstr "パッケージング数量"
+#: model:ir.model.fields,field_description:sale.field_sale_order_line__parent_id
+msgid "Parent Section Line"
+msgstr "親セクション明細行"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__partner_credit_warning
@@ -3967,13 +3966,17 @@ msgid "Pay Now"
 msgstr "今すぐ支払う"
 
 #. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_pay_modal
+msgid "Pay Order"
+msgstr "ペイオーダ"
+
+#. module: sale
 #: model:ir.model.fields.selection,name:sale.selection__res_company__sale_onboarding_payment_method__other
 msgid "Pay with another payment provider"
 msgstr "他の決済プロバイダーで支払います"
 
 #. module: sale
 #: model:ir.model.fields.selection,name:sale.selection__res_company__sale_onboarding_payment_method__paypal
-#: model:ir.model.fields.selection,name:sale.selection__sale_payment_provider_onboarding_wizard__payment_method__paypal
 msgid "PayPal"
 msgstr "PayPal"
 
@@ -3983,12 +3986,8 @@ msgid "Payment"
 msgstr "支払"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_payment_provider_onboarding_wizard__manual_post_msg
-msgid "Payment Instructions"
-msgstr "支払方法"
-
-#. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_payment_provider_onboarding_wizard__payment_method
+#: model:ir.model.fields,field_description:sale.field_sale_order__preferred_payment_method_line_id
+#: model_terms:ir.ui.view,arch_db:sale.view_sales_order_filter
 msgid "Payment Method"
 msgstr "支払方法"
 
@@ -4004,7 +4003,6 @@ msgstr "決済プロバイダー"
 
 #. module: sale
 #: model:ir.ui.menu,name:sale.payment_provider_menu
-#: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "Payment Providers"
 msgstr "決済プロバイダー"
 
@@ -4041,7 +4039,12 @@ msgstr "支払取引金額"
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_content
 msgid "Payment terms"
-msgstr "支払条件"
+msgstr "支払期限"
+
+#. module: sale
+#: model:ir.model.fields,field_description:sale.field_sale_order__pending_email_template_id
+msgid "Pending Email Template"
+msgstr "保留メールテンプレート"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_discount__discount_percentage
@@ -4049,9 +4052,19 @@ msgid "Percentage"
 msgstr "パーセンテージ"
 
 #. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
+msgid "Place orders through Gelato's print-on-demand service"
+msgstr "Gelatoのオンデマンド印刷サービスでオーダする"
+
+#. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__access_url
 msgid "Portal Access URL"
 msgstr "ポータルアクセスURL"
+
+#. module: sale
+#: model:ir.model.fields,field_description:sale.field_payment_link_wizard__prepayment_amount
+msgid "Prepayment Amount"
+msgstr "前受金額"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_res_company__prepayment_percent
@@ -4071,12 +4084,6 @@ msgstr "前払パーセンテージは有効なパーセンテージにして下
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
 msgid "Preview"
 msgstr "プレビュー表示"
-
-#. module: sale
-#. odoo-javascript
-#: code:addons/sale/static/src/js/product_list/product_list.xml:0
-msgid "Price"
-msgstr "価格"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__price_reduce_taxexcl
@@ -4100,6 +4107,11 @@ msgid "Pricelist Item"
 msgstr "価格表項目"
 
 #. module: sale
+#: model:ir.model,name:sale.model_product_pricelist_item
+msgid "Pricelist Rule"
+msgstr "価格表ルール"
+
+#. module: sale
 #: model:ir.ui.menu,name:sale.menu_product_pricelist_main
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "Pricelists"
@@ -4109,6 +4121,11 @@ msgstr "価格表"
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "Pricing"
 msgstr "価格設定"
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.view_order_form
+msgid "Print"
+msgstr "印刷"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_res_config_settings__group_proforma_sales
@@ -4155,12 +4172,7 @@ msgid "Product Catalog Product Is In Sale Order"
 msgstr "プロダクトカタログのプロダクトが販売オーダにあります"
 
 #. module: sale
-#: model:ir.ui.menu,name:sale.menu_product_categories
-msgid "Product Categories"
-msgstr "プロダクトカテゴリ"
-
-#. module: sale
-#: model:ir.model,name:sale.model_product_category
+#: model:ir.model.fields,field_description:sale.field_sale_order_line__categ_id
 #: model:ir.model.fields,field_description:sale.field_sale_report__categ_id
 #: model_terms:ir.ui.view,arch_db:sale.view_order_product_search
 msgid "Product Category"
@@ -4173,15 +4185,11 @@ msgstr "プロダクトドキュメント"
 
 #. module: sale
 #. odoo-javascript
+#: code:addons/sale/static/src/js/combo_configurator_dialog/combo_configurator_dialog.xml:0
 #: code:addons/sale/static/src/js/product/product.xml:0
 #: code:addons/sale/static/src/js/product_card/product_card.xml:0
 msgid "Product Image"
 msgstr "プロダクト画像"
-
-#. module: sale
-#: model:ir.model,name:sale.model_product_packaging
-msgid "Product Packaging"
-msgstr "プロダクトパッケージング"
 
 #. module: sale
 #: model:ir.ui.menu,name:sale.menu_product_tags
@@ -4285,8 +4293,6 @@ msgid "Quantities to invoice from sales orders"
 msgstr "販売オーダからの未請求数量"
 
 #. module: sale
-#. odoo-javascript
-#: code:addons/sale/static/src/js/product_list/product_list.xml:0
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__product_uom_qty
 #: model_terms:ir.ui.view,arch_db:sale.report_saleorder_document
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_content
@@ -4309,7 +4315,6 @@ msgstr "数量:"
 #: code:addons/sale/models/sale_order.py:0
 #: model:ir.model.fields.selection,name:sale.selection__sale_order__state__draft
 #: model:ir.model.fields.selection,name:sale.selection__sale_report__state__draft
-#: model_terms:ir.ui.view,arch_db:sale.crm_team_view_kanban_dashboard
 #: model_terms:ir.ui.view,arch_db:sale.product_document_search
 msgid "Quotation"
 msgstr "見積"
@@ -4373,7 +4378,6 @@ msgstr "顧客%sが見積を参照しました。"
 #: model:ir.actions.act_window,name:sale.action_quotations_salesteams
 #: model:ir.actions.act_window,name:sale.action_quotations_with_onboarding
 #: model:ir.ui.menu,name:sale.menu_sale_quotations
-#: model_terms:ir.ui.view,arch_db:sale.crm_team_view_kanban_dashboard
 #: model_terms:ir.ui.view,arch_db:sale.portal_my_home_menu_sale
 #: model_terms:ir.ui.view,arch_db:sale.portal_my_quotations
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_view_search_inherit_quotation
@@ -4422,9 +4426,9 @@ msgid "Re-Invoice Policy visible"
 msgstr "再請求書ポリシーが表示されます"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_order_cancel__recipient_ids
-msgid "Recipients"
-msgstr "宛先"
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+msgid "Read the documentation"
+msgstr "ドキュメンテーションをお読み下さい。"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.product_template_view_form
@@ -4439,7 +4443,7 @@ msgstr "この価格表に基づいてすべての価格を再計算します"
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
 msgid "Recompute all taxes based on this fiscal position"
-msgstr "この会計ポジションに基づいて、全ての税を再計算します"
+msgstr "この会計ポジションに基づいて、すべての税を再計算します"
 
 #. module: sale
 #: model:ir.model.fields,help:sale.field_sale_order__origin
@@ -4469,9 +4473,9 @@ msgid "Remove one"
 msgstr "一つを削除"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_order_cancel__render_model
-msgid "Rendering Model"
-msgstr "レンダリングモデル"
+#: model:ir.model,name:sale.model_ir_actions_report
+msgid "Report Action"
+msgstr "レポートアクション"
 
 #. module: sale
 #: model:ir.ui.menu,name:sale.menu_sale_report
@@ -4560,8 +4564,13 @@ msgid "Sale Information"
 msgstr "販売情報"
 
 #. module: sale
+#: model:ir.model.fields,field_description:sale.field_account_move_line__sale_line_warn_msg
+#: model:ir.model.fields,field_description:sale.field_sale_order_line__sale_line_warn_msg
+msgid "Sale Line Warn Msg"
+msgstr "販売明細行警告メッセージ"
+
+#. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_advance_payment_inv__sale_order_ids
-#: model:ir.model.fields,field_description:sale.field_sale_order_cancel__order_id
 #: model:ir.model.fields,field_description:sale.field_sale_order_discount__sale_order_id
 #: model:ir.model.fields.selection,name:sale.selection__account_analytic_applicability__business_domain__sale_order
 msgid "Sale Order"
@@ -4586,6 +4595,8 @@ msgid "Sale Order Warnings"
 msgstr "販売オーダ警告"
 
 #. module: sale
+#. odoo-python
+#: code:addons/sale/models/res_partner.py:0
 #: model_terms:ir.ui.view,arch_db:sale.account_invoice_form
 msgid "Sale Orders"
 msgstr "販売オーダ"
@@ -4596,9 +4607,11 @@ msgid "Sale Orders Count"
 msgstr "販売オーダ数"
 
 #. module: sale
-#: model:ir.model,name:sale.model_sale_payment_provider_onboarding_wizard
-msgid "Sale Payment provider onboarding wizard"
-msgstr "販売決済プロバイダーオンボーディングウィザード"
+#: model:ir.model.fields,field_description:sale.field_account_bank_statement_line__sale_warning_text
+#: model:ir.model.fields,field_description:sale.field_account_move__sale_warning_text
+#: model:ir.model.fields,field_description:sale.field_sale_order__sale_warning_text
+msgid "Sale Warning"
+msgstr "販売警告"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
@@ -4616,7 +4629,6 @@ msgid "Sale orders to cancel"
 msgstr "キャンセルする販売オーダ"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_product_packaging__sales
 #: model:ir.ui.menu,name:sale.menu_reporting_sales
 #: model:ir.ui.menu,name:sale.sale_menu_root
 #: model_terms:ir.ui.view,arch_db:sale.crm_team_view_kanban_dashboard
@@ -4686,11 +4698,6 @@ msgid "Sales Order"
 msgstr "販売オーダ"
 
 #. module: sale
-#: model:ir.model,name:sale.model_sale_order_cancel
-msgid "Sales Order Cancel"
-msgstr "受注キャンセル"
-
-#. module: sale
 #: model:mail.message.subtype,name:sale.mt_order_confirmed
 #: model:mail.message.subtype,name:sale.mt_salesteam_order_confirmed
 msgid "Sales Order Confirmed"
@@ -4705,10 +4712,14 @@ msgstr "販売オーダ項目"
 #. module: sale
 #: model:ir.model,name:sale.model_sale_order_line
 #: model:ir.model.fields,field_description:sale.field_product_attribute_custom_value__sale_order_line_id
-#: model:ir.model.fields,field_description:sale.field_product_product__sale_line_warn
-#: model:ir.model.fields,field_description:sale.field_product_template__sale_line_warn
 msgid "Sales Order Line"
 msgstr "販売オーダ明細"
+
+#. module: sale
+#: model:ir.model.fields,field_description:sale.field_product_product__sale_line_warn_msg
+#: model:ir.model.fields,field_description:sale.field_product_template__sale_line_warn_msg
+msgid "Sales Order Line Warning"
+msgstr "販売オーダ明細警告"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_account_move_line__sale_line_ids
@@ -4744,6 +4755,7 @@ msgstr "販売オーダ"
 #: model_terms:ir.ui.view,arch_db:sale.portal_my_home_menu_sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_tree
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_view_search_inherit_quotation
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_view_search_inherit_sale
 #: model_terms:ir.ui.view,arch_db:sale.view_order_product_search
 #: model_terms:ir.ui.view,arch_db:sale.view_order_tree
 #: model_terms:ir.ui.view,arch_db:sale.view_sale_order_calendar
@@ -4773,20 +4785,15 @@ msgid "Sales Teams"
 msgstr "販売チーム"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_res_partner__sale_warn
-#: model:ir.model.fields,field_description:sale.field_res_users__sale_warn
-msgid "Sales Warnings"
-msgstr "販売警告"
-
-#. module: sale
 #: model:ir.model.fields,help:sale.field_account_analytic_line__so_line
 msgid ""
 "Sales order item to which the time spent will be added in order to be "
 "invoiced to your customer. Remove the sales order item for the timesheet "
 "entry to be non-billable."
 msgstr ""
-"顧客に請求するために、使用した時間を追加する販売オーダ項目。タイムシートエン"
-"トリーを非請求対象にするには、販売オーダ項目を削除して下さい。"
+"顧客に請求するために、使用した時間を追加する販売オーダ項目。"
+"タイムシートエントリーを非請求対象にするには、販売オーダ項目を削除して下さい"
+"。"
 
 #. module: sale
 #: model:ir.model.fields.selection,name:sale.selection__product_template__expense_policy__sales_price
@@ -4794,30 +4801,29 @@ msgid "Sales price"
 msgstr "販売価格"
 
 #. module: sale
-#: model:mail.template,name:sale.mail_template_sale_cancellation
-msgid "Sales: Order Cancellation"
-msgstr "販売：オーダキャンセル"
-
-#. module: sale
 #: model:mail.template,name:sale.mail_template_sale_confirmation
 msgid "Sales: Order Confirmation"
-msgstr "販売：注文確認"
+msgstr "販売: オーダ確定"
 
 #. module: sale
 #: model:mail.template,name:sale.mail_template_sale_payment_executed
 msgid "Sales: Payment Done"
-msgstr "販売：支払済"
+msgstr "販売: 支払済"
+
+#. module: sale
+#: model:mail.template,name:sale.email_template_proforma
+msgid "Sales: Send Proforma"
+msgstr "販売: 仮請求書を送付"
 
 #. module: sale
 #: model:mail.template,name:sale.email_template_edi_sale
 msgid "Sales: Send Quotation"
-msgstr "販売: 見積送付"
+msgstr "販売: 見積書を送付"
 
 #. module: sale
-#. odoo-python
-#: code:addons/sale/models/crm_team.py:0
-msgid "Sales: Untaxed Total"
-msgstr "販売高:非課税合計"
+#: model:ir.actions.server,name:sale.send_pending_emails_cron_ir_actions_server
+msgid "Sales: Send pending emails"
+msgstr "販売: 保留中のEメールを送信"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__user_id
@@ -4835,11 +4841,6 @@ msgid "Salespersons"
 msgstr "販売担当者"
 
 #. module: sale
-#: model:ir.model,name:sale.model_mail_scheduled_message
-msgid "Scheduled Message"
-msgstr "送信予約済メッセージ"
-
-#. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.view_sales_order_filter
 #: model_terms:ir.ui.view,arch_db:sale.view_sales_order_line_filter
 msgid "Search Sales Order"
@@ -4849,7 +4850,7 @@ msgstr "販売オーダ検索"
 #. odoo-javascript
 #: code:addons/sale/static/src/js/tours/sale.js:0
 msgid "Search a customer name, or create one on the fly."
-msgstr "顧客名を検索するか、その場で作成します。"
+msgstr "顧客名を検索するか、その場で作成できます"
 
 #. module: sale
 #: model:ir.model.fields.selection,name:sale.selection__sale_order_line__display_type__line_section
@@ -4862,6 +4863,12 @@ msgid "Section Name (eg. Products, Services)"
 msgstr "セクション名 (例 プロダクト、サービス)"
 
 #. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.report_saleorder_document
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_content
+msgid "Section Summary"
+msgstr "セクション要約"
+
+#. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__access_token
 msgid "Security Token"
 msgstr "セキュリティトークン"
@@ -4870,7 +4877,7 @@ msgstr "セキュリティトークン"
 #. odoo-javascript
 #: code:addons/sale/static/src/js/tours/sale.js:0
 msgid "Select a product, or create a new one on the fly."
-msgstr "プロダクトを選択するか、その場で新しいプロダクトを作成します。"
+msgstr "プロダクトを選択するか、その場で新しいプロダクトを作成できます"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__selected_combo_items
@@ -4878,33 +4885,21 @@ msgid "Selected Combo Items"
 msgstr "選択済コンボ項目"
 
 #. module: sale
-#: model:ir.model.fields,help:sale.field_product_product__sale_line_warn
-#: model:ir.model.fields,help:sale.field_product_template__sale_line_warn
-#: model:ir.model.fields,help:sale.field_res_partner__sale_warn
-#: model:ir.model.fields,help:sale.field_res_users__sale_warn
-msgid ""
-"Selecting the \"Warning\" option will notify user with the message, "
-"Selecting \"Blocking Message\" will throw an exception with the message and "
-"block the flow. The Message has to be written in the next field."
-msgstr ""
-"警告オプションを選択するとユーザにメッセージを通知します。メッセージをブロッ"
-"クを選択するとメッセージとともに例外が発生しその流れがブロックされます。メッ"
-"セージは次の項目で記述する必要があります。"
-
-#. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
-msgid "Sell and purchase products in different units of measure"
-msgstr "複数の異なる単位での販売/購買"
-
-#. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
-msgid "Sell products by multiple of unit # per package"
-msgstr "荷姿あたりのユニット数の倍数でプロダクトを販売"
+msgid "Sell and purchase products in different units of measure or packagings"
+msgstr "異なる測定単位やパッケージングでプロダクトを販売および購買する"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "Sell variants of a product using attributes (size, color, etc.)"
-msgstr "属性（サイズ、色など）を使用してプロダクトのバリエーションを販売"
+msgstr "属性（サイズ、色など）を使用してプロダクトのバリエーションを販売できます"
+
+#. module: sale
+#. odoo-python
+#: code:addons/sale/models/sale_order.py:0
+#: model_terms:ir.ui.view,arch_db:sale.view_order_form
+msgid "Send"
+msgstr "送信"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
@@ -4920,16 +4915,6 @@ msgstr "請求書検証の際にプロダクトに関するEメールを送信"
 #: model:ir.actions.server,name:sale.model_sale_order_send_mail
 msgid "Send an email"
 msgstr "Eメールを送信"
-
-#. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.sale_order_cancel_view_form
-msgid "Send and cancel"
-msgstr "送信と取り消し"
-
-#. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.view_order_form
-msgid "Send by Email"
-msgstr "Eメールで送信"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_res_config_settings__module_delivery_sendcloud
@@ -4948,14 +4933,9 @@ msgstr ""
 "から、Eメールテンプレートを作成してください。"
 
 #. module: sale
-#: model:mail.template,description:sale.mail_template_sale_cancellation
-msgid "Sent automatically to customers when you cancel an order"
-msgstr "オーダをキャンセルした際、顧客に自動的に送られる"
-
-#. module: sale
 #: model:mail.template,description:sale.mail_template_sale_confirmation
 msgid "Sent to customers on order confirmation"
-msgstr "オーダを確定した際、顧客に自動的に送られる"
+msgstr "オーダ確定時に、顧客に自動的に送られる"
 
 #. module: sale
 #: model:mail.template,description:sale.mail_template_sale_payment_executed
@@ -5007,9 +4987,14 @@ msgid "Shiprocket Connector"
 msgstr "Shiprocketコネクタ"
 
 #. module: sale
+#: model:ir.model.fields,field_description:sale.field_res_config_settings__module_sale_shopee
+msgid "Shopee Sync"
+msgstr "Shopee同期"
+
+#. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.view_sales_order_filter
-msgid "Show all records which has next action date is before today"
-msgstr "次のアクションの日付が今日より前のすべてのレコードを表示"
+msgid "Show all records whose next activity date is past"
+msgstr "次回活動日が過去のすべてのレコードを表示"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
@@ -5055,6 +5040,11 @@ msgid "Signed On"
 msgstr "署名日"
 
 #. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.mass_cancel_orders_view_form
+msgid "So, are you sure you want to cancel these"
+msgstr "これらの項目を本当にキャンセルしても"
+
+#. module: sale
 #: model:ir.model.fields,field_description:sale.field_product_product__sales_count
 #: model:ir.model.fields,field_description:sale.field_product_template__sales_count
 msgid "Sold"
@@ -5073,7 +5063,15 @@ msgid ""
 "                        affected by the cancellation."
 msgstr ""
 "一部の確定した販売オーダが選択されています。その関連ドキュメントが\n"
-"                        取消による影響を受ける可能性があります。"
+"                        キャンセルによる影響を受ける可能性があります。"
+
+#. module: sale
+#. odoo-python
+#: code:addons/sale/models/sale_order.py:0
+msgid ""
+"Some order lines are missing a product, you need to correct them before "
+"going further."
+msgstr "一部のオーダ明細にプロダクトが欠落しています。先に進む前に修正してください。"
 
 #. module: sale
 #. odoo-python
@@ -5092,7 +5090,7 @@ msgstr "参照元"
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__origin
 msgid "Source Document"
-msgstr "参照元ドキュメント"
+msgstr "元ドキュメント"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_res_config_settings__module_product_email_template
@@ -5105,11 +5103,16 @@ msgid "Starshipit Connector"
 msgstr "Starshipitコネクタ"
 
 #. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+msgid "Start on Odoo"
+msgstr "Odooで始めましょう"
+
+#. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__state
 #: model:ir.model.fields,field_description:sale.field_sale_report__state
 #: model_terms:ir.ui.view,arch_db:sale.view_order_product_search
 msgid "Status"
-msgstr "状態"
+msgstr "ステータス"
 
 #. module: sale
 #: model:ir.model.fields,help:sale.field_sale_order__activity_state
@@ -5120,7 +5123,7 @@ msgid ""
 "Planned: Future activities."
 msgstr ""
 "活動に基づくステータス\n"
-"期限超過：期限日がすでに過ぎています\n"
+"遅延: 期日が既に過ぎています\n"
 "今日: 活動日は今日です\n"
 "予定: 将来の活動。"
 
@@ -5130,10 +5133,23 @@ msgid "Stripe"
 msgstr "Stripe"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_order_cancel__subject
-#: model_terms:ir.ui.view,arch_db:sale.sale_order_cancel_view_form
-msgid "Subject"
-msgstr "件名"
+#: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
+msgid ""
+"Stripe Connect is not available in your country, please use another payment "
+"provider."
+msgstr ""
+"Stripe Connectはお客様の国では使用できません。他の決済プロバイダーをご利用く"
+"ださい。"
+
+#. module: sale
+#: model:ir.model.fields.selection,name:sale.selection__sale_order_line__display_type__line_subsection
+msgid "Subsection"
+msgstr "サブセクション"
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.view_order_form
+msgid "Subsection Name"
+msgstr "サブセクション名"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__price_subtotal
@@ -5162,7 +5178,7 @@ msgid ""
 "state 'done' or 'authorized' and linked to this order."
 msgstr ""
 "オンライン支払フォームを通じて行われた取引のうち、 '完了' または '認証済' の"
-"状態にあり、このオーダにリンクされている取引の合計。"
+"ステータスにあり、このオーダにリンクされている取引の合計。"
 
 #. module: sale
 #: model:ir.model,name:sale.model_ir_config_parameter
@@ -5177,6 +5193,7 @@ msgstr "タグ"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.report_saleorder_document
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_content
 msgid "Tax 15%"
 msgstr "税率 15%"
 
@@ -5223,16 +5240,9 @@ msgstr "税計算丸め方法"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__amount_tax
-#: model:ir.model.fields,field_description:sale.field_sale_order_discount__tax_ids
-#: model:ir.model.fields,field_description:sale.field_sale_order_line__tax_id
-#: model_terms:ir.ui.view,arch_db:sale.report_saleorder_document
+#: model:ir.model.fields,field_description:sale.field_sale_order_line__tax_ids
 msgid "Taxes"
 msgstr "税金"
-
-#. module: sale
-#: model:ir.model.fields,help:sale.field_sale_order_discount__tax_ids
-msgid "Taxes to add on the discount line."
-msgstr "割引明細に追加する税"
 
 #. module: sale
 #. odoo-python
@@ -5242,7 +5252,7 @@ msgid ""
 "cancelling them or archiving the team instead."
 msgstr ""
 "%(team_name)sチームには %(sale_order_count)sの有効な販売オーダがあります。 そ"
-"れらを取消するか、代わりにチームをアーカイブすることを検討して下さい。"
+"れらをキャンセルするか、代わりにチームをアーカイブすることを検討して下さい。"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__technical_price_unit
@@ -5300,8 +5310,8 @@ msgid ""
 "The Sales Order %(order)s to be reinvoiced is cancelled. You cannot register "
 "an expense on a cancelled Sales Order."
 msgstr ""
-"再請求予定の販売オーダ %(order)s が取消されました。取消済販売オーダに経費を登"
-"録することはできません。"
+"再請求予定の販売オーダ %(order)s がキャンセルされました。キャンセル済販売"
+"オーダに経費を登録することはできません。"
 
 #. module: sale
 #. odoo-python
@@ -5320,8 +5330,8 @@ msgid ""
 "The Sales Order %(order)s to be reinvoiced must be validated before "
 "registering expenses."
 msgstr ""
-"再請求予定の販売オーダ %(order)s は経費を登録する前に検証される必要がありま"
-"す。"
+"再請求予定の販売オーダ %(order)s は経費を登録する前に検証される必要があります"
+"。"
 
 #. module: sale
 #. odoo-python
@@ -5330,9 +5340,16 @@ msgid "The access token is invalid."
 msgstr "アクセストークンは無効です。"
 
 #. module: sale
-#: model:ir.model.fields,help:sale.field_sale_advance_payment_inv__amount_to_invoice
-msgid "The amount to invoice = Sale Order Total - Confirmed Down Payments."
-msgstr "請求金額 = 販売オーダ合計 - 確認済の前払"
+#. odoo-python
+#: code:addons/sale/controllers/portal.py:0
+msgid "The amount is lower than the prepayment amount."
+msgstr "金額が前受金額よりも少なくなっています。"
+
+#. module: sale
+#. odoo-python
+#: code:addons/sale/wizard/payment_link_wizard.py:0
+msgid "The amount must be greater than the prepayment amount."
+msgstr "金額は前受金額を上回る必要があります。"
 
 #. module: sale
 #. odoo-python
@@ -5348,7 +5365,7 @@ msgstr "会社は必須です。販売オーダを変更する前に、会社を
 msgid ""
 "The delivery date is sooner than the expected date. You may be unable to "
 "honor the delivery date."
-msgstr "納期が予定日より早いため、納期を守れない場合があります。"
+msgstr "納品予定日が予定日より早いため、納期を守れない場合があります。"
 
 #. module: sale
 #: model:ir.model.fields,help:sale.field_sale_advance_payment_inv__fixed_amount
@@ -5384,8 +5401,8 @@ msgid ""
 msgstr ""
 "請求書は自動的に生成され決済プロバイダが取引を確認すると、請求書が自動的に作"
 "成され、カスタマーポータルで利用できます。\n"
-"請求書は支払済としてマークされ、支払は決済プロバイダの設定で定義された支払仕"
-"訳帳に登録されます。\n"
+"請求書は支払済とされ、支払は決済プロバイダの設定で定義された支払仕訳帳に登録"
+"されます。\n"
 "このモードは、納品後ではなく発注時に最終請求書を発行する場合に推奨されます。"
 
 #. module: sale
@@ -5400,8 +5417,7 @@ msgstr ""
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.view_sale_advance_payment_inv
 msgid "The new invoice will deduct draft invoices linked to this sale order."
-msgstr ""
-"この販売オーダにリンクした請求書ドラフトから新しい請求書が控除されます。"
+msgstr "この販売オーダにリンクした請求書ドラフトから新しい請求書が控除されます。"
 
 #. module: sale
 #. odoo-python
@@ -5414,7 +5430,7 @@ msgstr ""
 "せん。"
 
 #. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_pay_modal
 msgid "The order is not in a state requiring customer payment."
 msgstr "このオーダは顧客署名が必要なステータスではありません。"
 
@@ -5428,7 +5444,7 @@ msgstr "このオーダは顧客署名が必要なステータスではありま
 #. odoo-python
 #: code:addons/sale/models/sale_order_line.py:0
 msgid "The ordered quantity has been updated."
-msgstr "オーダ数量が更新されました。"
+msgstr "注文数量が更新されました。"
 
 #. module: sale
 #: model:ir.model.fields,help:sale.field_sale_order__reference
@@ -5450,15 +5466,13 @@ msgstr "事前に請求される金額の割合。"
 msgid ""
 "The percentage of the amount needed that must be paid by the customer to "
 "confirm the order."
-msgstr ""
-"オーダを確定するために顧客が支払わなければならない必要金額のパーセンテージ。"
+msgstr "オーダを確定するために顧客が支払わなければならない必要金額のパーセンテージ。"
 
 #. module: sale
 #: model:ir.model.fields,help:sale.field_res_company__prepayment_percent
 #: model:ir.model.fields,help:sale.field_res_config_settings__prepayment_percent
 msgid "The percentage of the amount needed to be paid to confirm quotations."
-msgstr ""
-"見積書を確定するために顧客が支払わなければならない必要金額のパーセンテージ。"
+msgstr "見積書を確定するために顧客が支払わなければならない必要金額のパーセンテージ。"
 
 #. module: sale
 #. odoo-python
@@ -5468,16 +5482,9 @@ msgstr "プロダクト(%(product)s)に互換性のない値があります:%(va
 
 #. module: sale
 #. odoo-python
-#: code:addons/sale/controllers/portal.py:0
-msgid "The provided parameters are invalid."
-msgstr "指定されたパラメータが無効です。"
-
-#. module: sale
-#. odoo-python
-#: code:addons/sale/controllers/portal.py:0
 #: code:addons/sale/wizard/payment_link_wizard.py:0
 msgid "The sale order has expired."
-msgstr "販売オーダは期限切れです。"
+msgstr ""
 
 #. module: sale
 #. odoo-python
@@ -5512,7 +5519,8 @@ msgstr ""
 "用するか、または管理者に割引を付与するよう依頼して下さい。"
 
 #. module: sale
-#: model:ir.model.fields,help:sale.field_product_category__property_account_downpayment_categ_id
+#: model:ir.model.fields,help:sale.field_res_company__downpayment_account_id
+#: model:ir.model.fields,help:sale.field_res_config_settings__downpayment_account_id
 msgid "This account will be used on Downpayment invoices."
 msgstr "この勘定は前受金請求書に使用されます。"
 
@@ -5542,8 +5550,8 @@ msgid ""
 "This is the delivery date promised to the customer. If set, the delivery "
 "order will be scheduled based on this date rather than product lead times."
 msgstr ""
-"これは、お客様に約束された納期です。設定されている場合、出荷オーダは、製品の"
-"リードタイムではなく、この日付に基づいてスケジュールされます。"
+"これは、顧客に対して約束した納品予定日です。設定されている場合、出荷オーダは"
+"、プロダクトのリードタイムではなく、この日付に基づいてスケジュールされます。"
 
 #. module: sale
 #: model:ir.model.fields,help:sale.field_account_bank_statement_line__medium_id
@@ -5560,8 +5568,8 @@ msgid ""
 "This is the source of the link, e.g. Search Engine, another domain, or name "
 "of email list"
 msgstr ""
-"これはリンクのソースです。たとえば、検索エンジン、別のドメイン、またはメーリ"
-"ングリストの名前です。"
+"これはリンクの参照元です。たとえば、検索エンジン、別のドメイン、または"
+"メーリングリストの名前です。"
 
 #. module: sale
 #. odoo-javascript
@@ -5574,16 +5582,6 @@ msgstr "このオプションまたはオプションの組合わせを利用で
 #: code:addons/sale/wizard/payment_link_wizard.py:0
 msgid "This payment will confirm the quotation."
 msgstr "この支払で見積書を確定します。"
-
-#. module: sale
-#. odoo-python
-#: code:addons/sale/models/sale_order_line.py:0
-msgid ""
-"This product is packaged by %(pack_size).2f %(pack_name)s. You should sell %"
-"(quantity).2f %(unit)s."
-msgstr ""
-"このプロダクトは %(pack_size).2f %(pack_name)sで梱包されています。以下で販売"
-"する必要があります： %(quantity).2f %(unit)s"
 
 #. module: sale
 #: model_terms:ir.actions.act_window,help:sale.action_order_report_all
@@ -5612,11 +5610,11 @@ msgid ""
 "invoiced yet. If you want to analyse your turnover, you should use the "
 "Invoice Analysis report in the Accounting application."
 msgstr ""
-"このレポートは見積書の分析を行います。 この分析では、販売収益をチェックし、"
-"様々なグループ基準（販売担当、取引先、プロダクトなど）によって並び替えます。"
-"このレポートを使用して、まだ請求されていない販売を分析しましょう。 総売上高を"
-"分析したい場合は、会計アプリケーションで請求書分析レポートを使用する必要があ"
-"ります。"
+"このレポートは見積書の分析を行います。 この分析では、販売収益をチェックし、様"
+"々なグループ基準（販売担当、取引先、プロダクトなど）によって並び替えます。こ"
+"のレポートを使用して、まだ請求されていない販売を分析しましょう。 総売上高を分"
+"析したい場合は、会計アプリケーションで請求書分析レポートを使用する必要があり"
+"ます。"
 
 #. module: sale
 #: model_terms:ir.actions.act_window,help:sale.action_order_report_so_salesteam
@@ -5637,14 +5635,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
 msgid ""
 "This will update all taxes based on the currently selected fiscal position."
-msgstr "選択された会計ポジションに基づいて、全ての税が更新されます。"
+msgstr "選択された会計ポジションに基づいて、すべての税が更新されます。"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
 msgid ""
 "This will update the unit price of all products based on the new pricelist."
-msgstr ""
-"これにより、全てのプロダクトの単価が新しい価格表に基づいて更新されます。"
+msgstr "これにより、すべてのプロダクトの単価が新しい価格表に基づいて更新されます。"
 
 #. module: sale
 #: model:ir.model.fields.selection,name:sale.selection__sale_order__invoice_status__to_invoice
@@ -5656,7 +5653,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale.view_order_product_search
 #: model_terms:ir.ui.view,arch_db:sale.view_sales_order_line_filter
 msgid "To Invoice"
-msgstr "未請求"
+msgstr "請求対象"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_view_search_inherit_sale
@@ -5671,13 +5668,13 @@ msgid ""
 "menu *Action*."
 msgstr ""
 "B2Bモードで招待状を送信するには、連絡先を開くか、リスト表示で複数の連絡先を選"
-"択して、ドロップダウンメニューの「アクション」から「ポータルアクセス管理」オ"
-"プションをクリックしてください。"
+"択して、ドロップダウンメニューの「アクション」から「ポータルアクセス管理」"
+"オプションをクリックしてください。"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.view_sales_order_filter
 msgid "Today Activities"
-msgstr "今日の活動"
+msgstr "本日の活動"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__amount_total
@@ -5707,7 +5704,7 @@ msgstr "税込合計"
 #. module: sale
 #. odoo-javascript
 #: code:addons/sale/static/src/js/combo_configurator_dialog/combo_configurator_dialog.js:0
-#: code:addons/sale/static/src/js/product_list/product_list.js:0
+#: code:addons/sale/static/src/js/product_configurator_dialog/product_configurator_dialog.js:0
 msgid "Total: %s"
 msgstr "合計: %s"
 
@@ -5725,7 +5722,7 @@ msgstr "追跡"
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__transaction_ids
 msgid "Transactions"
-msgstr "取引明細書"
+msgstr "取引"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__translated_product_name
@@ -5736,12 +5733,6 @@ msgstr "翻訳済プロダクト名"
 #: model:ir.model.fields,field_description:sale.field_sale_order__type_name
 msgid "Type Name"
 msgstr "タイプ名"
-
-#. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.product_template_form_view
-#: model_terms:ir.ui.view,arch_db:sale.res_partner_view_buttons
-msgid "Type a message..."
-msgstr "メッセージを入力..."
 
 #. module: sale
 #: model:ir.model.fields,help:sale.field_sale_order__activity_exception_decoration
@@ -5759,13 +5750,13 @@ msgid "Type to find a product..."
 msgstr "タイプしてプロダクトを検索..."
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_res_config_settings__module_delivery_ups
+#: model:ir.model.fields,field_description:sale.field_res_config_settings__module_delivery_ups_rest
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "UPS Connector"
 msgstr "UPSコネクター"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_res_config_settings__module_delivery_usps
+#: model:ir.model.fields,field_description:sale.field_res_config_settings__module_delivery_usps_rest
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "USPS Connector"
 msgstr "USPSコネクター"
@@ -5782,6 +5773,12 @@ msgid "Un-invoiced Balance"
 msgstr "未請求残高"
 
 #. module: sale
+#: model:ir.model.fields,field_description:sale.field_sale_order_line__product_uom_id
+#: model:ir.model.fields,field_description:sale.field_sale_report__product_uom_id
+msgid "Unit"
+msgstr "単位"
+
+#. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order_line__price_unit
 #: model:ir.model.fields,field_description:sale.field_sale_report__price_unit
 #: model_terms:ir.ui.view,arch_db:sale.report_saleorder_document
@@ -5795,23 +5792,10 @@ msgid "Unit Price:"
 msgstr "単価:"
 
 #. module: sale
-#: model:ir.model.fields,field_description:sale.field_sale_order_line__product_uom
-#: model:ir.model.fields,field_description:sale.field_sale_report__product_uom
-#: model_terms:ir.ui.view,arch_db:sale.view_order_line_tree
-msgid "Unit of Measure"
-msgstr "単位"
-
-#. module: sale
 #: model:ir.ui.menu,name:sale.menu_product_uom_form_action
-#: model:ir.ui.menu,name:sale.next_id_16
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
-msgid "Units of Measure"
-msgstr "単位"
-
-#. module: sale
-#: model:ir.ui.menu,name:sale.menu_product_uom_categ_form_action
-msgid "Units of Measure Categories"
-msgstr "単位カテゴリ"
+msgid "Units & Packagings"
+msgstr "単位 & パッケージング"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
@@ -5846,11 +5830,6 @@ msgstr "税抜合計"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
-msgid "UoM"
-msgstr "単位"
-
-#. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.view_order_form
 msgid "Update Prices"
 msgstr "価格の更新"
 
@@ -5858,6 +5837,12 @@ msgstr "価格の更新"
 #: model_terms:ir.ui.view,arch_db:sale.view_order_form
 msgid "Update Taxes"
 msgstr "税の更新"
+
+#. module: sale
+#. odoo-javascript
+#: code:addons/sale/static/src/js/upload_rfq_cog_menu/upload_rfq_cog_menu.xml:0
+msgid "Upload Request For Quotation"
+msgstr "見積依頼をアップロード"
 
 #. module: sale
 #. odoo-python
@@ -5874,17 +5859,29 @@ msgid "Upselling Opportunity"
 msgstr "アップセリングの機会"
 
 #. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+msgid ""
+"Use the above REST URL to get structured data of the purchase order in UBL "
+"format."
+msgstr "上記のREST URLを使用して、購買オーダの構造データをUBL形式で取得します。"
+
+#. module: sale
+#: model:mail.template,description:sale.email_template_proforma
+msgid "Used by salespeople when they send proforma to prospects"
+msgstr "販売担当者によって仮請求書を見込み客に送付する際に使用される"
+
+#. module: sale
 #: model:mail.template,description:sale.email_template_edi_sale
 msgid "Used by salespeople when they send quotations or proforma to prospects"
-msgstr "営業担当者によって見積書や見積送状を見込み客に送付する際に使用される"
+msgstr "販売担当者によって見積書や仮請求書を見込み客に送付する際に使用される"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.portal_my_quotations
 msgid "Valid Until"
-msgstr "有効期限日"
+msgstr "使用期限日"
 
 #. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_sign_modal
 msgid "Validate Order"
 msgstr "オーダを検証"
 
@@ -5899,17 +5896,21 @@ msgstr ""
 "価または販売価格で顧客に再請求できます。"
 
 #. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.product_pricelist_item_form
+msgid "Validity Period"
+msgstr "有効期間"
+
+#. module: sale
 #: model:ir.model.fields,help:sale.field_sale_order__validity_date
 msgid ""
 "Validity of the order, after that you will not able to sign & pay the "
 "quotation."
-msgstr ""
-"オーダの有効期限：有効期限を過ぎると、見積に署名することができなくなります。"
+msgstr "オーダの有効期限：有効期限を過ぎると、見積に署名することができなくなります。"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
 msgid "Values set here are company-specific."
-msgstr "ここで設定される値は、会社ごとに異なります。"
+msgstr ""
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
@@ -5917,9 +5918,19 @@ msgid "Variant Grid Entry"
 msgstr "バリアントグリッド入力"
 
 #. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
+msgid "View Alternatives"
+msgstr "他の選択肢を確認"
+
+#. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
 msgid "View Details"
 msgstr "詳細を見る"
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.res_config_settings_view_form
+msgid "View Other Providers"
+msgstr "他のプロバイダーを表示"
 
 #. module: sale
 #. odoo-python
@@ -5943,24 +5954,17 @@ msgid "Volume"
 msgstr "容積"
 
 #. module: sale
-#. odoo-python
-#: code:addons/sale/models/product_product.py:0
-#: code:addons/sale/models/product_template.py:0
-#: code:addons/sale/models/sale_order_line.py:0
-#: code:addons/sale/wizard/res_config_settings.py:0
-#: model:ir.model.fields.selection,name:sale.selection__product_template__sale_line_warn__warning
-#: model:ir.model.fields.selection,name:sale.selection__res_partner__sale_warn__warning
-#: model_terms:ir.ui.view,arch_db:sale.product_template_form_view
-msgid "Warning"
-msgstr "警告"
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+msgid "Want to import this document in Odoo?"
+msgstr "このドキュメントをOdooでインポートしますか？"
 
 #. module: sale
 #. odoo-python
+#: code:addons/sale/models/product_product.py:0
 #: code:addons/sale/models/product_template.py:0
-#: code:addons/sale/models/sale_order.py:0
-#: code:addons/sale/models/sale_order_line.py:0
-msgid "Warning for %s"
-msgstr "%s の警告です。"
+#: code:addons/sale/wizard/res_config_settings.py:0
+msgid "Warning"
+msgstr "警告"
 
 #. module: sale
 #. odoo-python
@@ -5969,14 +5973,14 @@ msgid "Warning for the change of your quotation's company"
 msgstr "見積書の会社の変更の警告"
 
 #. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.res_partner_view_buttons
-msgid "Warning on the Sales Order"
-msgstr "販売オーダにて警告"
+#: model_terms:ir.ui.view,arch_db:sale.product_template_form_view
+msgid "Warning on Sales Orders"
+msgstr "販売オーダに関する警告"
 
 #. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.product_template_form_view
-msgid "Warning when Selling this Product"
-msgstr "このプロダクトの販売時に警告"
+#: model_terms:ir.ui.view,arch_db:sale.res_partner_view_buttons
+msgid "Warning on Sales Orders and Invoices"
+msgstr "販売オーダおよび請求書に関する警告"
 
 #. module: sale
 #: model:ir.model.fields,field_description:sale.field_sale_order__website_message_ids
@@ -5990,19 +5994,13 @@ msgstr "ウェブサイト通信履歴"
 
 #. module: sale
 #. odoo-python
-#: code:addons/sale/models/product_template.py:0
-msgid "You can invoice goods before they are delivered."
-msgstr "配送前に商品代金を請求できます。"
-
-#. module: sale
-#. odoo-python
 #: code:addons/sale/models/sale_order.py:0
 msgid ""
 "You can not delete a sent quotation or a confirmed sales order. You must "
 "first cancel it."
 msgstr ""
-"送信された見積または確認済みの受注を削除することはできません。最初にキャンセ"
-"ルする必要があります。"
+"送信された見積または確認済みの受注を削除することはできません。最初に"
+"キャンセルする必要があります。"
 
 #. module: sale
 #: model_terms:ir.actions.act_window,help:sale.action_orders_to_invoice
@@ -6010,7 +6008,7 @@ msgid ""
 "You can select all orders and invoice them in batch,<br>\n"
 "            or check every order and invoice them one by one."
 msgstr ""
-"全ての販売オーダを選択して、まとめて請求書を作成する<br>\n"
+"すべての販売オーダを選択して、まとめて請求書を作成する<br>\n"
 "            またはオーダごとに確認して、オーダごとに請求することができます。"
 
 #. module: sale
@@ -6027,7 +6025,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/sale/models/sale_order.py:0
 msgid "You cannot cancel a locked order. Please unlock it first."
-msgstr "ロックされたオーダを取消できません。先にロック解除して下さい。"
+msgstr "ロックされたオーダをキャンセルできません。先にロック解除して下さい。"
 
 #. module: sale
 #. odoo-python
@@ -6070,6 +6068,11 @@ msgid ""
 msgstr ""
 "デフォルトの見積有効期限に負の数を設定することはできません。見積の自動有効期"
 "限を無効にするには、空（または0）のままにします。"
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+msgid "You don't use a good CRM software?"
+msgstr "優秀なCRMソフトウェアを使用しないのですか？"
 
 #. module: sale
 #: model_terms:ir.actions.act_window,help:sale.product_template_action
@@ -6120,7 +6123,7 @@ msgstr "ご注文は署名済みです。"
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
 msgid "Your order is not in a state to be rejected."
-msgstr "ご注文は拒否される状態ではありません。"
+msgstr "ご注文は拒否されるステータスではありません。"
 
 #. module: sale
 #. odoo-python
@@ -6164,7 +6167,18 @@ msgid "days"
 msgstr "日"
 
 #. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+#: model_terms:ir.ui.view,arch_db:sale.res_partner_view_buttons
+msgid "e.g. This customer has reported recurring issues with previous orders."
+msgstr "例: この顧客は、以前のオーダで繰り返し問題が発生していると報告しています。"
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.product_template_form_view
+msgid "e.g. This product is defective."
+msgstr "例: このプロダクトは不良品です。"
+
+#. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_pay_modal
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_sign_modal
 msgid "for the"
 msgstr "以下用:"
 
@@ -6174,13 +6188,19 @@ msgid "for this Sale Order."
 msgstr "この販売オーダ用"
 
 #. module: sale
+#: model_terms:ir.ui.view,arch_db:sale.mass_cancel_orders_view_form
+msgid "items?"
+msgstr "よろしいですか?"
+
+#. module: sale
 #. odoo-javascript
 #: code:addons/sale/static/src/js/tours/sale.js:0
 msgid "let's continue"
 msgstr "続けましょう"
 
 #. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_pay_modal
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_sign_modal
 msgid "quote."
 msgstr "見積。"
 
@@ -6191,13 +6211,9 @@ msgid "sale order"
 msgstr "販売注文"
 
 #. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.mass_cancel_orders_view_form
-msgid ""
-"selected\n"
-"                    items?"
-msgstr ""
-"選択された\n"
-"                    項目?"
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
+msgid "to learn all the ways to connect your software with"
+msgstr "自社システムとの連携方法について詳しくはこちら。"
 
 #. module: sale
 #: model_terms:ir.ui.view,arch_db:sale.report_saleorder_document
@@ -6205,15 +6221,14 @@ msgid "units"
 msgstr "単位"
 
 #. module: sale
-#. odoo-javascript
-#: code:addons/sale/static/src/xml/sale_product_field.xml:0
+#: model_terms:ir.ui.view,arch_db:sale.report_saleorder_document
 msgid "x"
-msgstr "x"
+msgstr ""
 
 #. module: sale
-#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_template
-msgid "you confirm acceptance on the behalf of"
-msgstr "の代理人として受諾を確認します。"
+#: model_terms:ir.ui.view,arch_db:sale.sale_order_portal_pay_modal
+msgid "you confirm acceptance on behalf of"
+msgstr "あなたは次の人の代理で承認を確定しました:"
 
 #. module: sale
 #: model:mail.template,subject:sale.mail_template_sale_confirmation
@@ -6224,34 +6239,47 @@ msgid ""
 "a' }})"
 msgstr ""
 "{{ object.company_id.name }} {{ (object.get_portal_last_transaction().state "
-"== 'pending') and 'Pending Order' or 'Order' }} (Ref {{ object.name or 'n/"
-"a' }})"
+"== 'pending') and '保留中のオーダ' or 'オーダ' }} (参照番号：{{ object.name "
+"or 'n/a' }})"
+
+#. module: sale
+#: model:mail.template,subject:sale.email_template_proforma
+msgid ""
+"{{ object.company_id.name }} {{ object.state in ('draft', 'sent') and "
+"'Proforma' or 'Order'}} (Ref {{ object.name or 'n/a' }})"
+msgstr ""
+"{{ object.company_id.name }} {{ object.state in ('draft', 'sent') and '仮請求"
+"書' or オーダ'}} (参照番号{{ object.name or 'n/a' }})"
 
 #. module: sale
 #: model:mail.template,subject:sale.email_template_edi_sale
 msgid ""
 "{{ object.company_id.name }} {{ object.state in ('draft', 'sent') and "
-"(ctx.get('proforma') and 'Proforma' or 'Quotation') or 'Order' }} (Ref "
-"{{ object.name or 'n/a' }})"
+"'Quotation' or 'Order' }} (Ref {{ object.name or 'n/a' }})"
 msgstr ""
-"{{ object.company_id.name }} {{ object.state in ('draft', 'sent') and "
-"(ctx.get('proforma') and 'Proforma' or 'Quotation') or 'Order' }} (Ref "
-"{{ object.name or 'n/a' }})"
+"{{ object.company_id.name }} {{ object.state in ('draft', 'sent') and '見積"
+"書' or 'オーダ' }} (参照 {{ object.name or 'n/a' }})"
 
-#. module: sale
-#: model:mail.template,subject:sale.mail_template_sale_cancellation
-msgid ""
-"{{ object.company_id.name }} {{ object.type_name }} Cancelled (Ref "
-"{{ object.name or 'n/a' }})"
-msgstr ""
-"{{ object.company_id.name }} {{ object.type_name }} キャンセル済 (Ref "
-"{{ object.name or 'n/a' }})"
+#~ msgid "Connect your software"
+#~ msgstr "自社のシステムと連携"
+
+#~ msgid "to create quotes automatically."
+#~ msgstr "自動的に見積書を作成します。"
+
+#~ msgid "with"
+#~ msgstr "と:"
 
 #~ msgid "2023-12-31"
 #~ msgstr "2023-12-31"
 
+#~ msgid "25.00"
+#~ msgstr "25.00"
+
 #~ msgid "27.00"
 #~ msgstr "27.00"
+
+#~ msgid "30.00"
+#~ msgstr "30.00"
 
 #~ msgid "31.05"
 #~ msgstr "31.05"
@@ -6262,3 +6290,1278 @@ msgstr ""
 #~ msgstr ""
 #~ "<span class=\"fa fa-lg fa-building-o p-2\" title=\"Values set here are "
 #~ "company-specific.\" groups=\"base.group_multi_company\"/>"
+
+#~ msgid ""
+#~ "<div style=\"margin: 0px; padding: 0px;\">\n"
+#~ "    <p style=\"margin: 0px; padding: 0px; font-size: 12px;\">\n"
+#~ "        Hello,\n"
+#~ "        <br/><br/>\n"
+#~ "        <t t-set=\"tx_sudo\" t-"
+#~ "value=\"object.get_portal_last_transaction()\"/>\n"
+#~ "        Your order <span style=\"font-weight:bold;\" t-out=\"object.name "
+#~ "or ''\">S00049</span> amounting in <span style=\"font-weight:bold;\" t-"
+#~ "out=\"format_amount(object.amount_total, object.currency_id) or ''\">$ "
+#~ "10.00</span>\n"
+#~ "        <t t-if=\"object.state == 'sale' or (tx_sudo and tx_sudo.state in "
+#~ "('done', 'authorized'))\">\n"
+#~ "            has been confirmed.<br/>\n"
+#~ "            Thank you for your trust!\n"
+#~ "        </t>\n"
+#~ "        <t t-elif=\"tx_sudo and tx_sudo.state == 'pending'\">\n"
+#~ "            is pending. It will be confirmed when the payment is "
+#~ "received.\n"
+#~ "            <t t-if=\"object.reference\">\n"
+#~ "                Your payment reference is <span style=\"font-weight:bold;"
+#~ "\" t-out=\"object.reference or ''\"/>.\n"
+#~ "            </t>\n"
+#~ "        </t>\n"
+#~ "        <br/>\n"
+#~ "        <t t-set=\"documents\" t-value=\"object._get_product_documents()"
+#~ "\"/>\n"
+#~ "        <t t-if=\"documents\">\n"
+#~ "            <br/>\n"
+#~ "            <t t-if=\"len(documents)&gt;1\">\n"
+#~ "                Here are some additional documents that may interest "
+#~ "you:\n"
+#~ "            </t>\n"
+#~ "            <t t-else=\"\">\n"
+#~ "                Here is an additional document that may interest you:\n"
+#~ "            </t>\n"
+#~ "            <ul style=\"margin-bottom: 0;\">\n"
+#~ "                <t t-foreach=\"documents\" t-as=\"document\">\n"
+#~ "                    <li style=\"font-size: 13px;\">\n"
+#~ "                        <a t-out=\"document.ir_attachment_id.name\" t-att-"
+#~ "href=\"object.get_portal_url('/document/' + str(document.id))\" t-att-"
+#~ "target=\"target\"/>\n"
+#~ "                    </li>\n"
+#~ "                </t>\n"
+#~ "            </ul>\n"
+#~ "        </t>\n"
+#~ "        <br/>\n"
+#~ "        Do not hesitate to contact us if you have any questions.\n"
+#~ "        <t t-if=\"not is_html_empty(object.user_id.signature)\" data-o-"
+#~ "mail-quote-container=\"1\">\n"
+#~ "            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/"
+#~ "><t t-out=\"object.user_id.signature or ''\" data-o-mail-"
+#~ "quote=\"1\">Mitchell Admin</t></div>\n"
+#~ "        </t>\n"
+#~ "    </p>\n"
+#~ "<t t-if=\"hasattr(object, 'website_id') and object.website_id\">\n"
+#~ "    <div style=\"margin: 0px; padding: 0px;\">\n"
+#~ "        <table width=\"100%\" style=\"color: #454748; font-size: 12px; "
+#~ "border-collapse: collapse; white-space: nowrap;\">\n"
+#~ "            <tr style=\"border-bottom: 2px solid #dee2e6;\">\n"
+#~ "                <td style=\"width: 150px;\"><span style=\"font-"
+#~ "weight:bold;\">Products</span></td>\n"
+#~ "                <td/>\n"
+#~ "                <td width=\"15%\" align=\"center\"><span style=\"font-"
+#~ "weight:bold;\">Quantity</span></td>\n"
+#~ "                <td width=\"20%\" align=\"right\">\n"
+#~ "                    <span style=\"font-weight:bold;\">\n"
+#~ "                        <t t-"
+#~ "if=\"object.website_id.show_line_subtotals_tax_selection == "
+#~ "'tax_excluded'\">\n"
+#~ "                            Tax Excl.\n"
+#~ "                        </t>\n"
+#~ "                        <t t-else=\"\">\n"
+#~ "                            Tax Incl.\n"
+#~ "                        </t>\n"
+#~ "                    </span>\n"
+#~ "                </td>\n"
+#~ "            </tr>\n"
+#~ "        </table>\n"
+#~ "        <t t-set=\"current_subtotal\" t-value=\"0\"/>\n"
+#~ "        <t t-foreach=\"object.order_line\" t-as=\"line\">\n"
+#~ "            <t t-set=\"line_subtotal\" t-value=\"                     "
+#~ "line.price_subtotal                     if "
+#~ "object.website_id.show_line_subtotals_tax_selection == "
+#~ "'tax_excluded'                     else line.price_total                 "
+#~ "\"/>\n"
+#~ "            <t t-set=\"current_subtotal\" t-value=\"current_subtotal + "
+#~ "line_subtotal\"/>\n"
+#~ "            <t t-if=\"(not hasattr(line, 'is_delivery') or not "
+#~ "line.is_delivery) and (                     line.display_type in "
+#~ "['line_section', 'line_subsection', 'line_note']                     or "
+#~ "line.product_type == 'combo'                 )\">\n"
+#~ "                <table width=\"100%\" style=\"color: #454748; font-size: "
+#~ "12px; border-collapse: collapse;\">\n"
+#~ "                    <t t-set=\"loop_cycle_number\" t-"
+#~ "value=\"loop_cycle_number or 0\"/>\n"
+#~ "                    <tr t-att-style=\"'background-color: #f2f2f2' if "
+#~ "loop_cycle_number % 2 == 0 else 'background-color: #ffffff'\">\n"
+#~ "                        <t t-set=\"loop_cycle_number\" t-"
+#~ "value=\"loop_cycle_number + 1\"/>\n"
+#~ "                        <td colspan=\"4\">\n"
+#~ "                            <t t-if=\"line.display_type in "
+#~ "('line_section', 'line_subsection') or line.product_type == 'combo'\">\n"
+#~ "                                <span t-att-style=\"'font-weight:bold;' "
+#~ "if line.display_type == 'line_subsection' else 'font-weight:bolder;'\" t-"
+#~ "out=\"line.name or ''\">Taking care of Trees Course</span>\n"
+#~ "                                <t t-set=\"current_section\" t-"
+#~ "value=\"line\"/>\n"
+#~ "                                <t t-set=\"current_subtotal\" t-"
+#~ "value=\"0\"/>\n"
+#~ "                            </t>\n"
+#~ "                            <t t-elif=\"line.display_type == "
+#~ "'line_note'\">\n"
+#~ "                                <i t-out=\"line.name or ''\">Taking care "
+#~ "of Trees Course</i>\n"
+#~ "                            </t>\n"
+#~ "                        </td>\n"
+#~ "                    </tr>\n"
+#~ "                </table>\n"
+#~ "            </t>\n"
+#~ "            <t t-elif=\"(not hasattr(line, 'is_delivery') or not "
+#~ "line.is_delivery)\">\n"
+#~ "                <table width=\"100%\" style=\"color: #454748; font-size: "
+#~ "12px; border-collapse: collapse;\">\n"
+#~ "                    <t t-set=\"loop_cycle_number\" t-"
+#~ "value=\"loop_cycle_number or 0\"/>\n"
+#~ "                    <tr t-att-style=\"'background-color: #f2f2f2' if "
+#~ "loop_cycle_number % 2 == 0 else 'background-color: #ffffff'\">\n"
+#~ "                        <t t-set=\"loop_cycle_number\" t-"
+#~ "value=\"loop_cycle_number + 1\"/>\n"
+#~ "                        <td style=\"width: 150px;\">\n"
+#~ "                            <img t-attf-src=\"/web/image/product.product/"
+#~ "{{ line.product_id.id }}/image_128\" t-attf-style=\"width: 64px; height: "
+#~ "{{object.website_id and "
+#~ "object.website_id._get_product_image_ratio_height() or '64px'}}; object-"
+#~ "fit: cover; object-position: center;\" alt=\"Product image\"/>\n"
+#~ "                        </td>\n"
+#~ "                        <td align=\"left\" t-out=\"line.product_id.name "
+#~ "or ''\">\tTaking care of Trees Course</td>\n"
+#~ "                        <td width=\"15%\" align=\"center\" t-"
+#~ "out=\"line.product_uom_qty or ''\">1</td>\n"
+#~ "                        <td width=\"20%\" align=\"right\"><span "
+#~ "style=\"font-weight:bold; white-space: nowrap;\">\n"
+#~ "                        <t t-"
+#~ "if=\"object.website_id.show_line_subtotals_tax_selection == "
+#~ "'tax_excluded'\">\n"
+#~ "                            <t t-"
+#~ "out=\"format_amount(line.price_reduce_taxexcl, object.currency_id) or "
+#~ "''\">$ 10.00</t>\n"
+#~ "                        </t>\n"
+#~ "                        <t t-else=\"\">\n"
+#~ "                            <t t-"
+#~ "out=\"format_amount(line.price_reduce_taxinc, object.currency_id) or "
+#~ "''\">$ 10.00</t>\n"
+#~ "                        </t>\n"
+#~ "                        </span></td>\n"
+#~ "                    </tr>\n"
+#~ "                </table>\n"
+#~ "            </t>\n"
+#~ "            <t t-if=\"current_section and "
+#~ "(                     line_last                     or "
+#~ "object.order_line[line_index+1].display_type in ('line_section', "
+#~ "'line_subsection')                     or "
+#~ "object.order_line[line_index+1].product_type == "
+#~ "'combo'                     or "
+#~ "(                         line.combo_item_id                         and "
+#~ "not "
+#~ "object.order_line[line_index+1].combo_item_id                     )                 ) "
+#~ "and not line.is_downpayment\">\n"
+#~ "                <t t-set=\"current_section\" t-value=\"None\"/>\n"
+#~ "                <table width=\"100%\" style=\"color: #454748; font-size: "
+#~ "12px; border-collapse: collapse;\">\n"
+#~ "                    <t t-set=\"loop_cycle_number\" t-"
+#~ "value=\"loop_cycle_number or 0\"/>\n"
+#~ "                    <tr t-att-style=\"'background-color: #f2f2f2' if "
+#~ "loop_cycle_number % 2 == 0 else 'background-color: #ffffff'\">\n"
+#~ "                        <t t-set=\"loop_cycle_number\" t-"
+#~ "value=\"loop_cycle_number + 1\"/>\n"
+#~ "                        <td style=\"width: 100%\" align=\"right\">\n"
+#~ "                            <span style=\"font-weight: bold;\">Subtotal:</"
+#~ "span>\n"
+#~ "                            <span t-out=\"format_amount(current_subtotal, "
+#~ "object.currency_id) or ''\">$ 10.00</span>\n"
+#~ "                        </td>\n"
+#~ "                    </tr>\n"
+#~ "                </table>\n"
+#~ "            </t>\n"
+#~ "        </t>\n"
+#~ "    </div>\n"
+#~ "    <div style=\"margin: 0px; padding: 0px;\" t-if=\"hasattr(object, "
+#~ "'carrier_id') and object.carrier_id\">\n"
+#~ "        <table width=\"100%\" style=\"color: #454748; font-size: 12px; "
+#~ "border-spacing: 0px 4px; white-space: nowrap;\" align=\"right\">\n"
+#~ "            <tr>\n"
+#~ "                <td style=\"width: 60%\"/>\n"
+#~ "                <td style=\"width: 30%; border-top: 1px solid #dee2e6;\" "
+#~ "align=\"right\"><span style=\"font-weight:bold;\">Delivery:</span></td>\n"
+#~ "                <td style=\"width: 10%; border-top: 1px solid #dee2e6;\" "
+#~ "align=\"right\" t-out=\"format_amount(object.amount_delivery, "
+#~ "object.currency_id) or ''\">$ 0.00</td>\n"
+#~ "            </tr>\n"
+#~ "            <tr>\n"
+#~ "                <td style=\"width: 60%\"/>\n"
+#~ "                <td style=\"width: 30%;\" align=\"right\"><span "
+#~ "style=\"font-weight:bold;\">Untaxed Amount:</span></td>\n"
+#~ "                <td style=\"width: 10%;\" align=\"right\" t-"
+#~ "out=\"format_amount(object.amount_untaxed, object.currency_id) or ''\">$ "
+#~ "10.00</td>\n"
+#~ "            </tr>\n"
+#~ "        </table>\n"
+#~ "    </div>\n"
+#~ "    <div style=\"margin: 0px; padding: 0px;\" t-else=\"\">\n"
+#~ "        <table width=\"100%\" style=\"color: #454748; font-size: 12px; "
+#~ "border-spacing: 0px 4px; white-space: nowrap;\" align=\"right\">\n"
+#~ "            <tr>\n"
+#~ "                <td style=\"width: 60%\"/>\n"
+#~ "                <td style=\"width: 30%; border-top: 1px solid #dee2e6;\" "
+#~ "align=\"right\"><span style=\"font-weight:bold;\">Untaxed Amount:</span></"
+#~ "td>\n"
+#~ "                <td style=\"width: 10%; border-top: 1px solid #dee2e6;\" "
+#~ "align=\"right\" t-out=\"format_amount(object.amount_untaxed, "
+#~ "object.currency_id) or ''\">$ 10.00</td>\n"
+#~ "            </tr>\n"
+#~ "        </table>\n"
+#~ "    </div>\n"
+#~ "    <div style=\"margin: 0px; padding: 0px;\">\n"
+#~ "        <table width=\"100%\" style=\"color: #454748; font-size: 12px; "
+#~ "border-spacing: 0px 4px; white-space: nowrap;\" align=\"right\">\n"
+#~ "            <tr>\n"
+#~ "                <td style=\"width: 60%\"/>\n"
+#~ "                <td style=\"width: 30%;\" align=\"right\"><span "
+#~ "style=\"font-weight:bold;\">Taxes:</span></td>\n"
+#~ "                <td style=\"width: 10%;\" align=\"right\" t-"
+#~ "out=\"format_amount(object.amount_tax, object.currency_id) or ''\">$ "
+#~ "0.00</td>\n"
+#~ "            </tr>\n"
+#~ "            <tr>\n"
+#~ "                <td style=\"width: 60%\"/>\n"
+#~ "                <td style=\"width: 30%; border-top: 1px solid #dee2e6;\" "
+#~ "align=\"right\"><span style=\"font-weight:bold;\">Total:</span></td>\n"
+#~ "                <td style=\"width: 10%; border-top: 1px solid #dee2e6;\" "
+#~ "align=\"right\" t-out=\"format_amount(object.amount_total, "
+#~ "object.currency_id) or ''\">$ 10.00</td>\n"
+#~ "            </tr>\n"
+#~ "        </table>\n"
+#~ "    </div>\n"
+#~ "    <div t-if=\"object.partner_invoice_id\" style=\"margin: 0px; padding: "
+#~ "0px;\">\n"
+#~ "        <table width=\"100%\" style=\"color: #454748; font-size: 12px;"
+#~ "\">\n"
+#~ "            <tr>\n"
+#~ "                <td style=\"padding-top: 10px;\">\n"
+#~ "                    <span style=\"font-weight:bold;\">Bill to:</span>\n"
+#~ "                    <t t-out=\"object.partner_invoice_id.street or "
+#~ "''\">1201 S Figueroa St</t>\n"
+#~ "                    <t t-out=\"object.partner_invoice_id.city or ''\">Los "
+#~ "Angeles</t>\n"
+#~ "                    <t t-out=\"object.partner_invoice_id.state_id.name or "
+#~ "''\">California</t>\n"
+#~ "                    <t t-out=\"object.partner_invoice_id.zip or "
+#~ "''\">90015</t>\n"
+#~ "                    <t t-out=\"object.partner_invoice_id.country_id.name "
+#~ "or ''\">United States</t>\n"
+#~ "                </td>\n"
+#~ "            </tr>\n"
+#~ "            <tr>\n"
+#~ "                <td>\n"
+#~ "                    <span style=\"font-weight:bold;\">Payment Method:</"
+#~ "span>\n"
+#~ "                    <t t-if=\"tx_sudo.token_id\">\n"
+#~ "                        <t t-out=\"tx_sudo.token_id.display_name or ''\"/"
+#~ ">\n"
+#~ "                    </t>\n"
+#~ "                    <t t-else=\"\">\n"
+#~ "                        <t t-out=\"tx_sudo.provider_id.sudo().name or "
+#~ "''\"/>\n"
+#~ "                    </t>\n"
+#~ "                    (<t t-out=\"format_amount(tx_sudo.amount, "
+#~ "object.currency_id) or ''\">$ 10.00</t>)\n"
+#~ "                </td>\n"
+#~ "            </tr>\n"
+#~ "        </table>\n"
+#~ "    </div>\n"
+#~ "    <div t-if=\"object.partner_shipping_id and not object.only_services\" "
+#~ "style=\"margin: 0px; padding: 0px;\">\n"
+#~ "        <table width=\"100%\" style=\"color: #454748; font-size: 12px;"
+#~ "\">\n"
+#~ "            <tr>\n"
+#~ "                <td>\n"
+#~ "                    <br/>\n"
+#~ "                    <span style=\"font-weight:bold;\">Ship to:</span>\n"
+#~ "                    <t t-out=\"object.partner_shipping_id.street or "
+#~ "''\">1201 S Figueroa St</t>\n"
+#~ "                    <t t-out=\"object.partner_shipping_id.city or "
+#~ "''\">Los Angeles</t>\n"
+#~ "                    <t t-out=\"object.partner_shipping_id.state_id.name "
+#~ "or ''\">California</t>\n"
+#~ "                    <t t-out=\"object.partner_shipping_id.zip or "
+#~ "''\">90015</t>\n"
+#~ "                    <t t-out=\"object.partner_shipping_id.country_id.name "
+#~ "or ''\">United States</t>\n"
+#~ "                </td>\n"
+#~ "            </tr>\n"
+#~ "        </table>\n"
+#~ "        <table t-if=\"hasattr(object, 'carrier_id') and "
+#~ "object.carrier_id\" width=\"100%\" style=\"color: #454748; font-size: "
+#~ "12px;\">\n"
+#~ "            <tr>\n"
+#~ "                <td>\n"
+#~ "                    <span style=\"font-weight:bold;\">Shipping Method:</"
+#~ "span>\n"
+#~ "                    <t t-out=\"object.carrier_id.name or ''\"/>\n"
+#~ "                    <t t-if=\"object.amount_delivery == 0.0\">\n"
+#~ "                        (Free)\n"
+#~ "                    </t>\n"
+#~ "                    <t t-else=\"\">\n"
+#~ "                        (<t t-out=\"format_amount(object.amount_delivery, "
+#~ "object.currency_id) or ''\">$ 10.00</t>)\n"
+#~ "                    </t>\n"
+#~ "                </td>\n"
+#~ "            </tr>\n"
+#~ "            <tr t-if=\"object.carrier_id.carrier_description\">\n"
+#~ "                <td>\n"
+#~ "                    <strong>Shipping Description:</strong>\n"
+#~ "                    <t t-out=\"object.carrier_id.carrier_description\"/>\n"
+#~ "                </td>\n"
+#~ "            </tr>\n"
+#~ "        </table>\n"
+#~ "    </div>\n"
+#~ "</t>\n"
+#~ "</div>"
+#~ msgstr ""
+#~ "<div style=\"margin: 0px; padding: 0px;\">\n"
+#~ "    <p style=\"margin: 0px; padding: 0px; font-size: 12px;\">\n"
+#~ "        お世話になっております。\n"
+#~ "        <br/><br/>\n"
+#~ "        <t t-set=\"tx_sudo\" t-"
+#~ "value=\"object.get_portal_last_transaction()\"/>\n"
+#~ "        お客様のご注文<span style=\"font-weight:bold;\" t-"
+#~ "out=\"object.name or ''\">S00049</span> (金額：<span style=\"font-"
+#~ "weight:bold;\" t-out=\"format_amount(object.amount_total, "
+#~ "object.currency_id) or ''\">$ 10.00)</span>\n"
+#~ "        <t t-if=\"object.state == 'sale' or (tx_sudo and tx_sudo.state in "
+#~ "('done', 'authorized'))\">\n"
+#~ "            が確定されました。<br/>\n"
+#~ "            当店をご利用頂きましてまことにありがとうございます。\n"
+#~ "        </t>\n"
+#~ "        <t t-elif=\"tx_sudo and tx_sudo.state == 'pending'\">\n"
+#~ "            は現在保留中です。お支払いの確認後、確定されます。\n"
+#~ "            <t t-if=\"object.reference\">\n"
+#~ "                お支払い参照番号：<span style=\"font-weight:bold;\" t-"
+#~ "out=\"object.reference or ''\"/>\n"
+#~ "            </t>\n"
+#~ "        </t>\n"
+#~ "        <br/>\n"
+#~ "        <t t-set=\"documents\" t-value=\"object._get_product_documents()"
+#~ "\"/>\n"
+#~ "        <t t-if=\"documents\">\n"
+#~ "            <br/>\n"
+#~ "            <t t-if=\"len(documents)&gt;1\">\n"
+#~ "                ご参考までに、以下の追加資料をご覧ください:\n"
+#~ "            </t>\n"
+#~ "            <t t-else=\"\">\n"
+#~ "                ご参考までに、以下の追加資料をご覧ください:\n"
+#~ "            </t>\n"
+#~ "            <ul style=\"margin-bottom: 0;\">\n"
+#~ "                <t t-foreach=\"documents\" t-as=\"document\">\n"
+#~ "                    <li style=\"font-size: 13px;\">\n"
+#~ "                        <a t-out=\"document.ir_attachment_id.name\" t-att-"
+#~ "href=\"object.get_portal_url('/document/' + str(document.id))\" t-att-"
+#~ "target=\"target\"/>\n"
+#~ "                    </li>\n"
+#~ "                </t>\n"
+#~ "            </ul>\n"
+#~ "        </t>\n"
+#~ "        <br/>\n"
+#~ "        何かご不明な点がございましたら、お気軽にお問い合わせください。\n"
+#~ "        <t t-if=\"not is_html_empty(object.user_id.signature)\" data-o-"
+#~ "mail-quote-container=\"1\">\n"
+#~ "            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/"
+#~ "><t t-out=\"object.user_id.signature or ''\" data-o-mail-"
+#~ "quote=\"1\">Mitchell Admin</t></div>\n"
+#~ "        </t>\n"
+#~ "    </p>\n"
+#~ "<t t-if=\"hasattr(object, 'website_id') and object.website_id\">\n"
+#~ "    <div style=\"margin: 0px; padding: 0px;\">\n"
+#~ "        <table width=\"100%\" style=\"color: #454748; font-size: 12px; "
+#~ "border-collapse: collapse; white-space: nowrap;\">\n"
+#~ "            <tr style=\"border-bottom: 2px solid #dee2e6;\">\n"
+#~ "                <td style=\"width: 150px;\"><span style=\"font-"
+#~ "weight:bold;\">プロダクト</span></td>\n"
+#~ "                <td/>\n"
+#~ "                <td width=\"15%\" align=\"center\"><span style=\"font-"
+#~ "weight:bold;\">数量</span></td>\n"
+#~ "                <td width=\"20%\" align=\"right\">\n"
+#~ "                    <span style=\"font-weight:bold;\">\n"
+#~ "                        <t t-"
+#~ "if=\"object.website_id.show_line_subtotals_tax_selection == "
+#~ "'tax_excluded'\">\n"
+#~ "                            税抜き価格\n"
+#~ "                        </t>\n"
+#~ "                        <t t-else=\"\">\n"
+#~ "                            税込み価格\n"
+#~ "                        </t>\n"
+#~ "                    </span>\n"
+#~ "                </td>\n"
+#~ "            </tr>\n"
+#~ "        </table>\n"
+#~ "        <t t-set=\"current_subtotal\" t-value=\"0\"/>\n"
+#~ "        <t t-foreach=\"object.order_line\" t-as=\"line\">\n"
+#~ "            <t t-set=\"line_subtotal\" t-value=\"                     "
+#~ "line.price_subtotal                     if "
+#~ "object.website_id.show_line_subtotals_tax_selection == "
+#~ "'tax_excluded'                     else line.price_total                 "
+#~ "\"/>\n"
+#~ "            <t t-set=\"current_subtotal\" t-value=\"current_subtotal + "
+#~ "line_subtotal\"/>\n"
+#~ "            <t t-if=\"(not hasattr(line, 'is_delivery') or not "
+#~ "line.is_delivery) and (                     line.display_type in "
+#~ "['line_section', 'line_subsection', 'line_note']                     or "
+#~ "line.product_type == 'combo'                 )\">\n"
+#~ "                <table width=\"100%\" style=\"color: #454748; font-size: "
+#~ "12px; border-collapse: collapse;\">\n"
+#~ "                    <t t-set=\"loop_cycle_number\" t-"
+#~ "value=\"loop_cycle_number or 0\"/>\n"
+#~ "                    <tr t-att-style=\"'background-color: #f2f2f2' if "
+#~ "loop_cycle_number % 2 == 0 else 'background-color: #ffffff'\">\n"
+#~ "                        <t t-set=\"loop_cycle_number\" t-"
+#~ "value=\"loop_cycle_number + 1\"/>\n"
+#~ "                        <td colspan=\"4\">\n"
+#~ "                            <t t-if=\"line.display_type in "
+#~ "('line_section', 'line_subsection') or line.product_type == 'combo'\">\n"
+#~ "                                <span t-att-style=\"'font-weight:bold;' "
+#~ "if line.display_type == 'line_subsection' else 'font-weight:bolder;'\" t-"
+#~ "out=\"line.name or ''\">樹木の手入れについて学ぶコース</span>\n"
+#~ "                                <t t-set=\"current_section\" t-"
+#~ "value=\"line\"/>\n"
+#~ "                                <t t-set=\"current_subtotal\" t-"
+#~ "value=\"0\"/>\n"
+#~ "                            </t>\n"
+#~ "                            <t t-elif=\"line.display_type == "
+#~ "'line_note'\">\n"
+#~ "                                <i t-out=\"line.name or ''\">樹木の手入れ"
+#~ "について学ぶコース</i>\n"
+#~ "                            </t>\n"
+#~ "                        </td>\n"
+#~ "                    </tr>\n"
+#~ "                </table>\n"
+#~ "            </t>\n"
+#~ "            <t t-elif=\"(not hasattr(line, 'is_delivery') or not "
+#~ "line.is_delivery)\">\n"
+#~ "                <table width=\"100%\" style=\"color: #454748; font-size: "
+#~ "12px; border-collapse: collapse;\">\n"
+#~ "                    <t t-set=\"loop_cycle_number\" t-"
+#~ "value=\"loop_cycle_number or 0\"/>\n"
+#~ "                    <tr t-att-style=\"'background-color: #f2f2f2' if "
+#~ "loop_cycle_number % 2 == 0 else 'background-color: #ffffff'\">\n"
+#~ "                        <t t-set=\"loop_cycle_number\" t-"
+#~ "value=\"loop_cycle_number + 1\"/>\n"
+#~ "                        <td style=\"width: 150px;\">\n"
+#~ "                            <img t-attf-src=\"/web/image/product.product/"
+#~ "{{ line.product_id.id }}/image_128\" t-attf-style=\"width: 64px; height: "
+#~ "{{object.website_id and "
+#~ "object.website_id._get_product_image_ratio_height() or '64px'}}; object-"
+#~ "fit: cover; object-position: center;\" alt=\"Product image\"/>\n"
+#~ "                        </td>\n"
+#~ "                        <td align=\"left\" t-out=\"line.product_id.name "
+#~ "or ''\">\t樹木の手入れについて学ぶコース</td>\n"
+#~ "                        <td width=\"15%\" align=\"center\" t-"
+#~ "out=\"line.product_uom_qty or ''\">1</td>\n"
+#~ "                        <td width=\"20%\" align=\"right\"><span "
+#~ "style=\"font-weight:bold; white-space: nowrap;\">\n"
+#~ "                        <t t-"
+#~ "if=\"object.website_id.show_line_subtotals_tax_selection == "
+#~ "'tax_excluded'\">\n"
+#~ "                            <t t-"
+#~ "out=\"format_amount(line.price_reduce_taxexcl, object.currency_id) or "
+#~ "''\">$ 10.00</t>\n"
+#~ "                        </t>\n"
+#~ "                        <t t-else=\"\">\n"
+#~ "                            <t t-"
+#~ "out=\"format_amount(line.price_reduce_taxinc, object.currency_id) or "
+#~ "''\">$ 10.00</t>\n"
+#~ "                        </t>\n"
+#~ "                        </span></td>\n"
+#~ "                    </tr>\n"
+#~ "                </table>\n"
+#~ "            </t>\n"
+#~ "            <t t-if=\"current_section and "
+#~ "(                     line_last                     or "
+#~ "object.order_line[line_index+1].display_type in ('line_section', "
+#~ "'line_subsection')                     or "
+#~ "object.order_line[line_index+1].product_type == "
+#~ "'combo'                     or "
+#~ "(                         line.combo_item_id                         and "
+#~ "not "
+#~ "object.order_line[line_index+1].combo_item_id                     )                 ) "
+#~ "and not line.is_downpayment\">\n"
+#~ "                <t t-set=\"current_section\" t-value=\"None\"/>\n"
+#~ "                <table width=\"100%\" style=\"color: #454748; font-size: "
+#~ "12px; border-collapse: collapse;\">\n"
+#~ "                    <t t-set=\"loop_cycle_number\" t-"
+#~ "value=\"loop_cycle_number or 0\"/>\n"
+#~ "                    <tr t-att-style=\"'background-color: #f2f2f2' if "
+#~ "loop_cycle_number % 2 == 0 else 'background-color: #ffffff'\">\n"
+#~ "                        <t t-set=\"loop_cycle_number\" t-"
+#~ "value=\"loop_cycle_number + 1\"/>\n"
+#~ "                        <td style=\"width: 100%\" align=\"right\">\n"
+#~ "                            <span style=\"font-weight: bold;\">小計:</"
+#~ "span>\n"
+#~ "                            <span t-out=\"format_amount(current_subtotal, "
+#~ "object.currency_id) or ''\">$ 10.00</span>\n"
+#~ "                        </td>\n"
+#~ "                    </tr>\n"
+#~ "                </table>\n"
+#~ "            </t>\n"
+#~ "        </t>\n"
+#~ "    </div>\n"
+#~ "    <div style=\"margin: 0px; padding: 0px;\" t-if=\"hasattr(object, "
+#~ "'carrier_id') and object.carrier_id\">\n"
+#~ "        <table width=\"100%\" style=\"color: #454748; font-size: 12px; "
+#~ "border-spacing: 0px 4px; white-space: nowrap;\" align=\"right\">\n"
+#~ "            <tr>\n"
+#~ "                <td style=\"width: 60%\"/>\n"
+#~ "                <td style=\"width: 30%; border-top: 1px solid #dee2e6;\" "
+#~ "align=\"right\"><span style=\"font-weight:bold;\">配送:</span></td>\n"
+#~ "                <td style=\"width: 10%; border-top: 1px solid #dee2e6;\" "
+#~ "align=\"right\" t-out=\"format_amount(object.amount_delivery, "
+#~ "object.currency_id) or ''\">$ 0.00</td>\n"
+#~ "            </tr>\n"
+#~ "            <tr>\n"
+#~ "                <td style=\"width: 60%\"/>\n"
+#~ "                <td style=\"width: 30%;\" align=\"right\"><span "
+#~ "style=\"font-weight:bold;\">税抜き金額:</span></td>\n"
+#~ "                <td style=\"width: 10%;\" align=\"right\" t-"
+#~ "out=\"format_amount(object.amount_untaxed, object.currency_id) or ''\">$ "
+#~ "10.00</td>\n"
+#~ "            </tr>\n"
+#~ "        </table>\n"
+#~ "    </div>\n"
+#~ "    <div style=\"margin: 0px; padding: 0px;\" t-else=\"\">\n"
+#~ "        <table width=\"100%\" style=\"color: #454748; font-size: 12px; "
+#~ "border-spacing: 0px 4px; white-space: nowrap;\" align=\"right\">\n"
+#~ "            <tr>\n"
+#~ "                <td style=\"width: 60%\"/>\n"
+#~ "                <td style=\"width: 30%; border-top: 1px solid #dee2e6;\" "
+#~ "align=\"right\"><span style=\"font-weight:bold;\">税抜き金額:</span></"
+#~ "td>\n"
+#~ "                <td style=\"width: 10%; border-top: 1px solid #dee2e6;\" "
+#~ "align=\"right\" t-out=\"format_amount(object.amount_untaxed, "
+#~ "object.currency_id) or ''\">$ 10.00</td>\n"
+#~ "            </tr>\n"
+#~ "        </table>\n"
+#~ "    </div>\n"
+#~ "    <div style=\"margin: 0px; padding: 0px;\">\n"
+#~ "        <table width=\"100%\" style=\"color: #454748; font-size: 12px; "
+#~ "border-spacing: 0px 4px; white-space: nowrap;\" align=\"right\">\n"
+#~ "            <tr>\n"
+#~ "                <td style=\"width: 60%\"/>\n"
+#~ "                <td style=\"width: 30%;\" align=\"right\"><span "
+#~ "style=\"font-weight:bold;\">税:</span></td>\n"
+#~ "                <td style=\"width: 10%;\" align=\"right\" t-"
+#~ "out=\"format_amount(object.amount_tax, object.currency_id) or ''\">$ "
+#~ "0.00</td>\n"
+#~ "            </tr>\n"
+#~ "            <tr>\n"
+#~ "                <td style=\"width: 60%\"/>\n"
+#~ "                <td style=\"width: 30%; border-top: 1px solid #dee2e6;\" "
+#~ "align=\"right\"><span style=\"font-weight:bold;\">合計:</span></td>\n"
+#~ "                <td style=\"width: 10%; border-top: 1px solid #dee2e6;\" "
+#~ "align=\"right\" t-out=\"format_amount(object.amount_total, "
+#~ "object.currency_id) or ''\">$ 10.00</td>\n"
+#~ "            </tr>\n"
+#~ "        </table>\n"
+#~ "    </div>\n"
+#~ "    <div t-if=\"object.partner_invoice_id\" style=\"margin: 0px; padding: "
+#~ "0px;\">\n"
+#~ "        <table width=\"100%\" style=\"color: #454748; font-size: 12px;"
+#~ "\">\n"
+#~ "            <tr>\n"
+#~ "                <td style=\"padding-top: 10px;\">\n"
+#~ "                    <span style=\"font-weight:bold;\">請求先:</span>\n"
+#~ "                    <t t-out=\"object.partner_invoice_id.street or "
+#~ "''\">1201 S Figueroa St</t>\n"
+#~ "                    <t t-out=\"object.partner_invoice_id.city or ''\">Los "
+#~ "Angeles</t>\n"
+#~ "                    <t t-out=\"object.partner_invoice_id.state_id.name or "
+#~ "''\">California</t>\n"
+#~ "                    <t t-out=\"object.partner_invoice_id.zip or "
+#~ "''\">90015</t>\n"
+#~ "                    <t t-out=\"object.partner_invoice_id.country_id.name "
+#~ "or ''\">United States</t>\n"
+#~ "                </td>\n"
+#~ "            </tr>\n"
+#~ "            <tr>\n"
+#~ "                <td>\n"
+#~ "                    <span style=\"font-weight:bold;\">支払い方法:</span>\n"
+#~ "                    <t t-if=\"tx_sudo.token_id\">\n"
+#~ "                        <t t-out=\"tx_sudo.token_id.display_name or ''\"/"
+#~ ">\n"
+#~ "                    </t>\n"
+#~ "                    <t t-else=\"\">\n"
+#~ "                        <t t-out=\"tx_sudo.provider_id.sudo().name or "
+#~ "''\"/>\n"
+#~ "                    </t>\n"
+#~ "                    (<t t-out=\"format_amount(tx_sudo.amount, "
+#~ "object.currency_id) or ''\">$ 10.00</t>)\n"
+#~ "                </td>\n"
+#~ "            </tr>\n"
+#~ "        </table>\n"
+#~ "    </div>\n"
+#~ "    <div t-if=\"object.partner_shipping_id and not object.only_services\" "
+#~ "style=\"margin: 0px; padding: 0px;\">\n"
+#~ "        <table width=\"100%\" style=\"color: #454748; font-size: 12px;"
+#~ "\">\n"
+#~ "            <tr>\n"
+#~ "                <td>\n"
+#~ "                    <br/>\n"
+#~ "                    <span style=\"font-weight:bold;\">配送先:</span>\n"
+#~ "                    <t t-out=\"object.partner_shipping_id.street or "
+#~ "''\">1201 S Figueroa St</t>\n"
+#~ "                    <t t-out=\"object.partner_shipping_id.city or "
+#~ "''\">Los Angeles</t>\n"
+#~ "                    <t t-out=\"object.partner_shipping_id.state_id.name "
+#~ "or ''\">California</t>\n"
+#~ "                    <t t-out=\"object.partner_shipping_id.zip or "
+#~ "''\">90015</t>\n"
+#~ "                    <t t-out=\"object.partner_shipping_id.country_id.name "
+#~ "or ''\">United States</t>\n"
+#~ "                </td>\n"
+#~ "            </tr>\n"
+#~ "        </table>\n"
+#~ "        <table t-if=\"hasattr(object, 'carrier_id') and "
+#~ "object.carrier_id\" width=\"100%\" style=\"color: #454748; font-size: "
+#~ "12px;\">\n"
+#~ "            <tr>\n"
+#~ "                <td>\n"
+#~ "                    <span style=\"font-weight:bold;\">配送方法:</span>\n"
+#~ "                    <t t-out=\"object.carrier_id.name or ''\"/>\n"
+#~ "                    <t t-if=\"object.amount_delivery == 0.0\">\n"
+#~ "                        (無料)\n"
+#~ "                    </t>\n"
+#~ "                    <t t-else=\"\">\n"
+#~ "                        (<t t-out=\"format_amount(object.amount_delivery, "
+#~ "object.currency_id) or ''\">$ 10.00</t>)\n"
+#~ "                    </t>\n"
+#~ "                </td>\n"
+#~ "            </tr>\n"
+#~ "            <tr t-if=\"object.carrier_id.carrier_description\">\n"
+#~ "                <td>\n"
+#~ "                    <strong>配送についての詳細:</strong>\n"
+#~ "                    <t t-out=\"object.carrier_id.carrier_description\"/>\n"
+#~ "                </td>\n"
+#~ "            </tr>\n"
+#~ "        </table>\n"
+#~ "    </div>\n"
+#~ "</t>\n"
+#~ "</div>"
+
+#~ msgid " Data Fetched"
+#~ msgstr " フェッチされたデータ"
+
+#~ msgid ""
+#~ "<b>Congratulations</b>, your first quotation is sent!<br>Check your email "
+#~ "to validate the quote."
+#~ msgstr ""
+#~ "<b>おめでとうございます！</b>最初の見積書が送信されました！<br>見積書の有"
+#~ "効性を確認するために、メールを確認してください。"
+
+#~ msgid "<b>Set a price</b>."
+#~ msgstr "<b>価格を設定します</b>。"
+
+#~ msgid "<i class=\"fa fa-comment\"/> Send message"
+#~ msgstr "<i class=\"fa fa-comment\"/> メッセージ送信"
+
+#~ msgid "<i class=\"fa fa-download\"/> Download"
+#~ msgstr "<i class=\"fa fa-download\"/>ダウンロード"
+
+#~ msgid ""
+#~ "<i class=\"fa fa-fw fa-check\" role=\"img\" aria-label=\"Done\" "
+#~ "title=\"Done\"/>Done"
+#~ msgstr ""
+#~ "<i class=\"fa fa-fw fa-check\" role=\"img\" aria-label=\"Done\" "
+#~ "title=\"Done\"/>完了"
+
+#~ msgid "<i class=\"fa fa-fw fa-check\"/> <b>Paid</b>"
+#~ msgstr "<i class=\"fa fa-fw fa-check\"/> <b>支払済</b>"
+
+#~ msgid "<i class=\"fa fa-fw fa-clock-o\"/> <b>Waiting Payment</b>"
+#~ msgstr "<i class=\"fa fa-fw fa-clock-o\"/> <b>支払待ち</b>"
+
+#~ msgid ""
+#~ "<i class=\"fa fa-fw fa-usd\" role=\"img\" aria-label=\"Sale orders\" "
+#~ "title=\"Sales orders\"/>"
+#~ msgstr ""
+#~ "<i class=\"fa fa-fw fa-usd\" role=\"img\" aria-label=\"Sale orders\" "
+#~ "title=\"Sales orders\"/>"
+
+#~ msgid "<i class=\"fa fa-print\"/> Print"
+#~ msgstr "<i class=\"fa fa-print\"/> 印刷"
+
+#~ msgid "<small><b class=\"text-muted\">This offer expires on</b></small>"
+#~ msgstr "<small><b class=\"text-muted\">このオファーの有効期限は</b></small>"
+
+#~ msgid "<span>Accepted on the behalf of:</span>"
+#~ msgstr "<span>次の組織を代表:</span>"
+
+#~ msgid ""
+#~ "<span>By paying this proposal, I agree to the following terms:</span>"
+#~ msgstr ""
+#~ "<span>この提案へ支払うことにより、私は以下の条件に同意します。</span>"
+
+#~ msgid ""
+#~ "<span>By signing this proposal, I agree to the following terms:</span>"
+#~ msgstr "<span>この提案への署名をもち、次の条件に同意します:</span>"
+
+#~ msgid "<span>For an amount of:</span>"
+#~ msgstr "<span>金額:</span>"
+
+#~ msgid "<span>Signature</span>"
+#~ msgstr "<span>署名</span>"
+
+#~ msgid "<span>With payment terms:</span>"
+#~ msgstr "<span>支払い条件付き:</span>"
+
+#~ msgid ""
+#~ "<strong class=\"d-block mb-1\">\n"
+#~ "                            Shipping Address:\n"
+#~ "                        </strong>"
+#~ msgstr "<strong class=\"d-block mb-1\"> 配送先住所\\: </strong>"
+
+#~ msgid "<strong class=\"d-block mb-1\">Invoices</strong>"
+#~ msgstr "<strong class=\"d-block mb-1\">請求書</strong>"
+
+#~ msgid "<strong class=\"mr16\">Subtotal</strong>"
+#~ msgstr "<strong class=\"mr16\">小計</strong>"
+
+#~ msgid "<strong class=\"text-muted\">Salesperson</strong>"
+#~ msgstr "<strong class=\"text-muted\">販売担当者</strong>"
+
+#~ msgid "<strong>Expiration Date:</strong>"
+#~ msgstr "<strong>有効期限日:</strong>"
+
+#~ msgid "<strong>Expiration:</strong>"
+#~ msgstr "<strong>有効期限日:</strong>"
+
+#~ msgid ""
+#~ "<strong>No suitable payment option could be found.</strong><br/>\n"
+#~ "                                        If you believe that it is an "
+#~ "error, please contact the website administrator."
+#~ msgstr ""
+#~ "<strong>適用可能な決済オプションが見つかりませんでした</strong><br/>\n"
+#~ "                                        エラーと思われる場合は、サイトの管"
+#~ "理者までお問い合わせください。"
+
+#~ msgid "<strong>Order Date:</strong>"
+#~ msgstr "<strong>発注日:</strong>"
+
+#~ msgid "<strong>Quotation Date:</strong>"
+#~ msgstr "<strong>見積日:</strong>"
+
+#~ msgid "<strong>Salesperson:</strong>"
+#~ msgstr "<strong>販売担当者:</strong>"
+
+#~ msgid "<strong>Shipping Address:</strong>"
+#~ msgstr "<strong>お届け先:</strong>"
+
+#~ msgid "<strong>This quotation has been canceled.</strong>"
+#~ msgstr "<strong>この見積は取り消されました。</strong>"
+
+#~ msgid "<strong>Your Reference:</strong>"
+#~ msgstr "<strong>お客様参照:</strong>"
+
+#~ msgid ""
+#~ "A storable product is a product for which you manage stock. The Inventory "
+#~ "app has to be installed.\n"
+#~ "A consumable product is a product for which stock is not managed.\n"
+#~ "A service is a non-material product you provide."
+#~ msgstr ""
+#~ "在庫可能品は在庫管理対象のプロダクトです。在庫アプリのインストールが必要で"
+#~ "す。\n"
+#~ "消耗品は移動処理の対象ではあるものの、厳密な在庫管理対象ではないプロダクト"
+#~ "です。\n"
+#~ "サービス品は物理的なモノが存在しない無形のプロダクトです。"
+
+#~ msgid ""
+#~ "Ability to select a package type in sales orders and to force a quantity "
+#~ "that is a multiple of the number of units per package."
+#~ msgstr ""
+#~ "販売オーダにて梱包タイプを選択することで、梱包入数の倍数の数量を強制できる"
+#~ "になります。"
+
+#~ msgid "Account Number"
+#~ msgstr "口座番号"
+
+#~ msgid "Account used for deposits"
+#~ msgstr "預金用口座"
+
+#~ msgid "Amount of quotations to invoice"
+#~ msgstr "請求対象見積金額"
+
+#~ msgid "Analytic Account"
+#~ msgstr "分析勘定"
+
+#~ msgid "Attribute Value"
+#~ msgstr "属性値"
+
+#~ msgid "Author"
+#~ msgstr "著作者"
+
+#~ msgid "Bank Name"
+#~ msgstr "銀行名"
+
+#~ msgid "Blocking Message"
+#~ msgstr "阻止メッセージ"
+
+#~ msgid "Can Edit Body"
+#~ msgstr "本文編集可"
+
+#~ msgid "Cancel %s"
+#~ msgstr "キャンセル %s"
+
+#~ msgid "Category"
+#~ msgstr "カテゴリ"
+
+#~ msgid "Choose between electronic signatures or online payments."
+#~ msgstr "電子署名またはオンライン支払を選択"
+
+#~ msgid "Choose how to confirm quotations"
+#~ msgstr "見積の確認方法を選択"
+
+#~ msgid "Closed"
+#~ msgstr "クローズ"
+
+#~ msgid "Complete your company's data"
+#~ msgstr "自社データを完成させる"
+
+#~ msgid "Compute shipping costs and ship with DHL"
+#~ msgstr "DHLで配送費用計算し出荷"
+
+#~ msgid "Compute shipping costs and ship with FedEx"
+#~ msgstr "FedExで配送費用計算し出荷"
+
+#~ msgid "Compute shipping costs and ship with UPS"
+#~ msgstr "UPSで配送費用計算し出荷"
+
+#~ msgid "Compute shipping costs and ship with USPS"
+#~ msgstr "USPSで配送費用計算し出荷"
+
+#~ msgid "Contents"
+#~ msgstr "内容"
+
+#~ msgid ""
+#~ "Conversion between Units of Measure can only occur if they belong to the "
+#~ "same category. The conversion will be made based on the ratios."
+#~ msgstr ""
+#~ "単位間の変換は同じカテゴリに属している場合のみ可能です。変換は比率に基づい"
+#~ "て行われます。"
+
+#~ msgid "Create invoices"
+#~ msgstr "請求書作成"
+
+#~ msgid "Credit & Debit card (via Stripe)"
+#~ msgstr "クレジット＆デビットカード（Stripe経由）"
+
+#~ msgid "Custom"
+#~ msgstr "カスタム"
+
+#~ msgid "Custom payment instructions"
+#~ msgstr "カスタム支払案内"
+
+#~ msgid "Customer Taxes"
+#~ msgstr "顧客税"
+
+#~ msgid "Customize"
+#~ msgstr "カスタマイズ"
+
+#~ msgid "Customize the look of your quotations."
+#~ msgstr "見積の外観をカスタマイズ"
+
+#~ msgid "Customize your quotes and orders."
+#~ msgstr "見積もりと注文をカスタマイズします。"
+
+#~ msgid "Deposit Product"
+#~ msgstr "頭金プロダクト"
+
+#~ msgid "Discounts, Loyalty & Gift Card"
+#~ msgstr "値引・ロイヤルティ・ギフトカード"
+
+#~ msgid "Done"
+#~ msgstr "完了"
+
+#~ msgid "Down Payment Amount"
+#~ msgstr "前受金額"
+
+#~ msgid "Down Payment Product"
+#~ msgstr "前受金プロダクト"
+
+#~ msgid "Down Payment: %s (Draft)"
+#~ msgstr ""
+#~ "頭金: %s (ドラフト)\n"
+#~ " "
+
+#~ msgid "Download"
+#~ msgstr "ダウンロード"
+
+#~ msgid "Draft Quotation"
+#~ msgstr "ドラフト見積"
+
+#~ msgid "Electronic signature"
+#~ msgstr "電子署名"
+
+#~ msgid "Email"
+#~ msgstr "Eメール"
+
+#~ msgid "Email composition wizard"
+#~ msgstr "Eメール構成ウィザード"
+
+#~ msgid ""
+#~ "Expenses and vendor bills can be re-invoiced to a customer.With this "
+#~ "option, a validated expense can be re-invoice to a customer at its cost "
+#~ "or sales price."
+#~ msgstr ""
+#~ "経費とベンダーの請求書は顧客に再請求できます。このオプションを使用すると、"
+#~ "検証済みの経費をそのコストまたは販売価格で顧客に再請求できます。"
+
+#~ msgid "Extended Filters"
+#~ msgstr "拡張フィルタ"
+
+#~ msgid "Good job, let's continue."
+#~ msgstr "よくできました。続けましょう。"
+
+#~ msgid "Group By"
+#~ msgstr "グループ化"
+
+#~ msgid "History"
+#~ msgstr "履歴"
+
+#~ msgid "Income Account"
+#~ msgstr "収益勘定"
+
+#~ msgid "Invoice Alert"
+#~ msgstr "請求書アラート"
+
+#~ msgid "Invoice Confirmed"
+#~ msgstr "請求書確認済"
+
+#~ msgid "Invoice Created"
+#~ msgstr "請求書作成済"
+
+#~ msgid "Invoice Email Template"
+#~ msgstr "請求書メールテンプレート"
+
+#~ msgid "Invoicing Address:"
+#~ msgstr "請求先:"
+
+#~ msgid "Invoicing and Payments"
+#~ msgstr "請求と支払"
+
+#~ msgid "Invoicing and Shipping Address:"
+#~ msgstr "請求・お届け先:"
+
+#~ msgid "Is Editor"
+#~ msgstr "編集者であり"
+
+#~ msgid "It is not allowed to confirm an order in the following states: %s"
+#~ msgstr "次の状態では注文を確認できません:%s"
+
+#~ msgid "Just done"
+#~ msgstr "完了"
+
+#~ msgid "Language"
+#~ msgstr "言語"
+
+#~ msgid "Let's send the quote."
+#~ msgstr "見積もりを送ってみましょう。"
+
+#~ msgid "Lets keep electronic signature for now."
+#~ msgstr "今のところ電子署名を保持しましょう。"
+
+#~ msgid "Looks good. Let's continue."
+#~ msgstr "良さげですね。次に進みましょう。"
+
+#~ msgid "Looks great!"
+#~ msgstr "素晴らしい!"
+
+#~ msgid "Mail Template"
+#~ msgstr "メールテンプレート"
+
+#~ msgid "Message"
+#~ msgstr "メッセージ"
+
+#~ msgid "Message for Sales Order Line"
+#~ msgstr "販売オーダ明細のメッセージ"
+
+#~ msgid "Method"
+#~ msgstr "償却方法"
+
+#~ msgid "No Message"
+#~ msgstr "メッセージなし"
+
+#~ msgid "Not done"
+#~ msgstr "未完了"
+
+#~ msgid "Now, we'll create a sample quote."
+#~ msgstr "次に、サンプル見積もりを作成します。"
+
+#~ msgid "Number of messages which requires an action"
+#~ msgstr "アクションを必要とするメッセージの数"
+
+#~ msgid "Number of quotations to invoice"
+#~ msgstr "請求対象見積数"
+
+#~ msgid "Number of sales to invoice"
+#~ msgstr "請求対象販売数"
+
+#~ msgid "Online confirmation"
+#~ msgstr "オンライン確認"
+
+#~ msgid "Open Sales app to send your first quotation in a few clicks."
+#~ msgstr ""
+#~ "セールスアプリを開いて、数回クリックするだけで最初の見積もりを送信します。"
+
+#~ msgid ""
+#~ "Optional translation language (ISO code) to select when sending out an "
+#~ "email. If not set, the english version will be used. This should usually "
+#~ "be a placeholder expression that provides the appropriate language, e.g. "
+#~ "{{ object.partner_id.lang }}."
+#~ msgstr "メールを送信時に、オプションで選択可能な翻訳言語 (ISOコード)"
+
+#~ msgid "Order Confirmation"
+#~ msgstr "オーダ確認"
+
+#~ msgid "Order Upsell"
+#~ msgstr "オーダアップセル"
+
+#~ msgid "Order to Invoice"
+#~ msgstr "請求対象オーダ"
+
+#~ msgid "PDT Identity Token"
+#~ msgstr "PDTIDトークン"
+
+#~ msgid "Packaging Quantity"
+#~ msgstr "梱包数量"
+
+#~ msgid "Pay with"
+#~ msgstr "お支払"
+
+#~ msgid "Payment Instructions"
+#~ msgstr "お支払い方法"
+
+#~ msgid "Product Attribute"
+#~ msgstr "プロダクト属性"
+
+#~ msgid "Product Packaging"
+#~ msgstr "製品包装"
+
+#~ msgid "Product used for down payments"
+#~ msgstr "前受金用プロダクト"
+
+#~ msgid "Quantity visible in configurator"
+#~ msgstr "コンフィギュレータに表示される数量"
+
+#~ msgid "Quotation / Order"
+#~ msgstr "見積 / オーダ"
+
+#~ msgid "Quotation Date:"
+#~ msgstr "見積り日:"
+
+#~ msgid "Quotation Layout"
+#~ msgstr "見積レイアウト"
+
+#~ msgid "Re-Invoice Expenses"
+#~ msgstr "経費の請求"
+
+#~ msgid "Recipients"
+#~ msgstr "宛先"
+
+#~ msgid "Reference"
+#~ msgstr "参照"
+
+#~ msgid "Register Payment"
+#~ msgstr "支払登録"
+
+#~ msgid "Rendering Model"
+#~ msgstr "レンダリングモデル"
+
+#~ msgid "Request an online payment to confirm orders"
+#~ msgstr "オーダの確認にオンライン支払を要求"
+
+#~ msgid "Request an online signature to confirm orders"
+#~ msgstr "オーダの確認にオンライン署名を要求"
+
+#~ msgid ""
+#~ "Revenue target for the current month (untaxed total of confirmed "
+#~ "invoices)."
+#~ msgstr "今月の収益目標(確認済みの請求書の非課税合計)。"
+
+#~ msgid "Sales Done"
+#~ msgstr "販売完了"
+
+#~ msgid "Sales Order Cancel"
+#~ msgstr "受注キャンセル"
+
+#~ msgid "Sales Warnings"
+#~ msgstr "販売警告"
+
+#~ msgid "Sales: Untaxed Total"
+#~ msgstr "売上高:非課税合計"
+
+#~ msgid "Sample Order Line"
+#~ msgstr "サンプルオーダ明細"
+
+#~ msgid "Sample Product"
+#~ msgstr "サンプルプロダクト"
+
+#~ msgid "Sample Quotation"
+#~ msgstr "見積サンプル"
+
+#~ msgid ""
+#~ "Selecting the \"Warning\" option will notify user with the message, "
+#~ "Selecting \"Blocking Message\" will throw an exception with the message "
+#~ "and block the flow. The Message has to be written in the next field."
+#~ msgstr ""
+#~ "警告オプションを選択するとユーザにメッセージを通知します。メッセージをブ"
+#~ "ロックを選択するとメッセージとともに例外が発生しその流れがブロックされま"
+#~ "す。メッセージは次の項目で記述する必要があります。"
+
+#~ msgid "Sell and purchase products in different units of measure"
+#~ msgstr "複数の異なる単位での販売/購買"
+
+#~ msgid "Sell products by multiple of unit # per package"
+#~ msgstr "荷姿あたりのユニット数の倍数でプロダクトを販売"
+
+#~ msgid "Send a quotation to test the customer portal."
+#~ msgstr "見積書を送付して顧客ポータルを試す"
+
+#~ msgid "Send and cancel"
+#~ msgstr "送信と取り消し"
+
+#~ msgid "Send by Email"
+#~ msgstr "Eメールで送信"
+
+#~ msgid "Send sample"
+#~ msgstr "サンプルを送付"
+
+#~ msgid "Set payments"
+#~ msgstr "支払方法を設定"
+
+#~ msgid "Show all records which has next action date is before today"
+#~ msgstr "次のアクションの日付が今日より前のすべてのレコードを表示する"
+
+#~ msgid "Stage"
+#~ msgstr "ステージ"
+
+#~ msgid "Start by checking your company's data."
+#~ msgstr "会社のデータをチェックすることからはじめします。"
+
+#~ msgid "State of the onboarding confirmation order step"
+#~ msgstr "オンボーディング確認注文ステップの状態"
+
+#~ msgid "State of the onboarding sample quotation step"
+#~ msgstr "オンボーディングサンプル見積もりステップの状態"
+
+#~ msgid "State of the sale onboarding panel"
+#~ msgstr "販売のオンボーディングパネルの状態"
+
+#~ msgid "Subject"
+#~ msgstr "件名"
+
+#~ msgid "Taxes used for deposits"
+#~ msgstr "預金に使用される税金"
+
+#~ msgid "Terms &amp; Conditions:"
+#~ msgstr "諸条件："
+
+#~ msgid ""
+#~ "The Sales Order %s linked to the Analytic Account %s is cancelled. You "
+#~ "cannot register an expense on a cancelled Sales Order."
+#~ msgstr ""
+#~ "販売注文%s(分析アカウント%sに紐づく)はキャンセルされます。キャンセルされた"
+#~ "販売注文に経費を登録することはできません。"
+
+#~ msgid ""
+#~ "The Sales Order %s linked to the Analytic Account %s is currently locked. "
+#~ "You cannot register an expense on a locked Sales Order. Please create a "
+#~ "new SO linked to this Analytic Account."
+#~ msgstr ""
+#~ "販売注文%s(分析アカウント%sに紐づく)は現在ロックされています。ロックされた"
+#~ "販売注文に経費を登録することはできません。この分析アカウントにリンクされた"
+#~ "新しいSOを作成してください。"
+
+#~ msgid ""
+#~ "The Sales Order %s linked to the Analytic Account %s must be validated "
+#~ "before registering expenses."
+#~ msgstr ""
+#~ "販売注文%s(分析アカウント%sに紐づく)は、経費を登録する前に検証する必要があ"
+#~ "ります。"
+
+#~ msgid ""
+#~ "The following products cannot be restricted to the company %s because "
+#~ "they have already been used in quotations or sales orders in another "
+#~ "company:\n"
+#~ "%s\n"
+#~ "You can archive these products and recreate them with your company "
+#~ "restriction instead, or leave them as shared product."
+#~ msgstr ""
+#~ "次の製品は、別の会社の見積または受注ですでに使用されているため、会社%sに制"
+#~ "限することはできません。\n"
+#~ "%s\n"
+#~ "これらの製品をアーカイブして、代わりに会社の制限付きで再作成するか、共有製"
+#~ "品のままにすることができます。"
+
+#~ msgid ""
+#~ "The product used to invoice a down payment should be of type 'Service'. "
+#~ "Please use another product or update this product."
+#~ msgstr ""
+#~ "前受金を請求するために使用される製品は、タイプが 'サービス'である必要があ"
+#~ "ります。 他の製品を使用するか、この製品を更新してください。"
+
+#~ msgid "There are currently no orders for your account."
+#~ msgstr "現在、あなたのアカウントの注文はありません。"
+
+#~ msgid ""
+#~ "This will update all unit prices based on the currently set pricelist."
+#~ msgstr ""
+#~ "これにより、現在設定されている価格表に基づいてすべての単価が更新されます。"
+
+#~ msgid ""
+#~ "To speed up order confirmation, we can activate electronic signatures or "
+#~ "payments."
+#~ msgstr ""
+#~ "注文確認をスピードアップするために、電子署名または支払いを有効にすることが"
+#~ "できます。"
+
+#~ msgid "Type a message..."
+#~ msgstr "メッセージを入力..."
+
+#~ msgid "Unit of Measure"
+#~ msgstr "単位"
+
+#~ msgid "Units of Measure"
+#~ msgstr "単位"
+
+#~ msgid "Units of Measure Categories"
+#~ msgstr "単位カテゴリ"
+
+#~ msgid "UoM"
+#~ msgstr "単位"
+
+#~ msgid "View Order"
+#~ msgstr "オーダー参照"
+
+#~ msgid "Warning for %s"
+#~ msgstr "%s の警告です。"
+
+#~ msgid "Warning on the Sales Order"
+#~ msgstr "販売オーダにて警告"
+
+#~ msgid "Warning when Selling this Product"
+#~ msgstr "このプロダクトの販売時に警告"
+
+#~ msgid "Write a company name to create one, or see suggestions."
+#~ msgstr "会社名を書いて作成するか、提案を参照してください。"
+
+#~ msgid "You can invoice them before they are delivered."
+#~ msgstr "配送前に請求できます。"
+
+#~ msgid ""
+#~ "You can not remove an order line once the sales order is confirmed.\n"
+#~ "You should rather set the quantity to 0."
+#~ msgstr ""
+#~ "販売オーダ確認後は明細を削除できません。\n"
+#~ "必要に応じて数量を0に変更してください。"

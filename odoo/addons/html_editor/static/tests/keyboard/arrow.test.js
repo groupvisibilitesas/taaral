@@ -10,6 +10,7 @@ const keyPress = (keys) => async (editor) => {
     await simulateArrowKeyPress(editor, keys);
     // Allow onselectionchange handler to run.
     await tick();
+    await tick();
 };
 
 describe("Around ZWS", () => {
@@ -311,11 +312,11 @@ describe("Around ZWS", () => {
 describe("Around links", () => {
     test("should move into a link (ArrowRight)", async () => {
         await testEditor({
-            contentBefore: '<p>ab[]<a href="#">cd</a>ef</p>',
+            contentBefore: '<p>ab[]<a href="http://test.test/">cd</a>ef</p>',
             contentBeforeEdit:
                 "<p>ab[]" +
                 "\ufeff" + // before zwnbsp
-                '<a href="#">' +
+                '<a href="http://test.test/">' +
                 "\ufeff" + // start zwnbsp
                 "cd" + // content
                 "\ufeff" + // end zwnbsp
@@ -326,24 +327,24 @@ describe("Around links", () => {
             contentAfterEdit:
                 "<p>ab" +
                 "\ufeff" + // before zwnbsp
-                '<a href="#" class="o_link_in_selection">' +
+                '<a href="http://test.test/" class="o_link_in_selection">' +
                 "\ufeff" + // start zwnbsp
                 "[]cd" + // content
                 "\ufeff" + // end zwnbsp
                 "</a>" +
                 "\ufeff" + // after zwnbsp
                 "ef</p>",
-            contentAfter: '<p>ab<a href="#">[]cd</a>ef</p>',
+            contentAfter: '<p>ab<a href="http://test.test/">[]cd</a>ef</p>',
         });
     });
 
     test("should move into a link (ArrowLeft)", async () => {
         await testEditor({
-            contentBefore: '<p>ab<a href="#">cd</a>[]ef</p>',
+            contentBefore: '<p>ab<a href="http://test.test/">cd</a>[]ef</p>',
             contentBeforeEdit:
                 "<p>ab" +
                 "\ufeff" + // before zwnbsp
-                '<a href="#">' +
+                '<a href="http://test.test/">' +
                 "\ufeff" + // start zwnbsp
                 "cd" + // content
                 "\ufeff" + // end zwnbsp
@@ -354,24 +355,24 @@ describe("Around links", () => {
             contentAfterEdit:
                 "<p>ab" +
                 "\ufeff" + // before zwnbsp
-                '<a href="#" class="o_link_in_selection">' +
+                '<a href="http://test.test/" class="o_link_in_selection">' +
                 "\ufeff" + // start zwnbsp
                 "cd[]" + // content
                 "\ufeff" + // end zwnbsp
                 "</a>" +
                 "\ufeff" + // after zwnbsp
                 "ef</p>",
-            contentAfter: '<p>ab<a href="#">cd[]</a>ef</p>',
+            contentAfter: '<p>ab<a href="http://test.test/">cd[]</a>ef</p>',
         });
     });
 
     test("should move out of a link (ArrowRight)", async () => {
         await testEditor({
-            contentBefore: '<p>ab<a href="#">cd[]</a>ef</p>',
+            contentBefore: '<p>ab<a href="http://test.test/">cd[]</a>ef</p>',
             contentBeforeEdit:
                 "<p>ab" +
                 "\ufeff" + // before zwnbsp
-                '<a href="#" class="o_link_in_selection">' +
+                '<a href="http://test.test/" class="o_link_in_selection">' +
                 "\ufeff" + // start zwnbsp
                 "cd[]" + // content
                 "\ufeff" + // end zwnbsp
@@ -382,24 +383,24 @@ describe("Around links", () => {
             contentAfterEdit:
                 "<p>ab" +
                 "\ufeff" + // before zwnbsp
-                '<a href="#">' +
+                '<a href="http://test.test/">' +
                 "\ufeff" + // start zwnbsp
                 "cd" + // content
                 "\ufeff" + // end zwnbsp
                 "</a>" +
                 "\ufeff" + // after zwnbsp
                 "[]ef</p>",
-            contentAfter: '<p>ab<a href="#">cd</a>[]ef</p>',
+            contentAfter: '<p>ab<a href="http://test.test/">cd</a>[]ef</p>',
         });
     });
 
     test("should move out of a link (ArrowLeft)", async () => {
         await testEditor({
-            contentBefore: '<p>ab<a href="#">[]cd</a>ef</p>',
+            contentBefore: '<p>ab<a href="http://test.test/">[]cd</a>ef</p>',
             contentBeforeEdit:
                 "<p>ab" +
                 "\ufeff" + // before zwnbsp
-                '<a href="#" class="o_link_in_selection">' +
+                '<a href="http://test.test/" class="o_link_in_selection">' +
                 "\ufeff" + // start zwnbsp
                 "[]cd" + // content
                 "\ufeff" + // end zwnbsp
@@ -410,14 +411,14 @@ describe("Around links", () => {
             contentAfterEdit:
                 "<p>ab[]" +
                 "\ufeff" + // before zwnbsp
-                '<a href="#">' +
+                '<a href="http://test.test/">' +
                 "\ufeff" + // start zwnbsp
                 "cd" + // content
                 "\ufeff" + // end zwnbsp
                 "</a>" +
                 "\ufeff" + // after zwnbsp
                 "ef</p>",
-            contentAfter: '<p>ab[]<a href="#">cd</a>ef</p>',
+            contentAfter: '<p>ab[]<a href="http://test.test/">cd</a>ef</p>',
         });
     });
 });
@@ -474,7 +475,7 @@ describe("Around icons", () => {
     test("should correctly move cursor over icons (ArrowUp) (1)", async () => {
         await testEditor({
             contentBefore: `<p><br></p><p><span class="fa fa-music"></span></p><p>[]<br></p>`,
-            contentBeforeEdit: `<p><br></p><p>\ufeff<span class="fa fa-music" contenteditable="false">\u200b</span>\ufeff</p><p placeholder='Type "/" for commands' class="o-we-hint">[]<br></p>`,
+            contentBeforeEdit: `<p><br></p><p>\ufeff<span class="fa fa-music" contenteditable="false">\u200b</span>\ufeff</p><p o-we-hint-text='Type "/" for commands' class="o-we-hint">[]<br></p>`,
             stepFunction: keyPress("ArrowUp"),
             contentAfterEdit: `<p><br></p><p>[]\ufeff<span class="fa fa-music" contenteditable="false">\u200b</span>\ufeff</p><p><br></p>`,
             contentAfter: `<p><br></p><p>[]<span class="fa fa-music"></span></p><p><br></p>`,
@@ -493,7 +494,7 @@ describe("Around icons", () => {
     test("should correctly move cursor over icons (ArrowDown) (1)", async () => {
         await testEditor({
             contentBefore: `<p>[]<br></p><p><span class="fa fa-music"></span></p><p><br></p>`,
-            contentBeforeEdit: `<p placeholder='Type "/" for commands' class="o-we-hint">[]<br></p><p>\ufeff<span class="fa fa-music" contenteditable="false">\u200b</span>\ufeff</p><p><br></p>`,
+            contentBeforeEdit: `<p o-we-hint-text='Type "/" for commands' class="o-we-hint">[]<br></p><p>\ufeff<span class="fa fa-music" contenteditable="false">\u200b</span>\ufeff</p><p><br></p>`,
             stepFunction: keyPress("ArrowDown"),
             contentAfterEdit: `<p><br></p><p>[]\ufeff<span class="fa fa-music" contenteditable="false">\u200b</span>\ufeff</p><p><br></p>`,
             contentAfter: `<p><br></p><p>[]<span class="fa fa-music"></span></p><p><br></p>`,
@@ -512,27 +513,41 @@ describe("Around icons", () => {
 });
 
 describe("Selection correction when it lands at the editable root", () => {
-    test("should place cursor in the table below", async () => {
+    test("should place cursor between two tables (1)", async () => {
         await testEditor({
             contentBefore:
                 "<table><tbody><tr><td><p>a</p><p>b[]</p></td></tr></tbody></table>" +
                 "<table><tbody><tr><td><p>c</p><p>d</p></td></tr></tbody></table>",
             stepFunction: keyPress("ArrowRight"),
+            contentAfterEdit:
+                '<p data-selection-placeholder=""><br></p>' +
+                "<table><tbody><tr><td><p>a</p><p>b</p></td></tr></tbody></table>" +
+                `<p data-selection-placeholder="" o-we-hint-text='Type "/" for commands' class="o-we-hint o-horizontal-caret">[]<br></p>` +
+                "<table><tbody><tr><td><p>c</p><p>d</p></td></tr></tbody></table>" +
+                '<p data-selection-placeholder=""><br></p>',
             contentAfter:
                 "<table><tbody><tr><td><p>a</p><p>b</p></td></tr></tbody></table>" +
-                "<table><tbody><tr><td><p>[]c</p><p>d</p></td></tr></tbody></table>",
+                "[]" +
+                "<table><tbody><tr><td><p>c</p><p>d</p></td></tr></tbody></table>",
         });
     });
 
     test.tags("focus required");
-    test("should place cursor in the table above", async () => {
+    test("should place cursor between two tables (2)", async () => {
         await testEditor({
             contentBefore:
                 "<table><tbody><tr><td><p>a</p><p>b</p></td></tr></tbody></table>" +
                 "<table><tbody><tr><td><p>[]c</p><p>d</p></td></tr></tbody></table>",
             stepFunction: keyPress("ArrowLeft"),
+            contentAfterEdit:
+                '<p data-selection-placeholder=""><br></p>' +
+                "<table><tbody><tr><td><p>a</p><p>b</p></td></tr></tbody></table>" +
+                `<p data-selection-placeholder="" o-we-hint-text='Type "/" for commands' class="o-we-hint o-horizontal-caret">[]<br></p>` +
+                "<table><tbody><tr><td><p>c</p><p>d</p></td></tr></tbody></table>" +
+                '<p data-selection-placeholder=""><br></p>',
             contentAfter:
-                "<table><tbody><tr><td><p>a</p><p>b[]</p></td></tr></tbody></table>" +
+                "<table><tbody><tr><td><p>a</p><p>b</p></td></tr></tbody></table>" +
+                "[]" +
                 "<table><tbody><tr><td><p>c</p><p>d</p></td></tr></tbody></table>",
         });
     });
@@ -561,28 +576,42 @@ describe("Selection correction when it lands at the editable root", () => {
         });
     });
 
-    test("should keep cursor at the same position (avoid reaching the editable root) (1)", async () => {
+    test("should move cursor to safe space (avoid reaching the editable root) (1)", async () => {
         await testEditor({
             contentBefore: "<table><tbody><tr><td><p>a</p><p>b[]</p></td></tr></tbody></table>",
             stepFunction: keyPress("ArrowRight"),
-            contentAfter: "<table><tbody><tr><td><p>a</p><p>b[]</p></td></tr></tbody></table>",
+            contentAfterEdit:
+                '<p data-selection-placeholder=""><br></p>' +
+                "<table><tbody><tr><td><p>a</p><p>b</p></td></tr></tbody></table>" +
+                `<p o-we-hint-text='Type "/" for commands' class="o-we-hint">[]<br></p>`,
         });
     });
-    test("should keep cursor at the same position (avoid reaching the editable root) (2)", async () => {
+    test("should move cursor to safe space (avoid reaching the editable root) (2)", async () => {
         await testEditor({
             contentBefore: "<table><tbody><tr><td><p>[]a</p><p>b</p></td></tr></tbody></table>",
             stepFunction: keyPress("ArrowLeft"),
-            contentAfter: "<table><tbody><tr><td><p>[]a</p><p>b</p></td></tr></tbody></table>",
+            contentAfterEdit:
+                `<p data-selection-placeholder="" o-we-hint-text='Type "/" for commands' class="o-we-hint o-horizontal-caret">[]<br></p>` +
+                "<table><tbody><tr><td><p>a</p><p>b</p></td></tr></tbody></table>" +
+                '<p data-selection-placeholder=""><br></p>',
         });
     });
 
     test("should place cursor after the second separator", async () => {
         await testEditor({
             contentBefore:
-                '<p>[]<br></p><hr contenteditable="false">' +
-                '<hr contenteditable="false"><p><br></p>',
+                "<p>[]<br></p>" +
+                '<hr contenteditable="false">' +
+                '<hr contenteditable="false">' +
+                "<p><br></p>",
             stepFunction: keyPress("ArrowRight"),
-            contentAfter: "<p><br></p><hr>" + "<hr><p>[]<br></p>",
+            contentAfterEdit:
+                "<p><br></p>" +
+                '<hr contenteditable="false">' +
+                `<p data-selection-placeholder="" o-we-hint-text='Type "/" for commands' class="o-we-hint o-horizontal-caret">[]<br></p>` +
+                '<hr contenteditable="false">' +
+                "<p><br></p>",
+            contentAfter: "<p><br></p><hr>[]<hr><p><br></p>",
         });
     });
 
@@ -590,10 +619,18 @@ describe("Selection correction when it lands at the editable root", () => {
     test("should place cursor before the first separator", async () => {
         await testEditor({
             contentBefore:
-                '<p><br></p><hr contenteditable="false">' +
-                '<hr contenteditable="false"><p>[]<br></p>',
+                "<p><br></p>" +
+                '<hr contenteditable="false">' +
+                '<hr contenteditable="false">' +
+                "<p>[]<br></p>",
             stepFunction: keyPress("ArrowLeft"),
-            contentAfter: "<p>[]<br></p><hr>" + "<hr><p><br></p>",
+            contentAfterEdit:
+                "<p><br></p>" +
+                '<hr contenteditable="false">' +
+                `<p data-selection-placeholder="" o-we-hint-text='Type "/" for commands' class="o-we-hint o-horizontal-caret">[]<br></p>` +
+                '<hr contenteditable="false">' +
+                "<p><br></p>",
+            contentAfter: "<p><br></p><hr>[]<hr><p><br></p>",
         });
     });
 });
@@ -639,8 +676,9 @@ describe("Around invisible chars in RTL languages", () => {
     });
 
     describe("ZWNBSP", () => {
-        const content = "<p>" + "الرجال" + '<a href="#">اءيتجنب</a>' + "هؤلاء" + "</p>";
-        // Displayed as "هؤلاء<a href="#">اءيتجنب</a>الرجال" in the editor:
+        const content =
+            "<p>" + "الرجال" + '<a href="http://test.test/">اءيتجنب</a>' + "هؤلاء" + "</p>";
+        // Displayed as "هؤلاء<a href="http://test.test/">اءيتجنب</a>الرجال" in the editor:
         //                third +         link      + first
         test("should move into a link (ArrowLeft)", async () => {
             const { editor, el } = await setupEditor(content, { config: { direction: "rtl" } });
@@ -648,7 +686,7 @@ describe("Around invisible chars in RTL languages", () => {
             // childNodes[1] and childNodes[3] are the ZWNBSP text nodes
             const link = el.firstChild.childNodes[2];
             // Place cursor at the end of first child (before the FEFF char)
-            // Displayed as هؤلاء\uFEFF<a href="#">\uFEFFاءيتجنب\uFEFF</a>\uFEFF[]الرجال
+            // Displayed as هؤلاء\uFEFF<a href="http://test.test/">\uFEFFاءيتجنب\uFEFF</a>\uFEFF[]الرجال
             setSelection({ anchorNode: pFirstChild, anchorOffset: pFirstChild.length });
 
             await keyPress("ArrowLeft")(editor);
@@ -656,9 +694,9 @@ describe("Around invisible chars in RTL languages", () => {
             const selection = editor.document.getSelection();
             expect(selection.anchorNode).toBe(link.firstChild); // FEFF node
             expect(selection.anchorOffset).toBe(1);
-            // Displayed as هؤلاء\uFEFF<a href="#">\uFEFFاءيتجنب[]\uFEFF</a>\uFEFFالرجال
+            // Displayed as هؤلاء\uFEFF<a href="http://test.test/">\uFEFFاءيتجنب[]\uFEFF</a>\uFEFFالرجال
             expect(getContent(el)).toBe(
-                '<p>الرجال\uFEFF<a href="#" class="o_link_in_selection">\uFEFF[]اءيتجنب\uFEFF</a>\uFEFFهؤلاء</p>'
+                '<p>الرجال\uFEFF<a href="http://test.test/" class="o_link_in_selection">\uFEFF[]اءيتجنب\uFEFF</a>\uFEFFهؤلاء</p>'
             );
         });
         test("should move into a link (ArrowRight)", async () => {
@@ -668,7 +706,7 @@ describe("Around invisible chars in RTL languages", () => {
             const pFifthChild = el.firstChild.childNodes[4]; // "هؤلاء"
             const link2ndChild = link.childNodes[1]; // اءيتجنب
             // Place cursor at the beginning of fifth child (after the FEFF char)
-            // Displayed as هؤلاء[]\uFEFF<a href="#">\uFEFFاءيتجنب\uFEFF</a>\uFEFFالرجال
+            // Displayed as هؤلاء[]\uFEFF<a href="http://test.test/">\uFEFFاءيتجنب\uFEFF</a>\uFEFFالرجال
             setSelection({ anchorNode: pFifthChild, anchorOffset: 0 });
 
             await keyPress("ArrowRight")(editor);
@@ -676,9 +714,9 @@ describe("Around invisible chars in RTL languages", () => {
             const selection = editor.document.getSelection();
             expect(selection.anchorNode).toBe(link2ndChild);
             expect(selection.anchorOffset).toBe(link2ndChild.length);
-            // Displayed as هؤلاء\uFEFF<a href="#">\uFEFF[]اءيتجنب\uFEFF</a>\uFEFFالرجال
+            // Displayed as هؤلاء\uFEFF<a href="http://test.test/">\uFEFF[]اءيتجنب\uFEFF</a>\uFEFFالرجال
             expect(getContent(el)).toBe(
-                '<p>الرجال\uFEFF<a href="#" class="o_link_in_selection">\uFEFFاءيتجنب[]\uFEFF</a>\uFEFFهؤلاء</p>'
+                '<p>الرجال\uFEFF<a href="http://test.test/" class="o_link_in_selection">\uFEFFاءيتجنب[]\uFEFF</a>\uFEFFهؤلاء</p>'
             );
         });
         test("should move out of a link (ArrowLeft)", async () => {
@@ -687,7 +725,7 @@ describe("Around invisible chars in RTL languages", () => {
             const link = el.firstChild.childNodes[2];
             const link2ndChild = link.childNodes[1]; // text content inside link: اءيتجنب
             // Place cursor at the end of link's content (before the FEFF char)
-            // Displayed as هؤلاء\uFEFF<a href="#">\uFEFF[]اءيتجنب\uFEFF</a>\uFEFFالرجال
+            // Displayed as هؤلاء\uFEFF<a href="http://test.test/">\uFEFF[]اءيتجنب\uFEFF</a>\uFEFFالرجال
             setSelection({ anchorNode: link2ndChild, anchorOffset: link2ndChild.length });
 
             await keyPress("ArrowLeft")(editor);
@@ -695,9 +733,9 @@ describe("Around invisible chars in RTL languages", () => {
             const selection = editor.document.getSelection();
             expect(selection.anchorNode).toBe(el.firstChild.childNodes[3]); // FEFF node outside link
             expect(selection.anchorOffset).toBe(1);
-            // Displayed as هؤلاء[]\uFEFF<a href="#">\uFEFFاءيتجنب\uFEFF</a>\uFEFFالرجال
+            // Displayed as هؤلاء[]\uFEFF<a href="http://test.test/">\uFEFFاءيتجنب\uFEFF</a>\uFEFFالرجال
             expect(getContent(el)).toBe(
-                '<p>الرجال\uFEFF<a href="#">\uFEFFاءيتجنب\uFEFF</a>\uFEFF[]هؤلاء</p>'
+                '<p>الرجال\uFEFF<a href="http://test.test/">\uFEFFاءيتجنب\uFEFF</a>\uFEFF[]هؤلاء</p>'
             );
         });
         test("should move out of a link (ArrowRight)", async () => {
@@ -707,7 +745,7 @@ describe("Around invisible chars in RTL languages", () => {
             const link = el.firstChild.childNodes[2];
             const link2ndChild = link.childNodes[1]; // text content inside link: اءيتجنب
             // Place cursor at the beginning of link's content (after the FEFF char)
-            // Displayed as هؤلاء\uFEFF<a href="#">\uFEFFاءيتجنب[]\uFEFF</a>\uFEFFالرجال
+            // Displayed as هؤلاء\uFEFF<a href="http://test.test/">\uFEFFاءيتجنب[]\uFEFF</a>\uFEFFالرجال
             setSelection({ anchorNode: link2ndChild, anchorOffset: 0 });
 
             await keyPress("ArrowRight")(editor);
@@ -715,9 +753,9 @@ describe("Around invisible chars in RTL languages", () => {
             const selection = editor.document.getSelection();
             expect(selection.anchorNode).toBe(pFirstChild);
             expect(selection.anchorOffset).toBe(pFirstChild.length);
-            // Displayed as هؤلاء\uFEFF<a href="#">\uFEFFاءيتجنب\uFEFF</a>\uFEFF[]الرجال
+            // Displayed as هؤلاء\uFEFF<a href="http://test.test/">\uFEFFاءيتجنب\uFEFF</a>\uFEFF[]الرجال
             expect(getContent(el)).toBe(
-                '<p>الرجال[]\uFEFF<a href="#">\uFEFFاءيتجنب\uFEFF</a>\uFEFFهؤلاء</p>'
+                '<p>الرجال[]\uFEFF<a href="http://test.test/">\uFEFFاءيتجنب\uFEFF</a>\uFEFFهؤلاء</p>'
             );
         });
     });

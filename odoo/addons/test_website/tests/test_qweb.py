@@ -6,16 +6,12 @@ import re
 
 from odoo import tools
 from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
-from odoo.addons.website.tools import MockRequest
+from odoo.addons.http_routing.tests.common import MockRequest
 
 
 class TestQweb(TransactionCaseWithUserDemo):
     def _load(self, module, filepath):
-        tools.convert_file(
-            self.env, module,
-            filepath,
-            {}, 'init', False, 'test'
-        )
+        tools.convert_file(self.env, module, filepath, {}, 'init')
 
     def test_qweb_cdn(self):
         self._load('test_website', 'tests/template_qweb_test.xml')

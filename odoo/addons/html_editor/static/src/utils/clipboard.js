@@ -13,21 +13,34 @@ function prependOriginToImages(doc, origin) {
 }
 
 /**
- * Fills clipboard data, also with the
- * application/vnd.odoo.odoo-editor mimetype so that it can recognized
- * on paste inside an editor.
- * @param {ClipboardEvent} ev copy event
- * @param {string} textContent
+ * Fills clipboard or dataTransfer data, including the
+ * application/vnd.odoo.odoo-editor MIME type so it can be recognized
+ * when pasted or dropped inside an editor.
+ *
+ * @param {ClipboardEvent | DragEvent} ev - The event on which to set the data.
+ * @param {'clipboardData' | 'dataTransfer'} transferObjectProperty
  * @param {DocumentFragment} clonedContents
+ * @param {Object} [options]
+ * @param {boolean} [options.setEditorTransferData=true]
+ * @param {string} [options.textContent]
  */
-export function fillClipboardData(ev, textContent, clonedContents) {
+
+export function fillHtmlTransferData(
+    ev,
+    transferObjectProperty,
+    clonedContents,
+    { setEditorTransferData = true, textContent } = {}
+) {
     const doc = ev.target.ownerDocument;
     const dataHtmlElement = doc.createElement("data");
     dataHtmlElement.append(clonedContents);
     prependOriginToImages(dataHtmlElement, doc.defaultView.location.origin);
-    const odooHtml = dataHtmlElement.innerHTML;
-    const odooText = textContent;
-    ev.clipboardData.setData("text/plain", odooText);
-    ev.clipboardData.setData("text/html", odooHtml);
-    ev.clipboardData.setData("application/vnd.odoo.odoo-editor", odooHtml);
+    const htmlContent = dataHtmlElement.innerHTML;
+    if (textContent) {
+        ev[transferObjectProperty].setData("text/plain", textContent);
+    }
+    ev[transferObjectProperty].setData("text/html", htmlContent);
+    if (setEditorTransferData) {
+        ev[transferObjectProperty].setData("application/vnd.odoo.odoo-editor", htmlContent);
+    }
 }

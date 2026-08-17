@@ -30,13 +30,11 @@ class TestProgramRules(TestSaleCouponCommon, PaymentCommon):
             (0, False, {
                 'product_id': self.product_A.id,
                 'name': '1 Product A',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             }),
             (0, False, {
                 'product_id': self.product_B.id,
                 'name': '2 Product B',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             })
         ]})
@@ -49,13 +47,11 @@ class TestProgramRules(TestSaleCouponCommon, PaymentCommon):
             (0, False, {
                 'product_id': self.product_A.id,
                 'name': '10 Product A',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 10.0,
             }),
             (0, False, {
                 'product_id': self.product_B.id,
                 'name': '2 Product B',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             })
         ]})
@@ -310,13 +306,11 @@ class TestProgramRules(TestSaleCouponCommon, PaymentCommon):
             Command.create({
                 'product_id': self.product_A.id,
                 'name': '1 Product A',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             }),
             Command.create({
                 'product_id': self.product_B.id,
                 'name': '2 Product B',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             })
         ]})
@@ -380,7 +374,6 @@ class TestProgramRules(TestSaleCouponCommon, PaymentCommon):
             Command.create({
                 'product_id': self.product_A.id,
                 'name': '1 Product A',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             })
         ]})
@@ -395,7 +388,6 @@ class TestProgramRules(TestSaleCouponCommon, PaymentCommon):
             Command.create({
                 'product_id': self.product_B.id,
                 'name': '2 Product B',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             })
         ]})
@@ -504,7 +496,7 @@ class TestProgramRules(TestSaleCouponCommon, PaymentCommon):
         order.order_line = [
             Command.create({
                 'product_id': self.product_A.id,
-                'product_uom': self.ref('uom.product_uom_dozen'),
+                'product_uom_id': self.ref('uom.product_uom_dozen'),
                 'product_uom_qty': 1,
             }),
         ]

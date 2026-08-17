@@ -1,5 +1,3 @@
-/** @odoo-module **/
-
 import { registry } from "@web/core/registry";
 import * as wsTourUtils from "@website_sale/js/tours/tour_utils";
 
@@ -21,7 +19,7 @@ registry.category("web_tour.tours").add('shop_sale_loyalty_delivery', {
         },
         {
             content: "click on 'Apply'",
-            trigger: "a[role='button'].a-submit:contains(Apply)",
+            trigger: 'form[name="coupon_code"] button[type="submit"]',
             run: "click",
             expectUnloadPage: true,
         },

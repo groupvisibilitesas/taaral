@@ -54,9 +54,10 @@ test("should make qweb tag underline", async () => {
     });
 });
 
+test.tags("desktop");
 test("should make a whole heading underline after a triple click", async () => {
     await testEditor({
-        contentBefore: `<h1>[ab</h1><p>]cd</p>`,
+        contentBefore: `<h1>ab</h1><p>cd</p>`,
         stepFunction: async (editor) => {
             await tripleClick(editor.editable.querySelector("h1"));
             underline(editor);
@@ -65,6 +66,7 @@ test("should make a whole heading underline after a triple click", async () => {
     });
 });
 
+test.tags("desktop");
 test("should make a whole heading not underline after a triple click", async () => {
     const { el, editor } = await setupEditor(`<h1><u>ab</u></h1><p>cd</p>`);
     await tripleClick(el.querySelector("h1"));
@@ -94,6 +96,55 @@ test("should make a selection ending with underline text fully underline", async
         contentBefore: `<p>[ab</p><p><u>c]d</u></p>`,
         stepFunction: underline,
         contentAfter: `<p><u>[ab</u></p><p><u>c]d</u></p>`,
+    });
+});
+
+test("should make two paragraphs (separated with whitespace) underline", async () => {
+    await testEditor({
+        contentBefore: `
+            <p>[abc</p>
+            <p>def]</p>
+        `,
+        stepFunction: underline,
+        contentAfter: `
+            <p><u>[abc</u></p>
+            <p><u>def]</u></p>
+        `,
+    });
+});
+
+test("should make two paragraphs (separated with whitespace) not underline", async () => {
+    await testEditor({
+        contentBefore: `
+            <p><u>[abc</u></p>
+            <p><u>def]</u></p>
+        `,
+        stepFunction: underline,
+        contentAfter: `
+            <p>[abc</p>
+            <p>def]</p>
+        `,
+    });
+});
+
+test("should make two paragraphs (separated with whitespace) underline, then not underline", async () => {
+    await testEditor({
+        contentBefore: `
+            <p>[abc</p>
+            <p>def]</p>
+        `,
+        stepFunction: async (editor) => {
+            underline(editor);
+            expect(getContent(editor.editable)).toBe(`
+            <p><u>[abc</u></p>
+            <p><u>def]</u></p>
+        `);
+            underline(editor);
+        },
+        contentAfter: `
+            <p>[abc</p>
+            <p>def]</p>
+        `,
     });
 });
 
@@ -147,6 +198,7 @@ test("should make a few characters underline inside table (underline)", async ()
             </table>`),
         stepFunction: underline,
         contentAfterEdit: unformat(`
+            <p data-selection-placeholder=""><br></p>
             <table class="table table-bordered o_table o_selected_table">
                 <tbody>
                     <tr>
@@ -165,7 +217,8 @@ test("should make a few characters underline inside table (underline)", async ()
                         <td><p><br></p></td>
                     </tr>
                 </tbody>
-            </table>`),
+            </table>
+            <p data-selection-placeholder="" style="margin: -9px 0px 8px;"><br></p>`),
     });
 });
 
@@ -299,8 +352,8 @@ describe("with italic", () => {
         await testEditor({
             contentBefore: `<p>ab<u><em>cd</em></u><em>\u200B[]</em><u><em>ef</em></u></p>`,
             stepFunction: underline,
-            contentAfterEdit: `<p>ab<u><em>cd</em></u><em><u data-oe-zws-empty-inline="">\u200B[]</u></em><u><em>ef</em></u></p>`,
-            contentAfter: `<p>ab<u><em>cd</em></u><em>[]</em><u><em>ef</em></u></p>`,
+            contentAfterEdit: `<p>ab<u><em>cd</em></u><em><u data-oe-zws-empty-inline="">\u200b[]</u></em><u><em>ef</em></u></p>`,
+            contentAfter: `<p>ab<u><em>cd[]ef</em></u></p>`,
         });
     });
 

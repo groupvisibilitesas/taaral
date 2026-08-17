@@ -40,10 +40,6 @@ class PosOrder(models.Model):
         string="Veri*Factu QR Code",
         compute='_compute_l10n_es_edi_verifactu_qr_code',
     )
-    l10n_es_edi_verifactu_show_cancel_button = fields.Boolean(
-        string="Show Veri*Factu Cancel Button",
-        compute='_compute_l10n_es_edi_verifactu_show_cancel_button',
-    )
     l10n_es_edi_verifactu_refund_reason = fields.Selection(
         selection=[
             ('R1', "R1: Art 80.1 and 80.2 and error of law"),
@@ -96,11 +92,6 @@ class PosOrder(models.Model):
                 url = last_submission._get_qr_code_img_url() if last_submission else False
             order.l10n_es_edi_verifactu_qr_code = url
 
-    @api.depends('l10n_es_edi_verifactu_state')
-    def _compute_l10n_es_edi_verifactu_show_cancel_button(self):
-        for order in self:
-            order.l10n_es_edi_verifactu_show_cancel_button = order.l10n_es_edi_verifactu_state in ('registered_with_errors', 'accepted')
-
     def _l10n_es_edi_verifactu_get_tax_applicability(self):
         """
         Currently we only support a single Veri*Factu Tax Applicability per Veri*Factu document.
@@ -130,12 +121,6 @@ class PosOrder(models.Model):
             special_regime, forced_tax_applicability=tax_applicability
         )
         return selected_clave_regimen and selected_clave_regimen.split('_', 1)[0]
-
-    # TODO: remove in master (19.0)
-    def l10n_es_edi_verifactu_button_cancel(self):
-        # We should not Veri*Factu cancel orders. There is no clean way to cancel PoS orders.
-        # So they would still be reflected in the accounting.
-        pass
 
     def l10n_es_edi_verifactu_button_send(self):
         self._l10n_es_edi_verifactu_mark_for_next_batch()
@@ -186,6 +171,7 @@ class PosOrder(models.Model):
         else:
             refunded_document = refunded_order.l10n_es_edi_verifactu_document_ids._get_last('submission')
 
+        name = self.l10n_es_edi_verifactu_get_invoice_name()
         vals.update({
             'rejected_before': rejected_before,
             'verifactu_state': self.l10n_es_edi_verifactu_state,
@@ -196,7 +182,7 @@ class PosOrder(models.Model):
             # NOTE: invoice with negative amounts possible (when no `refunded_order` specified)
             'verifactu_move_type': 'correction_incremental' if refunded_order else 'invoice',
             'sign': -1 if refunded_order else 1,
-            'name': self.name,
+            'name': name,
             'partner': self.partner_id.commercial_partner_id,
             'refund_reason': self.l10n_es_edi_verifactu_refund_reason,
             'refunded_document': refunded_document,
@@ -293,9 +279,21 @@ class PosOrder(models.Model):
         if not self.config_id.l10n_es_edi_verifactu_required:
             return res
 
+        if len(self) > 1:
+            raise UserError(_("With Veri*Factu enabled, POS orders cannot be consolidated into one invoice."))
         res['l10n_es_edi_verifactu_refund_reason'] = self.l10n_es_edi_verifactu_refund_reason
         # There is no reason to create a simplified invoice instead of just creating an order.
         # (Currently "simplified" basically just removes the partner information.)
         res['l10n_es_is_simplified'] = False
 
         return res
+
+    def l10n_es_edi_verifactu_get_invoice_name(self):
+        if self.account_move:
+            return self.account_move.name
+        return str(self.config_id.id) + '/' + str(self.sequence_number).zfill(6)
+
+    def _update_sequence_number(self, session, values):
+        """ Override: do not allow updating the sequence number for Spanish pos orders"""
+        if not session.config_id.l10n_es_edi_verifactu_required or not values.get('to_invoice'):
+            super()._update_sequence_number(session, values)

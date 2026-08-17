@@ -109,7 +109,7 @@ class AccountMoveSend(models.AbstractModel):
                 }
 
         if created_document and self._can_commit():
-            self._cr.commit()
+            self.env.cr.commit()
 
     def _hook_if_errors(self, moves_data, allow_raising=True):
         # EXTENDS 'account'

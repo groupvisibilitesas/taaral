@@ -18,7 +18,6 @@ class SaleOrder(models.Model):
         of the order lines that do not refer to it directly.
 
         :param ProductProduct product: the product for which the unavailability is computed.
-        :param float free_qty: the free_qty of the product
         """
         self.ensure_one()
         unavailable_qty = 0
@@ -41,7 +40,9 @@ class SaleOrder(models.Model):
                 uom_qty_per_kit = bom_line_data['qty'] / bom_line_data['original_qty']
                 qty_per_kit[component] += bom_line.product_uom_id._compute_quantity(uom_qty_per_kit / kit_bom.product_qty, component.uom_id, round=False)
 
-        for line in self.order_line.filtered(lambda sol: sol.product_id.is_kits and sol.product_id != product):
+        for line in self.order_line:
+            if not line.product_id.is_kits or line.product_id == product:
+                continue
             # Other kit lines might influence the availability of the product.
             line_kit_bom = self.env['mrp.bom'].sudo()._bom_find(line.product_id, company_id=self.company_id.id, bom_type='phantom')[line.product_id]
             component_qties = line._get_bom_component_qty(line_kit_bom)

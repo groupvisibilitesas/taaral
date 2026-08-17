@@ -5,7 +5,7 @@
     'countries': ['dk'],
     'version': '1.4',
     'author': 'Odoo House ApS, VK DATA ApS, FlexERP ApS',
-    'website': 'https://www.odoo.com/documentation/master/applications/finance/fiscal_localizations.html',
+    'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations.html',
     'category': 'Accounting/Localizations/Account Charts',
     'description': """
 
@@ -89,11 +89,15 @@ Produktopsætning:
         'base_iban',
         'base_vat',
         'account',
+        'account_edi_ubl_cii',
     ],
     'auto_install': ['account'],
     'data': [
         'data/account_tax_report_data.xml',
         'data/account.account.tag.csv',
+        'views/account_journal_views.xml',
+        'views/res_partner_views.xml',
+        'views/res_company_views.xml',
     ],
     'demo': [
         'demo/demo_company.xml',

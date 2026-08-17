@@ -1,13 +1,14 @@
-# -*- coding: utf-8 -*-
-
 from difflib import SequenceMatcher
 
-from odoo import api, Command, fields, models, _
+from odoo import api, fields, models, _, Command
 from odoo.exceptions import ValidationError
-from odoo.osv import expression
-from odoo.tools import format_amount, frozendict, split_every
+from odoo.fields import Domain
+from odoo.tools import format_amount, frozendict
+from odoo.tools.misc import split_every
+from odoo.tools.constants import PREFETCH_MAX
 
-ACCOUNT_DOMAIN = "['&', ('deprecated', '=', False), ('account_type', 'not in', ('asset_receivable','liability_payable','asset_cash','liability_credit_card','off_balance'))]"
+
+ACCOUNT_DOMAIN = "[('account_type', 'not in', ('asset_receivable','liability_payable','asset_cash','liability_credit_card','off_balance'))]"
 
 
 class ProductCategory(models.Model):
@@ -31,6 +32,8 @@ class ProductCategory(models.Model):
 #----------------------------------------------------------
 # Products
 #----------------------------------------------------------
+
+
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
@@ -64,8 +67,15 @@ class ProductTemplate(models.Model):
 
     def _get_product_accounts(self):
         return {
-            'income': self.property_account_income_id or self._get_category_account('property_account_income_categ_id'),
-            'expense': self.property_account_expense_id or self._get_category_account('property_account_expense_categ_id')
+            'income': (
+                self.property_account_income_id
+                or self._get_category_account('property_account_income_categ_id')
+                or (self.company_id or self.env.company).income_account_id
+            ), 'expense': (
+                self.property_account_expense_id
+                or self._get_category_account('property_account_expense_categ_id')
+                or (self.company_id or self.env.company).expense_account_id
+            ),
         }
 
     def _get_category_account(self, field_name):
@@ -80,12 +90,6 @@ class ProductTemplate(models.Model):
                 return account
             categ = categ.parent_id
         return self.env['account.account']
-
-    def _get_asset_accounts(self):
-        res = {}
-        res['stock_input'] = False
-        res['stock_output'] = False
-        return res
 
     def get_product_accounts(self, fiscal_pos=None):
         return {
@@ -127,21 +131,19 @@ class ProductTemplate(models.Model):
     @api.constrains('uom_id')
     def _check_uom_not_in_invoice(self):
         self.env['product.template'].flush_model(['uom_id'])
-        self._cr.execute("""
+        self.env.cr.execute("""
             SELECT prod_template.id
               FROM account_move_line line
               JOIN product_product prod_variant ON line.product_id = prod_variant.id
               JOIN product_template prod_template ON prod_variant.product_tmpl_id = prod_template.id
               JOIN uom_uom template_uom ON prod_template.uom_id = template_uom.id
-              JOIN uom_category template_uom_cat ON template_uom.category_id = template_uom_cat.id
               JOIN uom_uom line_uom ON line.product_uom_id = line_uom.id
-              JOIN uom_category line_uom_cat ON line_uom.category_id = line_uom_cat.id
              WHERE prod_template.id IN %s
                AND line.parent_state = 'posted'
-               AND template_uom_cat.id != line_uom_cat.id
+               AND template_uom.id != line_uom.id
              LIMIT 1
         """, [tuple(self.ids)])
-        if self._cr.fetchall():
+        if self.env.cr.fetchall():
             raise ValidationError(_(
                 "This product is already being used in posted Journal Entries.\n"
                 "If you want to change its Unit of Measure, please archive this product and create a new one."
@@ -159,7 +161,7 @@ class ProductTemplate(models.Model):
         if not default_customer_taxes:
             return
         links = [Command.link(t.id) for t in default_customer_taxes]
-        for sub_ids in self.env.cr.split_for_in_conditions(self.ids, size=10000):
+        for sub_ids in split_every(self.env.cr.IN_MAX, self.ids):
             chunk = self.browse(sub_ids)
             chunk.write({'taxes_id': links})
             chunk.invalidate_recordset(['taxes_id'])
@@ -169,7 +171,7 @@ class ProductTemplate(models.Model):
         if not default_supplier_taxes:
             return
         links = [Command.link(t.id) for t in default_supplier_taxes]
-        for sub_ids in self.env.cr.split_for_in_conditions(self.ids, size=10000):
+        for sub_ids in split_every(self.env.cr.IN_MAX, self.ids):
             chunk = self.browse(sub_ids)
             chunk.write({'supplier_taxes_id': links})
             chunk.invalidate_recordset(['supplier_taxes_id'])
@@ -204,6 +206,10 @@ class ProductTemplate(models.Model):
         # calculate base from tax
         included_computed_price = self.taxes_id.with_context(force_price_include=True).compute_all(price, self.currency_id)
         return included_computed_price['total_excluded']
+
+    def _get_price_diff_account(self):
+        self.ensure_one()
+        return False
 
 
 class ProductProduct(models.Model):
@@ -308,6 +314,32 @@ class ProductProduct(models.Model):
         if default_code:
             return {'criteria': [{'domain': [('default_code', '=', default_code)]}]}
 
+    def _import_retrieve_product_from_supplierinfo(self, product_values):
+        vendor_partner_id = product_values.get('vendor_partner_id')
+        if not vendor_partner_id:
+            return {}
+        product_codes = [
+            code for code in [
+                product_values.get('sellers_item_id'),
+                product_values.get('standard_item_id'),
+                product_values.get('buyers_item_id'),
+            ]
+            if code
+        ]
+        if not product_codes:
+            return {}
+
+        return {
+            'criteria': [{
+                'domain': [(
+                    'product_tmpl_id.seller_ids', 'any', [
+                        ('partner_id', '=', vendor_partner_id),
+                        ('product_code', 'in', product_codes),
+                    ],
+                )]
+            }]
+        }
+
     def _import_retrieve_product_from_name(self, product_values):
 
         name = product_values.get('name')
@@ -328,13 +360,13 @@ class ProductProduct(models.Model):
                 similarity_threshold = 0.9
 
             all_product_ids = self.search(
-                expression.AND([
+                Domain.AND([
                     [('name', 'ilike', name)],
                     values['static_domain'],
                 ]),
             ).ids
             lowered_name = name.lower()
-            for products in split_every(models.PREFETCH_MAX, all_product_ids, self.browse):
+            for products in split_every(PREFETCH_MAX, all_product_ids, self.browse):
                 products.fetch(['product_tmpl_id'])
                 templates = products.product_tmpl_id
                 templates.fetch(['name'])
@@ -384,7 +416,7 @@ class ProductProduct(models.Model):
     def _import_retrieve_product(self, search_plan, company, product_values_list):
         cache = {}
 
-        static_domain = expression.OR([
+        static_domain = Domain.OR([
             [*self._check_company_domain(company), ('company_id', '!=', False)],
             [('company_id', '=', False)],
         ])
@@ -451,13 +483,13 @@ class ProductProduct(models.Model):
                         product_extra_domain.append(('l10n_hr_kpd_category_id', 'in', (cpv_code_record.id, False)))
                         orders.insert(1, 'l10n_hr_kpd_category_id')
 
-                    product_domain = expression.AND([
+                    product_domain = Domain.AND([
                         static_domain,
                         product_extra_domain
                     ])
 
                     if domain:
-                        full_domain = expression.AND([product_domain, domain])
+                        full_domain = Domain.AND([product_domain, domain])
                         product = self.search(
                             full_domain,
                             order=', '.join(orders),
@@ -478,7 +510,15 @@ class ProductProduct(models.Model):
                 if product:
                     break
 
-    def _retrieve_product(self, name=None, default_code=None, barcode=None, company=None, extra_domain=None):
+    def _get_retrieval_product_search_plan(self):
+        return [
+            (5, self._import_retrieve_product_from_supplierinfo),
+            (10, self._import_retrieve_product_from_barcode),
+            (15, self._import_retrieve_product_from_default_code),
+            (20, self._import_retrieve_product_from_name),
+        ]
+
+    def _retrieve_product(self, company=None, extra_domain=None, **product_vals):
         '''Search all products and find one that matches one of the parameters.
 
         :param name:            The name of the product.
@@ -488,18 +528,31 @@ class ProductProduct(models.Model):
         :param extra_domain:    Any extra domain to add to the search.
         :returns:               A product or an empty recordset if not found.
         '''
-        product_values = {
-            'name': name,
-            'default_code': default_code,
-            'barcode': barcode,
-        }
         self._import_retrieve_product(
-            search_plan=[
-                self._import_retrieve_product_from_barcode,
-                self._import_retrieve_product_from_default_code,
-                self._import_retrieve_product_from_name,
-            ],
+            search_plan=[method[1] for method in sorted(self._get_retrieval_product_search_plan())],
             company=company or self.env.company,
-            product_values_list=[product_values],
+            product_values_list=[product_vals],
         )
-        return product_values.get('product') or self.env['product.product']
+        return product_vals.get('product') or self.env['product.product']
+
+    def _get_product_domain_search_order(self, **vals):
+        """Gives the order of search for a product given the parameters.
+
+        :param name:            The name of the product.
+        :param default_code:    The default_code of the product.
+        :param barcode:         The barcode of the product.
+        :returns:               An ordered list of product domains and their associated priority.
+        :rtype: list[tuple[int, Domain]]
+        """
+        sorted_domains = []
+        if barcode := vals.get('barcode'):
+            sorted_domains.append((5, Domain('barcode', '=', barcode)))
+        if default_code := vals.get('default_code'):
+            sorted_domains.append((10, Domain('default_code', '=', default_code)))
+        if name := vals.get('name'):
+            name = name.split('\n', 1)[0]  # Cut sales description from the name
+            sorted_domains.append((15, Domain('name', '=ilike', name)))
+        return sorted_domains
+
+    def _get_price_diff_account(self):
+        return self.product_tmpl_id._get_price_diff_account()

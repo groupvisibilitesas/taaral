@@ -10,6 +10,7 @@ from odoo.tools import SQL
 
 from odoo.addons.payment.controllers import portal as payment_portal
 
+
 # TODO ANVFE part of payment routes ? /shop/payment ? express_checkout ?
 
 class PaymentPortal(payment_portal.PaymentPortal):
@@ -21,7 +22,7 @@ class PaymentPortal(payment_portal.PaymentPortal):
         """
         return
 
-    @route('/shop/payment/transaction/<int:order_id>', type='json', auth='public', website=True)
+    @route('/shop/payment/transaction/<int:order_id>', type='jsonrpc', auth='public', website=True)
     def shop_payment_transaction(self, order_id, access_token, **kwargs):
         """ Create a draft transaction and return its processing values.
 
@@ -31,7 +32,8 @@ class PaymentPortal(payment_portal.PaymentPortal):
         :return: The mandatory values for the processing of the transaction
         :rtype: dict
         :raise: UserError if the order has already been paid or has an ongoing transaction
-        :raise: ValidationError if the invoice id or the access token is invalid
+        :raise: ValidationError if the access token is invalid or the order is not in the expected
+            state/configuration.
         """
         # Check the order id and the access token
         # Then lock it during the transaction to prevent concurrent payments
@@ -67,8 +69,8 @@ class PaymentPortal(payment_portal.PaymentPortal):
         if compare_amounts(order_sudo.amount_paid, order_sudo.amount_total) == 0:
             raise UserError(_("The cart has already been paid. Please refresh the page."))
 
-        if delay_payment_request := kwargs.get('flow') == 'token':
-            request.update_context(delay_payment_request=True)  # wait until after tx validation
+        if delay_token_charge := kwargs.get('flow') == 'token':
+            request.update_context(delay_token_charge=True)  # wait until after tx validation
         tx_sudo = self._create_transaction(
             custom_create_values={'sale_order_ids': [Command.set([order_id])]}, **kwargs,
         )
@@ -78,7 +80,7 @@ class PaymentPortal(payment_portal.PaymentPortal):
         request.session['__website_sale_last_tx_id'] = tx_sudo.id
 
         self._validate_transaction_for_order(tx_sudo, order_sudo)
-        if delay_payment_request:
-            tx_sudo._send_payment_request()
+        if delay_token_charge:
+            tx_sudo._charge_with_token()
 
         return tx_sudo._get_processing_values()

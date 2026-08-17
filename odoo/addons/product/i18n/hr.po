@@ -3,33 +3,36 @@
 # * product
 #
 # Translators:
-# Đurđica Žarković <durdica.zarkovic@storm.hr>, 2024
-# Milan Tribuson <one.mile.code@gmail.com>, 2024
-# Mario Jureša <mario.juresa@uvid.hr>, 2024
-# Matija Gudlin, 2024
-# Ivica Dimjašević <ivica.dimjasevic@storm.hr>, 2024
-# Vladimir Vrgoč, 2024
-# Martin Trigaux, 2024
-# Vladimir Olujić <olujic.vladimir@storm.hr>, 2024
-# Karolina Tonković <karolina.tonkovic@storm.hr>, 2024
-# Tina Milas, 2024
-# hrvoje sić <hrvoje.sic@gmail.com>, 2024
-# Bole <bole@dajmi5.com>, 2024
-# Zvonimir Galic, 2025
-# Goran Kliska <gkliska@gmail.com>, 2025
-# Ivica Dimjašević, 2025
-# Luka Carević <luka@uvid.hr>, 2025
-# Alen Komljen <alen@uvid.hr>, 2025.
-# Karlo Mikešić <karlo@uvid.hr>, 2025.
+# Matej Mijoč, 2022
+# Goran Kliska <gkliska@gmail.com>, 2022
+# Marko Carević <marko.carevic@live.com>, 2022
+# 0ba0ac30481a756f36528ba6f9a4317e_6443a87 <52eefe24349934c364624ef40611b7a3_1010754>, 2022
+# Jasmina Otročak <jasmina@uvid.hr>, 2022
+# Ivan Marijanović <ivanm101@yahoo.com>, 2022
+# Ivica Dimjašević <ivica.dimjasevic@storm.hr>, 2022
+# Vladimir Vrgoč, 2022
+# Mario Jureša <mario.juresa@uvid.hr>, 2022
+# Đurđica Žarković <durdica.zarkovic@storm.hr>, 2022
+# Hrvoje Sić <hrvoje.sic@gmail.com>, 2022
+# KRISTINA PALAŠ <kristina.palas@storm.hr>, 2022
+# Vladimir Olujić <olujic.vladimir@storm.hr>, 2022
+# Tina Milas, 2022
+# Karolina Tonković <karolina.tonkovic@storm.hr>, 2022
+# Milan Tribuson <one.mile.code@gmail.com>, 2022
+# Martin Trigaux, 2022
+# Bole <bole@dajmi5.com>, 2023
 # Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Zvonimir Galić <zvonimir.galic@viavista.ba>, 2025, 2026.
+# Odoo Translation Bot <c3p@odoo.com>, 2026.
+# Boris Peko <boris.peko@ecodica.eu>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 18:38+0000\n"
-"PO-Revision-Date: 2026-04-14 08:29+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Croatian <https://translate.odoo.com/projects/odoo-18/product/"
+"POT-Creation-Date: 2026-04-10 18:39+0000\n"
+"PO-Revision-Date: 2026-08-05 19:49+0000\n"
+"Last-Translator: Zvonimir Galić <zvonimir.galic@viavista.ba>\n"
+"Language-Team: Croatian <https://translate.odoo.com/projects/odoo-19/product/"
 "hr/>\n"
 "Language: hr\n"
 "MIME-Version: 1.0\n"
@@ -37,7 +40,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: product
 #. odoo-python
@@ -56,12 +59,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:product.field_product_product__product_variant_count
 #: model:ir.model.fields,field_description:product.field_product_template__product_variant_count
 msgid "# Product Variants"
-msgstr "# Varijanti proizvoda"
+msgstr "# Varijante proizvoda"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_category__product_count
 msgid "# Products"
-msgstr "# Proizvoda"
+msgstr "# Proizvodi"
 
 #. module: product
 #. odoo-python
@@ -107,6 +110,7 @@ msgstr "%(percentage)s %% popust na prodajnu cijenu"
 
 #. module: product
 #. odoo-python
+#: code:addons/product/models/product_category.py:0
 #: code:addons/product/models/product_pricelist.py:0
 #: code:addons/product/models/product_tag.py:0
 #: code:addons/product/models/product_template.py:0
@@ -124,8 +128,8 @@ msgstr "'Labele proizvoda - %s' % (object.name)"
 
 #. module: product
 #: model:ir.actions.report,print_report_name:product.report_product_packaging
-msgid "'Products packaging - %s' % (object.name)"
-msgstr "'Pakiranje proizvoda - %s' % (object.name)"
+msgid "'Products packaging - %s' % (object.uom_id.name)"
+msgstr "'Products packaging - %s' % (object.uom_id.name)"
 
 #. module: product
 #. odoo-python
@@ -172,14 +176,14 @@ msgstr ""
 "proizvodu."
 
 #. module: product
-#: model:product.attribute.value,name:product.product_attribute_value_5
-msgid "1 year"
-msgstr "1 godina"
+#: model:product.attribute.value,name:product.pav_duration_month_1
+msgid "1 month"
+msgstr "1 mjesec"
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_warranty
-msgid "1 year warranty extension"
-msgstr "1 godina produljenja jamstva"
+#: model:product.attribute.value,name:product.pav_duration_year_1
+msgid "1 year"
+msgstr "1 godina"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
@@ -188,8 +192,8 @@ msgstr "10 komada"
 
 #. module: product
 #: model:product.template,description_sale:product.product_product_4_product_template
-msgid "160x80cm, with large legs."
-msgstr "160x80cm, sa velikim nogama."
+msgid "160x80cm, with large legs"
+msgstr "160x80 cm, s velikim nogama"
 
 #. module: product
 #: model:ir.model.fields.selection,name:product.selection__product_label_layout__print_format__2x7xprice
@@ -197,9 +201,24 @@ msgid "2 x 7 with price"
 msgstr "2 x 7 sa cijenom"
 
 #. module: product
-#: model:product.attribute.value,name:product.product_attribute_value_6
-msgid "2 year"
-msgstr "2 godine"
+#: model:product.attribute.value,name:product.pav_duration_year_2
+msgid "2 years"
+msgstr "2 years"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_size_2xl
+msgid "2XL"
+msgstr "2XL"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_duration_year_3
+msgid "3 years"
+msgstr "3 years"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_size_3xl
+msgid "3XL"
+msgstr "3XL"
 
 #. module: product
 #: model:ir.model.fields.selection,name:product.selection__product_label_layout__print_format__4x12
@@ -215,6 +234,30 @@ msgstr "4 x 12 sa cijenom"
 #: model:ir.model.fields.selection,name:product.selection__product_label_layout__print_format__4x7xprice
 msgid "4 x 7 with price"
 msgstr "4 x 7 sa cijenom"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_size_4xl
+msgid "4XL"
+msgstr "4XL"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_size_5xl
+msgid "5XL"
+msgstr "5XL"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_duration_month_6
+msgid "6 months"
+msgstr "6 mjeseci"
+
+#. module: product
+#: model_terms:product.template,website_description:product.product_product_4_product_template
+msgid ""
+"<a href=\"/contactus\" class=\"mb-2 btn btn-primary "
+"o_translate_inline\">Contact Us</a>"
+msgstr ""
+"<a href=\"/contactus\" class=\"mb-2 btn btn-primary o_translate_inline\">"
+"Kontaktirajte nas</a>"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
@@ -236,51 +279,18 @@ msgid ""
 "<i class=\"fa fa-money\" role=\"img\" aria-label=\"Currency\" "
 "title=\"Currency\"/>"
 msgstr ""
-"<i class=\"fa fa-money\" role=\"img\" aria-label=\"Valuta\" title=\"Valuta\"/"
-">"
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-msgid ""
-"<span class=\"o_stat_text\" invisible=\"pricelist_item_count == 1\">\n"
-"                                            Rules\n"
-"                                        </span>\n"
-"                                        <span class=\"o_stat_text\" "
-"invisible=\"pricelist_item_count != 1\">\n"
-"                                            Rule\n"
-"                                        </span>"
-msgstr ""
-"<span class=\"o_stat_text\" invisible=\"pricelist_item_count == 1\">\n"
-"                                            Pravila\n"
-"                                        </span>\n"
-"                                        <span class=\"o_stat_text\" "
-"invisible=\"pricelist_item_count != 1\">\n"
-"                                            Pravilo\n"
-"                                        </span>"
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-msgid ""
-"<span class=\"o_stat_text\" invisible=\"pricelist_item_count == 1\">\n"
-"                                        Pricelists\n"
-"                                    </span>\n"
-"                                    <span class=\"o_stat_text\" "
-"invisible=\"pricelist_item_count != 1\">\n"
-"                                        Pricelist\n"
-"                                    </span>"
-msgstr ""
-"<span class=\"o_stat_text\" invisible=\"pricelist_item_count == 1\">\n"
-"                                        Cjenici\n"
-"                                    </span>\n"
-"                                    <span class=\"o_stat_text\" "
-"invisible=\"pricelist_item_count != 1\">\n"
-"                                        Cjenik\n"
-"                                    </span>"
+"<i class=\"fa fa-money\" role=\"img\" aria-label=\"Valuta\" "
+"title=\"Valuta\"/>"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_category_form_view
 msgid "<span class=\"o_stat_text\"> Products</span>"
-msgstr "<span class=\"o_stat_text\"> Proizvodi"
+msgstr "<span class=\"o_stat_text\"> Proizvodi</span>"
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.uom_uom_form_view_inherit
+msgid "<span class=\"o_stat_text\">Packaging Barcodes</span>"
+msgstr "<span class=\"o_stat_text\">Barkodovi pakiranja</span>"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_attribute_view_form
@@ -293,31 +303,19 @@ msgid "<span>%</span>"
 msgstr "<span>%</span>"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
-msgid ""
-"<span>%</span>\n"
-"                                <span>on</span>"
-msgstr ""
-"<span>%</span>\n"
-"                                <span>na </span>"
-
-#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "<span>All general settings about this product are managed on</span>"
 msgstr "<span>Svim općim postavkama proizvoda upravlja se na</span>"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.report_packagingbarcode
-msgid "<strong>Qty: </strong>"
-msgstr "<strong>Kol: </strong>"
+#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
+msgid "<span>on</span>"
+msgstr "<span>na</span>"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
-msgid ""
-"<strong>Save</strong> this page and come back\n"
-"                                here to set up the feature."
-msgstr ""
-"<strong>Snimite</strong> i osvježite stranicu za aktivaciju ove značajke"
+#: model_terms:ir.ui.view,arch_db:product.report_packagingbarcode
+msgid "<strong>Qty: </strong>"
+msgstr "<strong>Kol:</strong>"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_only_form_view
@@ -331,9 +329,9 @@ msgstr ""
 "do gubitka njihove moguće prilagodbe."
 
 #. module: product
-#: model:ir.model.constraint,message:product.constraint_product_packaging_barcode_uniq
+#: model:ir.model.constraint,message:product.constraint_product_uom_barcode_uniq
 msgid "A barcode can only be assigned to one packaging."
-msgstr " Barkod se može dodijeliti samo jednom pakiranju."
+msgstr "Barkod se može dodijeliti samo jednom pakiranju."
 
 #. module: product
 #. odoo-python
@@ -403,7 +401,7 @@ msgstr ""
 
 #. module: product
 #. odoo-python
-#: code:addons/product/models/product_packaging.py:0
+#: code:addons/product/models/product_uom.py:0
 msgid "A product already uses the barcode"
 msgstr "Proizvod već koristi ovaj barkod"
 
@@ -418,7 +416,7 @@ msgstr ""
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_document__access_token
 msgid "Access Token"
-msgstr "Pristupni token"
+msgstr "Token pristupa"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
@@ -441,7 +439,7 @@ msgstr "Akustični Bloc zasloni"
 #: model:ir.model.fields,field_description:product.field_product_product__message_needaction
 #: model:ir.model.fields,field_description:product.field_product_template__message_needaction
 msgid "Action Needed"
-msgstr "Potrebna radnja"
+msgstr "Potrebna akcija"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__active
@@ -456,7 +454,7 @@ msgstr "Potrebna radnja"
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_search_view
 #: model_terms:ir.ui.view,arch_db:product.product_template_attribute_value_view_search
 msgid "Active"
-msgstr "Aktivno"
+msgstr "Aktivan"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_search_view
@@ -475,7 +473,7 @@ msgstr "Aktivnosti"
 #: model:ir.model.fields,field_description:product.field_product_product__activity_exception_decoration
 #: model:ir.model.fields,field_description:product.field_product_template__activity_exception_decoration
 msgid "Activity Exception Decoration"
-msgstr "Oznaka izuzetka aktivnosti"
+msgstr "Dekoracija iznimke aktivnosti"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist__activity_state
@@ -510,6 +508,11 @@ msgid "Add Products to pricelist report"
 msgstr "Dodaj proizvode u izvješće cjenika"
 
 #. module: product
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
+msgid "Add a price"
+msgstr "Dodaj cijenu"
+
+#. module: product
 #. odoo-javascript
 #: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
 msgid "Add a quantity"
@@ -542,6 +545,17 @@ msgid "Add to products"
 msgstr "Dodaj proizvodima"
 
 #. module: product
+#: model:ir.model.fields,help:product.field_product_product__uom_ids
+#: model:ir.model.fields,help:product.field_product_template__uom_ids
+msgid "Additional packagings for this product which can be used for sales"
+msgstr "Dodatna pakiranja za ovaj proizvod koja se mogu koristiti za prodaju"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_adidas
+msgid "Adidas"
+msgstr "Adidas"
+
+#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_document_search
 msgid "All"
 msgstr "Sve"
@@ -550,7 +564,7 @@ msgstr "Sve"
 #. odoo-python
 #: code:addons/product/models/product_pricelist_item.py:0
 msgid "All Categories"
-msgstr "Dodaj kategorijama"
+msgstr "Sve kategorije"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__all_product_tag_ids
@@ -560,13 +574,12 @@ msgstr "Oznaka svih proizvoda"
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_tag__product_ids
 msgid "All Product Variants using this Tag"
-msgstr "Sve varijante proizvoda koje koriste ovu oznaku"
+msgstr "Sve varijante sa ovom oznakom"
 
 #. module: product
 #. odoo-python
 #: code:addons/product/models/product_pricelist_item.py:0
 #: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__applied_on__3_global
-#: model_terms:ir.ui.view,arch_db:product.product_tag_form_view
 msgid "All Products"
 msgstr "Svi proizvodi"
 
@@ -584,7 +597,7 @@ msgstr "Sve države"
 #. odoo-python
 #: code:addons/product/controllers/product_document.py:0
 msgid "All files uploaded"
-msgstr "Sve prenešene datoteke"
+msgstr "Sve datoteke učitane"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
@@ -604,19 +617,25 @@ msgid "Allow customers to set their own value"
 msgstr "Dozvoli korisnicima da postave svoje vrijednosti"
 
 #. module: product
-#: model:product.attribute.value,name:product.product_attribute_value_2
+#: model:product.attribute.value,name:product.pav_legs_aluminium
 msgid "Aluminium"
 msgstr "Aluminij"
 
 #. module: product
+#: model:product.attribute.value,name:product.pav_brand_apple
+msgid "Apple"
+msgstr "Apple"
+
+#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_tree_view
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Applied On"
 msgstr "Primjenjeno na"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__applied_on
 msgid "Apply On"
-msgstr "Primjeni na"
+msgstr "Primijeni na"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
@@ -640,6 +659,11 @@ msgstr "Primjeni na"
 #: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "Archived"
 msgstr "Arhivirano"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_ariel
+msgid "Ariel"
+msgstr "Ariel"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo__sequence
@@ -672,7 +696,7 @@ msgstr "Prilog"
 #: model:ir.model.fields,field_description:product.field_product_product__message_attachment_count
 #: model:ir.model.fields,field_description:product.field_product_template__message_attachment_count
 msgid "Attachment Count"
-msgstr "Broj priloga"
+msgstr "Broj privitaka"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_document__local_url
@@ -685,7 +709,7 @@ msgstr "URL priloga"
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__attribute_id
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__attribute_id
 msgid "Attribute"
-msgstr "Atribut"
+msgstr "Značajka"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__attribute_line_id
@@ -696,7 +720,7 @@ msgstr "Stavka atributa"
 #: model_terms:ir.ui.view,arch_db:product.product_attribute_view_form
 #: model_terms:ir.ui.view,arch_db:product.product_template_attribute_line_form
 msgid "Attribute Name"
-msgstr "Naziv atributa"
+msgstr "Naziv značajke"
 
 #. module: product
 #: model:ir.model,name:product.model_product_attribute_value
@@ -705,7 +729,7 @@ msgstr "Naziv atributa"
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__product_attribute_value_id
 #: model:ir.model.fields,field_description:product.field_update_product_attribute_value__attribute_value_id
 msgid "Attribute Value"
-msgstr "Vrijednost atributa"
+msgstr "Vrijednosti značajki"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__product_template_attribute_value_ids
@@ -713,20 +737,19 @@ msgstr "Vrijednost atributa"
 #: model_terms:ir.ui.view,arch_db:product.product_attribute_value_list
 #: model_terms:ir.ui.view,arch_db:product.product_attribute_view_form
 msgid "Attribute Values"
-msgstr "Vrijednosti atributa"
+msgstr "Vrijednosti značajki"
 
 #. module: product
 #: model:ir.actions.act_window,name:product.attribute_action
 #: model_terms:ir.ui.view,arch_db:product.product_template_attribute_value_view_tree
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
-#: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
 msgid "Attributes"
-msgstr "Atributi"
+msgstr "Značajke"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_only_form_view
 msgid "Attributes & Variants"
-msgstr "Atributi i varijante"
+msgstr "Značajke i Varijante"
 
 #. module: product
 #. odoo-javascript
@@ -738,21 +761,14 @@ msgstr "Natrag na narudžbu"
 #. odoo-javascript
 #: code:addons/product/static/src/product_catalog/kanban_controller.js:0
 msgid "Back to Quotation"
-msgstr "Povratak na Nalog"
+msgstr "Natrag na ponudu"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_packaging__barcode
 #: model:ir.model.fields,field_description:product.field_product_product__barcode
 #: model:ir.model.fields,field_description:product.field_product_template__barcode
+#: model:ir.model.fields,field_description:product.field_product_uom__barcode
 msgid "Barcode"
 msgstr "Barkod"
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_packaging__barcode
-msgid ""
-"Barcode used for packaging identification. Scan this packaging barcode from "
-"a transfer in the Barcode app to move all the contained units"
-msgstr ""
 
 #. module: product
 #. odoo-python
@@ -765,6 +781,11 @@ msgstr ""
 "Barkod(ovi) već dodijeljeni:\n"
 "\n"
 "%s"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_uom_uom__product_uom_ids
+msgid "Barcodes"
+msgstr "Barkodovi"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item__base
@@ -782,7 +803,7 @@ msgstr ""
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__base
 msgid "Based on"
-msgstr "Bazirano na"
+msgstr "Prema"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
@@ -795,20 +816,50 @@ msgid "Basic Pricelists"
 msgstr "Osnovni cjenici"
 
 #. module: product
-#: model:product.attribute.value,name:product.product_attribute_value_4
+#: model:product.attribute.value,name:product.pav_color_beige
+msgid "Beige"
+msgstr "Bež"
+
+#. module: product
+#: model:product.template,description_sale:product.consu_delivery_02_product_template
+msgid "Big table seats 10–12 for team discussions"
+msgstr "Veliki stol za 10–12 osoba za timske razgovore"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_color_black
 msgid "Black"
-msgstr "Crno"
+msgstr "Crna"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_color_blue
+msgid "Blue"
+msgstr "Plava"
+
+#. module: product
+#: model:product.template,description_sale:product.product_product_7_product_template
+msgid "Blue plastic bin for flexible office storage"
+msgstr "Plava plastična kanta za fleksibilno uredsko spremište"
+
+#. module: product
+#: model:product.attribute,name:product.pa_brand
+msgid "Brand"
+msgstr "Marka"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_color_brown
+msgid "Brown"
+msgstr "Smeđa"
 
 #. module: product
 #. odoo-javascript
 #: code:addons/product/static/src/js/product_attribute_value_list.js:0
 msgid "Bye-bye, record!"
-msgstr "Pa-pa, zapisu!"
+msgstr "Zbogom, zapise!"
 
 #. module: product
 #: model:product.template,name:product.product_product_10_product_template
 msgid "Cabinet with Doors"
-msgstr "Ormarić sa vratima"
+msgstr "Ormar s vratima"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__can_image_1024_be_zoomed
@@ -824,7 +875,18 @@ msgstr "Može li se slika varijante 1024 povećati?"
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.update_product_attribute_value_form
 msgid "Cancel"
-msgstr "Otkaži"
+msgstr "Odustani"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_canon
+msgid "Canon"
+msgstr "Canon"
+
+#. module: product
+#: model:ir.actions.act_window,name:product.product_category_action_form
+#: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
+msgid "Categories"
+msgstr "Kategorije"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__categ_id
@@ -841,6 +903,21 @@ msgid "Category: %s"
 msgstr "Kategorija: %s"
 
 #. module: product
+#. odoo-python
+#: code:addons/product/models/product_product.py:0
+#: code:addons/product/models/product_template.py:0
+msgid ""
+"Changing the unit of measure for your product will apply a conversion 1 %"
+"(old_uom_name)s = 1 %(new_uom_name)s.\n"
+"All existing records (Sales orders, Purchase orders, etc.) using this "
+"product will be updated by replacing the unit name."
+msgstr ""
+"Promjena jedinice mjere za Vaš proizvod primijenit će konverziju 1 %"
+"(old_uom_name)s = 1 %(new_uom_name)s.\n"
+"Svi postojeći zapisi (prodajni nalozi, nabavni nalozi, itd.) koji koriste "
+"ovaj proizvod bit će ažurirani zamjenom imena jedinice."
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_product_document__checksum
 msgid "Checksum/SHA1"
 msgstr "Kontrolni zbroj/SHA1"
@@ -848,12 +925,7 @@ msgstr "Kontrolni zbroj/SHA1"
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_category__child_id
 msgid "Child Categories"
-msgstr "Podređene kategorije"
-
-#. module: product
-#: model:ir.actions.act_window,name:product.action_open_label_layout
-msgid "Choose Labels Layout"
-msgstr "Izaberi izgled naljepnica"
+msgstr "Kategorije kćeri"
 
 #. module: product
 #: model:ir.model,name:product.model_product_label_layout
@@ -861,9 +933,9 @@ msgid "Choose the sheet layout to print the labels"
 msgstr "Odabir izgleda stranice za ispis naljepnica"
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_cleaning_kit
-msgid "Cleaning kit"
-msgstr ""
+#: model:product.attribute.value,name:product.pav_brand_cocacola
+msgid "Coca-Cola"
+msgstr "Coca-Cola"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
@@ -871,11 +943,16 @@ msgid "Codes"
 msgstr "Šifre"
 
 #. module: product
+#: model:product.attribute.value,name:product.pav_brand_colgate
+msgid "Colgate"
+msgstr "Colgate"
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__html_color
 #: model:ir.model.fields,field_description:product.field_product_tag__color
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__color
 #: model:ir.model.fields.selection,name:product.selection__product_attribute__display_type__color
-#: model:product.attribute,name:product.product_attribute_2
+#: model:product.attribute,name:product.pa_color
 msgid "Color"
 msgstr "Boja"
 
@@ -884,7 +961,7 @@ msgstr "Boja"
 #: model:ir.model.fields,field_description:product.field_product_product__color
 #: model:ir.model.fields,field_description:product.field_product_template__color
 msgid "Color Index"
-msgstr "Index boje"
+msgstr "Indeks boje"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_label_layout__columns
@@ -914,12 +991,12 @@ msgstr "Odabir kombinacije"
 #: model:ir.model.fields,field_description:product.field_product_template__combo_ids
 #: model_terms:ir.ui.view,arch_db:product.product_combo_view_tree
 msgid "Combo Choices"
-msgstr "Odabiri kombinacije"
+msgstr "Kombinirani izbori"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_combo__combo_item_ids
 msgid "Combo Item"
-msgstr "Stavka kombinacije"
+msgstr "Kombinirana stavka"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_combo__base_price
@@ -943,6 +1020,11 @@ msgstr ""
 "kategoriji."
 
 #. module: product
+#: model:product.template,description_sale:product.product_delivery_01_product_template
+msgid "Comfortable yellow chair for daily work"
+msgstr "Udobna žuta stolica za svakodnevni rad"
+
+#. module: product
 #: model:ir.model,name:product.model_res_company
 msgid "Companies"
 msgstr "Tvrtke"
@@ -951,12 +1033,12 @@ msgstr "Tvrtke"
 #: model:ir.model.fields,field_description:product.field_product_combo__company_id
 #: model:ir.model.fields,field_description:product.field_product_combo_item__company_id
 #: model:ir.model.fields,field_description:product.field_product_document__company_id
-#: model:ir.model.fields,field_description:product.field_product_packaging__company_id
 #: model:ir.model.fields,field_description:product.field_product_pricelist__company_id
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__company_id
 #: model:ir.model.fields,field_description:product.field_product_product__company_id
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__company_id
 #: model:ir.model.fields,field_description:product.field_product_template__company_id
+#: model:ir.model.fields,field_description:product.field_product_uom__company_id
 msgid "Company"
 msgstr "Tvrtka"
 
@@ -973,17 +1055,12 @@ msgstr "Puni naziv"
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__compute_price
 msgid "Compute Price"
-msgstr "Izračuanj cijenu"
+msgstr "Izračunaj cijenu"
 
 #. module: product
 #: model:product.template,name:product.product_product_11_product_template
 msgid "Conference Chair"
 msgstr "Konferencijska stolica"
-
-#. module: product
-#: model:product.template,description_sale:product.consu_delivery_02_product_template
-msgid "Conference room table"
-msgstr ""
 
 #. module: product
 #: model:ir.model,name:product.model_res_config_settings
@@ -993,10 +1070,9 @@ msgstr "Konfiguracijske postavke"
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_only_form_view
 msgid "Configure"
-msgstr "Postavi"
+msgstr "Postavke"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_label_layout_form
 #: model_terms:ir.ui.view,arch_db:product.update_product_attribute_value_form
 msgid "Confirm"
 msgstr "Potvrdi"
@@ -1007,45 +1083,19 @@ msgid "Contact"
 msgstr "Kontakt"
 
 #. module: product
-#: model_terms:product.template,website_description:product.product_product_4_product_template
-msgid "Contact Us"
-msgstr "Kontaktirajte nas"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_packaging__qty
-msgid "Contained Quantity"
-msgstr "Sadržana količina"
-
-#. module: product
-#: model:ir.model.constraint,message:product.constraint_product_packaging_positive_qty
-msgid "Contained Quantity should be positive."
-msgstr "Sadržana količina mora biti pozitivna."
-
-#. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_packaging_form_view
-msgid "Contained quantity"
-msgstr "Sadržana količina"
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_product__uom_category_id
-#: model:ir.model.fields,help:product.field_product_template__uom_category_id
-msgid ""
-"Conversion between Units of Measure can only occur if they belong to the "
-"same category. The conversion will be made based on the ratios."
-msgstr ""
-"Konverzija jedinica mjere može se vršiti samo za jedinice mjere koje "
-"pripadaju istoj kategoriji. Konverzija će se izvršiti temeljem omjera "
-"jedinica mjere."
+#: model:ir.model.fields,field_description:product.field_product_label_layout__custom_quantity
+msgid "Copies"
+msgstr "Kopije"
 
 #. module: product
 #: model:product.template,name:product.product_product_13_product_template
 msgid "Corner Desk Left Sit"
-msgstr "Kutni stol lijevo sjedište"
+msgstr "Kutni stol lijevo"
 
 #. module: product
 #: model:product.template,name:product.product_product_5_product_template
 msgid "Corner Desk Right Sit"
-msgstr "Kutni stol desno sjedište"
+msgstr "Kutni stol desno"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__standard_price
@@ -1069,6 +1119,16 @@ msgstr "Grupa država"
 #: model:ir.model.fields,field_description:product.field_product_pricelist__country_group_ids
 msgid "Country Groups"
 msgstr "Grupe država"
+
+#. module: product
+#: model:res.groups,name:product.group_product_manager
+msgid "Create"
+msgstr "Kreiraj"
+
+#. module: product
+#: model:ir.model,website_form_label:product.model_res_partner
+msgid "Create a Customer"
+msgstr "Kreiraj kupca"
 
 #. module: product
 #: model_terms:ir.actions.act_window,help:product.product_pricelist_action2
@@ -1109,7 +1169,6 @@ msgstr "Kreiraj prilikom narudžbe"
 #: model:ir.model.fields,field_description:product.field_product_combo_item__create_uid
 #: model:ir.model.fields,field_description:product.field_product_document__create_uid
 #: model:ir.model.fields,field_description:product.field_product_label_layout__create_uid
-#: model:ir.model.fields,field_description:product.field_product_packaging__create_uid
 #: model:ir.model.fields,field_description:product.field_product_pricelist__create_uid
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__create_uid
 #: model:ir.model.fields,field_description:product.field_product_product__create_uid
@@ -1119,6 +1178,7 @@ msgstr "Kreiraj prilikom narudžbe"
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__create_uid
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__create_uid
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__create_uid
+#: model:ir.model.fields,field_description:product.field_product_uom__create_uid
 #: model:ir.model.fields,field_description:product.field_update_product_attribute_value__create_uid
 msgid "Created by"
 msgstr "Kreirao"
@@ -1132,7 +1192,6 @@ msgstr "Kreirao"
 #: model:ir.model.fields,field_description:product.field_product_combo_item__create_date
 #: model:ir.model.fields,field_description:product.field_product_document__create_date
 #: model:ir.model.fields,field_description:product.field_product_label_layout__create_date
-#: model:ir.model.fields,field_description:product.field_product_packaging__create_date
 #: model:ir.model.fields,field_description:product.field_product_pricelist__create_date
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__create_date
 #: model:ir.model.fields,field_description:product.field_product_product__create_date
@@ -1142,6 +1201,7 @@ msgstr "Kreirao"
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__create_date
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__create_date
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__create_date
+#: model:ir.model.fields,field_description:product.field_product_uom__create_date
 #: model:ir.model.fields,field_description:product.field_update_product_attribute_value__create_date
 msgid "Created on"
 msgstr "Kreirano"
@@ -1149,17 +1209,17 @@ msgstr "Kreirano"
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_document_form
 msgid "Creation"
-msgstr "Kreirano"
+msgstr "Kreiranje"
 
 #. module: product
 #: model:ir.model.fields.selection,name:product.selection__res_config_settings__product_volume_volume_in_cubic_feet__1
-msgid "Cubic Feet"
-msgstr "Kubične stope"
+msgid "Cubic Feet (ft³)"
+msgstr "Kubične stope (ft³)"
 
 #. module: product
 #: model:ir.model.fields.selection,name:product.selection__res_config_settings__product_volume_volume_in_cubic_feet__0
-msgid "Cubic Meters"
-msgstr "Kubični metri"
+msgid "Cubic Meters (m³)"
+msgstr "Kubični metri (m³)"
 
 #. module: product
 #: model:ir.model,name:product.model_res_currency
@@ -1175,9 +1235,11 @@ msgid "Currency"
 msgstr "Valuta"
 
 #. module: product
-#: model:product.attribute.value,name:product.fabric_attribute_custom
+#: model:product.attribute.value,name:product.pav_custom
+#: model:product.attribute.value,name:product.pav_legs_custom
+#: model:product.attribute.value,name:product.pav_length_custom
 msgid "Custom"
-msgstr "Prilagođeno"
+msgstr "Prilagođen"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_custom_value__custom_value
@@ -1187,7 +1249,7 @@ msgstr "Prilagođena vrijednost"
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__partner_ref
 msgid "Customer Ref"
-msgstr "Referenca kupca"
+msgstr "Šifra kupca"
 
 #. module: product
 #: model:product.template,name:product.product_product_4_product_template
@@ -1195,14 +1257,19 @@ msgid "Customizable Desk"
 msgstr "Prilagodljivi stol"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_document__db_datas
-msgid "Database Data"
-msgstr "Baza podataka"
+#: model:product.attribute,name:product.pa_customization
+msgid "Customization"
+msgstr "Prilagodba"
 
 #. module: product
-#: model:ir.model,name:product.model_decimal_precision
-msgid "Decimal Precision"
-msgstr "Decimalna preciznost"
+#: model:product.attribute.value,name:product.pav_color_cyan
+msgid "Cyan"
+msgstr "Cijan"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_document__db_datas
+msgid "Database Data"
+msgstr "Podaci baze podataka"
 
 #. module: product
 #. odoo-python
@@ -1221,22 +1288,10 @@ msgid "Default Extra Price Changed"
 msgstr "Zadana dodatna cijena promijenjena"
 
 #. module: product
-#: model:ir.model.fields,help:product.field_product_packaging__product_uom_id
 #: model:ir.model.fields,help:product.field_product_product__uom_id
 #: model:ir.model.fields,help:product.field_product_template__uom_id
 msgid "Default unit of measure used for all stock operations."
-msgstr "Zadana jedinica mjere za sve skladišne operacije."
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_product__uom_po_id
-#: model:ir.model.fields,help:product.field_product_supplierinfo__product_uom
-#: model:ir.model.fields,help:product.field_product_template__uom_po_id
-msgid ""
-"Default unit of measure used for purchase orders. It must be in the same "
-"category as the default unit of measure."
-msgstr ""
-"Zadana jedinica mjere korištena za nabavu. Mora biti u istoj kategoriji kao "
-"i zadana jedinica mjere."
+msgstr "Predefinirana mjerna jedinica za sve funkcije zalihe."
 
 #. module: product
 #: model_terms:ir.actions.act_window,help:product.product_tag_action
@@ -1246,12 +1301,12 @@ msgstr "Definiraj novu oznaku"
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
 msgid "Define your volume unit of measure"
-msgstr "Definirajte jedinicu mjere volumena"
+msgstr "Definiraj jedinicu mjere volumena"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
 msgid "Define your weight unit of measure"
-msgstr "Definirajte jedinicu mjere mase"
+msgstr "Definiraj jedinicu mjere težine"
 
 #. module: product
 #. odoo-javascript
@@ -1261,9 +1316,9 @@ msgid "Delete"
 msgstr "Obriši"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_supplierinfo__delay
-msgid "Delivery Lead Time"
-msgstr "Vodeće vrijeme isporuke"
+#: model:product.attribute.value,name:product.pav_brand_dell
+msgid "Dell"
+msgstr "Dell"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_document__description
@@ -1271,6 +1326,11 @@ msgstr "Vodeće vrijeme isporuke"
 #: model:ir.model.fields,field_description:product.field_product_template__description
 msgid "Description"
 msgstr "Opis"
+
+#. module: product
+#: model:product.template,description_sale:product.product_order_01_product_template
+msgid "Design and plan smart offices with ease"
+msgstr "Dizajnirajte i planirajte pametne urede s lakoćom"
 
 #. module: product
 #: model:product.template,name:product.product_product_3_product_template
@@ -1294,8 +1354,8 @@ msgstr "Postolje za stol sa zaslonom"
 
 #. module: product
 #: model:product.template,description_sale:product.product_product_3_product_template
-msgid "Desk combination, black-brown: chair + desk + drawer."
-msgstr ""
+msgid "Desk combination, black-brown: chair + desk + drawer"
+msgstr "Kombinacija stola, crno-smeđa: stolica + stol + ladica"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_attribute__sequence
@@ -1330,15 +1390,16 @@ msgid "Display Applied On"
 msgstr "Prikaži na što je prijenjeno"
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_ir_attachment__display_name
 #: model:ir.model.fields,field_description:product.field_product_attribute__display_name
 #: model:ir.model.fields,field_description:product.field_product_attribute_custom_value__display_name
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__display_name
+#: model:ir.model.fields,field_description:product.field_product_catalog_mixin__display_name
 #: model:ir.model.fields,field_description:product.field_product_category__display_name
 #: model:ir.model.fields,field_description:product.field_product_combo__display_name
 #: model:ir.model.fields,field_description:product.field_product_combo_item__display_name
 #: model:ir.model.fields,field_description:product.field_product_document__display_name
 #: model:ir.model.fields,field_description:product.field_product_label_layout__display_name
-#: model:ir.model.fields,field_description:product.field_product_packaging__display_name
 #: model:ir.model.fields,field_description:product.field_product_pricelist__display_name
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__display_name
 #: model:ir.model.fields,field_description:product.field_product_product__display_name
@@ -1348,6 +1409,19 @@ msgstr "Prikaži na što je prijenjeno"
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__display_name
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__display_name
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__display_name
+#: model:ir.model.fields,field_description:product.field_product_uom__display_name
+#: model:ir.model.fields,field_description:product.field_report_product_report_pricelist__display_name
+#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel2x7__display_name
+#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel4x12__display_name
+#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel4x12noprice__display_name
+#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel4x7__display_name
+#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel_dymo__display_name
+#: model:ir.model.fields,field_description:product.field_res_company__display_name
+#: model:ir.model.fields,field_description:product.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:product.field_res_country_group__display_name
+#: model:ir.model.fields,field_description:product.field_res_currency__display_name
+#: model:ir.model.fields,field_description:product.field_res_partner__display_name
+#: model:ir.model.fields,field_description:product.field_uom_uom__display_name
 #: model:ir.model.fields,field_description:product.field_update_product_attribute_value__display_name
 msgid "Display Name"
 msgstr "Naziv za prikaz"
@@ -1357,7 +1431,7 @@ msgstr "Naziv za prikaz"
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__display_type
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__display_type
 msgid "Display Type"
-msgstr "Tip prikaza"
+msgstr "Vrsta prikaza"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_document_kanban
@@ -1385,15 +1459,20 @@ msgid "Documents of this variant"
 msgstr "Dokumenti za ovu varijantu"
 
 #. module: product
+#: model:product.attribute.value,name:product.pav_brand_dove
+msgid "Dove"
+msgstr "Dove"
+
+#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_document_kanban
 msgid "Download"
-msgstr "Preuzimanje"
+msgstr "Preuzmi"
 
 #. module: product
 #. odoo-python
 #: code:addons/product/models/product_template.py:0
 msgid "Download examples"
-msgstr "Preuzimanje primjera"
+msgstr "Preuzmi primjere"
 
 #. module: product
 #: model:product.template,name:product.product_product_27_product_template
@@ -1403,15 +1482,26 @@ msgstr "Ladica"
 #. module: product
 #: model:product.template,name:product.product_product_16_product_template
 msgid "Drawer Black"
-msgstr "Crna ladica"
+msgstr "Ladica crna"
 
 #. module: product
 #: model_terms:product.template,description:product.product_product_27_product_template
-msgid "Drawer with two routing possiblities."
-msgstr ""
+msgid "Drawer with two routing possiblities"
+msgstr "Ladica s dvije mogućnosti postavljanja"
 
 #. module: product
-#: model:product.attribute,name:product.product_attribute_3
+#: model:product.attribute.value,name:product.pav_options_drawers
+msgid "Drawers"
+msgstr "Ladice"
+
+#. module: product
+#. odoo-python
+#: code:addons/product/models/product_product.py:0
+msgid "Duplicate values in attribute values are not allowed: %s"
+msgstr "Duple vrijednosti u vrijednostima atributa nisu dopuštene: %s"
+
+#. module: product
+#: model:product.attribute,name:product.pa_duration
 msgid "Duration"
 msgstr "Trajanje"
 
@@ -1424,6 +1514,11 @@ msgstr "Dymo"
 #: model:ir.model.fields.selection,name:product.selection__product_attribute__create_variant__dynamic
 msgid "Dynamically"
 msgstr "Dinamički"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_dyson
+msgid "Dyson"
+msgstr "Dyson"
 
 #. module: product
 #: model:ir.model.constraint,message:product.constraint_product_template_attribute_value_attribute_value_unique
@@ -1446,12 +1541,12 @@ msgstr "Uredi"
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__date_end
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__date_end
 msgid "End Date"
-msgstr "Završni datum"
+msgstr "Datum završetka"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo__date_end
 msgid "End date for this vendor price"
-msgstr "Završni datum za ovu cijenu dobavljača"
+msgstr "Datum završetka ove cijene dobavljača"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item__date_end
@@ -1482,7 +1577,7 @@ msgstr "Izuzmi za"
 #: model:ir.model.fields,help:product.field_product_pricelist_item__name
 #: model:ir.model.fields,help:product.field_product_pricelist_item__price
 msgid "Explicit rule name for this pricelist line."
-msgstr "Eksplicitni naziv pravila za ovu stavku cjenika."
+msgstr "Naziv eksplicitnog pravila za ovu stavku cjenika."
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_label_layout__extra_html
@@ -1492,17 +1587,12 @@ msgstr "Dodatni sadržaj"
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__price_surcharge
 msgid "Extra Fee"
-msgstr "Dodatna naknada"
+msgstr "Dodatne naknade"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Extra Info"
-msgstr "Dodatni info"
-
-#. module: product
-#: model:product.attribute,name:product.pa_extra_options
-msgid "Extra Options"
-msgstr "Dodatne opcije"
+msgstr "Dodatni podaci"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_combo_item__extra_price
@@ -1520,7 +1610,7 @@ msgstr ""
 "npr. 200 dodatne cijene, 1000 + 200 = 1200."
 
 #. module: product
-#: model:product.attribute,name:product.fabric_attribute
+#: model:product.attribute,name:product.pa_fabric
 msgid "Fabric"
 msgstr "Tkanina"
 
@@ -1544,12 +1634,17 @@ msgstr "Sadržaj datoteke (base64)"
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_document__raw
 msgid "File Content (raw)"
-msgstr "Sadržaj datoteke (raw)"
+msgstr "Sadržaj datoteke (sirovo)"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_document__file_size
 msgid "File Size"
 msgstr "Veličina datoteke"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_options_file_cabinets
+msgid "File cabinets"
+msgstr "Kartoteke"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__fixed_price
@@ -1599,7 +1694,7 @@ msgstr ""
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_label_layout__print_format
 msgid "Format"
-msgstr "Format"
+msgstr "Oblik"
 
 #. module: product
 #: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__compute_price__formula
@@ -1610,11 +1705,6 @@ msgstr "Formula"
 #: model:product.template,name:product.consu_delivery_03_product_template
 msgid "Four Person Desk"
 msgstr "Stol za četiri osobe"
-
-#. module: product
-#: model:product.template,description_sale:product.consu_delivery_03_product_template
-msgid "Four person modern office workstation"
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__is_custom
@@ -1638,21 +1728,25 @@ msgid "General Information"
 msgstr "Opći podaci"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
-msgid "Get product pictures using Barcode"
-msgstr "Dohvati sliku proizvoda korištenjem barkoda"
-
-#. module: product
-#: model:ir.model.fields,help:product.field_product_product__packaging_ids
-#: model:ir.model.fields,help:product.field_product_template__packaging_ids
-msgid "Gives the different ways to package the same product."
-msgstr ""
+#: model:product.attribute.value,name:product.pav_brand_gillette
+msgid "Gillette"
+msgstr "Gillette"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product__sequence
 #: model:ir.model.fields,help:product.field_product_template__sequence
 msgid "Gives the sequence order when displaying a product list"
 msgstr "Određuje redoslijed slijeda pri prikazu popisa proizvoda"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_fabric_glass
+msgid "Glass"
+msgstr "Staklo"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_color_gold
+msgid "Gold"
+msgstr "Zlato"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
@@ -1664,7 +1758,7 @@ msgstr "Cjenik za zlatne članove"
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
 #: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
 msgid "Goods"
-msgstr "Dobra"
+msgstr "Roba"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_product__type
@@ -1673,21 +1767,23 @@ msgid ""
 "Goods are tangible materials and merchandise you provide.\n"
 "A service is a non-material product you provide."
 msgstr ""
-"Dobra su opipljivi materijali i roba koju prodajete.\n"
-"usluga je nematerijalni proizvod koji prodajete."
+"Roba su opipljivi materijali i roba koju pružate.\n"
+"Usluga je nematerijalni proizvod koji pružate."
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
-msgid "Google Images"
-msgstr "Google slike"
+#: model:product.attribute.value,name:product.pav_color_gray
+msgid "Gray"
+msgstr "Siva"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_view_search
-#: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_search_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
-#: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
-msgid "Group By"
-msgstr "Grupiraj po"
+#: model:product.attribute.value,name:product.pav_color_green
+msgid "Green"
+msgstr "Zeleno"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_h_m
+msgid "H&M"
+msgstr "H&M"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__html_color
@@ -1703,6 +1799,21 @@ msgid "Has Message"
 msgstr "Ima poruku"
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_product_document__has_thumbnail
+msgid "Has Thumbnail"
+msgstr "Ima sličicu"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_head_shoulders
+msgid "Head & Shoulders"
+msgstr "Head & Shoulders"
+
+#. module: product
+#: model:product.attribute,name:product.pa_height
+msgid "Height"
+msgstr "Visina"
+
+#. module: product
 #: model:ir.model.fields,help:product.field_product_attribute_value__html_color
 #: model:ir.model.fields,help:product.field_product_template_attribute_value__html_color
 msgid ""
@@ -1713,6 +1824,11 @@ msgstr ""
 "boje ako je tip atributa 'Boja'."
 
 #. module: product
+#: model:product.template,description_sale:product.product_product_12_product_template
+msgid "High-back office chair with great support"
+msgstr "Uredska stolica s visokim naslonom i odličnim potpornjem"
+
+#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_document_form
 msgid "History"
 msgstr "Povijest"
@@ -1720,18 +1836,19 @@ msgstr "Povijest"
 #. module: product
 #: model:product.template,name:product.expense_hotel_product_template
 msgid "Hotel Accommodation"
-msgstr "Hotelski smještaj"
+msgstr "Troškovi smještaja u hotelu"
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_ir_attachment__id
 #: model:ir.model.fields,field_description:product.field_product_attribute__id
 #: model:ir.model.fields,field_description:product.field_product_attribute_custom_value__id
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__id
+#: model:ir.model.fields,field_description:product.field_product_catalog_mixin__id
 #: model:ir.model.fields,field_description:product.field_product_category__id
 #: model:ir.model.fields,field_description:product.field_product_combo__id
 #: model:ir.model.fields,field_description:product.field_product_combo_item__id
 #: model:ir.model.fields,field_description:product.field_product_document__id
 #: model:ir.model.fields,field_description:product.field_product_label_layout__id
-#: model:ir.model.fields,field_description:product.field_product_packaging__id
 #: model:ir.model.fields,field_description:product.field_product_pricelist__id
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__id
 #: model:ir.model.fields,field_description:product.field_product_product__id
@@ -1741,6 +1858,19 @@ msgstr "Hotelski smještaj"
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__id
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__id
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__id
+#: model:ir.model.fields,field_description:product.field_product_uom__id
+#: model:ir.model.fields,field_description:product.field_report_product_report_pricelist__id
+#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel2x7__id
+#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel4x12__id
+#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel4x12noprice__id
+#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel4x7__id
+#: model:ir.model.fields,field_description:product.field_report_product_report_producttemplatelabel_dymo__id
+#: model:ir.model.fields,field_description:product.field_res_company__id
+#: model:ir.model.fields,field_description:product.field_res_config_settings__id
+#: model:ir.model.fields,field_description:product.field_res_country_group__id
+#: model:ir.model.fields,field_description:product.field_res_currency__id
+#: model:ir.model.fields,field_description:product.field_res_partner__id
+#: model:ir.model.fields,field_description:product.field_uom_uom__id
 #: model:ir.model.fields,field_description:product.field_update_product_attribute_value__id
 msgid "ID"
 msgstr "ID"
@@ -1765,7 +1895,7 @@ msgstr "Ikona za prikaz iznimki."
 #: model:ir.model.fields,help:product.field_product_product__message_needaction
 #: model:ir.model.fields,help:product.field_product_template__message_needaction
 msgid "If checked, new messages require your attention."
-msgstr "Ako je označeno, nove poruke zahtijevaju Vašu pažnju."
+msgstr "Ako je označeno, nove poruke zahtijevaju vašu pažnju."
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_category__message_has_error
@@ -1773,7 +1903,7 @@ msgstr "Ako je označeno, nove poruke zahtijevaju Vašu pažnju."
 #: model:ir.model.fields,help:product.field_product_product__message_has_error
 #: model:ir.model.fields,help:product.field_product_template__message_has_error
 msgid "If checked, some messages have a delivery error."
-msgstr "Ako je označeno neke poruke mogu imati grešku u dostavi."
+msgstr "Ako je označeno, neke poruke imaju grešku u isporuci."
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo__product_id
@@ -1807,8 +1937,10 @@ msgstr "Ako je označeno omogućava sakrivanje proizvoda bez brisanja."
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__image
 #: model:ir.model.fields,field_description:product.field_product_product__image_1920
+#: model:ir.model.fields,field_description:product.field_product_tag__image
 #: model:ir.model.fields,field_description:product.field_product_template__image_1920
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__image
+#: model:ir.model.fields.selection,name:product.selection__product_attribute__display_type__image
 msgid "Image"
 msgstr "Slika"
 
@@ -1878,7 +2010,7 @@ msgstr "Predložak za uvoz Cjenika dobavljača"
 #: model_terms:ir.ui.view,arch_db:product.product_attribute_search
 #: model_terms:ir.ui.view,arch_db:product.product_template_attribute_value_view_search
 msgid "Inactive"
-msgstr "Neaktivan"
+msgstr "Neaktivno"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_document__index_content
@@ -1923,12 +2055,28 @@ msgid "Inventory"
 msgstr "Skladište"
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_product_product__is_dynamically_created
+#: model:ir.model.fields,field_description:product.field_product_template__is_dynamically_created
+msgid "Is Dynamically Created"
+msgstr "Dinamički kreirano"
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_product_category__message_is_follower
 #: model:ir.model.fields,field_description:product.field_product_pricelist__message_is_follower
 #: model:ir.model.fields,field_description:product.field_product_product__message_is_follower
 #: model:ir.model.fields,field_description:product.field_product_template__message_is_follower
 msgid "Is Follower"
-msgstr "Je li pratitelj"
+msgstr "Je pratitelj"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_product__is_in_selected_section_of_order
+msgid "Is In Selected Section Of Order"
+msgstr "Je u odabranoj sekciji narudžbe"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_pricelist_item__is_pricelist_required
+msgid "Is Pricelist Required"
+msgstr "Je potreban cjenik"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__is_product_variant
@@ -1952,14 +2100,38 @@ msgid "Is public document"
 msgstr "Je javni dokument"
 
 #. module: product
-#: model:ir.model.fields.selection,name:product.selection__res_config_settings__product_weight_in_lbs__0
-msgid "Kilograms"
-msgstr "Kilogrami"
+#. odoo-python
+#: code:addons/product/models/product_product.py:0
+msgid ""
+"It is not possible to import different values for the same attribute: %s"
+msgstr "Nije moguće uvesti različite vrijednosti za isti atribut: %s"
 
 #. module: product
-#: model:product.attribute.value,name:product.size_attribute_l
+#: model:ir.model.fields.selection,name:product.selection__res_config_settings__product_weight_in_lbs__0
+msgid "Kilograms (kg)"
+msgstr "Kilogrami (kg)"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_size_l
 msgid "L"
 msgstr ""
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_loreal
+msgid "L'Oréal"
+msgstr "L'Oréal"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_LG
+msgid "LG"
+msgstr "LG"
+
+#. module: product
+#. odoo-python
+#: code:addons/product/models/product_product.py:0
+#: code:addons/product/models/product_template.py:0
+msgid "Labels cannot be printed for products of service type"
+msgstr "Naljepnice se ne mogu ispisati za proizvode tipa usluga"
 
 #. module: product
 #: model:product.template,name:product.product_product_6_product_template
@@ -1985,7 +2157,6 @@ msgstr "Veliki stol za sastanke"
 #: model:ir.model.fields,field_description:product.field_product_combo_item__write_uid
 #: model:ir.model.fields,field_description:product.field_product_document__write_uid
 #: model:ir.model.fields,field_description:product.field_product_label_layout__write_uid
-#: model:ir.model.fields,field_description:product.field_product_packaging__write_uid
 #: model:ir.model.fields,field_description:product.field_product_pricelist__write_uid
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__write_uid
 #: model:ir.model.fields,field_description:product.field_product_product__write_uid
@@ -1995,9 +2166,10 @@ msgstr "Veliki stol za sastanke"
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__write_uid
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__write_uid
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__write_uid
+#: model:ir.model.fields,field_description:product.field_product_uom__write_uid
 #: model:ir.model.fields,field_description:product.field_update_product_attribute_value__write_uid
 msgid "Last Updated by"
-msgstr "Promijenio"
+msgstr "Zadnji ažurirao"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__write_date
@@ -2008,7 +2180,6 @@ msgstr "Promijenio"
 #: model:ir.model.fields,field_description:product.field_product_combo_item__write_date
 #: model:ir.model.fields,field_description:product.field_product_document__write_date
 #: model:ir.model.fields,field_description:product.field_product_label_layout__write_date
-#: model:ir.model.fields,field_description:product.field_product_packaging__write_date
 #: model:ir.model.fields,field_description:product.field_product_pricelist__write_date
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__write_date
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__write_date
@@ -2017,14 +2188,20 @@ msgstr "Promijenio"
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_exclusion__write_date
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__write_date
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_value__write_date
+#: model:ir.model.fields,field_description:product.field_product_uom__write_date
 #: model:ir.model.fields,field_description:product.field_update_product_attribute_value__write_date
 msgid "Last Updated on"
-msgstr "Promijenjeno"
+msgstr "Zadnje ažurirano"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
 msgid "Late Activities"
-msgstr "Zakašnjele aktivnosti"
+msgstr "Posljednje aktivnosti"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_supplierinfo__delay
+msgid "Lead Time"
+msgstr "Vrijeme isporuke"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo__delay
@@ -2037,20 +2214,50 @@ msgstr ""
 "u vaše skladište. Koristi ga planer za automatski izračun planiranja nabave."
 
 #. module: product
-#: model:product.attribute.value,name:product.fabric_attribute_leather
+#: model:product.attribute.value,name:product.pav_fabric_leather
 msgid "Leather"
 msgstr "Koža"
 
 #. module: product
-#: model:product.attribute,name:product.product_attribute_1
+#: model:product.template,description_sale:product.product_product_13_product_template
+msgid "Left-sided workspace with storage"
+msgstr "Lijevo-orijentirano radno mjesto sa spremištem"
+
+#. module: product
+#: model:product.attribute,name:product.pa_legs
 msgid "Legs"
 msgstr "Noge"
+
+#. module: product
+#: model:product.attribute,name:product.pa_length
+msgid "Length"
+msgstr "Duljina"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_lenovo
+msgid "Lenovo"
+msgstr "Lenovo"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_levis
+msgid "Levi's"
+msgstr "Levi's"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_fabric_linen
+msgid "Linen"
+msgstr "Lan"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__attribute_line_ids
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__pav_attribute_line_ids
 msgid "Lines"
 msgstr "Stavke"
+
+#. module: product
+#: model:ir.model,name:product.model_product_uom
+msgid "Link between products and their UoMs"
+msgstr "Veza između proizvoda i njihovih jedinica mjere"
 
 #. module: product
 #: model:product.template,name:product.product_product_local_delivery_product_template
@@ -2078,7 +2285,7 @@ msgstr ""
 "Kontaktirajte nas za ponudu."
 
 #. module: product
-#: model:product.attribute.value,name:product.size_attribute_m
+#: model:product.attribute.value,name:product.pav_size_m
 msgid "M"
 msgstr ""
 
@@ -2090,11 +2297,6 @@ msgid ""
 msgstr ""
 "Učini ovu vrijednost atributa nekompatibilnom s drugim vrijednostima "
 "proizvoda ili nekim vrijednostima atributa opcionalnih i dodatnih proizvoda."
-
-#. module: product
-#: model:res.groups,name:product.group_stock_packaging
-msgid "Manage Product Packaging"
-msgstr "Upravljaj pakiranjem proizvoda"
 
 #. module: product
 #: model:res.groups,name:product.group_product_variant
@@ -2113,6 +2315,11 @@ msgid "Markup"
 msgstr "Marža"
 
 #. module: product
+#: model:product.attribute.value,name:product.pav_color_maroon
+msgid "Maroon"
+msgstr "Tamnocrvena"
+
+#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 msgid "Max. Margin"
 msgstr "Maks. marža"
@@ -2121,6 +2328,11 @@ msgstr "Maks. marža"
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__price_max_margin
 msgid "Max. Price Margin"
 msgstr "Maks. marža prodajne cijene"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_maybelline
+msgid "Maybelline"
+msgstr "Maybelline"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_update_product_attribute_value__message
@@ -2133,7 +2345,7 @@ msgstr "Poruka"
 #: model:ir.model.fields,field_description:product.field_product_product__message_has_error
 #: model:ir.model.fields,field_description:product.field_product_template__message_has_error
 msgid "Message Delivery error"
-msgstr "Greška pri isporuci poruke"
+msgstr "Greška u isporuci poruke"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_category__message_ids
@@ -2144,9 +2356,14 @@ msgid "Messages"
 msgstr "Poruke"
 
 #. module: product
+#: model:product.attribute.value,name:product.pav_fabric_metal
+msgid "Metal"
+msgstr "Metal"
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_product_document__mimetype
 msgid "Mime Type"
-msgstr "MIME tip"
+msgstr "Mime vrsta"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
@@ -2169,6 +2386,11 @@ msgid "Min. Quantity"
 msgstr "Min. količina"
 
 #. module: product
+#: model:product.template,description_sale:product.product_product_8_product_template
+msgid "Minimalist wooden desk for executive use"
+msgstr "Minimalistički drveni stol za rukovoditelje"
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_update_product_attribute_value__mode
 msgid "Mode"
 msgstr "Način"
@@ -2177,6 +2399,11 @@ msgstr "Način"
 #: model:product.template,name:product.monitor_stand_product_template
 msgid "Monitor Stand"
 msgstr "Postolje monitora"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_montblanc
+msgid "Montblanc"
+msgstr "Montblanc"
 
 #. module: product
 #: model:ir.model.fields.selection,name:product.selection__product_attribute__display_type__multi
@@ -2188,6 +2415,11 @@ msgstr "Višestruki izbor"
 msgid ""
 "Multi-checkbox display type is not compatible with the creation of variants"
 msgstr "Prikaz s više okvira za odabir nije kompatibilan s kreiranjem varijanti"
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
+msgid "My Activities"
+msgstr "Moje aktivnosti"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist__my_activity_date_deadline
@@ -2209,6 +2441,16 @@ msgid "Name"
 msgstr "Naziv"
 
 #. module: product
+#: model:product.attribute.value,name:product.pav_color_navy
+msgid "Navy"
+msgstr "Tamnoplava"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_nestle
+msgid "Nestlé"
+msgstr "Nestlé"
+
+#. module: product
 #: model:ir.model.fields.selection,name:product.selection__product_attribute__create_variant__no_variant
 msgid "Never"
 msgstr "Nikad"
@@ -2217,21 +2459,26 @@ msgstr "Nikad"
 #. odoo-python
 #: code:addons/product/models/product_pricelist.py:0
 msgid "New"
-msgstr "Novi"
+msgstr "Novo"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_new_balance
+msgid "New Balance"
+msgstr "Novi saldo"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist__activity_calendar_event_id
 #: model:ir.model.fields,field_description:product.field_product_product__activity_calendar_event_id
 #: model:ir.model.fields,field_description:product.field_product_template__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr "Kaldendarski događaj slijedeće aktivnosti"
+msgstr "Događaj sljedećeg kalendara aktivnosti"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist__activity_date_deadline
 #: model:ir.model.fields,field_description:product.field_product_product__activity_date_deadline
 #: model:ir.model.fields,field_description:product.field_product_template__activity_date_deadline
 msgid "Next Activity Deadline"
-msgstr "Rok slijedeće aktivnosti"
+msgstr "Krajnji rok slijedeće aktivnosti"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist__activity_summary
@@ -2246,6 +2493,21 @@ msgstr "Sažetak sljedeće aktivnosti"
 #: model:ir.model.fields,field_description:product.field_product_template__activity_type_id
 msgid "Next Activity Type"
 msgstr "Tip sljedeće aktivnosti"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_nike
+msgid "Nike"
+msgstr "Nike"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_nikon
+msgid "Nikon"
+msgstr "Nikon"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_nivea
+msgid "Nivea"
+msgstr "Nivea"
 
 #. module: product
 #. odoo-python
@@ -2272,13 +2534,18 @@ msgstr "Nisu pronađeni proizvodi u izvještaju"
 #. module: product
 #: model_terms:ir.actions.act_window,help:product.product_supplierinfo_type_action
 msgid "No vendor pricelist found"
-msgstr "Nije pronađen cjenik dobavljača"
+msgstr "Nije pronađen nabavni cjenik"
 
 #. module: product
 #. odoo-javascript
 #: code:addons/product/static/src/js/product_attribute_value_list.js:0
 msgid "No, keep it"
-msgstr "Ne, zadržite to"
+msgstr "Ne, sačuvaj"
+
+#. module: product
+#: model:product.template,description_sale:product.product_template_acoustic_bloc_screens
+msgid "Noise-reducing panels for open spaces"
+msgstr "Paneli za smanjenje buke u otvorenim prostorima"
 
 #. module: product
 #. odoo-python
@@ -2319,7 +2586,7 @@ msgstr "Broj grešaka"
 #: model:ir.model.fields,help:product.field_product_product__message_needaction_counter
 #: model:ir.model.fields,help:product.field_product_template__message_needaction_counter
 msgid "Number of messages requiring action"
-msgstr "Broj poruka koje zahtijevaju aktivnost"
+msgstr "Broj poruka koje zahtijevaju akciju"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_category__message_has_error_counter
@@ -2327,13 +2594,7 @@ msgstr "Broj poruka koje zahtijevaju aktivnost"
 #: model:ir.model.fields,help:product.field_product_product__message_has_error_counter
 #: model:ir.model.fields,help:product.field_product_template__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr "Broj poruka sa greškama pri isporuci"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__pricelist_item_count
-#: model:ir.model.fields,field_description:product.field_product_template__pricelist_item_count
-msgid "Number of price rules"
-msgstr "Broj pravila cijene"
+msgstr "Broj poruka s greškom u isporuci"
 
 #. module: product
 #: model:product.template,name:product.product_delivery_01_product_template
@@ -2359,6 +2620,16 @@ msgstr "Softver za dizajn ureda"
 #: model:product.template,name:product.product_delivery_02_product_template
 msgid "Office Lamp"
 msgstr "Uredska svjetiljka"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_olay
+msgid "Olay"
+msgstr "Olay"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_color_olive
+msgid "Olive"
+msgstr "Maslinasta"
 
 #. module: product
 #. odoo-python
@@ -2387,6 +2658,22 @@ msgid "Oops! '%(fileName)s' didn’t upload since its format isn’t allowed."
 msgstr "Ups! '%(fileName)s' nije prenesena jer njen format nije dopušten."
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_product_combo_item__product_id
+#: model:product.attribute,name:product.pa_options
+msgid "Options"
+msgstr "Opcije"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_oral_b
+msgid "Oral-B"
+msgstr "Oral-B"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_color_orange
+msgid "Orange"
+msgstr "Narančasta"
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_product_document__original_id
 msgid "Original (unoptimized, unresized) attachment"
 msgstr "Izvorni (neoptimizirani, nepromijenjene veličine) prilog"
@@ -2409,17 +2696,42 @@ msgid "Outdoor dining table"
 msgstr "Stol za objedovanje na otvorenom"
 
 #. module: product
+#: model:product.attribute.value,name:product.pav_options_overhead_shelves
+msgid "Overhead shelves"
+msgstr "Stropne police"
+
+#. module: product
 #: model_terms:ir.ui.view,arch_db:product.report_packagingbarcode
 msgid "Package Type A"
 msgstr "Tip pakiranja A"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_packaging_form_view
-#: model_terms:ir.ui.view,arch_db:product.product_packaging_tree_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-#: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
-msgid "Packaging"
-msgstr "Pakiranje"
+#. odoo-python
+#: code:addons/product/models/uom_uom.py:0
+#: model_terms:ir.ui.view,arch_db:product.product_uom_list_view
+msgid "Packaging Barcodes"
+msgstr "Barkodovi pakiranja"
+
+#. module: product
+#: model:ir.actions.report,name:product.report_product_packaging
+msgid "Packaging Barcodes (PDF)"
+msgstr "Barkodovi pakiranja (PDF)"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_product__uom_ids
+#: model:ir.model.fields,field_description:product.field_product_template__uom_ids
+msgid "Packagings"
+msgstr "Pakiranja"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_panasonic
+msgid "Panasonic"
+msgstr "Panasonic"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_pantene
+msgid "Pantene"
+msgstr "Pantene"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_category__parent_id
@@ -2437,9 +2749,19 @@ msgid "Pedal Bin"
 msgstr "Kanta s pedalom"
 
 #. module: product
+#: model:product.attribute.value,name:product.pav_brand_pepsi
+msgid "Pepsi"
+msgstr "Pepsi"
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__percent_price
 msgid "Percentage Price"
 msgstr "Postotak cijena"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_philips
+msgid "Philips"
+msgstr "Philips"
 
 #. module: product
 #: model:ir.model.fields.selection,name:product.selection__product_attribute__display_type__pills
@@ -2447,9 +2769,9 @@ msgid "Pills"
 msgstr "Tablete"
 
 #. module: product
-#: model:product.attribute.value,name:product.fabric_attribute_plastic
-msgid "Plastic"
-msgstr "Plastika"
+#: model:product.attribute.value,name:product.pav_color_pink
+msgid "Pink"
+msgstr "Roza"
 
 #. module: product
 #. odoo-javascript
@@ -2499,8 +2821,8 @@ msgstr ""
 
 #. module: product
 #: model:ir.model.fields.selection,name:product.selection__res_config_settings__product_weight_in_lbs__1
-msgid "Pounds"
-msgstr "Funte"
+msgid "Pounds (lb)"
+msgstr "Funte (lb)"
 
 #. module: product
 #: model_terms:product.template,website_description:product.product_product_4_product_template
@@ -2513,10 +2835,8 @@ msgstr ""
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__price
-#: model:ir.model.fields,field_description:product.field_product_supplierinfo__price
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_tree_view_from_product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
-#: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_tree_view
 msgid "Price"
 msgstr "Cijena"
 
@@ -2531,12 +2851,8 @@ msgid "Price Rounding"
 msgstr "Zaokruživanje cijene"
 
 #. module: product
-#. odoo-python
-#: code:addons/product/models/product_product.py:0
-#: code:addons/product/models/product_template.py:0
 #: model:ir.actions.act_window,name:product.product_pricelist_item_action
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_tree_view
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
 msgid "Price Rules"
 msgstr "Pravila cijena"
 
@@ -2566,7 +2882,6 @@ msgstr "Cijena:"
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__pricelist_id
 #: model:ir.model.fields,field_description:product.field_res_partner__property_product_pricelist
 #: model:ir.model.fields,field_description:product.field_res_users__property_product_pricelist
-#: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_tree_view_from_product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_view_search
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_form_view
 #: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
@@ -2577,7 +2892,7 @@ msgstr "Cjenik"
 #: model:ir.model.fields,help:product.field_product_pricelist_item__applied_on
 #: model:ir.model.fields,help:product.field_product_pricelist_item__display_applied_on
 msgid "Pricelist Item applicable on selected option"
-msgstr "Stavka cjenika primjenjena na odabranu opciju"
+msgstr "Cjenik predmeta odnosi se na odabranu opciju"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist__name
@@ -2607,6 +2922,8 @@ msgstr "Pravilo cjenika"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_pricelist__item_ids
+#: model:ir.model.fields,field_description:product.field_product_product__pricelist_rule_ids
+#: model:ir.model.fields,field_description:product.field_product_template__pricelist_rule_ids
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_tree_view_from_product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
 msgid "Pricelist Rules"
@@ -2620,9 +2937,9 @@ msgid "Pricelists"
 msgstr "Cjenici"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.view_partner_property_form
-msgid "Pricelists are managed on"
-msgstr "Cjenicima se upravlja"
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
+msgid "Prices"
+msgstr "Cijene"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
@@ -2632,32 +2949,35 @@ msgstr "Cijene"
 #. module: product
 #. odoo-javascript
 #: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
+#: model_terms:ir.ui.view,arch_db:product.product_label_layout_form
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
 msgid "Print"
 msgstr "Ispis"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_product_tree_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_tree_view
-#: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
+#: model:ir.actions.act_window,name:product.action_open_label_layout
+#: model:ir.actions.server,name:product.action_product_print_labels
+#: model:ir.actions.server,name:product.action_product_template_print_labels
 msgid "Print Labels"
 msgstr "Ispiši naljepnice"
+
+#. module: product
+#: model:product.template,description_sale:product.product_product_24_product_template
+msgid "Private pod with desk and chair"
+msgstr "Privatna kabina sa stolom i stolicom"
 
 #. module: product
 #. odoo-python
 #: code:addons/product/controllers/pricelist_report.py:0
 #: model:ir.model,name:product.model_product_template
-#: model:ir.model.fields,field_description:product.field_product_combo_item__product_id
 #: model:ir.model.fields,field_description:product.field_product_label_layout__product_ids
-#: model:ir.model.fields,field_description:product.field_product_packaging__product_id
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__product_tmpl_id
 #: model:ir.model.fields,field_description:product.field_product_product__product_variant_id
 #: model:ir.model.fields,field_description:product.field_product_template__product_variant_id
+#: model:ir.model.fields,field_description:product.field_product_uom__product_id
 #: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__applied_on__1_product
 #: model:ir.model.fields.selection,name:product.selection__product_pricelist_item__display_applied_on__1_product
 #: model_terms:ir.ui.view,arch_db:product.product_kanban_view
-#: model_terms:ir.ui.view,arch_db:product.product_packaging_search_view
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_view_search
 #: model_terms:ir.ui.view,arch_db:product.product_search_form_view
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_form_view
@@ -2678,12 +2998,12 @@ msgstr "Proizvod"
 #: model_terms:ir.ui.view,arch_db:product.product_attribute_view_form
 #: model_terms:ir.ui.view,arch_db:product.product_template_attribute_value_view_form
 msgid "Product Attribute"
-msgstr "Atribut proizvoda"
+msgstr "Značajke proizvoda"
 
 #. module: product
 #: model:ir.model,name:product.model_product_attribute_custom_value
 msgid "Product Attribute Custom Value"
-msgstr "Prilagođena vrijednost atributa artikla"
+msgstr "Prilagođena vrijednost značajke artikla"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__product_template_value_ids
@@ -2693,13 +3013,13 @@ msgstr "Vrijednosti atributa proizvoda"
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_attribute_line_form
 msgid "Product Attribute and Values"
-msgstr "Atributi i vrijednosti proizvoda"
+msgstr "Značajke i vrijednosti proizvoda"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__attribute_line_ids
 #: model:ir.model.fields,field_description:product.field_product_template__attribute_line_ids
 msgid "Product Attributes"
-msgstr "Atributi proizvoda"
+msgstr "Značajke proizvoda"
 
 #. module: product
 #: model:ir.model,name:product.model_product_catalog_mixin
@@ -2707,7 +3027,6 @@ msgid "Product Catalog Mixin"
 msgstr "Mixin kataloga proizvoda"
 
 #. module: product
-#: model:ir.actions.act_window,name:product.product_category_action_form
 #: model_terms:ir.ui.view,arch_db:product.product_category_list_view
 #: model_terms:ir.ui.view,arch_db:product.product_category_search_view
 msgid "Product Categories"
@@ -2739,11 +3058,6 @@ msgstr "Stavka kombinacije proizvoda"
 #: model:ir.model.fields,field_description:product.field_update_product_attribute_value__product_count
 msgid "Product Count"
 msgstr "Broj proizvoda"
-
-#. module: product
-#: model:res.groups,name:product.group_product_manager
-msgid "Product Creation"
-msgstr "Izrada proizvoda"
 
 #. module: product
 #: model:ir.model,name:product.model_product_document
@@ -2808,33 +3122,8 @@ msgid "Product Name"
 msgstr "Naziv proizvoda"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__packaging_ids
-#: model:ir.model.fields,field_description:product.field_product_template__packaging_ids
-msgid "Product Packages"
-msgstr "Pakiranja proizvoda"
-
-#. module: product
-#: model:ir.model,name:product.model_product_packaging
-#: model:ir.model.fields,field_description:product.field_product_packaging__name
-#: model_terms:ir.ui.view,arch_db:product.product_packaging_form_view
-msgid "Product Packaging"
-msgstr "Pakiranje proizvoda"
-
-#. module: product
-#: model:ir.actions.report,name:product.report_product_packaging
-msgid "Product Packaging (PDF)"
-msgstr ""
-
-#. module: product
-#: model:ir.actions.act_window,name:product.action_packaging_view
-#: model:ir.model.fields,field_description:product.field_res_config_settings__group_stock_packaging
-#: model_terms:ir.ui.view,arch_db:product.product_packaging_search_view
-#: model_terms:ir.ui.view,arch_db:product.product_packaging_tree_view
-msgid "Product Packagings"
-msgstr "Pakiranje proizvoda"
-
-#. module: product
 #: model:ir.model.fields,field_description:product.field_product_category__product_properties_definition
+#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
 msgid "Product Properties"
 msgstr "Svojstva proizvoda"
 
@@ -2878,7 +3167,6 @@ msgstr "Vrijednost atributa predloška proizvoda"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_tag__product_template_ids
-#: model_terms:ir.ui.view,arch_db:product.product_tag_form_view
 #: model_terms:ir.ui.view,arch_db:product.product_template_view_tree_tag
 msgid "Product Templates"
 msgstr "Predlošci proizvoda"
@@ -2900,12 +3188,18 @@ msgstr "Pomoćni tekst proizvoda"
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
 #: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
 msgid "Product Type"
-msgstr "Vrsta proizvoda"
+msgstr "Tip artikla"
 
 #. module: product
 #: model:ir.model,name:product.model_uom_uom
 msgid "Product Unit of Measure"
-msgstr "Jedinice mjere proizvoda"
+msgstr "JM proizvoda"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_product__import_attribute_values
+#: model:ir.model.fields,field_description:product.field_product_template__import_attribute_values
+msgid "Product Values"
+msgstr ""
 
 #. module: product
 #: model:ir.model,name:product.model_product_product
@@ -2931,7 +3225,6 @@ msgstr "Vrijednosti varijanti proizvoda"
 #: model_terms:ir.ui.view,arch_db:product.product_product_tree_view
 #: model_terms:ir.ui.view,arch_db:product.product_product_view_activity
 #: model_terms:ir.ui.view,arch_db:product.product_product_view_tree_tag
-#: model_terms:ir.ui.view,arch_db:product.product_tag_form_view
 msgid "Product Variants"
 msgstr "Varijante proizvoda"
 
@@ -2950,6 +3243,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:product.product_template_action_all
 #: model:ir.model.fields,field_description:product.field_product_product__product_variant_ids
 #: model:ir.model.fields,field_description:product.field_product_template__product_variant_ids
+#: model:res.groups.privilege,name:product.res_groups_privilege_product
 #: model_terms:ir.ui.view,arch_db:product.product_template_view_activity
 #: model_terms:ir.ui.view,arch_db:product.report_pricelist_page
 msgid "Products"
@@ -2994,15 +3288,14 @@ msgid "Properties"
 msgstr "Svojstva"
 
 #. module: product
-#: model:product.attribute.value,name:product.pav_protection_kit
-msgid "Protection kit"
-msgstr ""
+#: model:product.attribute.value,name:product.pav_brand_puma
+msgid "Puma"
+msgstr "Puma"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__purchase_ok
 #: model:ir.model.fields,field_description:product.field_product_template__purchase_ok
 #: model_terms:ir.ui.view,arch_db:product.product_template_form_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_search_view
 msgid "Purchase"
 msgstr "Nabava"
 
@@ -3010,13 +3303,12 @@ msgstr "Nabava"
 #: model:ir.model.fields,field_description:product.field_product_product__description_purchase
 #: model:ir.model.fields,field_description:product.field_product_template__description_purchase
 msgid "Purchase Description"
-msgstr "Opis za nabavu"
+msgstr "Opis nabave"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__uom_po_id
-#: model:ir.model.fields,field_description:product.field_product_template__uom_po_id
-msgid "Purchase Unit"
-msgstr "Nabavna jedinica"
+#: model:product.attribute.value,name:product.pav_color_purple
+msgid "Purple"
+msgstr "Ljubičasta"
 
 #. module: product
 #. odoo-javascript
@@ -3030,7 +3322,6 @@ msgid "Quantities (Price)"
 msgstr "Količine (cijena)"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_label_layout__custom_quantity
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__min_qty
 msgid "Quantity"
 msgstr "Količina"
@@ -3048,11 +3339,6 @@ msgid "Quantity already present (%s)."
 msgstr "Količina već prisutna (%s)."
 
 #. module: product
-#: model:ir.model.fields,help:product.field_product_packaging__qty
-msgid "Quantity of products contained in the packaging."
-msgstr ""
-
-#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Quotation Description"
 msgstr "Opis ponude"
@@ -3061,6 +3347,27 @@ msgstr "Opis ponude"
 #: model:ir.model.fields.selection,name:product.selection__product_attribute__display_type__radio
 msgid "Radio"
 msgstr "Radio"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_rayban
+msgid "Ray-Ban"
+msgstr "Ray-Ban"
+
+#. module: product
+#. odoo-python
+#: code:addons/product/models/product_pricelist_item.py:0
+msgid "Recursive pricelist rules detected: %s"
+msgstr "Otkrivena su rekurzivna pravila cjenika: %s"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_color_red
+msgid "Red"
+msgstr "Crveno"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_reebok
+msgid "Reebok"
+msgstr "Reebok"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__code
@@ -3137,6 +3444,16 @@ msgid "Restaurant Expenses"
 msgstr "Troškovi restorana"
 
 #. module: product
+#: model:product.template,description_sale:product.product_product_5_product_template
+msgid "Right-aligned desk with storage"
+msgstr "Desno-orijentirani stol sa spremištem"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_rolex
+msgid "Rolex"
+msgstr "Rolex"
+
+#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 msgid "Round off to"
 msgstr "Zaokruži na"
@@ -3152,7 +3469,7 @@ msgid "Rule Tip"
 msgstr "Savjet za pravilo"
 
 #. module: product
-#: model:product.attribute.value,name:product.size_attribute_s
+#: model:product.attribute.value,name:product.pav_size_s
 msgid "S"
 msgstr ""
 
@@ -3182,9 +3499,25 @@ msgid "Sales Price"
 msgstr "Prodajna cijena"
 
 #. module: product
+#: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
+msgid "Sales Prices"
+msgstr "Prodajne cijene"
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_product_product__lst_price
 msgid "Sales Price"
 msgstr "Prodajna cijena"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_samsung
+msgid "Samsung"
+msgstr "Samsung"
+
+#. module: product
+#. odoo-javascript
+#: code:addons/product/static/src/product_name_and_description/product_name_and_description.js:0
+msgid "Search a product"
+msgstr "Pretražite proizvod"
 
 #. module: product
 #: model:ir.model.fields.selection,name:product.selection__product_attribute__display_type__select
@@ -3196,7 +3529,6 @@ msgstr "Odaberi"
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__sequence
 #: model:ir.model.fields,field_description:product.field_product_combo__sequence
 #: model:ir.model.fields,field_description:product.field_product_document__sequence
-#: model:ir.model.fields,field_description:product.field_product_packaging__sequence
 #: model:ir.model.fields,field_description:product.field_product_pricelist__sequence
 #: model:ir.model.fields,field_description:product.field_product_product__sequence
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__sequence
@@ -3204,7 +3536,7 @@ msgstr "Odaberi"
 #: model:ir.model.fields,field_description:product.field_product_template__sequence
 #: model:ir.model.fields,field_description:product.field_product_template_attribute_line__sequence
 msgid "Sequence"
-msgstr "Sekvenca"
+msgstr "Redoslijed"
 
 #. module: product
 #: model:ir.model.fields.selection,name:product.selection__product_template__type__service
@@ -3230,6 +3562,11 @@ msgstr ""
 "0,01"
 
 #. module: product
+#: model:product.attribute,name:product.pa_shoe_size
+msgid "Shoes size"
+msgstr "Broj cipela"
+
+#. module: product
 #. odoo-javascript
 #: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
 msgid "Show Name"
@@ -3237,13 +3574,28 @@ msgstr "Prikaži naziv"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
-msgid "Show all records which has next action date is before today"
-msgstr "Prikazuje sve zapise kojima je sljedeći datum akcije prije danas"
+msgid "Show all records whose next activity date is past"
+msgstr "Prikaži sve zapise čiji je datum sljedeće aktivnosti prošao"
 
 #. module: product
-#: model:product.attribute,name:product.size_attribute
+#: model:product.attribute.value,name:product.pav_color_silver
+msgid "Silver"
+msgstr "Srebrni"
+
+#. module: product
+#: model:product.attribute,name:product.pa_size
 msgid "Size"
 msgstr "Veličina"
+
+#. module: product
+#: model:product.template,description_sale:product.product_product_9_product_template
+msgid "Soft-close pedal bin for office use"
+msgstr "Kanta s pedalom i tihim zatvaranjem za uredsku upotrebu"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_sony
+msgid "Sony"
+msgstr "Sony"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_res_partner__specific_property_product_pricelist
@@ -3302,7 +3654,7 @@ msgstr "Specificirajte minimalni iznos marže na osnovnu cijenu."
 #: model:ir.model.fields,field_description:product.field_product_pricelist_item__date_start
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__date_start
 msgid "Start Date"
-msgstr "Početni datum"
+msgstr "Datum početka"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo__date_start
@@ -3334,7 +3686,7 @@ msgstr ""
 "Planirano: Buduće aktivnosti."
 
 #. module: product
-#: model:product.attribute.value,name:product.product_attribute_value_1
+#: model:product.attribute.value,name:product.pav_legs_steel
 msgid "Steel"
 msgstr "Čelik"
 
@@ -3346,12 +3698,17 @@ msgstr "Kutija za spremište"
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_document__store_fname
 msgid "Stored Filename"
-msgstr "Pohranjeni naziv datoteke"
+msgstr "Spremljeni naziv datoteke"
 
 #. module: product
 #: model:ir.model,name:product.model_product_supplierinfo
 msgid "Supplier Pricelist"
 msgstr "Cjenik dobavljača"
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.product_tag_form_view
+msgid "Tag"
+msgstr "Oznaka"
 
 #. module: product
 #: model:ir.model.constraint,message:product.constraint_product_tag_name_uniq
@@ -3363,6 +3720,7 @@ msgstr "Naziv oznake već postoji !"
 #: model:ir.model.fields,field_description:product.field_product_template__product_tag_ids
 #: model_terms:ir.ui.view,arch_db:product.product_search_form_view
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
+#: model_terms:ir.ui.view,arch_db:product.product_view_search_catalog
 msgid "Tags"
 msgstr "Oznake"
 
@@ -3370,6 +3728,16 @@ msgstr "Oznake"
 #: model_terms:ir.actions.act_window,help:product.product_tag_action
 msgid "Tags are used to search product for a given theme."
 msgstr "Oznake se koriste za pretraživanje proizvoda prema određenoj temi."
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_color_tan
+msgid "Tan"
+msgstr "Smeđe-žuta"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_color_teal
+msgid "Teal"
+msgstr "Tirkizna"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__template_value_ids
@@ -3409,11 +3777,10 @@ msgstr ""
 
 #. module: product
 #. odoo-python
+#: code:addons/product/models/product_product.py:0
 #: code:addons/product/models/product_template.py:0
-msgid ""
-"The default Unit of Measure and the purchase Unit of Measure must be in the "
-"same category."
-msgstr ""
+msgid "The cost of a product can't be negative."
+msgstr "Cijena proizvoda ne može biti negativna."
 
 #. module: product
 #: model:product.template,description_sale:product.desk_organizer_product_template
@@ -3434,9 +3801,15 @@ msgid "The display type used in the Product Configurator."
 msgstr "Tip prikaza korišten u konfiguratoru proizvoda."
 
 #. module: product
-#: model:ir.model.fields,help:product.field_product_packaging__sequence
-msgid "The first in the sequence is the default one."
-msgstr "Prvi u sekvenci je zadani."
+#. odoo-python
+#: code:addons/product/models/product_product.py:0
+msgid ""
+"The exitings product has different attribute value. \"%(imported_values)s\" "
+"is not equivalent to \"%(existing_values)s\" for \"%(external_id)s\", \"%"
+"(id)s\""
+msgstr ""
+"Postojeći proizvod ima drugu vrijednost atributa. \"%(imported_values)s\" "
+"nije ekvivalentno \"%(existing_values)s\" za \"%(external_id)s\", \"%(id)s\""
 
 #. module: product
 #: model_terms:product.template,website_description:product.product_product_4_product_template
@@ -3502,13 +3875,13 @@ msgstr "Predložak proizvoda je arhiviran pa nije moguća niti jedna kombinacija
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo__min_qty
 msgid ""
-"The quantity to purchase from this vendor to benefit from the price, "
-"expressed in the vendor Product Unit of Measure if not any, in the default "
-"unit of measure of the product otherwise."
+"The quantity to purchase from this vendor to benefit from the unit price. If "
+"a vendor unit is set, quantity should be specified in this unit, otherwise "
+"it should be specified in the default unit of the product."
 msgstr ""
-"Količina za nabavu od ovog dobavljača kako bi se ostvarila povoljna cijena, "
-"izražena u dobavljačevoj jedinici mjere proizvoda, a ako takva ne postoji, u "
-"zadanoj jedinici mjere proizvoda."
+"Količina koju treba kupiti od ovog dobavljača da biste ostvarili jediničnu "
+"cijenu. Ako je postavljena jedinica dobavljača, količina se treba navesti u "
+"toj jedinici, u suprotnom se treba navesti u zadanoj jedinici proizvoda."
 
 #. module: product
 #. odoo-python
@@ -3574,22 +3947,12 @@ msgstr "Ovo je zbroj dodatnih cijena svih atributa"
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 msgid "This note is added to sales orders and invoices."
-msgstr "Ova bilješka je dodana prodajnim nalozima i računima."
+msgstr "Ova bilješka je dodana nalozima za nabavu."
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 msgid "This note is only for internal purposes."
-msgstr "Ova bilješka je samo za internu upotrebu"
-
-#. module: product
-#: model:ir.model.fields,help:product.field_res_partner__property_product_pricelist
-#: model:ir.model.fields,help:product.field_res_users__property_product_pricelist
-msgid ""
-"This pricelist will be used, instead of the default one, for sales to the "
-"current partner"
-msgstr ""
-"Ovaj cjenik će se koristiti, umjesto predefiniranog, za prodaju trenutnom "
-"partneru"
+msgstr "Ova bilješka je samo za internu upotrebu."
 
 #. module: product
 #. odoo-python
@@ -3599,16 +3962,6 @@ msgid ""
 msgstr ""
 "Ovaj proizvod je dio kombinacije, pa se njegov tip ne može promijeniti u "
 "\"kombinacija\"."
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/uom_uom.py:0
-msgid ""
-"This rounding precision is higher than the Decimal Accuracy (%(digits)s "
-"digits).\n"
-"This may cause inconsistencies in computations.\n"
-"Please set a precision between %(min_precision)s and 1."
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_supplierinfo__product_code
@@ -3629,19 +3982,29 @@ msgstr ""
 "prazno ukoliko želite ispisati interni naziv."
 
 #. module: product
-#: model:product.template,description_sale:product.consu_delivery_01_product_template
-msgid "Three Seater Sofa with Lounger in Steel Grey Colour"
-msgstr ""
+#: model:ir.model.fields,field_description:product.field_product_document__thumbnail
+msgid "Thumbnail"
+msgstr "Sličica"
 
 #. module: product
-#: model:product.template,name:product.consu_delivery_01_product_template
-msgid "Three-Seat Sofa"
-msgstr ""
+#: model:product.attribute.value,name:product.pav_brand_tide
+msgid "Tide"
+msgstr "Tide"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
 msgid "Today Activities"
 msgstr "Današnje aktivnosti"
+
+#. module: product
+#: model:product.template,name:product.consu_delivery_01_product_template
+msgid "Two-Seat Sofa"
+msgstr "Dvosjed"
+
+#. module: product
+#: model:product.template,description_sale:product.consu_delivery_01_product_template
+msgid "Two-Seater Sofa with Oak Wood Frame"
+msgstr "Dvosjed s okvirom od hrastovine"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_document__type
@@ -3669,53 +4032,82 @@ msgid "Unable to find report template for %s format"
 msgstr "Nije moguće pronaći predložak izvještaja za %s format"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.product_product_tree_view
-#: model_terms:ir.ui.view,arch_db:product.product_template_tree_view
+#. odoo-python
+#: code:addons/product/models/product_product.py:0
+msgid ""
+"Unable to import products with attribute value without attribute name "
+"(defined as: attribute:value): %s"
+msgstr ""
+"Nije moguće uvesti proizvode s vrijednošću atributa bez imena atributa "
+"(definirano kao: atribut:vrijednost): %s"
+
+#. module: product
+#. odoo-python
+#: code:addons/product/models/product_product.py:0
+msgid ""
+"Unable to import products with attribute values but without name of product "
+"set"
+msgstr ""
+"Nije moguće uvesti proizvode s vrijednostima atributa, ali bez postavljenog "
+"imena proizvoda"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_underarmour
+msgid "Under Armour"
+msgstr "Under Armour"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_options_under_desk_pedestals
+msgid "Under-desk pedestals"
+msgstr "Ladičari ispod stola"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_uniqlo
+msgid "Uniqlo"
+msgstr "Uniqlo"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_product__uom_id
+#: model:ir.model.fields,field_description:product.field_product_supplierinfo__product_uom_id
+#: model:ir.model.fields,field_description:product.field_product_template__uom_id
+#: model:ir.model.fields,field_description:product.field_product_uom__uom_id
 msgid "Unit"
 msgstr "Jedinica"
 
 #. module: product
+#: model:ir.model.fields,field_description:product.field_product_product__product_uom_ids
+msgid "Unit Barcode"
+msgstr "Barkod jedinice"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_pricelist_item__product_uom_name
+#: model:ir.model.fields,field_description:product.field_product_product__uom_name
+#: model:ir.model.fields,field_description:product.field_product_template__uom_name
+msgid "Unit Name"
+msgstr "Naziv jedinice"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_supplierinfo__price
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_form_view
 msgid "Unit Price"
 msgstr "Jedinična cijena"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_packaging__product_uom_id
-#: model:ir.model.fields,field_description:product.field_product_product__uom_id
-#: model:ir.model.fields,field_description:product.field_product_supplierinfo__product_uom
-#: model:ir.model.fields,field_description:product.field_product_template__uom_id
-msgid "Unit of Measure"
-msgstr "Jedinica mjere"
-
-#. module: product
-#: model:ir.model.fields,field_description:product.field_product_pricelist_item__product_uom
-#: model:ir.model.fields,field_description:product.field_product_product__uom_name
-#: model:ir.model.fields,field_description:product.field_product_template__uom_name
-msgid "Unit of Measure Name"
-msgstr "Naziv jedinice mjere"
-
-#. module: product
 #. odoo-javascript
-#: code:addons/product/static/src/product_catalog/order_line/order_line.xml:0
-msgid "Unit price:"
-msgstr "Jedinična cijena:"
-
-#. module: product
+#: code:addons/product/static/src/product_catalog/kanban_model.js:0
 #: model_terms:ir.ui.view,arch_db:product.report_packagingbarcode
 msgid "Units"
 msgstr "Jedinice"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_res_config_settings__group_uom
 #: model_terms:ir.ui.view,arch_db:product.res_config_settings_view_form
 msgid "Units of Measure"
 msgstr "Jedinice mjere"
 
 #. module: product
-#: model:ir.model.fields,field_description:product.field_product_product__uom_category_id
-#: model:ir.model.fields,field_description:product.field_product_template__uom_category_id
-msgid "UoM Category"
-msgstr "Kategorija JM"
+#: model:ir.model.fields,field_description:product.field_res_config_settings__group_uom
+msgid "Units of Measure & Packagings"
+msgstr "Jedinice mjere i pakiranja"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_attribute_view_form
@@ -3758,7 +4150,7 @@ msgstr "Povećanje prodaje & unakrsna prodaja"
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_document__url
 msgid "Url"
-msgstr "Url"
+msgstr "URL"
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item__compute_price
@@ -3778,6 +4170,12 @@ msgid ""
 msgstr ""
 "Koristite ovu značajku za pohranu bilo kojih datoteka koje želite podijeliti "
 "sa svojim kupcima"
+
+#. module: product
+#: model:ir.model.fields,help:product.field_res_partner__property_product_pricelist
+#: model:ir.model.fields,help:product.field_res_users__property_product_pricelist
+msgid "Used for sales to the current partner"
+msgstr "Koristi se za prodaju trenutnom partneru"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__is_used_on_products
@@ -3804,7 +4202,7 @@ msgstr "Valjanost"
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_item_form_view
 msgid "Validity Period"
-msgstr "Razdoblje valjanosti"
+msgstr "Razdoblje važenja"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute_value__name
@@ -3849,7 +4247,7 @@ msgstr "Inačica"
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__product_variant_count
 msgid "Variant Count"
-msgstr "Broj varijanti"
+msgstr "Inačica broja"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_attribute__create_variant
@@ -3922,6 +4320,11 @@ msgid "Variants"
 msgstr "Inačice"
 
 #. module: product
+#: model:product.attribute.value,name:product.pav_fabric_velvet
+msgid "Velvet"
+msgstr "Baršun"
+
+#. module: product
 #: model:ir.model.fields,field_description:product.field_product_supplierinfo__partner_id
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_form_view
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_search_view
@@ -3931,7 +4334,7 @@ msgstr "Dobavljač"
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Vendor Bills"
-msgstr "Ulazni računi"
+msgstr "Ulazni računi dobavljača"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_supplierinfo_form_view
@@ -3973,9 +4376,16 @@ msgstr "Virtualni dizajn interijera"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_combo_view_form
+#: model_terms:ir.ui.view,arch_db:product.product_document_form
+#: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
 #: model_terms:ir.ui.view,arch_db:product.product_template_form_view
 msgid "Visible to all"
 msgstr "Vidljivo svima"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_tag__visible_to_customers
+msgid "Visible to customers"
+msgstr "Vidljivo kupcima"
 
 #. module: product
 #: model:ir.model.fields,field_description:product.field_product_document__voice_ids
@@ -4000,13 +4410,6 @@ msgstr "Jedinica mjere za volumen"
 #: model:ir.model.fields,field_description:product.field_product_template__volume_uom_name
 msgid "Volume unit of measure label"
 msgstr "Oznaka jedinice mjere volumena"
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/decimal_precision.py:0
-#: code:addons/product/models/uom_uom.py:0
-msgid "Warning!"
-msgstr "Upozorenje!"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_template_search_view
@@ -4038,15 +4441,33 @@ msgstr "Jedinica mjere težine"
 #: model:ir.model.fields,field_description:product.field_product_product__weight_uom_name
 #: model:ir.model.fields,field_description:product.field_product_template__weight_uom_name
 msgid "Weight unit of measure label"
-msgstr "Natpis za jedinicu mjere težine"
+msgstr "Oznaka jedinice mjere težine"
 
 #. module: product
-#: model:product.attribute.value,name:product.product_attribute_value_3
+#. odoo-python
+#: code:addons/product/models/product_product.py:0
+#: code:addons/product/models/product_template.py:0
+msgid "What to expect ?"
+msgstr "Što očekivati?"
+
+#. module: product
+#: model:ir.model.fields,help:product.field_product_tag__visible_to_customers
+msgid "Whether the tag is displayed to customers."
+msgstr "Hoće li se oznaka prikazati kupcima."
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_brand_whirlpool
+msgid "Whirlpool"
+msgstr "Whirlpool"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_color_white
 msgid "White"
 msgstr "Bijela"
 
 #. module: product
-#: model:product.attribute.value,name:product.product_attribute_value_color_wood
+#: model:product.attribute.value,name:product.pav_fabric_wood
+#: model:product.attribute.value,name:product.pav_legs_wood
 msgid "Wood"
 msgstr "Drvo"
 
@@ -4054,6 +4475,21 @@ msgstr "Drvo"
 #: model:ir.model.fields,field_description:product.field_product_product__write_date
 msgid "Write Date"
 msgstr "Datum unosa"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_size_xl
+msgid "XL"
+msgstr "XL"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_size_xs
+msgid "XS"
+msgstr "XS"
+
+#. module: product
+#: model:product.attribute.value,name:product.pav_color_yellow
+msgid "Yellow"
+msgstr "Žuta"
 
 #. module: product
 #. odoo-python
@@ -4078,17 +4514,6 @@ msgid ""
 "You are deactivating the pricelist feature. Every active pricelist will be "
 "archived."
 msgstr "Deaktivirate značajku cjenika. Svaki aktivni cjenik bit će arhiviran."
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/decimal_precision.py:0
-msgid ""
-"You are setting a Decimal Accuracy less precise than the UOMs:\n"
-"%s\n"
-"This may cause inconsistencies in computations.\n"
-"Please increase the rounding of those units of measure, or the digits of "
-"this Decimal Accuracy."
-msgstr ""
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_pricelist_item__percent_price
@@ -4116,8 +4541,8 @@ msgid ""
 "You can either upload a file from your computer or copy/paste an internet "
 "link to your file."
 msgstr ""
-"Možete učitati datoteku sa svog računala ili copy/paste internet link u "
-"svoju datoteku"
+"Možete učitati datoteku s računala ili kopirati/zalijepiti internetski link "
+"na datoteku."
 
 #. module: product
 #: model:ir.model.fields,help:product.field_product_attribute_value__image
@@ -4141,13 +4566,6 @@ msgid ""
 "You cannot archive this attribute as there are still products linked to it"
 msgstr ""
 "Ne možete arhivirati ovaj atribut jer su s njim još uvijek povezani proizvodi"
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_pricelist_item.py:0
-msgid ""
-"You cannot assign the Main Pricelist as Other Pricelist in PriceList Item"
-msgstr ""
 
 #. module: product
 #. odoo-python
@@ -4199,14 +4617,6 @@ msgstr "Nije moguće kreirati rekurzivne kategorije."
 
 #. module: product
 #. odoo-python
-#: code:addons/product/models/decimal_precision.py:0
-msgid ""
-"You cannot define the decimal precision of 'Account' as greater than the "
-"rounding factor of the company's main currency"
-msgstr ""
-
-#. module: product
-#. odoo-python
 #: code:addons/product/models/product_pricelist.py:0
 msgid ""
 "You cannot delete pricelist(s):\n"
@@ -4218,12 +4628,6 @@ msgstr ""
 "(%(pricelists)s)\n"
 "Koriste se unutar cjenika:\n"
 "%(other_pricelists)s"
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_category.py:0
-msgid "You cannot delete the %s product category."
-msgstr "Nije moguće brisati kategoriju %s."
 
 #. module: product
 #. odoo-python
@@ -4248,13 +4652,6 @@ msgstr ""
 "Ne možete brisati vrijednost %(value)s jer se koristi na sljedećim "
 "proizvodima:\n"
 "%(products)s\n"
-
-#. module: product
-#. odoo-python
-#: code:addons/product/models/product_category.py:0
-msgid ""
-"You cannot delete this product category, it is the default generic category."
-msgstr ""
 
 #. module: product
 #. odoo-python
@@ -4295,9 +4692,9 @@ msgid ""
 "You must define a product for everything you sell or purchase,\n"
 "                whether it's a storable product, a consumable or a service."
 msgstr ""
-"Sve što prodajete ili kupujete potrebno je definirati kao proizvod,\n"
-"                bez obzira na to radi li se o uskladištivom proizvodu, "
-"potrošnom materijalu ili usluzi."
+"Sve što prodajete ili kupujete potrebno je definirati kao atrikl,\n"
+"                bez obzira na to radi li se o artiklu koji je moguće "
+"pohraniti, potrošnom materijalu ili usluzi."
 
 #. module: product
 #: model_terms:ir.actions.act_window,help:product.product_variant_action
@@ -4347,6 +4744,17 @@ msgid "You need to set a positive quantity."
 msgstr "Morate postaviti pozitivnu količinu."
 
 #. module: product
+#: model:product.attribute.value,name:product.pav_brand_zara
+msgid "Zara"
+msgstr "Zara"
+
+#. module: product
+#. odoo-python
+#: code:addons/product/models/product_attribute.py:0
+msgid "attribute_id"
+msgstr "attribute_id"
+
+#. module: product
 #. odoo-javascript
 #: code:addons/product/static/src/js/pricelist_report/product_pricelist_report.xml:0
 msgid "csv"
@@ -4383,7 +4791,7 @@ msgstr "npr. Boja za drvo"
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_category_form_view
 msgid "e.g. Lamps"
-msgstr "npr. Lampe"
+msgstr "npr. Lamps"
 
 #. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
@@ -4399,6 +4807,12 @@ msgstr "npr. Predjelo - Obrok - Desert"
 #: model_terms:ir.ui.view,arch_db:product.product_pricelist_view
 msgid "e.g. USD Retailers"
 msgstr "npr. USD Retailers"
+
+#. module: product
+#. odoo-python
+#: code:addons/product/models/product_template_attribute_line.py:0
+msgid "id"
+msgstr "id"
 
 #. module: product
 #. odoo-python
@@ -4449,11 +4863,6 @@ msgid "sales price"
 msgstr "prodajna cijena"
 
 #. module: product
-#: model_terms:ir.ui.view,arch_db:product.view_partner_property_form
-msgid "the parent company"
-msgstr "Nadređena tvrtka"
-
-#. module: product
 #: model_terms:ir.ui.view,arch_db:product.product_variant_easy_edit_view
 msgid "the product template."
 msgstr "predložak proizvoda."
@@ -4478,5 +4887,239 @@ msgstr "xlsx"
 #~ msgid "10"
 #~ msgstr "10"
 
+#~ msgid "100"
+#~ msgstr "100"
+
 #~ msgid "123456789012"
 #~ msgstr "123456789012"
+
+#~ msgid "45"
+#~ msgstr "45"
+
+#~ msgid "%(percentage)s %% discount and %(price)s surcharge"
+#~ msgstr "%(percentage)s %% popust %(price)s cijena"
+
+#~ msgid "%s %% discount"
+#~ msgstr "%s %% popust"
+
+#~ msgid "160x80cm, with large legs."
+#~ msgstr "160x80cm, sa velikim nogama."
+
+#~ msgid "2 year"
+#~ msgstr "2 godine"
+
+#~ msgid "<span class=\"o_stat_text\">Related Products</span>"
+#~ msgstr "<span class=\"o_stat_text\">Povezani proizvodi</span>"
+
+#~ msgid ""
+#~ "A storable product is a product for which you manage stock. The Inventory "
+#~ "app has to be installed.\n"
+#~ "A consumable product is a product for which stock is not managed.\n"
+#~ "A service is a non-material product you provide."
+#~ msgstr ""
+#~ "Proizvod koji se može skladištiti je proizvod čijim zalihama možete "
+#~ "upravljati. \n"
+#~ "Potrebno je instalirati aplikaciju Inventar.\n"
+#~ "Potrošni proizvod je proizvod za koji se ne upravlja zalihama.\n"
+#~ "Usluga je nematerijalni proizvod koji pružate."
+
+#~ msgid "Additional Product Tag"
+#~ msgstr "Dodatna oznaka proizvoda"
+
+#~ msgid "Advanced Pricelists"
+#~ msgstr "Napredni cjenici"
+
+#~ msgid "Advanced price rules (discounts, formulas)"
+#~ msgstr "Napredna pravila cijena (popusti, formule)"
+
+#~ msgid "Allow users to input custom values for this attribute value"
+#~ msgstr ""
+#~ "Dozvoli korisnicima da unose prilagođene vrijednosti za ovaj atribut"
+
+#~ msgid ""
+#~ "Allows to manage different prices based on rules per category of "
+#~ "customers.\n"
+#~ "                Example: 10% for retailers, promotion of 5 EUR on this "
+#~ "product, etc."
+#~ msgstr ""
+#~ "Omogućuje korištenje različitih cijena, bazirano na pravilima po "
+#~ "kategorijama kupaca.\n"
+#~ "Primjer: 10% za trgovce, popust od 5 kn na odabrani proizvod itd."
+
+#~ msgid "Applicable On"
+#~ msgstr "Primjenjiv na"
+
+#~ msgid "Availability"
+#~ msgstr "Raspoloživost"
+
+#~ msgid "Can be Purchased"
+#~ msgstr "Vidljiv u nabavi"
+
+#~ msgid "Can be Sold"
+#~ msgstr "Može se prodavati"
+
+#~ msgid "Computation"
+#~ msgstr "Izračun"
+
+#~ msgid "Conditions"
+#~ msgstr "Uvjeti"
+
+#~ msgid "Configuration"
+#~ msgstr "Postava"
+
+#~ msgid "Consumable"
+#~ msgstr "Potrošni"
+
+#~ msgid ""
+#~ "Consumables are physical products for which you don't manage the "
+#~ "inventory level: they are always available."
+#~ msgstr ""
+#~ "Potrošni materijali su fizički proizvodi za koje ne upravljate razinom "
+#~ "zaliha: uvijek su dostupni."
+
+#~ msgid "Contact Us"
+#~ msgstr "Kontaktirajte nas"
+
+#~ msgid "Contained Quantity"
+#~ msgstr "Sadržana količina"
+
+#~ msgid "Contained quantity"
+#~ msgstr "Sadržana količina"
+
+#~ msgid "Cubic Feet"
+#~ msgstr "Kubične stope"
+
+#~ msgid "Cubic Meters"
+#~ msgstr "Kubični metri"
+
+#~ msgid "Decimal Precision"
+#~ msgstr "Decimalna preciznost"
+
+#~ msgid "Delivery Lead Time"
+#~ msgstr "Glavno vrijeme dostave"
+
+#~ msgid "Discount Policy"
+#~ msgstr "Politika popusta"
+
+#~ msgid "Discount included in the price"
+#~ msgstr "Popust uključen u cijenu"
+
+#~ msgid "Discount on lines"
+#~ msgstr "Popust na stavkama"
+
+#~ msgid "Discounts"
+#~ msgstr "Popusti"
+
+#~ msgid "Display Pricelist"
+#~ msgstr "Prikaži cjenik"
+
+#~ msgid "Group By"
+#~ msgstr "Grupiraj po"
+
+#~ msgid "Is custom value"
+#~ msgstr "Je prilagođena vrijednost"
+
+#~ msgid "Kilograms"
+#~ msgstr "Kilogrami"
+
+#~ msgid "Manage Product Packaging"
+#~ msgstr "Upravljaj pakiranjem proizvoda"
+
+#~ msgid "Multiple prices per product"
+#~ msgstr "Višestruke cijene za proizvod"
+
+#~ msgid "Normal"
+#~ msgstr "Normalan"
+
+#~ msgid "Number of messages which requires an action"
+#~ msgstr "Broj poruka koje zahtijevaju aktivnost"
+
+#~ msgid "Number of price rules"
+#~ msgstr "Broj pravila cijene"
+
+#~ msgid "Packaging"
+#~ msgstr "Pakiranje"
+
+#~ msgid "Pounds"
+#~ msgstr "Funti"
+
+#~ msgid "Price Computation"
+#~ msgstr "Izračun cijene"
+
+#~ msgid "Price Surcharge"
+#~ msgstr "Dodatna cijena"
+
+#~ msgid "Pricelist:"
+#~ msgstr "Cjenik:"
+
+#~ msgid "Pricelists Method"
+#~ msgstr "Metoda cjenika"
+
+#~ msgid "Pricelists are managed on"
+#~ msgstr "Cjenicima se upravlja"
+
+#~ msgid "Product Packages"
+#~ msgstr "Pakiranja proizvoda"
+
+#~ msgid "Product Product"
+#~ msgstr "Proizvod"
+
+#~ msgid "Product Template Tags"
+#~ msgstr "Oznake prdložaka proizvoda"
+
+#~ msgid "Purchase UoM"
+#~ msgstr "Nabavna JM"
+
+#~ msgid "Rounding Method"
+#~ msgstr "Metoda zaokruživanja"
+
+#~ msgid "Sales Grid Entry"
+#~ msgstr "Unos u prodajnu mrežu"
+
+#~ msgid ""
+#~ "Sets the price so that it is a multiple of this value.\n"
+#~ "Rounding is applied after the discount and before the surcharge.\n"
+#~ "To have prices that end in 9.99, set rounding 10, surcharge -0.01"
+#~ msgstr ""
+#~ "Postavlja cijenu kao višestruku vrijednost ove vrijednosti.\n"
+#~ "Zaokruživanje se izvršava nakon izračuna popusta i prije dodatka na "
+#~ "cijenu.\n"
+#~ "Za dobivanje cijene koja završava na 9.99 postavite zaokruživanje na 10, "
+#~ "a dodatak na cijenu -0.01"
+
+#~ msgid "Show all records which has next action date is before today"
+#~ msgstr "Prikazuje sve zapise kojima je sljedeći datum akcije prije danas"
+
+#~ msgid "Show public price & discount to the customer"
+#~ msgstr "Prikaži kupcu javnu cijenu i popust"
+
+#~ msgid "Tag Name"
+#~ msgstr "Naziv taga"
+
+#~ msgid ""
+#~ "This pricelist will be used, instead of the default one, for sales to the "
+#~ "current partner"
+#~ msgstr ""
+#~ "Ovaj cjenik će se koristiti, umjesto predefiniranog, za prodaju trenutnom "
+#~ "partneru"
+
+#~ msgid "Unit of Measure"
+#~ msgstr "Jedinica mjere"
+
+#~ msgid "Unit of Measure Name"
+#~ msgstr "Naziv jedinice mjere"
+
+#~ msgid "UoM"
+#~ msgstr "UoM"
+
+#~ msgid "Variants Creation Mode"
+#~ msgstr "Način kreiranja varijanti"
+
+#~ msgid "Warning!"
+#~ msgstr "Upozorenje!"
+
+#~ msgid "You cannot delete the %s product category."
+#~ msgstr "Nije moguće brisati kategoriju %s."
+
+#~ msgid "the parent company"
+#~ msgstr "Nadređena tvrtka"

@@ -5,7 +5,7 @@ patch(PaymentScreen.prototype, {
     onMounted() {
         super.onMounted();
         if (this.pos.company.country_id?.code == "UY") {
-            this.currentOrder.set_to_invoice(true);
+            this.currentOrder.setToInvoice(true);
         }
     },
 });

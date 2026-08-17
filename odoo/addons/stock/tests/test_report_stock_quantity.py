@@ -21,7 +21,6 @@ class TestReportStockQuantity(tests.TransactionCase):
             'name': 'Mellohi',
             'default_code': 'C418',
             'is_storable': True,
-            'categ_id': cls.env.ref('product.product_category_all').id,
             'tracking': 'lot',
             'barcode': 'scan_me'
         })
@@ -29,13 +28,11 @@ class TestReportStockQuantity(tests.TransactionCase):
             'name': 'Base Warehouse',
             'code': 'TESTWH'
         })
-        cls.categ_unit = cls.env.ref('uom.product_uom_categ_unit')
-        cls.uom_unit = cls.env['uom.uom'].search([('category_id', '=', cls.categ_unit.id), ('uom_type', '=', 'reference')], limit=1)
+        cls.uom_unit = cls.env.ref('uom.product_uom_unit')
         cls.customer_location = cls.env.ref('stock.stock_location_customers')
         cls.supplier_location = cls.env.ref('stock.stock_location_suppliers')
         # replenish
         cls.move1 = cls.env['stock.move'].create({
-            'name': 'test_in_1',
             'location_id': cls.supplier_location.id,
             'location_dest_id': cls.wh.lot_stock_id.id,
             'product_id': cls.product1.id,
@@ -47,7 +44,6 @@ class TestReportStockQuantity(tests.TransactionCase):
         })
         # ship
         cls.move2 = cls.env['stock.move'].create({
-            'name': 'test_out_1',
             'location_id': cls.wh.lot_stock_id.id,
             'location_dest_id': cls.customer_location.id,
             'product_id': cls.product1.id,
@@ -73,7 +69,6 @@ class TestReportStockQuantity(tests.TransactionCase):
         transit_loc = self.wh.company_id.internal_transit_location_id
 
         self.move_transit_out = self.env['stock.move'].create({
-            'name': 'test_transit_out_1',
             'location_id': self.wh.lot_stock_id.id,
             'location_dest_id': transit_loc.id,
             'product_id': self.product1.id,
@@ -84,7 +79,6 @@ class TestReportStockQuantity(tests.TransactionCase):
             'date_deadline': fields.Datetime.now(),
         })
         self.move_transit_in = self.env['stock.move'].create({
-            'name': 'test_transit_in_1',
             'location_id': transit_loc.id,
             'location_dest_id': wh2.lot_stock_id.id,
             'product_id': self.product1.id,
@@ -120,7 +114,6 @@ class TestReportStockQuantity(tests.TransactionCase):
         self.product_replenished = self.env['product.product'].create({
             'name': 'Security razor',
             'is_storable': True,
-            'categ_id': self.env.ref('product.product_category_all').id,
         })
         # get auto-created pull rule from when warehouse is created
         self.wh.reception_route_id.rule_ids.unlink()
@@ -140,7 +133,6 @@ class TestReportStockQuantity(tests.TransactionCase):
             'picking_type_id': self.ref('stock.picking_type_out'),
         })
         self.env['stock.move'].create({
-            'name': 'Delivery',
             'product_id': self.product_replenished.id,
             'product_uom_qty': 500.0,
             'product_uom': self.uom_unit.id,
@@ -168,7 +160,7 @@ class TestReportStockQuantity(tests.TransactionCase):
             ('location_dest_id', '=', self.wh.lot_stock_id.id)
         ])
         # Simulate a supplier delay
-        move.date = fields.datetime.now() + timedelta(days=1)
+        move.date = fields.Datetime.now() + timedelta(days=1)
         orderpoint = self.env['stock.warehouse.orderpoint'].search([
             ('product_id', '=', self.product_replenished.id)
         ])
@@ -208,7 +200,6 @@ class TestReportStockQuantity(tests.TransactionCase):
 
         # Let's have 2 inter-warehouses stock moves (one for today and one for two days from now)
         move01, move02 = self.env['stock.move'].create([{
-            'name': 'Inter WH Move',
             'location_id': wh01.lot_stock_id.id,
             'location_dest_id': wh02.lot_stock_id.id,
             'product_id': product.id,
@@ -243,7 +234,7 @@ class TestReportStockQuantity(tests.TransactionCase):
     def test_past_date_quantity_with_multistep_delivery(self):
         """
         Verify that available quantities are correctly computed at different past dates
-        when using multi-step reciept/delivery.
+        when using multi-step receipt/delivery.
         """
         def get_inv_qty_at_date(product_id, inv_datetime):
             inventory_at_date_wizard = self.env['stock.quantity.history'].create({'inventory_datetime': inv_datetime})
@@ -267,7 +258,6 @@ class TestReportStockQuantity(tests.TransactionCase):
         today = fields.Date.today()
         with freeze_time(today - timedelta(days=8)):
             move_transit = self.env['stock.move'].create({
-                'name': 'test transit',
                 'warehouse_id': warehouse.id,
                 'picking_type_id': warehouse.in_type_id.id,
                 'location_id': self.supplier_location.id,
@@ -294,7 +284,6 @@ class TestReportStockQuantity(tests.TransactionCase):
 
         with freeze_time(today - timedelta(days=4)):
             move_pick = self.env['stock.move'].create({
-                'name': 'pick',
                 'picking_type_id': warehouse.pick_type_id.id,
                 'location_id': warehouse.lot_stock_id.id,
                 'location_dest_id': warehouse.wh_output_stock_loc_id.id,
@@ -343,3 +332,123 @@ class TestReportStockQuantity(tests.TransactionCase):
             ['product_qty:sum'])
         forecast_report = [qty for __, __, qty in report]
         self.assertEqual(forecast_report, [0, 40])
+
+    def test_move_grams_on_kg_product(self):
+        """Stock moves in g for a kg-tracked product must aggregate in kg
+        in the forecasted report."""
+        uom_kg = self.env.ref('uom.product_uom_kgm')
+        uom_g = self.env.ref('uom.product_uom_gram')
+
+        product_kg = self.env['product.product'].create({
+            'name': 'KG product',
+            'is_storable': True,
+            'uom_id': uom_kg.id,
+            'uom_ids': [uom_g.id]
+        })
+
+        receipt_kg_01, receipt_kg_02 = self.env['stock.move'].create([{
+            'location_id': self.supplier_location.id,
+            'location_dest_id': self.wh.lot_stock_id.id,
+            'product_id': product_kg.id,
+            'product_uom': uom_kg.id,
+            'product_uom_qty': 10,
+            'quantity': 10,
+            'date': fields.Datetime.now(),
+        } for _ in range(2)])
+        receipt_kg_01._action_confirm()
+        receipt_kg_01.write({'quantity': 10, 'picked': True})
+        receipt_kg_01._action_done()
+        receipt_kg_02._action_confirm()
+
+        delivery_g = self.env['stock.move'].create({
+            'location_id': self.wh.lot_stock_id.id,
+            'location_dest_id': self.customer_location.id,
+            'product_id': product_kg.id,
+            'product_uom': uom_g.id,
+            'product_uom_qty': 500,
+            'quantity': 500,
+            'date': fields.Datetime.now(),
+        })
+        delivery_g._action_confirm()
+        delivery_g.write({'quantity': 500, 'picked': True})
+        delivery_g._action_done()
+
+        from_date = fields.Date.to_string(fields.Date.add(fields.Date.today(), days=-1))
+        to_date = fields.Date.to_string(fields.Date.add(fields.Date.today(), days=0))
+        report = self.env['report.stock.quantity']._read_group(
+            [
+                ('date', '>=', from_date), ('date', '<=', to_date),
+                ('product_id', '=', product_kg.id), ('state', '=', 'forecast'),
+            ],
+            ['date:day', 'product_id'],
+            ['product_qty:sum'],
+        )
+        forecast = [qty for __, __, qty in report]
+        self.assertEqual(forecast, [0, 19.5])
+
+    def test_inter_warehouse_transfer_uom(self):
+        """
+        Ensure that the forecast report correctly applies UoM conversion for done
+        inter-warehouse moves.
+        """
+        uom_box = self.env['uom.uom'].create({
+            'name': 'Box of 25',
+            'relative_uom_id': self.uom_unit.id,
+            'relative_factor': 25.0,
+        })
+        product = self.env['product.product'].create({
+            'name': 'SuperProduct',
+            'is_storable': True,
+            'uom_ids': [Command.link(uom_box.id)],
+        })
+
+        wh1, wh2 = self.env['stock.warehouse'].create([{
+            'name': 'Warehouse 1',
+            'code': 'WH1',
+        }, {
+            'name': 'Warehouse 2',
+            'code': 'WH2',
+        }])
+
+        today = datetime.now()
+
+        # Receive 800 units into wh1 via a done move
+        self.env['stock.move'].create({
+            'location_id': self.supplier_location.id,
+            'location_dest_id': wh1.lot_stock_id.id,
+            'product_id': product.id,
+            'product_uom': self.uom_unit.id,
+            'product_uom_qty': 800.0,
+            'quantity': 800.0,
+            'state': 'done',
+            'date': today,
+        })
+
+        # Transfer 2 boxes (= 50 units) from wh1 to wh2
+        move = self.env['stock.move'].create({
+            'location_id': wh1.lot_stock_id.id,
+            'location_dest_id': wh2.lot_stock_id.id,
+            'product_id': product.id,
+            'product_uom': uom_box.id,
+            'product_uom_qty': 2.0,
+            'date': today,
+        })
+        move._action_confirm()
+        move.quantity = 2.0
+        move.picked = True
+        move._action_done()
+
+        self.env.flush_all()
+
+        # wh1 quant = 800 - 50 = 750 units
+        # Forecast before today should use the converted qty (50), not the done qty (2)
+        # Expected: 0
+        # Bug case: -48
+        yesterday = fields.Date.to_string(fields.Date.add(fields.Date.today(), days=-1))
+        report = self.env['report.stock.quantity']._read_group(
+            [('state', '=', 'forecast'), ('product_id', '=', product.id), ('warehouse_id', '=', wh1.id),
+             ('date', '=', yesterday)],
+            ['date:day', 'warehouse_id'],
+            ['product_qty:sum'],
+        )
+        self.assertEqual(report[0][2], 0.0)

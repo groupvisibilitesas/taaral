@@ -1,9 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from itertools import pairwise
 from unittest.mock import patch
 
-from odoo.exceptions import UserError
-from odoo.fields import Command
+from odoo.exceptions import UserError, ValidationError
+from odoo.fields import Command, Domain
 from odoo.tests import Form, tagged
 
 from odoo.addons.product.tests.common import ProductVariantsCommon
@@ -49,7 +50,8 @@ class TestPricelist(ProductVariantsCommon):
         }])
 
         # Enable pricelist feature
-        cls.env.user.groups_id += cls.env.ref('product.group_product_pricelist')
+        cls.env.user.group_ids += cls.env.ref('product.group_product_pricelist')
+        cls.uom_ton = cls.env.ref('uom.product_uom_ton')
 
     def test_10_discount(self):
         # Make sure the price using a pricelist is the same than without after
@@ -91,13 +93,10 @@ class TestPricelist(ProductVariantsCommon):
 
         tonne_price = 100
 
-        # make sure 'tonne' resolves down to 1 'kg'.
-        self.uom_ton.write({'rounding': 0.001})
         # setup product stored in 'tonnes', with a discounted pricelist for qty > 3 tonnes
         spam = self.env['product.product'].create({
             'name': '1 tonne of spam',
             'uom_id': self.uom_ton.id,
-            'uom_po_id': self.uom_ton.id,
             'list_price': tonne_price,
             'type': 'consu'
         })
@@ -176,8 +175,8 @@ class TestPricelist(ProductVariantsCommon):
         self.assertEqual(self.partner.specific_property_product_pricelist, pricelist_2)
 
     def test_45_property_product_pricelist_config_parameter(self):
-        """Check that the ``ir.config_parameter`` is accounted for as fallback
-        for both ``property_product_pricelist`` & ``specific_property_product_pricelist``
+        """Check that the ``ir.config_parameter`` gets utilized as fallback to both
+        ``property_product_pricelist`` & ``specific_property_product_pricelist``.
         """
         pricelist_1, pricelist_2 = self.pricelist, self.sale_pricelist_id
         self.env['product.pricelist'].search([
@@ -189,8 +188,9 @@ class TestPricelist(ProductVariantsCommon):
         ICP = self.env['ir.config_parameter'].sudo()
         ICP.set_param('res.partner.property_product_pricelist', pricelist_2.id)
         with patch.object(
-            self.pricelist.__class__, '_get_partner_pricelist_multi_search_domain_hook',
-            return_value=[(0, '=', 1)],  # ensures pricelist falls back on ICP
+            self.pricelist.__class__,
+            '_get_partner_pricelist_multi_search_domain_hook',
+            return_value=Domain.FALSE,  # ensures pricelist falls back on ICP
         ):
             with Form(self.partner) as partner_form:
                 self.assertEqual(partner_form.property_product_pricelist, pricelist_2)
@@ -212,6 +212,7 @@ class TestPricelist(ProductVariantsCommon):
 
         self.assertEqual(self.pricelist.company_id, first_company)
         self.assertFalse(shared_pricelist.company_id)
+        self.assertEqual(second_pricelist.company_id, first_company)
 
         with self.assertRaises(UserError):
             shared_pricelist.item_ids = [
@@ -236,6 +237,8 @@ class TestPricelist(ProductVariantsCommon):
         ]
 
         with self.assertRaises(UserError):
+            # Should raise because the pricelist would have a rule based on a pricelist
+            # from another company
             self.pricelist.company_id = second_company
 
     def test_pricelists_res_partner_form(self):
@@ -285,21 +288,22 @@ class TestPricelist(ProductVariantsCommon):
         self.assertEqual(self.partner.property_product_pricelist, self.sale_pricelist_id)
 
         company_2 = self.env.company.create({'name': "Company Two"})
-        company_2_b2b_pl = self.env['product.pricelist'].create({
-            'name': f"B2B ({company_2.name})",
-            'company_id': company_2.id,
-        })
-        parent = self.env['res.partner'].create({
+        company_1_b2b_pl, company_2_b2b_pl = self.sale_pricelist_id.create([{
+            'name': f"B2B ({company.name})",
+            'company_id': company.id,
+        } for company in self.env.company + company_2])
+        parent = self.partner.create({
             'name': f"{self.partner.name}'s Company",
             'is_company': True,
-            'specific_property_product_pricelist': False,
+            'specific_property_product_pricelist': company_1_b2b_pl.id,
         })
         parent.with_company(company_2).specific_property_product_pricelist = company_2_b2b_pl
 
         self.partner.parent_id = parent
-        self.assertFalse(
+        self.assertEqual(
             self.partner.specific_property_product_pricelist,
-            "Assigning a parent without specific pricelist should reset the partner's pricelist",
+            company_1_b2b_pl,
+            "Assigning a parent with a specific pricelist should sync the parent's pricelist",
         )
         self.assertEqual(
             self.partner.with_company(company_2).specific_property_product_pricelist,
@@ -318,6 +322,115 @@ class TestPricelist(ProductVariantsCommon):
             company_2_b2b_pl,
             "Assigning pricelists in one company shouldn't impact pricelists in other companies",
         )
+
+    def test_prevent_pricelist_recursion(self):
+        """Ensure recursive pricelist rules raise an error on creation."""
+        def create_item_vals(pl_from, pl_to):
+            return {
+                'pricelist_id': pl_from.id,
+                'compute_price': 'formula',
+                'base': 'pricelist',
+                'base_pricelist_id': pl_to.id,
+                'applied_on': '3_global',
+            }
+        Pricelist = self.env['product.pricelist']
+        pl_a, pl_b, pl_c, pl_d = pricelists = Pricelist.create([{
+            'name': f"Pricelist {c}",
+        } for c in 'ABCD'])
+
+        # A -> B -> C -> D
+        Pricelist.item_ids.create([
+            create_item_vals(pl_from, pl_to)
+            for (pl_from, pl_to) in pairwise(pricelists)
+        ])
+
+        with self.assertRaises(ValidationError):
+            # A -> B -> C -> D -> D -> _ (recurs)
+            Pricelist.item_ids.create(create_item_vals(pl_d, pl_d))
+        with self.assertRaises(ValidationError):
+            # A -> B -> C -> D -> A -> _ (recurs)
+            Pricelist.item_ids.create(create_item_vals(pl_d, pl_a))
+        with self.assertRaises(ValidationError):
+            # A -> B -> C -> [B -> _, D] (recurs)
+            Pricelist.item_ids.create(create_item_vals(pl_c, pl_b))
+
+        # A -> B, C -> D
+        pl_b.item_ids.unlink()
+        # C -> D -> A -> B
+        Pricelist.item_ids.create(create_item_vals(pl_d, pl_a))
+        # C -> [B, D -> A -> B]
+        Pricelist.item_ids.create(create_item_vals(pl_c, pl_b))
+
+        with self.assertRaises(ValidationError):
+            # C -> [B, D -> A -> [B, C -> _]] (recurs)
+            Pricelist.item_ids.create(create_item_vals(pl_a, pl_c))
+        with self.assertRaises(ValidationError):
+            # C -> [B -> D -> A -> B -> _, D -> _] (recurs)
+            Pricelist.item_ids.create(create_item_vals(pl_b, pl_d))
+
+    def test_pricelist_rule_linked_to_product_variant(self):
+        """Verify that pricelist rules assigned to a variant remain linked after write."""
+        self.product_sofa_red.pricelist_rule_ids = [
+            Command.create({
+                'applied_on': '0_product_variant',
+                'product_id': self.product_sofa_red.id,
+                'compute_price': 'fixed',
+                'fixed_price': 99.9,
+                'pricelist_id': self.pricelist.id,
+            }),
+            Command.create({
+                'applied_on': '0_product_variant',
+                'product_id': self.product_sofa_red.id,
+                'compute_price': 'fixed',
+                'fixed_price': 89.9,
+                'pricelist_id': self.pricelist.id,
+            }),
+        ]
+        self.assertEqual(len(self.product_sofa_red.pricelist_rule_ids), 2)
+        first_rule, second_rule = self.product_sofa_red.pricelist_rule_ids
+        self.product_sofa_red.pricelist_rule_ids = [
+            Command.update(first_rule.id, {'fixed_price': 79.9}),
+            Command.unlink(second_rule.id),
+        ]
+        self.assertEqual(len(self.product_sofa_red.pricelist_rule_ids), 1)
+        self.assertEqual(self.pricelist.item_ids.fixed_price, 79.9)
+        self.assertIn(self.product_sofa_red, self.pricelist.item_ids.product_id)
+
+        # Update of template-based rules through variant form
+        self.product_template_sofa.pricelist_rule_ids = [
+            # Template-based rule (can be edited through the variants)
+            Command.create({
+                'applied_on': '1_product',
+                'product_tmpl_id': self.product_template_sofa.id,
+                'pricelist_id': self.pricelist.id,
+            }),
+            # Rule on another variant than the one being edited. It cannot be edited through the
+            # current variant and therefore shouldn't change when another variant rules are edited.
+            Command.create({
+                'applied_on': '0_product_variant',
+                'product_id': self.product_sofa_blue.id,
+                'compute_price': 'fixed',
+                'fixed_price': 89.9,
+                'pricelist_id': self.pricelist.id,
+            })
+        ]
+        self.assertEqual(len(self.product_template_sofa.pricelist_rule_ids), 3)
+        template_rule = self.product_template_sofa.pricelist_rule_ids.filtered(
+            lambda item: not item.product_id
+        )
+        self.assertEqual(len(self.product_sofa_red.pricelist_rule_ids), 2)
+        self.product_sofa_red.pricelist_rule_ids = [
+            Command.update(template_rule.id, {'fixed_price': 133}),
+        ]
+        self.assertEqual(template_rule.fixed_price, 133)
+
+        self.product_sofa_red.pricelist_rule_ids = [
+            Command.unlink(template_rule.id),
+        ]
+        self.assertFalse(template_rule.exists())
+
+        self.assertTrue(self.product_sofa_blue.pricelist_rule_ids)
+        self.assertEqual(len(self.product_template_sofa.pricelist_rule_ids), 2)
 
     def test_pricelist_applied_on_product_variant(self):
         # product template with variants

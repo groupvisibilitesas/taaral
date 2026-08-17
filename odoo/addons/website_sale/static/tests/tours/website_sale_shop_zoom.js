@@ -1,5 +1,3 @@
-/** @odoo-module **/
-
 import { registry } from "@web/core/registry";
 
 var imageSelector = '#o-carousel-product .carousel-item.active img';
@@ -32,7 +30,7 @@ registry.category("web_tour.tours").add('shop_zoom', {
     },
     {
         content: "change variant",
-        trigger: `input[data-attribute_name='Beautiful Color'][data-value_name='${nameGreen}']:not(:visible)`,
+        trigger: `input[data-attribute-name='Beautiful Color'][data-value-name='${nameGreen}']:not(:visible)`,
         run: 'click',
     },
     {
@@ -51,7 +49,7 @@ registry.category("web_tour.tours").add('shop_zoom', {
     },
 ]});
 
-registry.category("web_tour.tours").add("shop_zoom_grid_image_order", {
+registry.category("web_tour.tours").add("website_sale.zoom_grid_image_order", {
     steps: () => [
         {
             content: "check that the product page is in grid layout",

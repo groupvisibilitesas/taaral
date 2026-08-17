@@ -2,7 +2,8 @@
 
 from odoo import models, fields, api
 
-class BarcodeEventsMixin(models.AbstractModel):
+
+class BarcodesBarcode_Events_Mixin(models.AbstractModel):
     """ Mixin class for objects reacting when a barcode is scanned in their form views
         which contains `<field name="_barcode_scanned" widget="barcode_handler"/>`.
         Models using this mixin must implement the method on_barcode_scanned. It works

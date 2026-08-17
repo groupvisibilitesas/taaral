@@ -1,23 +1,23 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* lunch
+# * lunch
 #
-# Translators:
-# Raz Omer Hussein, 2025
-#
+# Weblate <noreply-mt-weblate@weblate.org>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~18.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-20 18:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Raz Omer Hussein, 2025\n"
-"Language-Team: Kurdish (https://app.transifex.com/odoo/teams/41243/ku/)\n"
+"POT-Creation-Date: 2026-04-10 18:38+0000\n"
+"PO-Revision-Date: 2026-08-08 01:51+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Kurdish (Sorani) <https://translate.odoo.com/projects/odoo-19/"
+"lunch/ckb/>\n"
 "Language: ku\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: lunch
 #: model_terms:lunch.product,description:lunch.product_temaki
@@ -145,7 +145,7 @@ msgid ""
 "                    <td valign=\"top\" style=\"font-size: 13px;\">\n"
 "    <div>\n"
 "        <t t-set=\"lines\" t-value=\"ctx.get('lines', [])\"/>\n"
-"        <t t-set=\"order\" t-value=\"ctx.get('order')\"/>\n"
+"        <t t-set=\"order\" t-value=\"ctx.get('order', {})\"/>\n"
 "        <t t-set=\"currency\" t-"
 "value=\"user.env['res.currency'].browse(order.get('currency_id'))\"/>\n"
 "        <p>\n"
@@ -214,9 +214,9 @@ msgid ""
 "                    <td style=\"width: 100%; font-size: 13px; border-top: "
 "1px solid black;\"><strong>Total</strong></td>\n"
 "                    <td style=\"width: 100%; font-size: 13px; border-top: "
-"1px solid black;\" align=\"right\"><strong t-"
-"out=\"format_amount(order['amount_total'], currency) or ''\">$ 10.00</"
-"strong></td>\n"
+"1px solid black;\" align=\"right\"><strong t-out=\"order.get('amount_total') "
+"and format_amount(order['amount_total'], currency) or ''\">$ 10.00</strong></"
+"td>\n"
 "                </tr>\n"
 "            </tbody>\n"
 "        </table>\n"
@@ -275,8 +275,9 @@ msgid ""
 "style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; "
 "padding: 8px; border-collapse:separate;\">\n"
 "      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
-"        Powered by <a target=\"_blank\" href=\"https://www.odoo.com\" "
-"style=\"color: #875A7B;\">Odoo</a>\n"
+"        Powered by <a target=\"_blank\" href=\"https://www.odoo.com\" t-attf-"
+"style=\"color: {{user.company_id.email_secondary_color or '#875A7B'}};"
+"\">Odoo</a>\n"
 "      </td></tr>\n"
 "    </table>\n"
 "</td></tr>\n"
@@ -306,6 +307,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__message_needaction
+#, fuzzy
 msgid "Action Needed"
 msgstr "کردەوەی پێویستە"
 
@@ -316,11 +318,13 @@ msgstr "کردەوەی پێویستە"
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__active
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__active
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_alert_view_search
+#, fuzzy
 msgid "Active"
 msgstr "چالاک"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__activity_ids
+#, fuzzy
 msgid "Activities"
 msgstr "چالاکیەکان"
 
@@ -331,11 +335,13 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__activity_state
+#, fuzzy
 msgid "Activity State"
 msgstr "دۆخی چالاکییەکان"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__activity_type_icon
+#, fuzzy
 msgid "Activity Type Icon"
 msgstr "ئایکۆنی جۆری چالاکیی"
 
@@ -347,11 +353,13 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_location__address
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+#, fuzzy
 msgid "Address"
 msgstr "ناونیشان"
 
 #. module: lunch
 #: model:res.groups,name:lunch.group_lunch_manager
+#, fuzzy
 msgid "Administrator"
 msgstr "کارگێڕ"
 
@@ -372,6 +380,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.ui.menu,name:lunch.lunch_alert_menu
+#, fuzzy
 msgid "Alerts"
 msgstr "ئاگادارکردنەوەکان"
 
@@ -384,6 +393,7 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_cashmove__amount
 #: model:ir.model.fields,field_description:lunch.field_lunch_cashmove_report__amount
+#, fuzzy
 msgid "Amount"
 msgstr "بڕ"
 
@@ -395,6 +405,7 @@ msgstr "بڕ"
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_search
+#, fuzzy
 msgid "Archived"
 msgstr "ئەرشیف کراوە"
 
@@ -407,6 +418,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__message_attachment_count
+#, fuzzy
 msgid "Attachment Count"
 msgstr "ژمارەی هاوپێچەکان"
 
@@ -417,8 +429,15 @@ msgstr ""
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+#, fuzzy
 msgid "Availability"
 msgstr "بەردەست بوون"
+
+#. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Available Balance"
+msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__available_on_date
@@ -449,6 +468,12 @@ msgstr ""
 #: model:lunch.product,name:lunch.product_bacon
 #: model:lunch.product,name:lunch.product_bacon_0
 msgid "Bacon"
+msgstr ""
+
+#. module: lunch
+#: model:res.groups,comment:lunch.group_lunch_manager
+msgid ""
+"Be able to create new products, cashmoves and to confirm or cancel orders."
 msgstr ""
 
 #. module: lunch
@@ -492,12 +517,14 @@ msgstr ""
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_kanban
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_tree
+#, fuzzy
 msgid "Cancel"
 msgstr "ڕەتکردنەوە"
 
 #. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_order__state__cancelled
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
+#, fuzzy
 msgid "Cancelled"
 msgstr "هەڵوەشایەوە"
 
@@ -520,11 +547,13 @@ msgstr ""
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
+#, fuzzy
 msgid "Categories"
 msgstr "پۆلەکان"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
+#, fuzzy
 msgid "Category"
 msgstr "جۆر"
 
@@ -562,8 +591,15 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__city
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+#, fuzzy
 msgid "City"
 msgstr "شار"
+
+#. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Clear Order"
+msgstr ""
 
 #. module: lunch
 #: model_terms:ir.actions.act_window,help:lunch.lunch_order_action_control_suppliers
@@ -579,6 +615,13 @@ msgid ""
 msgstr ""
 
 #. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+#, fuzzy
+msgid "Close"
+msgstr "داخستن"
+
+#. module: lunch
 #: model:lunch.product,name:lunch.product_club
 #: model:lunch.product,name:lunch.product_club_0
 msgid "Club"
@@ -591,6 +634,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model,name:lunch.model_res_company
+#, fuzzy
 msgid "Companies"
 msgstr "کۆمپانیاکان"
 
@@ -601,6 +645,7 @@ msgstr "کۆمپانیاکان"
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__company_id
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__company_id
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__company_id
+#, fuzzy
 msgid "Company"
 msgstr "کۆمپانیا"
 
@@ -611,6 +656,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.ui.menu,name:lunch.menu_lunch_config
+#, fuzzy
 msgid "Configuration"
 msgstr "ڕێکخستن"
 
@@ -622,6 +668,7 @@ msgstr ""
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_tree
+#, fuzzy
 msgid "Confirm"
 msgstr "دڵنیاکردنەوە"
 
@@ -645,6 +692,7 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__country_id
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+#, fuzzy
 msgid "Country"
 msgstr "وڵات"
 
@@ -678,6 +726,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__create_uid
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__create_uid
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__create_uid
+#, fuzzy
 msgid "Created by"
 msgstr "دروستکراوە لەلایەن..."
 
@@ -690,6 +739,7 @@ msgstr "دروستکراوە لەلایەن..."
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__create_date
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__create_date
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__create_date
+#, fuzzy
 msgid "Created on"
 msgstr "دروستکراوە لە"
 
@@ -707,6 +757,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__currency_id
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__currency_id
 #: model:ir.model.fields,field_description:lunch.field_res_config_settings__currency_id
+#, fuzzy
 msgid "Currency"
 msgstr "دراو"
 
@@ -718,12 +769,20 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_cashmove__date
 #: model:ir.model.fields,field_description:lunch.field_lunch_cashmove_report__date
+#, fuzzy
 msgid "Date"
 msgstr "ڕێکەوت"
 
 #. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Decrease quantity"
+msgstr ""
+
+#. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__delivery
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__delivery__delivery
+#, fuzzy
 msgid "Delivery"
 msgstr "گەیاندن"
 
@@ -732,16 +791,19 @@ msgstr "گەیاندن"
 #: model:ir.model.fields,field_description:lunch.field_lunch_cashmove_report__description
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__product_description
 #: model:ir.model.fields,field_description:lunch.field_lunch_product__description
+#, fuzzy
 msgid "Description"
 msgstr "وەسف"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_form
+#, fuzzy
 msgid "Discard"
 msgstr "ڕەتکردنەوە"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__mode
+#, fuzzy
 msgid "Display"
 msgstr "نیشاندان"
 
@@ -760,6 +822,9 @@ msgstr ""
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__display_name
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__display_name
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__display_name
+#: model:ir.model.fields,field_description:lunch.field_res_company__display_name
+#: model:ir.model.fields,field_description:lunch.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:lunch.field_res_users__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -774,14 +839,9 @@ msgid "Drinks"
 msgstr ""
 
 #. module: lunch
-#. odoo-javascript
-#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
-msgid "Edit order"
-msgstr ""
-
-#. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__email
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__send_by__mail
+#, fuzzy
 msgid "Email"
 msgstr "ئیمەیڵ"
 
@@ -873,11 +933,13 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__message_follower_ids
+#, fuzzy
 msgid "Followers"
 msgstr "فۆڵۆوەرەکان"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__message_partner_ids
+#, fuzzy
 msgid "Followers (Partners)"
 msgstr "فۆڵۆوەرەکان (هاوبەشەکان)"
 
@@ -918,13 +980,6 @@ msgid "Gouda Cheese"
 msgstr ""
 
 #. module: lunch
-#: model_terms:ir.ui.view,arch_db:lunch.lunch_cashmove_report_view_search_2
-#: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
-#: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
-msgid "Group By"
-msgstr "گروپ لەلایەن..."
-
-#. module: lunch
 #: model_terms:lunch.product,description:lunch.product_club
 #: model_terms:lunch.product,description:lunch.product_club_0
 msgid "Ham, Cheese, Vegetables"
@@ -932,15 +987,9 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__has_message
+#, fuzzy
 msgid "Has Message"
 msgstr "نامە هەیە"
-
-#. module: lunch
-#: model:ir.module.category,description:lunch.module_lunch_category
-msgid ""
-"Helps you handle your lunch needs, if you are a manager you will be able to "
-"create new products, cashmoves and to confirm or cancel orders."
-msgstr ""
 
 #. module: lunch
 #: model_terms:ir.actions.act_window,help:lunch.lunch_product_category_action
@@ -971,26 +1020,34 @@ msgstr ""
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__id
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__id
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__id
+#: model:ir.model.fields,field_description:lunch.field_res_company__id
+#: model:ir.model.fields,field_description:lunch.field_res_config_settings__id
+#: model:ir.model.fields,field_description:lunch.field_res_users__id
+#, fuzzy
 msgid "ID"
 msgstr "ID"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__activity_exception_icon
+#, fuzzy
 msgid "Icon"
 msgstr "ئایکۆن"
 
 #. module: lunch
 #: model:ir.model.fields,help:lunch.field_lunch_supplier__activity_exception_icon
+#, fuzzy
 msgid "Icon to indicate an exception activity."
 msgstr "ئایکۆن بۆ ئاماژەدان بە چالاکیەکی ئیستسناء."
 
 #. module: lunch
 #: model:ir.model.fields,help:lunch.field_lunch_supplier__message_needaction
+#, fuzzy
 msgid "If checked, new messages require your attention."
 msgstr "ئەگەر پشکنینیان بۆ کرا، پەیامە نوێیەکان پێویستیان بە سەرنجی تۆ هەیە."
 
 #. module: lunch
 #: model:ir.model.fields,help:lunch.field_lunch_supplier__message_has_error
+#, fuzzy
 msgid "If checked, some messages have a delivery error."
 msgstr "ئەگەر پشکنینیان بۆ کرا، هەندێک لە نامەکان هەڵەی گەیاندنیان هەیە."
 
@@ -1031,6 +1088,12 @@ msgid "Image 512"
 msgstr ""
 
 #. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Increase quantity"
+msgstr ""
+
+#. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_form
 msgid "Information, allergens, ..."
 msgstr ""
@@ -1047,6 +1110,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__message_is_follower
+#, fuzzy
 msgid "Is Follower"
 msgstr "فۆڵۆوەرە"
 
@@ -1074,6 +1138,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__write_uid
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__write_uid
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__write_uid
+#, fuzzy
 msgid "Last Updated by"
 msgstr "دوایین نوێکردنەوە لەلایەن..."
 
@@ -1086,12 +1151,14 @@ msgstr "دوایین نوێکردنەوە لەلایەن..."
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__write_date
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__write_date
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__write_date
+#, fuzzy
 msgid "Last Updated on"
 msgstr "دوایین نوێکردنەوە لە..."
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__location_ids
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__available_location_ids
+#, fuzzy
 msgid "Location"
 msgstr "شوێن"
 
@@ -1106,8 +1173,8 @@ msgid "Locations"
 msgstr ""
 
 #. module: lunch
-#: model:ir.module.category,name:lunch.module_lunch_category
 #: model:ir.ui.menu,name:lunch.menu_lunch
+#: model:res.groups.privilege,name:lunch.res_groups_privilege_lunch
 #: model_terms:ir.ui.view,arch_db:lunch.res_config_settings_view_form
 msgid "Lunch"
 msgstr ""
@@ -1228,37 +1295,38 @@ msgid "Lunch: Supplier Order"
 msgstr ""
 
 #. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_alert_cron_sa_229
+#: model:ir.actions.server,name:lunch.lunch_alert_cron_sa_231
 msgid "Lunch: alert chat notification (Alert for Office 3)"
 msgstr ""
 
 #. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_230
+#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_232
 msgid "Lunch: send automatic email to Coin gourmand"
 msgstr ""
 
 #. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_225
+#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_227
 msgid "Lunch: send automatic email to Lunch Supplier"
 msgstr ""
 
 #. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_231
+#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_233
 msgid "Lunch: send automatic email to Pizza Inn"
 msgstr ""
 
 #. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_233
+#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_235
 msgid "Lunch: send automatic email to Sushi Shop"
 msgstr ""
 
 #. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_232
+#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_234
 msgid "Lunch: send automatic email to The Corner"
 msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,help:lunch.field_res_config_settings__currency_id
+#, fuzzy
 msgid "Main currency of the company."
 msgstr "دراوی سەرەکی کۆمپانیاکە."
 
@@ -1279,18 +1347,21 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__message
+#, fuzzy
 msgid "Message"
 msgstr "نامە"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__message_has_error
+#, fuzzy
 msgid "Message Delivery error"
 msgstr "نامەکە هەڵەی گەیاندنی تیایە"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__message_ids
+#, fuzzy
 msgid "Messages"
-msgstr "نامەکان "
+msgstr "نامەکان"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__moment
@@ -1336,6 +1407,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__my_activity_date_deadline
+#, fuzzy
 msgid "My Activity Deadline"
 msgstr "دوا وادەی چالاکییەکانم"
 
@@ -1352,12 +1424,14 @@ msgstr ""
 #. module: lunch
 #: model:ir.actions.act_window,name:lunch.lunch_order_action
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
+#, fuzzy
 msgid "My Orders"
 msgstr "داواکارییەکانم"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__name
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__name
+#, fuzzy
 msgid "Name"
 msgstr "ناو"
 
@@ -1368,6 +1442,7 @@ msgstr ""
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.view_lunch_product_kanban_order
+#, fuzzy
 msgid "New"
 msgstr "نوێ"
 
@@ -1383,21 +1458,25 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__activity_calendar_event_id
+#, fuzzy
 msgid "Next Activity Calendar Event"
 msgstr "چالاکییەکانی داهاتووی ڕووداوی ساڵنامە"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__activity_date_deadline
+#, fuzzy
 msgid "Next Activity Deadline"
 msgstr "دوا وادەی چالاکییەکانی داهاتوو"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__activity_summary
+#, fuzzy
 msgid "Next Activity Summary"
 msgstr "پوختەی چالاکییەکانی داهاتوو"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__activity_type_id
+#, fuzzy
 msgid "Next Activity Type"
 msgstr "جۆری چالاکیی داهاتوو"
 
@@ -1447,12 +1526,19 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__note
+#, fuzzy
 msgid "Notes"
 msgstr "تێبینیەکان"
 
 #. module: lunch
 #: model_terms:ir.actions.act_window,help:lunch.lunch_order_action_by_supplier
 msgid "Nothing to order today"
+msgstr ""
+
+#. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Nothing to order, add some meals to begin."
 msgstr ""
 
 #. module: lunch
@@ -1477,23 +1563,35 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__message_needaction_counter
+#, fuzzy
 msgid "Number of Actions"
 msgstr "ژمارەی کردارەکان"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__message_has_error_counter
+#, fuzzy
 msgid "Number of errors"
 msgstr "ژمارەی هەڵەکان"
 
 #. module: lunch
 #: model:ir.model.fields,help:lunch.field_lunch_supplier__message_needaction_counter
+#, fuzzy
 msgid "Number of messages requiring action"
 msgstr "ژمارەی ئەو نامانەی کە پێویستیان بە کردار هەیە"
 
 #. module: lunch
 #: model:ir.model.fields,help:lunch.field_lunch_supplier__message_has_error_counter
+#, fuzzy
 msgid "Number of messages with delivery error"
 msgstr "ژمارەی ئەو نامانەی کە هەڵەی گەیاندنیان هەیە"
+
+#. module: lunch
+#. odoo-python
+#: code:addons/lunch/models/lunch_order.py:0
+msgid ""
+"Oh no! You don’t have enough money in your wallet to order your selected "
+"lunch! Contact your lunch manager to add some money to your wallet."
+msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__topping_quantity_1__1_more
@@ -1511,12 +1609,14 @@ msgstr ""
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_kanban
+#, fuzzy
 msgid "Order"
 msgstr "داواکای"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__date
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
+#, fuzzy
 msgid "Order Date"
 msgstr "بەرواری داواکردن"
 
@@ -1554,12 +1654,13 @@ msgstr ""
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+#, fuzzy
 msgid "Orders"
 msgstr "داواکارییەکان"
 
 #. module: lunch
 #: model:mail.template,subject:lunch.lunch_order_mail_supplier
-msgid "Orders for {{ ctx['order']['company_name'] }}"
+msgid "Orders for {{ ctx.get('order', {}).get('company_name') }}"
 msgstr ""
 
 #. module: lunch
@@ -1574,17 +1675,25 @@ msgid "PM"
 msgstr ""
 
 #. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Passed orders"
+msgstr ""
+
+#. module: lunch
 #: model:lunch.product.category,name:lunch.categ_pasta
 msgid "Pasta"
 msgstr ""
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_cashmove_report_view_search
+#, fuzzy
 msgid "Payment"
 msgstr "پارەدان"
 
 #. module: lunch
 #: model_terms:ir.actions.act_window,help:lunch.lunch_cashmove_action_payment
+#, fuzzy
 msgid ""
 "Payments are used to register liquidity movements. You can process those "
 "payments by your own means or by using installed facilities."
@@ -1595,6 +1704,7 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__phone
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__send_by__phone
+#, fuzzy
 msgid "Phone"
 msgstr "تەلەفۆن"
 
@@ -1639,6 +1749,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:lunch.field_lunch_product__price
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__price
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_tree
+#, fuzzy
 msgid "Price"
 msgstr "نرخ"
 
@@ -1646,6 +1757,7 @@ msgstr "نرخ"
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__product_id
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
+#, fuzzy
 msgid "Product"
 msgstr "بەرهەم"
 
@@ -1657,6 +1769,7 @@ msgstr ""
 #. module: lunch
 #: model:ir.actions.act_window,name:lunch.lunch_product_category_action
 #: model:ir.ui.menu,name:lunch.lunch_product_category_menu
+#, fuzzy
 msgid "Product Categories"
 msgstr "پۆلەکانی بەرهەم"
 
@@ -1670,6 +1783,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:lunch.field_lunch_product__category_id
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__name
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_category_view_tree
+#, fuzzy
 msgid "Product Category"
 msgstr "پۆلی بەرهەم"
 
@@ -1707,6 +1821,7 @@ msgstr ""
 #: model:ir.ui.menu,name:lunch.lunch_product_menu
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_category_view_form
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_category_view_kanban
+#, fuzzy
 msgid "Products"
 msgstr "بەرهەمەکان"
 
@@ -1723,6 +1838,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__quantity
+#, fuzzy
 msgid "Quantity"
 msgstr "بڕ"
 
@@ -1734,12 +1850,14 @@ msgstr ""
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_kanban
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_tree
+#, fuzzy
 msgid "Receive"
 msgstr "وەرگرتن"
 
 #. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_order__state__confirmed
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
+#, fuzzy
 msgid "Received"
 msgstr "وەرگرتن"
 
@@ -1755,6 +1873,7 @@ msgstr ""
 
 #. module: lunch
 #: model_terms:ir.actions.act_window,help:lunch.lunch_cashmove_action_payment
+#, fuzzy
 msgid "Register a payment"
 msgstr "پارەدانێک تۆمار بکە"
 
@@ -1770,6 +1889,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__activity_user_id
+#, fuzzy
 msgid "Responsible User"
 msgstr "بەکارهێنەری بەرپرسیار"
 
@@ -1802,6 +1922,7 @@ msgstr ""
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_kanban
+#, fuzzy
 msgid "Send"
 msgstr "ناردن"
 
@@ -1828,6 +1949,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_order__state__sent
+#, fuzzy
 msgid "Sent"
 msgstr "ناردن"
 
@@ -1865,16 +1987,19 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__state_id
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+#, fuzzy
 msgid "State"
 msgstr "دۆخ"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__state
+#, fuzzy
 msgid "Status"
 msgstr "دۆخ"
 
 #. module: lunch
 #: model:ir.model.fields,help:lunch.field_lunch_supplier__activity_state
+#, fuzzy
 msgid ""
 "Status based on activities\n"
 "Overdue: Due date is already passed\n"
@@ -1893,11 +2018,13 @@ msgstr ""
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+#, fuzzy
 msgid "Street 2..."
-msgstr "شەقامی دووەم..."
+msgstr "شەقامی 2..."
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+#, fuzzy
 msgid "Street..."
 msgstr "شەقام..."
 
@@ -2049,6 +2176,7 @@ msgstr ""
 #. module: lunch
 #. odoo-javascript
 #: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+#, fuzzy
 msgid "To Pay"
 msgstr "بۆ پارەدان"
 
@@ -2070,9 +2198,8 @@ msgid ""
 msgstr ""
 
 #. module: lunch
-#. odoo-javascript
-#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
+#, fuzzy
 msgid "Today"
 msgstr "ئەمڕۆ"
 
@@ -2135,6 +2262,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_cashmove_report_view_tree_2
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_cashmove_view_tree
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_tree
+#, fuzzy
 msgid "Total"
 msgstr "کۆ"
 
@@ -2166,6 +2294,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,help:lunch.field_lunch_supplier__activity_exception_decoration
+#, fuzzy
 msgid "Type of the exception activity on record."
 msgstr "جۆری چالاکیی ئیستسنای تۆمارکراو."
 
@@ -2180,6 +2309,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:lunch.field_lunch_cashmove_report__user_id
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__user_id
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
+#, fuzzy
 msgid "User"
 msgstr "بەکارهێنەر"
 
@@ -2195,6 +2325,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+#, fuzzy
 msgid "Vendor"
 msgstr "فرۆشیار"
 
@@ -2207,8 +2338,17 @@ msgstr ""
 #: model:ir.actions.act_window,name:lunch.lunch_vendors_action
 #: model:ir.ui.menu,name:lunch.lunch_vendors_menu
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
+#, fuzzy
 msgid "Vendors"
 msgstr "فرۆشیارەکان:"
+
+#. module: lunch
+#: model_terms:ir.ui.view,arch_db:lunch.lunch_location_form_view
+#: model_terms:ir.ui.view,arch_db:lunch.lunch_product_category_view_form
+#: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_form
+#: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+msgid "Visible to all"
+msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__wed
@@ -2244,12 +2384,6 @@ msgstr ""
 #. module: lunch
 #. odoo-javascript
 #: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
-msgid "Your Account"
-msgstr ""
-
-#. module: lunch
-#. odoo-javascript
-#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
 msgid "Your Cart ("
 msgstr ""
 
@@ -2266,8 +2400,6 @@ msgid "Your Order"
 msgstr ""
 
 #. module: lunch
-#. odoo-python
-#: code:addons/lunch/models/lunch_order.py:0
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_form
 msgid ""
 "Your wallet does not contain enough money to order that. To add some money "
@@ -2325,10 +2457,18 @@ msgstr ""
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_alert_view_kanban
+#, fuzzy
 msgid "on"
 msgstr "لەسەر"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_alert_view_kanban
+#, fuzzy
 msgid "to"
 msgstr "بۆ"
+
+#. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "x"
+msgstr ""

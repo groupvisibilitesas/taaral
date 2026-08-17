@@ -132,47 +132,41 @@ test("handles error", async () => {
     });
     const fileUploadService = await getService("file_upload");
     fileUploadService.upload("/test/", []);
-    await waitFor(".o_notification:has(.bg-warning):contains(An error occured while uploading)");
+    await waitFor(".o_notification:has(.bg-danger):contains(An error occured while uploading)");
 });
 
 test("handles http not success", async () => {
     await mountWithCleanup(Parent);
-    onRpc("/test/", () => {
-        return new Response("<p>Boom HTML</p>", { status: 500 });
-    });
+    onRpc("/test/", () => new Response("<p>Boom HTML</p>", { status: 500 }));
     const fileUploadService = await getService("file_upload");
     fileUploadService.upload("/test/", []);
-    await waitFor(".o_notification:has(.bg-warning):contains(Boom HTML)");
+    await waitFor(".o_notification:has(.bg-danger):contains(Boom HTML)");
 });
 
 test("handles jsonrpc error", async () => {
     // https://www.jsonrpc.org/specification#error_object
     await mountWithCleanup(Parent);
-    onRpc("/test/", () => {
-        return {
-            error: {
-                message: "Boom JSON",
-            },
-        };
-    });
+    onRpc("/test/", () => ({
+        error: {
+            message: "Boom JSON",
+        },
+    }));
     const fileUploadService = await getService("file_upload");
     fileUploadService.upload("/test/", []);
-    await waitFor(".o_notification:has(.bg-warning):contains(Boom JSON)");
+    await waitFor(".o_notification:has(.bg-danger):contains(Boom JSON)");
 });
 
 test("handles Odoo's jsonrpc error", async () => {
     await mountWithCleanup(Parent);
-    onRpc("/test/", () => {
-        return {
-            error: {
-                data: {
-                    name: "ValidationError",
-                    message: "Boom Odoo",
-                },
+    onRpc("/test/", () => ({
+        error: {
+            data: {
+                name: "ValidationError",
+                message: "Boom Odoo",
             },
-        };
-    });
+        },
+    }));
     const fileUploadService = await getService("file_upload");
     fileUploadService.upload("/test/", []);
-    await waitFor(".o_notification:has(.bg-warning):contains(ValidationError: Boom Odoo)");
+    await waitFor(".o_notification:has(.bg-danger):contains(ValidationError: Boom Odoo)");
 });

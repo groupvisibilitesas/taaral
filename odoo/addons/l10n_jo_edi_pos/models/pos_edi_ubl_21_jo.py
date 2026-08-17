@@ -1,9 +1,11 @@
 import functools
+import re
 from types import SimpleNamespace
 
 from odoo import models
 from odoo.tools import float_compare, float_round, float_is_zero
 from odoo.addons.l10n_jo_edi.models.account_edi_xml_ubl_21_jo import JO_MAX_DP
+from odoo.addons.account_edi_ubl_cii.models.account_edi_common import FloatFmt
 
 
 class HashableNamespace(SimpleNamespace):
@@ -17,16 +19,22 @@ class HashableNamespace(SimpleNamespace):
 
 class PosEdiXmlUBL21Jo(models.AbstractModel):
     _name = 'pos.edi.xml.ubl_21.jo'
-    _inherit = ['account.edi.xml.ubl_21.jo', 'pos.edi.xml.ubl_21']
+    _inherit = ['pos.edi.xml.ubl_21']
     _description = 'UBL 2.1 (JoFotara) for PoS Orders'
 
+    def format_float(self, amount, precision_digits=3):
+        # Force all floats to be formatted with at least 3 decimals and at most 9 decimals
+        return FloatFmt(amount, 3, max_dp=JO_MAX_DP)
+
     def _get_tax_category_code(self, customer, supplier, tax):
-        if tax:
-            if tax._l10n_jo_is_exempt_tax():
-                return "Z"
-            if tax.amount:
-                return "S"
+        if tax and tax._l10n_jo_is_exempt_tax():
+            return "Z"
+        if tax and tax.amount:
+            return "S"
         return "O"
+
+    def _sanitize_phone(self, raw):
+        return re.sub(r'[^0-9]', '', raw or '')[:15]
 
     def _get_pos_order_node(self, vals):
         document_node = super()._get_pos_order_node(vals)
@@ -165,7 +173,7 @@ class PosEdiXmlUBL21Jo(models.AbstractModel):
             'cbc:UUID': {'_text': pos_order.l10n_jo_edi_pos_uuid},
             'cbc:IssueDate': {'_text': '2020-01-01' if pos_order.company_id.l10n_jo_edi_pos_testing_mode else pos_order.date_order.date()},
             'cbc:InvoiceTypeCode': {'_text': 381 if vals['is_refund'] else 388, 'name': self._get_payment_method_code(pos_order)},
-            'cbc:Note': {'_text': pos_order.general_note},
+            'cbc:Note': {'_text': pos_order.general_customer_note},
             'cbc:DocumentCurrencyCode': {'_text': pos_order.currency_id.name},
             'cbc:TaxCurrencyCode': {'_text': pos_order.currency_id.name},
             'cac:BillingReference': {
@@ -187,7 +195,7 @@ class PosEdiXmlUBL21Jo(models.AbstractModel):
         super()._add_pos_order_accounting_customer_party_nodes(document_node, vals)
         document_node['cac:AccountingCustomerParty'].update({
             'cac:AccountingContact': {
-                'cbc:Telephone': {'_text': self._sanitize_phone(vals['customer'].phone or vals['customer'].mobile)},
+                'cbc:Telephone': {'_text': self._sanitize_phone(vals['customer'].phone)}
             },
         })
 
@@ -302,6 +310,11 @@ class PosEdiXmlUBL21Jo(models.AbstractModel):
     def _add_pos_order_line_id_nodes(self, line_node, vals):
         line_id = self._get_pos_order_line_id(vals)
         line_node['cbc:ID'] = {'_text': line_id}
+
+    def _add_pos_order_line_amount_nodes(self, line_node, vals):
+        super()._add_pos_order_line_amount_nodes(line_node, vals)
+        quantity_tag = self._get_tags_for_document_type(vals)['line_quantity']
+        line_node[quantity_tag]['unitCode'] = 'PCE'
 
     def _add_pos_order_line_item_nodes(self, line_node, vals):
         product = vals['base_line']['product_id']

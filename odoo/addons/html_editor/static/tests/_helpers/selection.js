@@ -65,6 +65,10 @@ function getElemContent(el, selection, options) {
     const tag = el.tagName.toLowerCase();
     let attributes = [...el.attributes];
     if (options.sortAttrs) {
+        if (el.className) {
+            el.className = [...el.classList].sort().join(" ");
+            attributes = [...el.attributes];
+        }
         attributes.sort((attr1, attr2) => {
             if (attr1.name === attr2.name) {
                 return 0;
@@ -105,16 +109,16 @@ export function setContent(el, content) {
         textNode.textContent = textNode.textContent.replace("[", "").replace("]", "");
     }
     // remove extra empty text nodes
-    const innerHTML = div.innerHTML;
-    if (el.innerHTML !== innerHTML) {
-        el.innerHTML = innerHTML;
+    const divInnerHTML = div.innerHTML;
+    if (el.innerHTML !== divInnerHTML) {
+        el.innerHTML = divInnerHTML;
     }
 
     const configSelection = getSelection(el, content);
     if (configSelection) {
         setSelection(configSelection);
     }
-    if (getContent(el) !== content) {
+    if (getContent(el) !== content.toString()) {
         throw new Error("error in setContent/getContent helpers");
     }
 }

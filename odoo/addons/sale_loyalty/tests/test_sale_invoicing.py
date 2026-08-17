@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.fields import Command
@@ -137,4 +136,4 @@ class TestSaleInvoicing(TestSaleCouponCommon):
         order._update_programs_and_rewards()
         self._claim_reward(order, self.discount_coupon_program)
         reward_line = order.order_line.filtered('is_reward_line')
-        self.assertEqual(reward_line.tax_id, tax_quebec)
+        self.assertEqual(reward_line.tax_ids, tax_quebec)

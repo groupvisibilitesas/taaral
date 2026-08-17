@@ -39,6 +39,7 @@ class ResPartnerBank(models.Model):
         if qr_method == 'sct_qr':
             return {
                 'barcode_type': 'QR',
+                'quiet': 0,
                 'width': 128,
                 'height': 128,
                 'humanreadable': 1,

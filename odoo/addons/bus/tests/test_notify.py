@@ -55,7 +55,7 @@ class NotifyTests(TransactionCase):
 
     def test_postcommit(self):
         """Asserts all ``postcommit`` channels are fetched with a single listen."""
-        if ODOO_NOTIFY_FUNCTION != 'pg_notify':
+        if ODOO_NOTIFY_FUNCTION != "pg_notify":
             return
         channels = []
         stop_event = threading.Event()
@@ -89,7 +89,6 @@ class NotifyTests(TransactionCase):
         thread = threading.Thread(target=single_listen)
         thread.start()
         selector_ready_event.wait(timeout=5)
-
         self.env["bus.bus"].search([]).unlink()
         self.env["bus.bus"]._sendone("channel 1", "test 1", {})
         self.env["bus.bus"]._sendone("channel 2", "test 2", {})

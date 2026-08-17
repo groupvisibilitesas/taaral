@@ -9,11 +9,11 @@ registerWebsitePreviewTour(
     },
     () => [
         {
-            trigger: '.o_menu_systray .o_new_content_container > a',
+            trigger:'body:not(:has(.o_new_content_menu_choices)) .o_new_content_container > button',
             run: 'click',
         },
         {
-            trigger: 'a[data-module-xml-id="base.module_website_sale"]',
+            trigger: 'button[data-module-xml-id="base.module_website_sale"]',
             run: 'click',
         },
         {
@@ -40,11 +40,11 @@ registerWebsitePreviewTour(
     },
     () => [
         {
-            trigger: '.o_menu_systray .o_new_content_container > a',
+            trigger:'body:not(:has(.o_new_content_menu_choices)) .o_new_content_container > button',
             run: 'click',
         },
         {
-            trigger: 'a[data-module-xml-id="base.module_website_sale"]',
+            trigger: 'button[data-module-xml-id="base.module_website_sale"]',
             run: 'click',
         },
         {

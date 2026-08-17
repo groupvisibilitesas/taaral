@@ -22,6 +22,7 @@ class TestViesIAP(HttpCase):
         super().setUp()
         self.partner = self.env['res.partner'].create({
             'name': 'GAGA',
+            'country_id': self.env.ref('base.be').id,
         })
         self.original_post = requests.post
         self.mock_return_status = None

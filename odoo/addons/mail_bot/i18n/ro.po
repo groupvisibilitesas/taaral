@@ -3,24 +3,28 @@
 # 	* mail_bot
 #
 # Translators:
-# Lyall Kindmurr, 2024
-# Wil Odoo, 2024
-# Larisa_nexterp, 2025
+# Dorin Hongu <dhongu@gmail.com>, 2022
+# sharkutz <sharkutz4life@yahoo.com>, 2022
+# Foldi Robert <foldirobert@nexterp.ro>, 2022
+# Martin Trigaux, 2022
+# Hongu Cosmin <cosmin513@gmail.com>, 2022
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Larisa_nexterp, 2025\n"
-"Language-Team: Romanian (https://app.transifex.com/odoo/teams/41243/ro/)\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-02 13:51+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Romanian <https://translate.odoo.com/projects/odoo-19/"
+"mail_bot/ro/>\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
-"2:1));\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2;\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: mail_bot
 #. odoo-python
@@ -40,23 +44,22 @@ msgstr "Dezactivat"
 #. module: mail_bot
 #: model:ir.model,name:mail_bot.model_discuss_channel
 msgid "Discussion Channel"
-msgstr "Canal de Discuții"
+msgstr "Canal Discuții"
+
+#. module: mail_bot
+#: model:ir.model.fields,field_description:mail_bot.field_discuss_channel__display_name
+#: model:ir.model.fields,field_description:mail_bot.field_mail_bot__display_name
+#: model:ir.model.fields,field_description:mail_bot.field_res_users__display_name
+msgid "Display Name"
+msgstr ""
 
 #. module: mail_bot
 #. odoo-python
 #: code:addons/mail_bot/models/mail_bot.py:0
 msgid ""
-"Good, you can customize canned responses in the Discuss application.%"
-"(new_line)s%(new_line)s%(bold_start)sIt's the end of this overview%"
-"(bold_end)s, you can now %(bold_start)sclose this conversation%(bold_end)s "
-"or start the tour again with typing %(command_start)sstart the tour%"
-"(command_end)s. Enjoy discovering Odoo!"
+"Great! You can customize %(bold_start)scanned responses%(bold_end)s in the "
+"Discuss app."
 msgstr ""
-"Bine, poți personaliza răspunsurile predefinite în aplicația Discuții.%"
-"(new_line)s%(new_line)s%(bold_start)sEste sfârșitul acestei prezentări%"
-"(bold_end)s, acum poți %(bold_start)sînchide această conversație%(bold_end)s "
-"sau să începi din nou turul tastând %(command_start)sîncepeți turul%"
-"(command_end)s. Bucură-te de descoperirea Odoo!"
 
 #. module: mail_bot
 #. odoo-python
@@ -66,15 +69,12 @@ msgid ""
 "sentence with%(bold_end)s %(command_start)s/%(command_end)s. Try getting "
 "help."
 msgstr ""
-"Groza! 👍%(new_line)sPentru a accesa comenzi speciale, %(bold_start)sîncepe "
-"propoziția cu%(bold_end)s %(command_start)s/%(command_end)s. Încearcă să "
-"obții ajutor."
 
 #. module: mail_bot
 #. odoo-python
 #: code:addons/mail_bot/models/res_users.py:0
 msgid "Hello,"
-msgstr "Bună,"
+msgstr ""
 
 #. module: mail_bot
 #. odoo-python
@@ -95,9 +95,13 @@ msgid ""
 "I'm not smart enough to answer your question.%(new_line)sTo follow my guide, "
 "ask: %(command_start)sstart the tour%(command_end)s."
 msgstr ""
-"Nu sunt suficient de inteligent să răspund la întrebarea ta.%"
-"(new_line)sPentru a urma ghidul meu, scrie: %(command_start)sîncepeți turul%"
-"(command_end)s."
+
+#. module: mail_bot
+#: model:ir.model.fields,field_description:mail_bot.field_discuss_channel__id
+#: model:ir.model.fields,field_description:mail_bot.field_mail_bot__id
+#: model:ir.model.fields,field_description:mail_bot.field_res_users__id
+msgid "ID"
+msgstr ""
 
 #. module: mail_bot
 #: model:ir.model.fields.selection,name:mail_bot.selection__res_users__odoobot_state__idle
@@ -107,7 +111,7 @@ msgstr "Inactiv"
 #. module: mail_bot
 #: model:ir.model,name:mail_bot.model_mail_bot
 msgid "Mail Bot"
-msgstr "Robot de Mail"
+msgstr ""
 
 #. module: mail_bot
 #. odoo-python
@@ -116,8 +120,6 @@ msgid ""
 "Not exactly. To continue the tour, send an emoji: %(bold_start)stype%"
 "(bold_end)s%(command_start)s :)%(command_end)s and press enter."
 msgstr ""
-"Nu chiar. Pentru a continua turul, trimite un emoticon: %(bold_start)sscrie%"
-"(bold_end)s%(command_start)s :)%(command_end)s și apasă enter."
 
 #. module: mail_bot
 #: model:ir.model.fields.selection,name:mail_bot.selection__res_users__odoobot_state__not_initialized
@@ -132,9 +134,6 @@ msgid ""
 "and wait for the propositions. Select %(command_start)shelp%(command_end)s "
 "and press enter."
 msgstr ""
-"Nu sunt sigur ce faci. Te rog, tastează %(command_start)s/%(command_end)s și "
-"așteaptă sugestiile. Selectează %(command_start)sajutor%(command_end)s și "
-"apasă enter."
 
 #. module: mail_bot
 #. odoo-python
@@ -143,8 +142,6 @@ msgid ""
 "Not sure what you are doing. Please, type %(command_start)s:%(command_end)s "
 "and wait for the propositions. Select one of them and press enter."
 msgstr ""
-"Nu sunt sigur ce faci. Te rog, tastează %(command_start)s:%(command_end)s și "
-"așteaptă sugestiile. Selectează una dintre ele și apasă enter."
 
 #. module: mail_bot
 #. odoo-python
@@ -153,8 +150,6 @@ msgid ""
 "Odoo's chat helps employees collaborate efficiently. I'm here to help you "
 "discover its features."
 msgstr ""
-"Chatul Odoo ajută angajații să colaboreze eficient. Sunt aici să te ajut să "
-"descoperi funcționalitățile sale."
 
 #. module: mail_bot
 #: model:ir.model.fields,field_description:mail_bot.field_res_users__odoobot_state
@@ -169,27 +164,27 @@ msgstr "Odoobot nu a reușit"
 #. module: mail_bot
 #: model:ir.model.fields.selection,name:mail_bot.selection__res_users__odoobot_state__onboarding_attachement
 msgid "Onboarding attachment"
-msgstr "Atașament de inițializare"
+msgstr ""
 
 #. module: mail_bot
 #: model:ir.model.fields.selection,name:mail_bot.selection__res_users__odoobot_state__onboarding_canned
 msgid "Onboarding canned"
-msgstr "Răspuns predefinit de inițializare"
+msgstr ""
 
 #. module: mail_bot
 #: model:ir.model.fields.selection,name:mail_bot.selection__res_users__odoobot_state__onboarding_command
 msgid "Onboarding command"
-msgstr "Comandă de inițializare"
+msgstr ""
 
 #. module: mail_bot
 #: model:ir.model.fields.selection,name:mail_bot.selection__res_users__odoobot_state__onboarding_emoji
 msgid "Onboarding emoji"
-msgstr "Emoticon de inițializare"
+msgstr ""
 
 #. module: mail_bot
 #: model:ir.model.fields.selection,name:mail_bot.selection__res_users__odoobot_state__onboarding_ping
 msgid "Onboarding ping"
-msgstr "Ping de inițializare"
+msgstr ""
 
 #. module: mail_bot
 #. odoo-python
@@ -199,9 +194,6 @@ msgid ""
 "human language...%(new_line)sI can show you features if you write: %"
 "(command_start)sstart the tour%(command_end)s."
 msgstr ""
-"Scuze, sunt somnoros. Sau nu! Poate doar încerc să ascund că nu cunosc limba "
-"umană...%(new_line)sÎți pot arăta funcționalități dacă scrii: %"
-"(command_start)sîncepeți turul%(command_end)s."
 
 #. module: mail_bot
 #. odoo-python
@@ -211,20 +203,18 @@ msgid ""
 "him%(bold_end)s. Write %(command_start)s@OdooBot%(command_end)s and select "
 "me."
 msgstr ""
-"Scuze, nu ascult. Pentru a atrage atenția cuiva, %(bold_start)sfă-l ping%"
-"(bold_end)s. Scrie %(command_start)s@OdooBot%(command_end)s și selectează-mă."
 
 #. module: mail_bot
 #. odoo-python
 #: code:addons/mail_bot/models/mail_bot.py:0
 msgid "Thanks"
-msgstr "Mulțumiri"
+msgstr ""
 
 #. module: mail_bot
 #. odoo-python
 #: code:addons/mail_bot/models/mail_bot.py:0
 msgid "Thanks for your feedback. Goodbye!"
-msgstr "Mulțumesc pentru feedback. La revedere!"
+msgstr ""
 
 #. module: mail_bot
 #. odoo-python
@@ -235,10 +225,17 @@ msgstr "Asta nu-i frumos! Sunt robot dar am sentimente ... 💔"
 #. module: mail_bot
 #. odoo-python
 #: code:addons/mail_bot/models/mail_bot.py:0
+msgid ""
+"That’s the end of this overview. You can %(bold_start)sclose this "
+"conversation%(bold_end)s or type %(command_start)sstart the tour%"
+"(command_end)s to see it again. Enjoy exploring Odoo!"
+msgstr ""
+
+#. module: mail_bot
+#. odoo-python
+#: code:addons/mail_bot/models/mail_bot.py:0
 msgid "This is a temporary canned response to see how canned responses work."
 msgstr ""
-"Acesta este un răspuns predefinit temporar pentru a vedea cum funcționează "
-"răspunsurile predefinite."
 
 #. module: mail_bot
 #. odoo-python
@@ -247,8 +244,6 @@ msgid ""
 "To %(bold_start)ssend an attachment%(bold_end)s, click on the %"
 "(paperclip_icon)s icon and select a file."
 msgstr ""
-"Pentru a %(bold_start)strimite un atașament%(bold_end)s, apasă pe pictograma "
-"%(paperclip_icon)s și selectează un fișier."
 
 #. module: mail_bot
 #. odoo-python
@@ -260,7 +255,7 @@ msgstr "Pentru a începe, încercați să-mi trimiteți un emoticon :)"
 #. odoo-python
 #: code:addons/mail_bot/models/res_users.py:0
 msgid "Try to send me an emoji"
-msgstr "Încearcă să-mi trimiți un emoticon"
+msgstr ""
 
 #. module: mail_bot
 #. odoo-python
@@ -271,25 +266,19 @@ msgid ""
 "documentation%(document_link_end)s or %(slides_link_start)sour videos%"
 "(slides_link_end)s."
 msgstr ""
-"Din păcate, sunt doar un robot 😞 Nu înțeleg! Dacă ai nevoie de ajutor "
-"pentru a descoperi produsul nostru, te rog să consulți %"
-"(document_link_start)sdocumentația noastră%(document_link_end)s sau %"
-"(slides_link_start)svideo-urile noastre%(slides_link_end)s."
 
 #. module: mail_bot
 #: model:ir.model,name:mail_bot.model_res_users
 msgid "User"
-msgstr "Utilizator"
+msgstr "Operator"
 
 #. module: mail_bot
 #. odoo-python
 #: code:addons/mail_bot/models/mail_bot.py:0
 msgid ""
-"Wonderful! 😇%(new_line)sTry typing %(command_start)s:%(command_end)s to use "
-"canned responses. I've created a temporary one for you."
+"Wonderful! 😇%(new_line)sTry typing %(command_start)s::%(command_end)s to "
+"use canned responses. I've created a temporary one for you."
 msgstr ""
-"Minunat! 😇%(new_line)sÎncearcă să tastezi %(command_start)s:%(command_end)s "
-"pentru a folosi răspunsuri predefinite. Am creat unul temporar pentru tine."
 
 #. module: mail_bot
 #. odoo-python
@@ -299,9 +288,6 @@ msgid ""
 "attention. %(bold_start)sTry to ping me using%(bold_end)s %"
 "(command_start)s@OdooBot%(command_end)s in a sentence."
 msgstr ""
-"Wow, ești natural!%(new_line)sFă ping cuiva cu @username pentru a-i atrage "
-"atenția. %(bold_start)sÎncearcă să-mi dai ping folosind%(bold_end)s %"
-"(command_start)s@OdooBot%(command_end)s într-o propoziție."
 
 #. module: mail_bot
 #. odoo-python
@@ -310,8 +296,6 @@ msgid ""
 "Yep, I am here! 🎉 %(new_line)sNow, try %(bold_start)ssending an attachment%"
 "(bold_end)s, like a picture of your cute dog..."
 msgstr ""
-"Da, sunt aici! 🎉 %(new_line)sAcum, încearcă %(bold_start)strimiterea unui "
-"atașament%(bold_end)s, cum ar fi o poză cu câinele tău drăguț..."
 
 #. module: mail_bot
 #. odoo-python
@@ -342,3 +326,81 @@ msgstr "iubire"
 #: code:addons/mail_bot/models/mail_bot.py:0
 msgid "start the tour"
 msgstr "începeți turul"
+
+#~ msgid "Email Thread"
+#~ msgstr "Fir E-mail"
+
+#~ msgid ""
+#~ "Great! 👍<br/>To access special commands, <b>start your sentence with</b> "
+#~ "<span class=\"o_odoobot_command\">/</span>. Try getting help."
+#~ msgstr ""
+#~ "Grozav! 👍<br/>Pentru a accesa comenzi speciale, <b> începeți propoziția "
+#~ "cu</b><span class=\"o_odoobot_command\"> /</span>. Încercați să primiți "
+#~ "ajutor."
+
+#~ msgid "HTTP Routing"
+#~ msgstr "Rutare HTTP"
+
+#~ msgid ""
+#~ "I am a simple bot, but if that's a dog, he is the cutest 😊 <br/"
+#~ ">Congratulations, you finished this tour. You can now <b>close this chat "
+#~ "window</b>. Enjoy discovering Odoo."
+#~ msgstr ""
+#~ "Sunt un robot simplu, dar dacă acesta este un câine, el este cel mai "
+#~ "drăguț 😊<br/> Felicitări, ați terminat acest tur. Acum puteți <b> "
+#~ "închide această fereastră de chat </b>. Bucurați-vă de descoperirea Odoo."
+
+#~ msgid ""
+#~ "I'm not smart enough to answer your question.<br/>To follow my guide, "
+#~ "ask: <span class=\"o_odoobot_command\">start the tour</span>."
+#~ msgstr ""
+#~ "Nu sunt suficient de deștept să-ți răspund la întrebare.<br/> Pentru a-mi "
+#~ "urma ghidul, întreabă:<span class=\"o_odoobot_command\"> începe turul</"
+#~ "span>."
+
+#~ msgid ""
+#~ "Not exactly. To continue the tour, send an emoji: <b>type</b> <span "
+#~ "class=\"o_odoobot_command\">:)</span> and press enter."
+#~ msgstr ""
+#~ "Nu chiar. Pentru a continua turul, trimiteți un emoticon:<b> tastați</b> "
+#~ "<span class=\"o_odoobot_command\"> :)</span> și apăsați Enter."
+
+#~ msgid ""
+#~ "Not sure what you are doing. Please, type <span "
+#~ "class=\"o_odoobot_command\">/</span> and wait for the propositions. "
+#~ "Select <span class=\"o_odoobot_command\">help</span> and press enter"
+#~ msgstr ""
+#~ "Nu sunt sigur ce faceți. Vă rugăm, tastați <span "
+#~ "class=\"o_odoobot_command\"> /</span> și așteptați propunerile. "
+#~ "Selectați<span class=\"o_odoobot_command\"> ajutor</span> și apăsați Enter"
+
+#~ msgid ""
+#~ "Sorry I'm sleepy. Or not! Maybe I'm just trying to hide my unawareness of "
+#~ "human language...<br/>I can show you features if you write: <span "
+#~ "class=\"o_odoobot_command\">start the tour</span>."
+#~ msgstr ""
+#~ "Îmi pare rău că sunt adomir. Sau nu! Poate că încerc doar să ascund lipsa "
+#~ "de conștientizare a limbajului uman ...<br/> Vă pot arăta caracteristici "
+#~ "dacă scrieți: <span class=\"o_odoobot_command\">începeți turul</span>."
+
+#~ msgid ""
+#~ "Sorry, I am not listening. To get someone's attention, <b>ping him</b>. "
+#~ "Write <span class=\"o_odoobot_command\">@OdooBot</span> and select me."
+#~ msgstr ""
+#~ "Îmi pare rău, nu ascult. Pentru a atrage atenția cuiva, <b>faceți-i ping</"
+#~ "b>. Scrie <span class=\"o_odoobot_command\"> @OdooBot</span> și "
+#~ "selectează-mă."
+
+#~ msgid ""
+#~ "To <b>send an attachment</b>, click on the <i class=\"fa fa-paperclip\" "
+#~ "aria-hidden=\"true\"></i> icon and select a file."
+#~ msgstr ""
+#~ "Pentru <b> a trimite un atașament</b>, faceți clic pe<i class=\"fa fa-"
+#~ "paperclip\" aria-hidden=\"true\"></i> pictogramă și selectați un fișier."
+
+#~ msgid ""
+#~ "Yep, I am here! 🎉 <br/>Now, try <b>sending an attachment</b>, like a "
+#~ "picture of your cute dog..."
+#~ msgstr ""
+#~ "Da, sunt aici! 🎉 <br/>Acum, încercați <b>să trimiteți un atașament</b>, "
+#~ "cum ar fi o fotografie a câinelui dvs. drăguț ..."

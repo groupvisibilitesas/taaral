@@ -1,5 +1,3 @@
-/** @odoo-module **/
-
 import { _t } from "@web/core/l10n/translation";
 import { clickOnElement } from '@website/js/tours/tour_utils';
 
@@ -35,40 +33,50 @@ export function assertCartAmounts({taxes = false, untaxed = false, total = false
     if (taxes) {
         steps.push({
             content: 'Check if the tax is correct',
-            trigger: `tr#order_total_taxes .oe_currency_value:text(${taxes})`,
+            trigger: `tr[name="o_order_total_taxes"] .oe_currency_value:text(${taxes})`,
         });
     }
     if (untaxed) {
         steps.push({
-            content: 'Check if the tax is correct',
-            trigger: `tr#order_total_untaxed .oe_currency_value:text(${untaxed})`,
+            content: 'Check if the subtotal is correct',
+            trigger: `tr[name="o_order_total_untaxed"] .oe_currency_value:text(${untaxed})`,
         });
     }
     if (total) {
         steps.push({
-            content: 'Check if the tax is correct',
-            trigger: `tr#order_total .oe_currency_value:text(${total})`,
+            content: 'Check if the total is correct',
+            trigger: `tr[name="o_order_total"] .oe_currency_value:text(${total})`,
         });
     }
     if (delivery) {
         steps.push({
-            content: 'Check if the tax is correct',
-            trigger: `tr#order_delivery .oe_currency_value:text(${delivery})`,
+            content: 'Check if the delivery is correct',
+            trigger: `tr[name='o_order_delivery'] .oe_currency_value:text(${delivery})`,
         });
     }
     return steps
 }
 
-export function assertCartContains({productName, backend, notContains = false} = {}) {
-    let trigger = `a:contains(${productName})`;
+export function assertCartContains({productName, backend, notContains = false, combinationName = false} = {}) {
+    let trigger = `h6:contains(${productName})`;
 
     if (notContains) {
         trigger = `:not(${trigger})`;
     }
-    return {
+    let steps = [{
         content: `Checking if ${productName} is in the cart`,
         trigger: `${backend ? ":iframe" : ""} ${trigger}`,
-    };
+    }];
+
+    if (combinationName) {
+        const combination_trigger = `span[class*=h6]:contains(${combinationName})`;
+        steps.push({
+            content: `Checking if ${combinationName} is the chosen combination in the cart`,
+            trigger: `${backend ? ":iframe" : ""} ${combination_trigger}`,
+        })
+    }
+
+    return steps;
 }
 
 /**
@@ -100,13 +108,13 @@ export function fillAdressForm(
     for (const arg of ["name", "phone", "email", "street", "city", "zip"]) {
         steps.push({
             content: `Address filling ${arg}`,
-            trigger: `form.checkout_autoformat input[name=${arg}]`,
+            trigger: `form.address_autoformat input[name=${arg}]`,
             run: `edit ${adressParams[arg]}`,
         });
     }
     steps.push({
         content: "Continue checkout",
-        trigger: "#save_address",
+        trigger: "a[name='website_sale_main_button']",
         run: "click",
         expectUnloadPage,
     });
@@ -140,7 +148,7 @@ export function goToCheckout() {
 export function confirmOrder() {
     return {
         content: 'Confirm',
-        trigger: 'a[href^="/shop/confirm_order"]',
+        trigger: 'a[href^="/shop/payment"]',
         run: 'click',
         expectUnloadPage: true,
     };
@@ -167,18 +175,14 @@ export function pay({ expectUnloadPage = false, waitFinalizeYourPayment = false 
 
 export function payWithDemo() {
     return [{
-        content: 'eCommerce: select Test payment provider',
-        trigger: 'input[name="o_payment_radio"][data-payment-method-code="demo"]',
-        run: "click",
-    }, {
         content: 'eCommerce: add card number',
         trigger: 'input[name="customer_input"]',
         run: "edit 4242424242424242",
     },
-    ...pay(),
+    ...pay({expectUnloadPage: true}),
     {
         content: 'eCommerce: check that the payment is successful',
-        trigger: '.oe_website_sale_tx_status:contains("Your payment has been successfully processed.")',
+        trigger: '[name="order_confirmation"]:contains("Your payment has been processed.")',
     }]
 }
 
@@ -199,7 +203,7 @@ export function payWithTransfer({
             {
                 content: "Last step",
                 trigger:
-                    '.oe_website_sale_tx_status:contains("Please use the following transfer details")',
+                    '[name="order_confirmation"]:contains("Please use the following transfer details")',
                 timeout: 30000,
             },
         ];
@@ -210,7 +214,7 @@ export function payWithTransfer({
             {
                 content: "Last step",
                 trigger:
-                    '.oe_website_sale_tx_status:contains("Please use the following transfer details")',
+                    '[name="order_confirmation"]:contains("Please use the following transfer details")',
                 timeout: 30000,
                 run() {
                     window.location.href = '/contactus'; // Redirect in JS to avoid the RPC loop (20x1sec)
@@ -267,4 +271,14 @@ export function selectPriceList(pricelist) {
             expectUnloadPage: true,
         },
     ];
+}
+
+/**
+ * Used for resolving indeterministic behavior of tours
+ */
+export function waitForInteractionToLoad() {
+    return {
+        content: "Wait for interaction to be ready",
+        trigger: `body[is-ready=true]`,
+    };
 }

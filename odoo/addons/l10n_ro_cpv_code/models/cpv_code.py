@@ -8,9 +8,10 @@ class L10nRoCPVCode(models.Model):
     code = fields.Char(string="Code", required=True)
     name = fields.Char(string="Name", required=True)
 
-    _sql_constraints = [
-        ("_code_uniq", "unique(code)", "Code must be unique!"),
-    ]
+    _code_uniq = models.Constraint(
+        'unique (code)',
+        'Code must be unique!',
+    )
 
     @api.depends('code')
     def _compute_display_name(self):

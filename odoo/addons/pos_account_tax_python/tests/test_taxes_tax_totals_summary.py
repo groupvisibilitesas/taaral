@@ -7,7 +7,7 @@ from odoo.tests import tagged
 class TestTaxesTaxTotalsSummaryAccountTaxPython(TestTaxCommonPOS, TestTaxesTaxTotalsSummary):
 
     def test_point_of_sale_custom_tax_with_extra_product_field(self):
-        assert 'weight' not in self.env['product.template']._load_pos_data_fields(self.main_pos_config.id)
+        assert 'weight' not in self.env['product.template']._load_pos_data_fields(self.main_pos_config)
 
         tax = self.python_tax('product.weight * quantity')
         document_params = self.init_document(
@@ -35,9 +35,9 @@ class TestTaxesTaxTotalsSummaryAccountTaxPython(TestTaxCommonPOS, TestTaxesTaxTo
             self.assert_invoice_totals(order.account_move, expected_values)
 
     def test_point_of_sale_custom_tax_with_extra_product_uom_field(self):
-        assert 'ratio' not in self.env['uom.uom']._load_pos_data_fields(self.main_pos_config.id)
+        assert 'relative_factor' not in self.env['uom.uom']._load_pos_data_fields(self.main_pos_config)
 
-        tax = self.python_tax('uom.ratio * quantity')
+        tax = self.python_tax('uom.relative_factor * quantity')
         document_params = self.init_document(
             lines=[
                 {'price_unit': 200.0, 'quantity': 10.0, 'tax_ids': tax},
@@ -49,9 +49,8 @@ class TestTaxesTaxTotalsSummaryAccountTaxPython(TestTaxCommonPOS, TestTaxesTaxTo
         product = document['lines'][0]['product_id']
         product.uom_id = self.env['uom.uom'].create({
             'name': "test_point_of_sale_custom_tax_with_extra_product_uom_field",
-            'category_id': self.env.ref('uom.product_uom_categ_unit').id,
-            'uom_type': 'bigger',
-            'ratio': 4.2,
+            'relative_uom_id': self.env.ref('uom.product_uom_unit').id,
+            'relative_factor': 4.2,
         })
 
         expected_values = {

@@ -62,11 +62,11 @@ class AccountEdiXmlUBLHR(models.AbstractModel):
         })
         return nsmap
 
-    def _export_invoice_constraints_new(self, invoice, vals):
+    def _export_invoice_constraints(self, invoice, vals):
         # OVERRIDE 'account.edi.xml.ubl_bis3': don't apply Peppol rules
         constraints = self.env['account.edi.xml.ubl_20']._export_invoice_constraints(invoice, vals)
         constraints.update(
-            self._invoice_constraints_cen_en16931_ubl_new(invoice, vals)
+            self._invoice_constraints_cen_en16931_ubl(invoice, vals)
         )
         constraints.update(
             self._invoice_constraints_eracun_new(invoice, vals)
@@ -187,6 +187,8 @@ class AccountEdiXmlUBLHR(models.AbstractModel):
             vals['document_node']['cbc:CreditNoteTypeCode']['_text'] = '386'
         elif invoice.l10n_hr_process_type == 'P9':
             vals['document_node']['cbc:CreditNoteTypeCode']['_text'] = '381'
+        elif invoice.l10n_hr_process_type == 'P10':
+            vals['document_node']['cbc:CreditNoteTypeCode']['_text'] = '384'
 
     def _ubl_add_billing_reference_nodes(self, vals):
         # EXTENDS account.edi.xml.ubl_bis3

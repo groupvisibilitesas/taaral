@@ -71,20 +71,18 @@ class TestROEdiCommon(AccountTestInvoicingCommon):
 
     def send_invoice_with_mock(self, invoice, mock_return_value):
         """Helper to send invoice mocking the SPV response."""
-        with patch.object(
-            self.env.registry.get("l10n_ro_edi.document"),
-            "_request_ciusro_send_invoice",
+        with patch(
+            'odoo.addons.l10n_ro_edi.models.account_move._request_ciusro_send_invoice',
             return_value=mock_return_value,
         ):
             invoice._l10n_ro_edi_send_invoice(
                 xml_data=invoice.ubl_cii_xml_id.raw if invoice.ubl_cii_xml_id else b"<xml>test</xml>",
             )
 
-    def fetch_status_with_mock(self, invoice, mock_return_value):
-        """Helper to fetch invoice status mocking the SPV response."""
-        with patch.object(
-            self.env.registry.get("l10n_ro_edi.document"),
-            "_request_ciusro_fetch_status",
+    def synchronize_with_mock(self, mock_return_value):
+        """Helper to run synchronize mocking the SPV response."""
+        with patch(
+            'odoo.addons.l10n_ro_edi.models.account_move._request_ciusro_synchronize_invoices',
             return_value=mock_return_value,
         ):
-            invoice._l10n_ro_edi_fetch_invoice_sent_documents()
+            self.env["account.move"]._l10n_ro_edi_fetch_invoices()

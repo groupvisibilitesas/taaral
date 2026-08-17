@@ -59,6 +59,6 @@ class TestPartnerGeoLocalization(TransactionCase):
             mock_send.assert_called_with(user_partner, 'simple_notification', {
                 'type': 'danger',
                 'title': "Warning",
-                'message': "No match found for Test A, Other Address address(es).",
+                'message': "No match found for Test A, Other address(es).",
             })
             mock_send.reset_mock()

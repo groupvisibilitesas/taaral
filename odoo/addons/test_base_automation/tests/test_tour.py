@@ -13,10 +13,6 @@ def _urlencode_kwargs(**kwargs):
 
 @tagged("post_install_l10n", "post_install", "-at_install")
 class BaseAutomationTestUi(HttpCase):
-    def tearDown(self):
-        self.env['base.automation']._unregister_hook()
-        super().tearDown()
-
     def _neutralize_preexisting_automations(self, neutralize_action=True):
         self.env["base.automation"].with_context(active_test=False).search([]).write({"active": False})
         if neutralize_action:
@@ -162,7 +158,7 @@ class BaseAutomationTestUi(HttpCase):
         })
 
         action = {
-            "name": "This name should not survive :)",
+            "name": "Create Contact with name NameX",
             "base_automation_id": automation.id,
             "state": "object_create",
             "value": "NameX",
@@ -237,13 +233,13 @@ class BaseAutomationTestUi(HttpCase):
             onchange_link_passes += 1
             res = origin_link_onchange(self_model, *args)
             if onchange_link_passes == 1:
-                default_keys = {k: v for k, v in self_model._context.items() if k.startswith("default_")}
+                default_keys = {k: v for k, v in self_model.env.context.items() if k.startswith("default_")}
                 self.assertEqual(
                     default_keys,
                     {"default_model_id": model.id, "default_usage": "base_automation"},
                 )
             if onchange_link_passes == 2:
-                self.assertEqual(res["value"]["name"], "Add followers: ")
+                self.assertEqual(res["value"]["name"], "Add Followers")
 
             return res
 

@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
+
 from datetime import datetime, timedelta
 from dateutil.parser import parse
 import logging
@@ -8,16 +9,17 @@ from freezegun import freeze_time
 
 from odoo import Command
 
-from odoo.addons.microsoft_calendar.models.microsoft_sync import MicrosoftSync
+from odoo.addons.microsoft_calendar.models.microsoft_sync import MicrosoftCalendarSync
 from odoo.addons.microsoft_calendar.utils.microsoft_calendar import MicrosoftCalendarService
 from odoo.addons.microsoft_calendar.utils.microsoft_event import MicrosoftEvent
-from odoo.addons.microsoft_calendar.models.res_users import User
+from odoo.addons.microsoft_calendar.models.res_users import ResUsers
 from odoo.addons.microsoft_calendar.tests.common import TestCommon, mock_get_token, _modified_date_in_the_future, patch_api
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
-@patch.object(User, '_get_microsoft_calendar_token', mock_get_token)
+
+@patch.object(ResUsers, '_get_microsoft_calendar_token', mock_get_token)
 class TestUpdateEvents(TestCommon):
 
     @patch_api
@@ -162,11 +164,11 @@ class TestUpdateEvents(TestCommon):
                 'type': 'exception',
                 'start': {
                     'dateTime': pytz.utc.localize(new_date).isoformat(),
-                    'timeZone': 'Europe/London'
+                    'timeZone': 'UTC'
                 },
                 'end': {
                     'dateTime': pytz.utc.localize(new_date + timedelta(hours=1)).isoformat(),
-                    'timeZone': 'Europe/London'
+                    'timeZone': 'UTC'
                 },
                 'isAllDay': False
             },
@@ -342,11 +344,11 @@ class TestUpdateEvents(TestCommon):
                 'type': 'exception',
                 'start': {
                     'dateTime': pytz.utc.localize(new_date).isoformat(),
-                    'timeZone': 'Europe/London'
+                    'timeZone': 'UTC'
                 },
                 'end': {
                     'dateTime': pytz.utc.localize(new_date + timedelta(hours=1)).isoformat(),
-                    'timeZone': 'Europe/London'
+                    'timeZone': 'UTC'
                 },
                 'isAllDay': False
             },
@@ -415,11 +417,11 @@ class TestUpdateEvents(TestCommon):
                 'type': 'exception',
                 'start': {
                     'dateTime': pytz.utc.localize(new_date).isoformat(),
-                    'timeZone': 'Europe/London'
+                    'timeZone': 'UTC'
                 },
                 'end': {
                     'dateTime': pytz.utc.localize(new_date + timedelta(hours=1)).isoformat(),
-                    'timeZone': 'Europe/London'
+                    'timeZone': 'UTC'
                 },
                 'isAllDay': False
             },
@@ -483,11 +485,11 @@ class TestUpdateEvents(TestCommon):
                 'type': 'exception',
                 'start': {
                     'dateTime': pytz.utc.localize(new_date).isoformat(),
-                    'timeZone': 'Europe/London'
+                    'timeZone': 'UTC'
                 },
                 'end': {
                     'dateTime': pytz.utc.localize(new_date + timedelta(hours=1)).isoformat(),
-                    'timeZone': 'Europe/London'
+                    'timeZone': 'UTC'
                 },
                 'isAllDay': False
             },
@@ -576,11 +578,11 @@ class TestUpdateEvents(TestCommon):
                 'type': 'exception',
                 'start': {
                     'dateTime': pytz.utc.localize(new_date).isoformat(),
-                    'timeZone': 'Europe/London'
+                    'timeZone': 'UTC'
                 },
                 'end': {
                     'dateTime': pytz.utc.localize(new_date + timedelta(hours=1)).isoformat(),
-                    'timeZone': 'Europe/London'
+                    'timeZone': 'UTC'
                 },
                 'isAllDay': False
             },
@@ -640,11 +642,11 @@ class TestUpdateEvents(TestCommon):
                 'type': 'exception',
                 'start': {
                     'dateTime': pytz.utc.localize(new_date).isoformat(),
-                    'timeZone': 'Europe/London'
+                    'timeZone': 'UTC'
                 },
                 'end': {
                     'dateTime': pytz.utc.localize(new_date + timedelta(hours=1)).isoformat(),
-                    'timeZone': 'Europe/London'
+                    'timeZone': 'UTC'
                 },
                 'isAllDay': False
             },
@@ -1361,6 +1363,9 @@ class TestUpdateEvents(TestCommon):
         self.simple_event_values['user_id'] = self.organizer_user.id
         self.simple_event_values['partner_ids'] = [Command.set([self.organizer_user.partner_id.id])]
         event = self.env['calendar.event'].with_user(self.organizer_user).create(self.simple_event_values)
+        # Simulate sync where the api update the microsoft_id field
+        event.ms_universal_event_id = "test_id_for_event"
+        event.microsoft_id = "test_id_for_organizer"
 
         # Deactivate user B's calendar synchronization. Try changing the event organizer to user B.
         # A ValidationError must be thrown because user B's calendar is not synced.
@@ -1381,8 +1386,6 @@ class TestUpdateEvents(TestCommon):
         mock_get_events.return_value = ([], None)
 
         # Change the event organizer: user B (the organizer) is synced and now listed as an attendee.
-        event.ms_universal_event_id = "test_id_for_event"
-        event.microsoft_id = "test_id_for_organizer"
         event.with_user(self.organizer_user).write({
             'user_id': self.attendee_user.id,
             'partner_ids': [Command.set([self.organizer_user.partner_id.id, self.attendee_user.partner_id.id])]
@@ -1495,7 +1498,7 @@ class TestUpdateEvents(TestCommon):
 
         self.assertFalse(base_event.follow_recurrence, "Base event should remain an exception")
 
-    @patch.object(MicrosoftSync, '_write_from_microsoft')
+    @patch.object(MicrosoftCalendarSync, '_write_from_microsoft')
     @patch.object(MicrosoftCalendarService, 'get_events')
     def test_update_old_event_synced_with_outlook(self, mock_get_events, mock_write_from_microsoft):
         """

@@ -231,7 +231,7 @@ class StockPicking(models.Model):
             'issue_time': scheduled_date_local.time().strftime('%H:%M:%S'),
             'actual_date': date_done_local.strftime('%Y-%m-%d'),
             'actual_time': date_done_local.strftime('%H:%M:%S'),
-            'line_count': len(self.move_ids_without_package),
+            'line_count': len(self.move_ids),
             'printed_date': self.l10n_tr_nilvera_delivery_date and self.l10n_tr_nilvera_delivery_date.strftime('%Y-%m-%d'),
             'drivers': drivers,
             'default_tckn': '22222222222',
@@ -348,14 +348,12 @@ class StockPicking(models.Model):
             return []
 
         products_dict = self._find_or_create_products_from_xml(receipt_lines)
-        origin = self._get_tag_text('./cbc:ID', tree)
         source_location = self.picking_type_id.default_location_src_id
 
         values = []
         for receipt in receipt_lines:
             name = self._get_tag_text('./cac:Item/cbc:Name', receipt)
             values.append({
-                'name': f"E-Receipt Import - {origin}",
                 'description_picking': name,
                 'product_id': products_dict[name],
                 'product_uom_qty': self._get_tag_text('./cbc:DeliveredQuantity', receipt),
@@ -481,7 +479,7 @@ class StockPicking(models.Model):
         vals_to_update = {
             'scheduled_date': scheduled_datetime,
             'origin': self._get_tag_text('./cbc:ID', tree),  # sequence of the e-Receipt obtained from XML.
-            'move_ids_without_package': [Command.create(value) for value in self._import_receipt_lines(tree)],
+            'move_ids': [Command.create(value) for value in self._import_receipt_lines(tree)],
         }
 
         # Import Partners (Supplier, Carrier, Buyer, Seller, Originator)
@@ -497,18 +495,17 @@ class StockPicking(models.Model):
         files_with_errors = []
         picking_ids = self.env['stock.picking']
         warehouse = self.env.user._get_default_warehouse_id()
-
-        for attachment in attachments:
-            file_data = attachment._decode_edi_xml(attachment.name, attachment.raw)
-            # `_decode_edi_xml` returns empty array & logs the exception if error occurs while decoding the XML.
-            if not file_data:
-                files_with_errors.append(attachment.name)
+        attachments_data = self.env['account.move']._to_files_data(attachments)
+        for attachment in attachments_data:
+            # If any error occurs in parsing the XML, the 'xml_tree' key will be None.
+            if attachment['xml_tree'] is None:
+                files_with_errors.append(attachment['name'])
                 continue
             picking = self.create({
                 'picking_type_id': warehouse.in_type_id.id,
                 'location_dest_id': warehouse.lot_stock_id.id,
             })
-            picking._update_data_from_xml(file_data[0])
+            picking._update_data_from_xml(attachment)
             picking_ids |= picking
         return picking_ids, files_with_errors
 

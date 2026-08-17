@@ -3,6 +3,7 @@ import { setupEditor, testEditor } from "./_helpers/editor";
 import { deleteBackward, deleteForward, insertText, undo } from "./_helpers/user_actions";
 import { getContent } from "./_helpers/selection";
 import { execCommand } from "./_helpers/userCommands";
+import { dispatchNormalize } from "./_helpers/dispatch";
 
 function insertFontAwesome(faClass) {
     return (editor) => {
@@ -161,6 +162,40 @@ describe("parse/render", () => {
             contentAfter: '<p>a[b]c<i class="fa fa-pastafarianism"></i></p>',
         });
     });
+
+    test("should not add U+FEFF characters around icons not within a paragraph related element or a base container", async () => {
+        await testEditor({
+            contentBefore: '<div><i class="fa fa-pastafarianism"></i><div><p>abc</p></div></div>',
+            contentBeforeEdit:
+                '<p data-selection-placeholder=""><br></p>' +
+                '<div><i class="fa fa-pastafarianism" contenteditable="false">\u200b</i><div><p>abc</p></div></div>' +
+                '<p data-selection-placeholder=""><br></p>',
+            contentAfter: '<div><i class="fa fa-pastafarianism"></i><div><p>abc</p></div></div>',
+        });
+    });
+
+    test("should add U+FEFF characters around icon within a span which is within a paragraph related element or a base container", async () => {
+        await testEditor({
+            contentBefore: '<p><span><i class="fa fa-pastafarianism"></i></span></p>',
+            contentBeforeEdit:
+                '<p><span>\ufeff<i class="fa fa-pastafarianism" contenteditable="false">\u200b</i>\ufeff</span></p>',
+            contentAfter: '<p><span><i class="fa fa-pastafarianism"></i></span></p>',
+        });
+    });
+
+    test("should not add U+FEFF characters around icon if not direct child of paragraph related element or formatable tag", async () => {
+        const { editor, el } = await setupEditor(`<p></p>`);
+        const div = document.createElement("div");
+        const icon = document.createElement("i");
+        icon.className = "fa fa-pastafarianism";
+        div.appendChild(icon);
+        el.firstChild.appendChild(div);
+        dispatchNormalize(editor);
+        expect(getContent(el)).toBe(
+            `<p><div><i class="fa fa-pastafarianism" contenteditable="false">\u200b</i></div></p>`
+        );
+    });
+
     /** not sure this is necessary, keep for now in case it is
         test('should insert navigation helpers when before a fontawesome, in an editable (1)', async () => {
             await testEditor({
@@ -239,17 +274,17 @@ describe("parse/render", () => {
         test('should not insert navigation helpers when adjacent to a fontawesome in contenteditable=false format (oe-nested) (1)', async () => {
             await testEditor({
                 contentBefore:
-                    '<p contenteditable="true"><a contenteditable="true"><b contenteditable="false">abc[]<i class="fa fa-pastafarianism"></i></b></a></p>',
+                    '<p contenteditable="true"><a href="#" contenteditable="true"><b contenteditable="false">abc[]<i class="fa fa-pastafarianism"></i></b></a></p>',
                 contentAfter:
-                    '<p contenteditable="true"><a contenteditable="true"><b contenteditable="false">abc<i class="fa fa-pastafarianism" contenteditable="false"></i></b></a></p>',
+                    '<p contenteditable="true"><a href="#" contenteditable="true"><b contenteditable="false">abc<i class="fa fa-pastafarianism" contenteditable="false"></i></b></a></p>',
             });
         });
         test('should not insert navigation helpers when adjacent to a fontawesome in contenteditable=false format (oe-nested) (2)', async () => {
             await testEditor({
                 contentBefore:
-                    '<p contenteditable="true"><a contenteditable="true"><b contenteditable="false"><i class="fa fa-pastafarianism"></i>[]abc</b></a></p>',
+                    '<p contenteditable="true"><a href="#" contenteditable="true"><b contenteditable="false"><i class="fa fa-pastafarianism"></i>[]abc</b></a></p>',
                 contentAfter:
-                    '<p contenteditable="true"><a contenteditable="true"><b contenteditable="false"><i class="fa fa-pastafarianism" contenteditable="false"></i>abc</b></a></p>',
+                    '<p contenteditable="true"><a href="#" contenteditable="true"><b contenteditable="false"><i class="fa fa-pastafarianism" contenteditable="false"></i>abc</b></a></p>',
             });
         });*/
 });

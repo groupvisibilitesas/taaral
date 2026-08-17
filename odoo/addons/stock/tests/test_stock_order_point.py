@@ -36,7 +36,7 @@ class TestStockOrderpointActivity(TestStockCommon):
                 "name": "Portal Customer",
                 "login": "portal_customer_nature_leak_test",
                 "email": "customer@naturetest.com",
-                "groups_id": [(6, 0, [self.env.ref("base.group_portal").id])],
+                "group_ids": [(6, 0, [self.env.ref("base.group_portal").id])],
                 "company_id": company_b.id,
                 "company_ids": [(6, 0, [company_b.id])],
             }

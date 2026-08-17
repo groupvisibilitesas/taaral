@@ -1,4 +1,5 @@
 import {
+    after,
     before,
     createJobScopedGetter,
     expect,
@@ -8,10 +9,11 @@ import {
     mockWebSocket,
     registerDebugInfo,
 } from "@odoo/hoot";
-import { makeErrorFromResponse, RPCError } from "@web/core/network/rpc";
-import { registry } from "@web/core/registry";
+import { makeErrorFromResponse, rpc, RPCError } from "@web/core/network/rpc";
+import { RPCCache } from "@web/core/network/rpc_cache";
 import { ensureArray, isIterable } from "@web/core/utils/arrays";
 import { isObject } from "@web/core/utils/objects";
+import { hashCode } from "@web/core/utils/strings";
 import { serverState } from "../mock_server_state.hoot";
 import { fetchModelDefinitions, globalCachedFetch, registerModelToFetch } from "../module_set.hoot";
 import { DEFAULT_FIELD_PROPERTIES, getFieldDisplayName, S_SERVER_FIELD } from "./mock_fields";
@@ -164,7 +166,7 @@ function deepCopy(object) {
 function getAssignAction(options) {
     const shouldAdd = options?.mode === "add";
     return function assign(target, key, value) {
-        if (shouldAdd && isObject(target[key])) {
+        if (shouldAdd && target[key] === Object(target[key])) {
             // Add value
             if (Array.isArray(target[key])) {
                 target[key].push(...value);
@@ -362,11 +364,14 @@ const ROOT_MENU = {
     appID: "root",
 };
 
+/** Providing handlers for internal URLs (blob and data) is **optional** */
+const INTERNAL_URL_PROTOCOLS = ["blob:", "data:"];
+
 const R_DATASET_ROUTE = /\/web\/dataset\/call_(?:button|kw)\/[\w.-]+\/(?<step>\w+)/;
-const R_URL_SPECIAL_CHARACTERS = /[.$+()]/g;
 const R_ROUTE_PARAM = /<(?:(?<type>\w+):)?(?<name>[\w-]+)>/g;
-const R_WILDCARD = /\*+/g;
+const R_URL_SPECIAL_CHARACTERS = /[.$+()]/g;
 const R_WEBCLIENT_ROUTE = /(?<step>\/web\/webclient\/\w+)/;
+const R_WILDCARD = /\*+/g;
 
 /** @type {WeakMap<() => any, MockServer>} */
 const mockServers = new WeakMap();
@@ -410,7 +415,6 @@ export class MockServer {
         direction: "ltr",
         grouping: [3, 0],
         time_format: "%H:%M:%S",
-        short_time_format: "%H:%M",
         thousands_sep: ",",
         week_start: 7,
     };
@@ -472,7 +476,7 @@ export class MockServer {
             assign(serverState, "lang", params.lang);
         }
         if (params.lang_parameters) {
-            // Never fully replace "_lang_parameters"
+            // Never fully replace "lang_parameters"
             Object.assign(this._lang_parameters, params.lang_parameters);
         }
         if (params.menus) {
@@ -531,6 +535,10 @@ export class MockServer {
 
         registerDebugInfo("mock server", this);
 
+        // Add RPC cache
+        rpc.setCache(new RPCCache("mockRpc", 1, "23aeb0ff5d46cfa8aa44163720d871ac"));
+        after(() => rpc.setCache(null));
+
         // Intercept all server calls
         mockFetch(this._handleRequest.bind(this));
         mockWebSocket(this._handleWebSocket.bind(this));
@@ -551,21 +559,8 @@ export class MockServer {
         );
         this._onRoute(["/web/dataset/resequence"], this.resequence);
         this._onRoute(["/web/image/<string:model>/<int:id>/<string:field>"], this.loadImage);
-        this._onRoute(["/web/webclient/load_menus/<string:unique>"], this.loadMenus);
-        this._onRoute(["/web/webclient/translations/<string:unique>"], this.loadTranslations);
-
-        // Add routes from "mock_rpc" registry
-        const mockRpcEntries = registry.category("mock_rpc").getEntries();
-        if (mockRpcEntries.length) {
-            console.warn(
-                "Warning: 'mock_rpc' registry is deprecated; use 'onRpc' with the same parameters instead."
-            );
-            for (const [route, callback] of mockRpcEntries) {
-                if (typeof callback === "function") {
-                    this._onRpc(route, callback);
-                }
-            }
-        }
+        this._onRoute(["/web/webclient/load_menus"], this.loadMenus);
+        this._onRoute(["/web/webclient/translations"], this.loadTranslations);
 
         // Register ambiant parameters
         await this.configure(getCurrentParams());
@@ -652,7 +647,10 @@ export class MockServer {
      * @param {URL} url
      */
     _findRouteListeners(url) {
-        const fullRoute = url.origin + url.pathname;
+        // "blob:" and "data:" URLs do not have 'search' and 'hash' parameters
+        const fullRoute = INTERNAL_URL_PROTOCOLS.includes(url.protocol)
+            ? url.href
+            : url.origin + url.pathname;
         /** @type {[RouteCallback, Record<string, string>, RouteOptions][]} */
         const listeners = [];
         for (const [routeRegexes, callback, options] of this._routes) {
@@ -734,6 +732,7 @@ export class MockServer {
                 action.target ??= "current";
                 action.view_ids ||= [];
                 action.view_mode ??= "list,form";
+                action.cache ??= true;
                 for (const embeddedAction of this.actions) {
                     if (
                         embeddedAction.type === ACTION_TYPES.embedded &&
@@ -784,7 +783,7 @@ export class MockServer {
         let result = null;
 
         const listeners = this._findRouteListeners(url);
-        if (!listeners.length) {
+        if (!listeners.length && !INTERNAL_URL_PROTOCOLS.includes(url.protocol)) {
             if (url.origin === mockLocation.origin) {
                 error = new MockServerError(`Unimplemented server route: ${url.pathname}`);
             } else {
@@ -1326,17 +1325,29 @@ export class MockServer {
     /**
      * @type {RouteCallback<"unique">}
      */
-    async loadTranslations() {
+    async loadTranslations(request) {
+        const requestHash = new URL(request.url).searchParams.get("hash");
         const langParameters = { ...this._lang_parameters };
         if (typeof langParameters.grouping !== "string") {
             langParameters.grouping = JSON.stringify(langParameters.grouping);
         }
-        return {
+        const result = {
             lang: serverState.lang,
             lang_parameters: langParameters,
             modules: this._modules,
             multi_lang: serverState.multiLang,
         };
+
+        const currentHash = hashCode(JSON.stringify(result)).toString(16);
+        if (currentHash === requestHash) {
+            return {
+                lang: serverState.lang,
+                hash: currentHash,
+                no_change: true,
+            };
+        }
+        result.hash = currentHash;
+        return result;
     }
 
     /**

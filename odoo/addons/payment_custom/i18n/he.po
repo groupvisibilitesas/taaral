@@ -1,31 +1,29 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# * payment_custom
+# * payment_transfer
 #
 # Translators:
-# ZVI BLONDER <ZVIBLONDER@gmail.com>, 2024
-# ExcaliberX <excaliberx@gmail.com>, 2024
-# Ha Ketem <haketem@gmail.com>, 2024
-# Martin Trigaux, 2024
-# Lilach Gilliam <lilach.gilliam@gmail.com>, 2025
-# Yihya Hugirat <hugirat@gmail.com>, 2025
-# or balmas, 2025
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Martin Trigaux, 2019
+# ExcaliberX <excaliberx@gmail.com>, 2019
+# Yihya Hugirat <hugirat@gmail.com>, 2019
+# Yoram Lavi <yoram@digitale.co.il>, 2026.
+# or balmas <or@laylinetech.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~12.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:38+0000\n"
-"PO-Revision-Date: 2026-05-17 05:49+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Hebrew <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-07 06:04+0000\n"
+"Last-Translator: or balmas <or@laylinetech.com>\n"
+"Language-Team: Hebrew <https://translate.odoo.com/projects/odoo-19/"
 "payment_custom/he/>\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n == 2) ? 1 : 2);\n"
-"X-Generator: Weblate 5.17\n"
+"Plural-Forms: nplurals=4; plural=(n == 1) ? 0 : ((n == 2) ? 1 : ((n > 10 && "
+"n % 10 == 0) ? 2 : 3));\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: payment_custom
 #: model_terms:ir.ui.view,arch_db:payment_custom.custom_state_header
@@ -56,12 +54,12 @@ msgstr "חשבונות בנק"
 #. module: payment_custom
 #: model:ir.model.fields,field_description:payment_custom.field_payment_provider__code
 msgid "Code"
-msgstr "קוד"
+msgstr ""
 
 #. module: payment_custom
 #: model:ir.model.fields.selection,name:payment_custom.selection__payment_provider__code__custom
 msgid "Custom"
-msgstr "מותאם"
+msgstr ""
 
 #. module: payment_custom
 #: model:ir.model.fields,field_description:payment_custom.field_payment_provider__custom_mode
@@ -69,14 +67,20 @@ msgid "Custom Mode"
 msgstr ""
 
 #. module: payment_custom
+#: model:ir.model.fields,field_description:payment_custom.field_payment_provider__display_name
+#: model:ir.model.fields,field_description:payment_custom.field_payment_transaction__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: payment_custom
 #: model:ir.model.fields,field_description:payment_custom.field_payment_provider__qr_code
 msgid "Enable QR Codes"
-msgstr "לאפשר קוד QR"
+msgstr ""
 
 #. module: payment_custom
 #: model:ir.model.fields,help:payment_custom.field_payment_provider__qr_code
 msgid "Enable the use of QR-codes when paying by wire transfer."
-msgstr "לאפשר שימוש בקוד QR בתשלום בהעברה בנקאית."
+msgstr ""
 
 #. module: payment_custom
 #: model_terms:ir.ui.view,arch_db:payment_custom.custom_state_header
@@ -84,15 +88,15 @@ msgid "Finalize your payment"
 msgstr ""
 
 #. module: payment_custom
-#. odoo-python
-#: code:addons/payment_custom/models/payment_transaction.py:0
-msgid "No transaction found matching reference %s."
-msgstr "לא נמצאה עסקה המתאימה למספר האסמכתא %s."
+#: model:ir.model.fields,field_description:payment_custom.field_payment_provider__id
+#: model:ir.model.fields,field_description:payment_custom.field_payment_transaction__id
+msgid "ID"
+msgstr ""
 
 #. module: payment_custom
 #: model_terms:ir.ui.view,arch_db:payment_custom.custom_state_header
 msgid "OR"
-msgstr "או"
+msgstr ""
 
 #. module: payment_custom
 #: model:ir.model.constraint,message:payment_custom.constraint_payment_provider_custom_providers_setup
@@ -102,7 +106,7 @@ msgstr ""
 #. module: payment_custom
 #: model:ir.model,name:payment_custom.model_payment_provider
 msgid "Payment Provider"
-msgstr "ספק תשלום"
+msgstr ""
 
 #. module: payment_custom
 #: model:ir.model,name:payment_custom.model_payment_transaction
@@ -113,7 +117,7 @@ msgstr "עסקת תשלום"
 #. odoo-python
 #: code:addons/payment_custom/models/payment_provider.py:0
 msgid "Please use the following transfer details"
-msgstr "אנא השתמש בפרטי ההעברה הבאים"
+msgstr ""
 
 #. module: payment_custom
 #: model_terms:ir.ui.view,arch_db:payment_custom.payment_provider_form
@@ -129,10 +133,16 @@ msgstr ""
 #. module: payment_custom
 #: model:ir.model.fields,help:payment_custom.field_payment_provider__code
 msgid "The technical code of this payment provider."
-msgstr "הקוד הטכני של ספק התשלומים הזה."
+msgstr ""
 
 #. module: payment_custom
 #: model:ir.model.fields.selection,name:payment_custom.selection__payment_provider__custom_mode__wire_transfer
 #: model:payment.method,name:payment_custom.payment_method_wire_transfer
 msgid "Wire Transfer"
-msgstr "העברה בנקאית"
+msgstr ""
+
+#~ msgid "Payment Acquirer"
+#~ msgstr "תשלום נקלט"
+
+#~ msgid "Provider"
+#~ msgstr "ספק"

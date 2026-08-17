@@ -1,15 +1,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import base64
-import contextlib
 
 from datetime import datetime
 from freezegun import freeze_time
 from lxml import etree
 from pytz import timezone
 from odoo import Command
-from unittest.mock import patch
 
-from odoo.exceptions import ValidationError, UserError, AccessError
+from odoo.exceptions import ValidationError, UserError
 from odoo.tests import tagged
 from odoo.tools import misc
 from odoo.addons.l10n_sa_edi.tests.common import TestSaEdiCommon
@@ -30,7 +28,7 @@ class TestEdiZatca(TestSaEdiCommon):
             expected_tree = self.with_applied_xpath(expected_tree, expected_xpath)
 
             creation_handlers = {
-                "invoice": self._create_invoice,
+                "invoice": self._create_test_invoice,
                 "credit_note": self._create_credit_note,
                 "debit_note": self._create_debit_note,
             }
@@ -206,42 +204,11 @@ class TestEdiZatca(TestSaEdiCommon):
             freeze_time_at=datetime(2022, 9, 5, 8, 20, 2, tzinfo=timezone('Etc/GMT-3'))
         )
 
-    def testInvoiceWithZeroTax(self):
-        """Test invoice generation with 0% tax on a line."""
-        tax_0 = self.env['account.tax'].create({
-            'name': 'Tax 0',
-            'amount_type': 'percent',
-            'amount': 0,
-        })
-        invoice = self._create_invoice(
-            name='INV/2022/00014',
-            invoice_date='2022-09-05',
-            invoice_date_due='2022-09-22',
-            partner_id=self.partner_sa,
-            invoice_line_ids=[{
-                'product_id': self.product_a.id,
-                'price_unit': 500,
-                'tax_ids': self.tax_15.ids,
-            }, {
-                'product_id': self.product_b.id,
-                'price_unit': -100,
-                'tax_ids': tax_0.ids,
-            }],
-        )
-
-        invoice.action_post()
-        xml_content = self.env['account.edi.format']._l10n_sa_generate_zatca_template(invoice)
-        xml_root = etree.fromstring(xml_content)
-        taxable_amount = xml_root.xpath(
-            "(//cac:TaxSubtotal)[2]/cbc:TaxableAmount",
-            namespaces=self.env['account.edi.xml.ubl_21.zatca']._l10n_sa_get_namespaces()
-        )[0].text.strip()
-        self.assertEqual(taxable_amount, '-100.00')
-
     def testInvoiceWithDownpayment(self):
         """Test invoice generation with downpayment scenarios."""
         if 'sale' not in self.env["ir.module.module"]._installed():
             self.skipTest("Sale module is not installed")
+        self.env.user.group_ids += self.env.ref('sales_team.group_sale_salesman')
 
         freeze = datetime(2022, 9, 5, 8, 20, 2, tzinfo=timezone('Etc/GMT-3'))
 
@@ -251,7 +218,7 @@ class TestEdiZatca(TestSaEdiCommon):
             'currency_id': self.env.ref('base.SAR').id
         })
         with freeze_time(freeze):
-            sale_order = self.env['sale.order'].create({
+            sale_order = self.env['sale.order'].sudo().create({
                 'partner_id': self.partner_sa.id,
                 'pricelist_id': saudi_pricelist.id,
                 'order_line': [
@@ -259,10 +226,10 @@ class TestEdiZatca(TestSaEdiCommon):
                         'product_id': self.product_a.id,
                         'price_unit': 1000,
                         'product_uom_qty': 1,
-                        'tax_id': [Command.set(self.tax_15.ids)],
+                        'tax_ids': [Command.set(self.tax_15.ids)],
                     })
                 ]
-            })
+            }).sudo(False)
             sale_order.action_confirm()
 
             # Context for wizards
@@ -274,7 +241,7 @@ class TestEdiZatca(TestSaEdiCommon):
             }
 
             # Create downpayment invoice
-            downpayment_wizard = self.env['sale.advance.payment.inv'].with_context(context).create({
+            downpayment_wizard = self.env['sale.advance.payment.inv'].with_context(context).sudo().create({
                 'advance_payment_method': 'fixed',
                 'fixed_amount': 115,
             })
@@ -282,48 +249,54 @@ class TestEdiZatca(TestSaEdiCommon):
             downpayment.invoice_date_due = '2022-09-22'
 
             # Create final invoice
-            final_wizard = self.env['sale.advance.payment.inv'].with_context(context).create({})
+            final_wizard = self.env['sale.advance.payment.inv'].with_context(context).sudo().create({})
             final = final_wizard._create_invoices(sale_order)
             final.invoice_line_ids.filtered('is_downpayment').name = 'Down Payment'
             final.invoice_date_due = '2022-09-22'
 
-            # Test invoices
-            for move, test_file in [
-                (downpayment, "downpayment_invoice"),
-                (final, "final_invoice")
-            ]:
-                with self.subTest(move=move, test_file=test_file):
-                    self._test_document_generation(
-                        test_file_path=f'l10n_sa_edi/tests/test_files/{test_file}.xml',
-                        expected_xpath=self.invoice_applied_xpath,
-                        freeze_time_at=freeze,
-                        move=move,
-                    )
+        # Test invoices
+        additional_xpath = f'''
+            <xpath expr="(//*[local-name()='PaymentMeans']/*[local-name()='InstructionID'])" position="after">
+                <cbc:InstructionNote xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">{sale_order.name}</cbc:InstructionNote>
+            </xpath>
+        '''
+        for move, test_file in [
+            (downpayment, "downpayment_invoice"),
+            (final, "final_invoice")
+        ]:
+            with self.subTest(move=move, test_file=test_file):
+                self._test_document_generation(
+                    test_file_path=f'l10n_sa_edi/tests/test_files/{test_file}.xml',
+                    expected_xpath=self.invoice_applied_xpath,
+                    additional_xpath=additional_xpath,
+                    freeze_time_at=freeze,
+                    move=move,
+                )
 
-            # Test credit notes
-            for move, test_file in [
-                (downpayment, "downpayment_credit_note"),
-                (final, "final_credit_note")
-            ]:
-                with self.subTest(move=move, test_file=test_file):
-                    # Create refund
-                    wiz_context = {
-                        'active_model': 'account.move',
-                        'active_ids': [move.id],
-                        'default_journal_id': move.journal_id.id,
-                    }
-                    refund_wizard = self.env['account.move.reversal'].with_context(wiz_context).create({
-                        'reason': 'please reverse :c',
-                        'date': '2022-09-05',
-                    })
-                    refund_invoice = self.env['account.move'].browse(refund_wizard.reverse_moves()['res_id'])
-                    refund_invoice.invoice_date_due = '2022-09-22'
-                    self._test_document_generation(
-                        test_file_path=f'l10n_sa_edi/tests/test_files/{test_file}.xml',
-                        expected_xpath=self.credit_note_applied_xpath,
-                        freeze_time_at=freeze,
-                        move=refund_invoice,
-                    )
+        # Test credit notes
+        for move, test_file in [
+            (downpayment, "downpayment_credit_note"),
+            (final, "final_credit_note")
+        ]:
+            with self.subTest(move=move, test_file=test_file):
+                # Create refund
+                wiz_context = {
+                    'active_model': 'account.move',
+                    'active_ids': [move.id],
+                    'default_journal_id': move.journal_id.id,
+                }
+                refund_wizard = self.env['account.move.reversal'].with_context(wiz_context).create({
+                    'l10n_sa_reason': 'BR-KSA-17-reason-5',
+                    'date': '2022-09-05',
+                })
+                refund_invoice = self.env['account.move'].browse(refund_wizard.reverse_moves()['res_id'])
+                refund_invoice.invoice_date_due = '2022-09-22'
+                self._test_document_generation(
+                    test_file_path=f'l10n_sa_edi/tests/test_files/{test_file}.xml',
+                    expected_xpath=self.credit_note_applied_xpath,
+                    freeze_time_at=freeze,
+                    move=refund_invoice,
+                )
 
     @freeze_time('2022-09-05')
     def test_invoice_with_reversed_downpayment_invoice(self):
@@ -332,19 +305,20 @@ class TestEdiZatca(TestSaEdiCommon):
         """
         if 'sale' not in self.env["ir.module.module"]._installed():
             self.skipTest("Sale module is not installed")
+        self.env.user.group_ids += self.env.ref('sales_team.group_sale_salesman')
 
         saudi_pricelist = self.env['product.pricelist'].create({
             'name': 'SAR',
             'currency_id': self.env.ref('base.SAR').id,
         })
-        sale_order = self.env['sale.order'].create({
+        sale_order = self.env['sale.order'].create({  # noqa: OLS03001
             'partner_id': self.partner_sa.id,
             'pricelist_id': saudi_pricelist.id,
             'order_line': [Command.create({
                 'product_id': self.product_a.id,
                 'price_unit': 1000,
                 'product_uom_qty': 1,
-                'tax_id': [Command.set(self.tax_15.ids)],
+                'tax_ids': [Command.set(self.tax_15.ids)],
             })],
         })
         sale_order.action_confirm()
@@ -360,7 +334,7 @@ class TestEdiZatca(TestSaEdiCommon):
         sale_order.order_line.filtered(lambda l: not l.is_downpayment).qty_delivered = 1
 
         # 1. First downpayment, then reverse it through the Credit Note
-        dp1_wizard = self.env['sale.advance.payment.inv'].with_context(context).create({
+        dp1_wizard = self.env['sale.advance.payment.inv'].with_context(context).create({  # noqa: OLS03001
             'advance_payment_method': 'fixed',
             'fixed_amount': 115,
         })
@@ -374,6 +348,7 @@ class TestEdiZatca(TestSaEdiCommon):
         ).create({
             'journal_id': dp1.journal_id.id,
             'reason': 'Repro opw-6116265',
+            'l10n_sa_reason': 'BR-KSA-17-reason-5',
         })
         reversal_wizard.reverse_moves(is_modify=True)
         self.assertEqual(dp1.payment_state, 'reversed')
@@ -385,7 +360,7 @@ class TestEdiZatca(TestSaEdiCommon):
         dp2.action_post()
 
         # 3. Final invoice — should not raise "Expected singleton" during XML generation
-        final_wizard = self.env['sale.advance.payment.inv'].with_context(context).create({})
+        final_wizard = self.env['sale.advance.payment.inv'].with_context(context).create({})  # noqa: OLS03001
         final = final_wizard._create_invoices(sale_order)
         final.invoice_line_ids.filtered('is_downpayment').name = 'Down Payment'
         final.invoice_date_due = '2022-09-22'
@@ -442,7 +417,7 @@ class TestEdiZatca(TestSaEdiCommon):
         }
 
         # Fetch company name from xml
-        invoice = self._create_invoice(**move_data)
+        invoice = self._create_test_invoice(**move_data)
         invoice.action_post()
         xml_content = self.env['account.edi.format']._l10n_sa_generate_zatca_template(invoice)
         xml_root = etree.fromstring(xml_content)
@@ -488,9 +463,78 @@ class TestEdiZatca(TestSaEdiCommon):
             }],
         }
 
-        invoice = self._create_invoice(**move_data)
+        invoice = self._create_test_invoice(**move_data)
         with self.assertRaises(UserError):
             invoice.action_post()
+
+    def test_zatca_xml_price_amount_precision(self):
+        """
+        Test that PriceAmount has 10 decimal precision to satisfy ZATCA validation BR-KSA-EN16931-11
+        """
+
+        self.tax_15.write({
+            'price_include_override': 'tax_included',
+        })
+        move_data = {
+            'name': 'INV/2025/00013',
+            'invoice_date': '2025-01-15',
+            'invoice_date_due': '2025-01-15',
+            'partner_id': self.partner_sa,
+            'invoice_line_ids': [{
+                'product_id': self.product_a.id,
+                'price_unit': 200.0,
+                'quantity': 7,
+                'tax_ids': self.tax_15.ids,
+            }]
+        }
+        invoice = self._create_test_invoice(**move_data)
+        invoice.action_post()
+
+        # Generate XML
+        xml_content = self.env['account.edi.format']._l10n_sa_generate_zatca_template(invoice)
+        xml_root = etree.fromstring(xml_content)
+
+        # Get PriceAmount from XML
+        price_amount_nodes = xml_root.xpath(
+            "//cac:InvoiceLine/cac:Price/cbc:PriceAmount",
+            namespaces=self.env['account.edi.xml.ubl_21.zatca']._l10n_sa_get_namespaces()
+        )
+        self.assertTrue(price_amount_nodes, "PriceAmount node not found in XML")
+        price_amount_str = price_amount_nodes[0].text
+        self.assertEqual(price_amount_str, '173.9128571429')
+
+    def test_zatca_xml_line_rounding_amount_consistency(self):
+        """Test that LineExtensionAmount + TaxAmount = RoundingAmount for each invoice line."""
+        self.tax_15.price_include_override = 'tax_included'
+        invoice = self._create_test_invoice(
+            name='INV/2022/00001',
+            invoice_date='2022-09-05',
+            invoice_date_due='2022-09-22',
+            partner_id=self.partner_sa,
+            invoice_line_ids=[
+                {
+                    'product_id': self.product_a.id,
+                    'price_unit': 18.0,
+                    'tax_ids': self.tax_15.ids,
+                },
+                {
+                    'product_id': self.product_b.id,
+                    'price_unit': 14.0,
+                    'tax_ids': self.tax_15.ids,
+                }
+            ]
+        )
+        invoice.action_post()
+        xml_content = self.env['account.edi.format']._l10n_sa_generate_zatca_template(invoice)
+        xml_root = etree.fromstring(xml_content)
+        namespaces = self.env['account.edi.xml.ubl_21.zatca']._l10n_sa_get_namespaces()
+
+        for line in xml_root.xpath('//cac:InvoiceLine', namespaces=namespaces):
+            line_ext = float(line.xpath('cbc:LineExtensionAmount/text()', namespaces=namespaces)[0])
+            tax_amt = float(line.xpath('cac:TaxTotal/cbc:TaxAmount/text()', namespaces=namespaces)[0])
+            rounding_amt = float(line.xpath('cac:TaxTotal/cbc:RoundingAmount/text()', namespaces=namespaces)[0])
+            self.assertEqual(line_ext + tax_amt, rounding_amt,
+                msg=f"LineExtensionAmount ({line_ext}) + TaxAmount ({tax_amt}) != RoundingAmount ({rounding_amt})")
 
     def test_csr_generation_compliant_company(self):
         """Test that CSR generation succeeds for a compliant company with valid field lengths."""
@@ -518,7 +562,6 @@ class TestEdiZatca(TestSaEdiCommon):
             'company_id': compliant_company.id,
         })
 
-        compliant_journal._l10n_sa_edi_set_csr_fields()
         try:
             csr_string = self.env['certificate.certificate'].sudo()._l10n_sa_get_csr_str(compliant_journal)
             self.assertTrue(csr_string, "a Valid CSR should not be empty")
@@ -564,7 +607,6 @@ class TestEdiZatca(TestSaEdiCommon):
             'type': 'sale',
             'company_id': non_compliant_company.id,
         })
-        non_compliant_journal._l10n_sa_edi_set_csr_fields()
 
         with self.assertRaises(UserError) as context:
             self.env['certificate.certificate'].sudo()._l10n_sa_get_csr_str(non_compliant_journal)
@@ -603,8 +645,7 @@ class TestEdiZatca(TestSaEdiCommon):
         self.assertTrue(journal.l10n_sa_csr_errors)
         self.assertEqual(
             str(journal.l10n_sa_csr_errors),
-            '<p>Please, make sure all the following fields have been '
-            'correctly set on the Company:\n - Street</p>'
+            f'<p>Please set the following on {self.company.name}: Street</p>'
         )
 
     def test_child_company_api_mode_change_does_not_reset_parent_journal(self):
@@ -652,7 +693,7 @@ class TestEdiZatca(TestSaEdiCommon):
             }],
         }
 
-        invoice = self._create_invoice(**move_data)
+        invoice = self._create_test_invoice(**move_data)
         invoice.action_post()
         xml_content = self.env['account.edi.format']._l10n_sa_generate_zatca_template(invoice)
         xml_root = etree.fromstring(xml_content)
@@ -671,17 +712,19 @@ class TestEdiZatca(TestSaEdiCommon):
         """
         self.ensure_installed('sale')
 
+        self.env.user.group_ids += self.env.ref('sales_team.group_sale_salesman')
+
         self.company.tax_calculation_rounding_method = 'round_globally'
 
         # Create sale order with 8 lines at 33.34 each (triggers rounding precision issues)
-        sale_order = self.env['sale.order'].create({
+        sale_order = self.env['sale.order'].create({  # noqa: OLS03001
             'partner_id': self.partner_sa.id,
             'order_line': [
                 Command.create({
                     'product_id': self.product_a.id,
                     'price_unit': 33.34,
                     'product_uom_qty': 1,
-                    'tax_id': [Command.set(self.tax_15.ids)],
+                    'tax_ids': [Command.set(self.tax_15.ids)],
                 }) for _dummy in range(8)
             ],
         })
@@ -701,71 +744,41 @@ class TestEdiZatca(TestSaEdiCommon):
         downpayment = downpayment_wizard._create_invoices(sale_order)
         downpayment.action_post()
 
-        # Create final invoice that inludes downpayment lines
-        final_wizard = self.env['sale.advance.payment.inv'].with_context(context).create({})
+        # Create final invoice that includes downpayment lines
+        final_wizard = self.env['sale.advance.payment.inv'].with_context(context).create({})  # noqa: OLS03001
         final = final_wizard._create_invoices(sale_order)
         final.action_post()
 
         EdiHandler = self.env['account.edi.xml.ubl_21.zatca']
-        prepaid_vals = EdiHandler._l10n_sa_get_prepaid_amount(final, {})
 
-        self.assertGreaterEqual(len(prepaid_vals), 1, "Prepaid values shouldn't be empty")
-        # With correct rounding (sum raw at hundredth): 8 * 5.001 = 40.008 → 40.01
-        # With incorrect rounding (sum rounded): would be 8 * 5.00 = 40.00
-        expected_tax = final.currency_id.round(8 * 5.001)
+        # Generate EDI document and verify tax amount and payable amount
+        xml_content = self.env['account.edi.format']._l10n_sa_generate_zatca_template(final)
+        xml_root = etree.fromstring(xml_content)
+        namespaces = EdiHandler._l10n_sa_get_namespaces()
+
+        # Verify tax amount is correctly calculated with global rounding
+        tax_total_nodes = xml_root.xpath(
+            "//cac:TaxTotal/cbc:TaxAmount",
+            namespaces=namespaces,
+        )
+        tax_amount = tax_total_nodes[0].text.strip()
         self.assertEqual(
-            prepaid_vals['tax_amount'],
-            expected_tax,
-            f"Tax amount should be {expected_tax} (correct hundredth rounding), got \
-            {prepaid_vals['tax_amount']}"
+            tax_amount,
+            '40.01',
+            f"Tax amount should be 40.01 (correct global rounding), got {tax_amount}",
         )
 
-        monetary_vals = EdiHandler._l10n_sa_get_monetary_vals(final, {
-            'taxes_vals': {'base_amount_currency': 266.72, 'tax_amount_currency': 40.01},
-            'vals': {
-                'monetary_total_vals': {'line_extension_amount': 266.72, 'payable_rounding_amount': 0},
-                'allowance_charge_vals': [],
-            }
-        })
-        self.assertEqual(monetary_vals['payable_amount'], 0.0,
-        f"Payable amount should be 0.0 (fully prepaid), got {monetary_vals['payable_amount']}")
-
-    @freeze_time('2022-09-05 08:20:02')
-    def test_invoice_global_rounding_line_extension_amount(self):
-        """
-        Under global rounding, LineExtensionAmount (BT-106) must equal TaxExclusiveAmount (BT-109).
-        note: price included is just there to make it easy to have the rounding issue
-        """
-
-        self.company.tax_calculation_rounding_method = 'round_globally'
-        self.tax_15.price_include_override = 'tax_included'
-
-        move_data = {
-            'name': 'INV/2022/00015',
-            'invoice_date': '2022-09-05',
-            'invoice_date_due': '2022-09-05',
-            'partner_id': self.partner_sa,
-            'invoice_line_ids': [{
-                'product_id': self.product_a.id,
-                'price_unit': 10.00,
-                'tax_ids': self.tax_15.ids,
-            } for _dummy in range(3)],
-        }
-
-        invoice = self._create_invoice(**move_data)
-        invoice.action_post()
-
-        xml_content = self.env['account.edi.format']._l10n_sa_generate_zatca_template(invoice)
-        xml_root = etree.fromstring(xml_content)
-        namespaces = self.env['account.edi.xml.ubl_21.zatca']._l10n_sa_get_namespaces()
-        line_extension_amount = xml_root.xpath(
-            "//cac:LegalMonetaryTotal/cbc:LineExtensionAmount", namespaces=namespaces)[0].text.strip()
-        tax_exclusive_amount = xml_root.xpath(
-            "//cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount", namespaces=namespaces)[0].text.strip()
-
-        self.assertEqual(line_extension_amount, tax_exclusive_amount,
-            "LineExtensionAmount (BT-106) must equal TaxExclusiveAmount (BT-109) under global rounding")
-        self.assertEqual(line_extension_amount, '26.09')
+        payable_amount_nodes = xml_root.xpath(
+            "//cbc:PayableAmount",
+            namespaces=namespaces,
+        )
+        self.assertTrue(payable_amount_nodes, "PayableAmount node not found in XML")
+        payable_amount = payable_amount_nodes[0].text.strip()
+        self.assertEqual(
+            payable_amount,
+            '0.00',
+            f"Payable amount should be 0.00 (fully prepaid), got {payable_amount}",
+        )
 
     def test_csr_validation_with_multibyte_characters(self):
         vals = self._get_company_vals({"name": "مجموعة النخبة العالمية للاستشارات الفنية"})
@@ -784,61 +797,4 @@ class TestEdiZatca(TestSaEdiCommon):
         self.assertRegex(
             journal.l10n_sa_csr_errors,
             r"Please make sure the following fields are shorter than 64 bytes.*Company Name",
-        )
-
-    def test_zatca_submission_not_resent_when_user_lacks_journal_write(self):
-        """If a user with only Invoicing rights (read-only on journals) successfully submits
-        to ZATCA, then recording the result writes to journal.l10n_sa_latest_submission_hash.
-        If that write is not done with sudo it raises AccessError after ZATCA already
-        accepted the invoice, the transaction is rolled back, and the invoice is
-        resubmitted, resulting in a duplicate on ZATCA's side.
-        """
-
-        def _mock_l10n_sa_api_clearance(journal_self, inv, xml_content, PCSID_data):
-            return {
-                'reportingStatus': 'REPORTED',
-                'validationResults': {'status': 'PASS'},
-                'status_code': 200,
-            }
-
-        journal = self.customer_invoice_journal
-
-        if not journal.l10n_sa_chain_sequence_id:
-            journal.sudo().l10n_sa_chain_sequence_id = journal.sudo()._l10n_sa_edi_create_new_chain()
-
-        # Invoicing user with read-only on account.journal
-        restricted_user = self.env['res.users'].create({
-            'name': 'ZATCA Billing User',
-            'login': 'zatca_billing_user',
-            'email': 'zatca_billing_user@example.com',
-            'company_id': self.company.id,
-            'company_ids': [Command.set(self.company.ids)],
-            'groups_id': [Command.set([
-                self.env.ref('base.group_user').id,
-                self.env.ref('account.group_account_invoice').id,
-            ])],
-        })
-
-        invoice = self._create_invoice(
-            name='INV/2026/00001',
-            invoice_date='2026-07-28',
-            partner_id=self.partner_sa_simplified,
-            invoice_line_ids=[{
-                'product_id': self.product_burger.id,
-                'price_unit': self.product_burger.standard_price,
-                'quantity': 1,
-                'tax_ids': self.tax_15.ids,
-            }],
-        )
-        invoice.action_post()
-        zatca_doc = invoice.edi_document_ids.filtered(lambda d: d.edi_format_id.code == 'sa_zatca')
-
-        # Mocked _l10n_sa_api_clearance to simulate a successful ZATCA response
-        with patch.object(self.env.registry["account.journal"], '_l10n_sa_api_clearance', _mock_l10n_sa_api_clearance):
-            with contextlib.suppress(AccessError):
-                invoice.with_user(restricted_user).action_process_edi_web_services()
-
-        self.assertEqual(
-            zatca_doc.state, 'sent',
-            "The ZATCA document should be marked 'sent' after a successful submission.",
         )

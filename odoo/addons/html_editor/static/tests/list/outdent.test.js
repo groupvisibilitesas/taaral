@@ -1,15 +1,24 @@
-import { describe, expect, test } from "@odoo/hoot";
+import { describe, expect, test, before } from "@odoo/hoot";
 import { setupEditor, testEditor } from "../_helpers/editor";
 import { unformat } from "../_helpers/format";
 import { bold, deleteBackward, keydownShiftTab } from "../_helpers/user_actions";
 import { getContent } from "../_helpers/selection";
 
+before(async () => {
+    const font = new FontFace("Roboto", "url(/web/static/fonts/google/Roboto/Roboto-Regular.ttf)");
+    await font.load();
+    document.fonts.add(font);
+    await document.fonts.ready;
+});
+
 describe("Regular list", () => {
+    test.tags("font-dependent");
     test("should remove the list-style when outdent the list", async () => {
         await testEditor({
+            styleContent: "ul { font: 14px Roboto }",
             contentBefore: unformat(`
                     <ul>
-                        <li style="list-style: cambodian;">
+                        <li class="oe-nested" style="list-style: upper-latin;">
                             <ul>
                                 <li>a[b]c</li>
                             </ul>
@@ -18,7 +27,6 @@ describe("Regular list", () => {
             stepFunction: keydownShiftTab,
             contentAfter: unformat(`
                     <ul>
-                        <li style="list-style: cambodian;"></li>
                         <li>a[b]c</li>
                     </ul>`),
         });
@@ -66,8 +74,7 @@ describe("Checklist", () => {
         await testEditor({
             contentBefore: unformat(`
                     <ul class="o_checklist">
-                        <li class="o_checked">abc</li>
-                        <li class="oe-nested">
+                        <li><p>abc</p>
                             <ul class="o_checklist">
                                 <li class="o_checked">d[e]f</li>
                             </ul>
@@ -76,7 +83,7 @@ describe("Checklist", () => {
             stepFunction: keydownShiftTab,
             contentAfter: unformat(`
                     <ul class="o_checklist">
-                        <li class="o_checked">abc</li>
+                        <li><p>abc</p></li>
                         <li class="o_checked">d[e]f</li>
                     </ul>`),
         });
@@ -86,8 +93,7 @@ describe("Checklist", () => {
         await testEditor({
             contentBefore: unformat(`
                     <ul class="o_checklist">
-                        <li>abc</li>
-                        <li class="oe-nested">
+                        <li><p>abc</p>
                             <ul class="o_checklist">
                                 <li>d[e]f</li>
                             </ul>
@@ -96,7 +102,7 @@ describe("Checklist", () => {
             stepFunction: keydownShiftTab,
             contentAfter: unformat(`
                     <ul class="o_checklist">
-                        <li>abc</li>
+                        <li><p>abc</p></li>
                         <li>d[e]f</li>
                     </ul>`),
         });
@@ -108,9 +114,9 @@ describe("with selection collapsed", () => {
         await testEditor({
             contentBefore: unformat(`
                     <ul>
-                        <li>
+                        <li><p>
                             a
-                        </li><li class="oe-nested">
+                        </p>
                             <ul>
                                 <li>[]b</li>
                             </ul>
@@ -119,7 +125,7 @@ describe("with selection collapsed", () => {
             stepFunction: keydownShiftTab,
             contentAfter: unformat(`
                     <ul>
-                        <li>a</li>
+                        <li><p>a</p></li>
                         <li>[]b</li>
                     </ul>`),
         });
@@ -129,10 +135,9 @@ describe("with selection collapsed", () => {
         await testEditor({
             contentBefore: unformat(`
                     <ol>
-                        <li>
+                        <li><p>
                             a
-                        </li>
-                        <li class="oe-nested">
+                        </p>
                             <ol>
                                 <li>[]b</li>
                             </ol>
@@ -141,7 +146,7 @@ describe("with selection collapsed", () => {
             stepFunction: keydownShiftTab,
             contentAfter: unformat(`
                     <ol>
-                        <li>a</li>
+                        <li><p>a</p></li>
                         <li>[]b</li>
                     </ol>`),
         });
@@ -151,10 +156,9 @@ describe("with selection collapsed", () => {
         await testEditor({
             contentBefore: unformat(`
                     <ul>
-                        <li>
+                        <li><p>
                             a
-                        </li>
-                        <li class="oe-nested">
+                        </p>
                             <ul>
                                 <li>[]b</li>
                             </ul>
@@ -166,7 +170,7 @@ describe("with selection collapsed", () => {
             stepFunction: keydownShiftTab,
             contentAfter: unformat(`
                     <ul>
-                        <li>a</li>
+                        <li><p>a</p></li>
                         <li>[]b</li>
                         <li>c</li>
                     </ul>`),
@@ -193,10 +197,9 @@ describe("with selection collapsed", () => {
         await testEditor({
             contentBefore: unformat(`
                     <ul>
-                        <li>
+                        <li><p>
                             a
-                        </li>
-                        <li class="oe-nested">
+                        </p>
                             <ul>
                                 <li class="oe-nested">
                                     <ul>
@@ -209,10 +212,9 @@ describe("with selection collapsed", () => {
             stepFunction: keydownShiftTab,
             contentAfter: unformat(`
                     <ul>
-                        <li>
+                        <li><p>
                             a
-                        </li>
-                        <li class="oe-nested">
+                        </p>
                             <ul>
                                 <li>[]c</li>
                             </ul>
@@ -225,10 +227,9 @@ describe("with selection collapsed", () => {
         await testEditor({
             contentBefore: unformat(`
                     <ul>
-                        <li>
+                        <li><p>
                             a
-                        </li>
-                        <li class="oe-nested">
+                        </p>
                             <ul>
                                 <li>[]c</li>
                             </ul>
@@ -237,9 +238,9 @@ describe("with selection collapsed", () => {
             stepFunction: keydownShiftTab,
             contentAfter: unformat(`
                     <ul>
-                        <li>
+                        <li><p>
                             a
-                        </li>
+                        </p></li>
                         <li>[]c</li>
                     </ul>`),
         });
@@ -256,8 +257,7 @@ describe("with selection collapsed", () => {
                                 </td>
                                 <td>
                                     <ul>
-                                        <li>abc</li>
-                                        <li class="oe-nested">
+                                        <li><p>abc</p>
                                             <ul>
                                                 <li>def[]</li>
                                             </ul>
@@ -281,7 +281,7 @@ describe("with selection collapsed", () => {
                                 </td>
                                 <td>
                                     <ul>
-                                        <li>abc</li>
+                                        <li><p>abc</p></li>
                                         <li>def[]</li>
                                     </ul>
                                 </td>
@@ -306,8 +306,7 @@ describe("with selection collapsed", () => {
                                 </td>
                                 <td>
                                     <ul class="o_checklist">
-                                        <li>abc</li>
-                                        <li class="oe-nested">
+                                        <li><p>abc</p>
                                             <ul class="o_checklist">
                                                 <li>def[]</li>
                                             </ul>
@@ -331,7 +330,7 @@ describe("with selection collapsed", () => {
                                 </td>
                                 <td>
                                     <ul class="o_checklist">
-                                        <li>abc</li>
+                                        <li><p>abc</p></li>
                                         <li>def[]</li>
                                     </ul>
                                 </td>
@@ -522,7 +521,7 @@ describe("with selection collapsed", () => {
                 <ul>
                     <li>a</li>
                 </ul>
-                <p placeholder='Type "/" for commands' class="o-we-hint">[]<br></p>`)
+                <p o-we-hint-text='Type "/" for commands' class="o-we-hint">[]<br></p>`)
         );
     });
     test("should not crash when outdenting a list item with invisible nodes", async () => {
@@ -534,6 +533,7 @@ describe("with selection collapsed", () => {
                 </ul>`),
             stepFunction: (editor) => {
                 bold(editor); // produces a <strong> tag with zws inside
+                deleteBackward(editor); // removes the marker
                 deleteBackward(editor); // outdents the list item
             },
             contentAfter: unformat(`
@@ -543,6 +543,56 @@ describe("with selection collapsed", () => {
                 <p>[]<br></p>`),
         });
     });
+    test("should correctly merge list items when outdenting nested list", async () => {
+        await testEditor({
+            contentBefore: unformat(`
+                <ol>
+                    <li>
+                        <div>abc</div>
+                        <ol>
+                            <li>def</li>
+                            <li class="oe-nested">
+                                <div>[]ghi</div>
+                                <ol>
+                                    <li>jkl</li>
+                                </ol>
+                            </li>
+                            <li>mno</li>
+                        </ol>
+                    </li>
+                    <li>pqr</li>
+                </ol>
+            `),
+            stepFunction: (editor) => {
+                keydownShiftTab(editor);
+                keydownShiftTab(editor);
+            },
+            contentAfter: unformat(`
+                <ol>
+                    <li>
+                        <div>abc</div>
+                        <ol>
+                            <li>def</li>
+                        </ol>
+                    </li>
+                </ol>
+                <div>[]ghi</div>
+                <ol>
+                    <li class="oe-nested">
+                        <ol>
+                            <li class="oe-nested">
+                                <ol>
+                                    <li>jkl</li>
+                                </ol>
+                            </li>
+                            <li>mno</li>
+                        </ol>
+                    </li>
+                    <li>pqr</li>
+                </ol>
+            `),
+        });
+    });
 });
 
 describe("with selection", () => {
@@ -550,9 +600,9 @@ describe("with selection", () => {
         await testEditor({
             contentBefore: unformat(`
                     <ul>
-                        <li>
+                        <li><p>
                             a
-                        </li><li class="oe-nested">
+                        </p>
                             <ul>
                                 <li>[b]</li>
                             </ul>
@@ -564,7 +614,7 @@ describe("with selection", () => {
             stepFunction: keydownShiftTab,
             contentAfter: unformat(`
                     <ul>
-                        <li>a</li>
+                        <li><p>a</p></li>
                         <li>[b]</li>
                         <li>c</li>
                     </ul>`),
@@ -610,6 +660,54 @@ describe("with selection", () => {
         });
     });
 
+    test("should outdent multi-levl list", async () => {
+        await testEditor({
+            contentBefore: unformat(`
+                <ul>
+                    <li class="oe-nested">
+                        <ul>
+                            <li><p>[a</p>
+                                <ul>
+                                    <li><p>b</p>
+                                        <ul>
+                                            <li><p>c</p>
+                                                <ul>
+                                                    <li>d</li>
+                                                </ul>
+                                            </li>
+                                            <li>e</li>
+                                        </ul>
+                                    </li>
+                                    <li>f</li>
+                                </ul>
+                            </li>
+                            <li>g]</li>
+                        </ul>
+                    </li>
+                </ul>`),
+            stepFunction: keydownShiftTab,
+            contentAfter: unformat(`
+                <ul>
+                    <li><p>[a</p>
+                        <ul>
+                            <li><p>b</p>
+                                <ul>
+                                    <li><p>c</p>
+                                        <ul>
+                                            <li>d</li>
+                                        </ul>
+                                    </li>
+                                    <li>e</li>
+                                </ul>
+                            </li>
+                            <li>f</li>
+                        </ul>
+                    </li>
+                    <li>g]</li>
+                </ul>`),
+        });
+    });
+
     // @wrongCommand
     // This test fails because the original test tested the "indentList" command
     // (with mode="outdent"), which has a different behavior than keydown
@@ -641,10 +739,9 @@ describe("with selection", () => {
             contentAfter: unformat(`
                     <ul>
                         <li>a</li>
-                        <li>
+                        <li><p>
                             [b
-                        </li>
-                        <li class="oe-nested">
+                        </p>
                             <ul>
                                 <li>c</li>
                             </ul>
@@ -727,8 +824,7 @@ describe("with selection", () => {
                                 <li>[d</li>
                             </ul>
                         </li>
-                        <li>e</li>
-                        <li class="oe-nested">
+                        <li><p>e</p>
                             <ul>
                                 <li>f</li>
                                 <li>g</li>
@@ -779,8 +875,7 @@ describe("with selection", () => {
                                 </td>
                                 <td>
                                     <ol>
-                                        <li>abc</li>
-                                        <li class="oe-nested">
+                                        <li><p>abc</p>
                                             <ol>
                                                 <li>[def]</li>
                                             </ol>
@@ -804,7 +899,7 @@ describe("with selection", () => {
                                 </td>
                                 <td>
                                     <ol>
-                                        <li>abc</li>
+                                        <li><p>abc</p></li>
                                         <li>[def]</li>
                                     </ol>
                                 </td>

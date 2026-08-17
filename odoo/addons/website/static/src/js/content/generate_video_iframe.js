@@ -1,6 +1,3 @@
-import { ObservingCookieWidgetMixin } from "@website/snippets/observing_cookie_mixin";
-const { _manageIframeSrc } = ObservingCookieWidgetMixin;
-
 const SUPPORTED_DOMAINS = [
     "youtu.be",
     "youtube.com",
@@ -12,12 +9,43 @@ const SUPPORTED_DOMAINS = [
 ];
 
 /**
+ * This is a non-lazy version of the `manageIframeSrc` function already
+ * available in the `"website_cookies"` service. It was added here to
+ * adapt video iframe `src` as soon as the HTML document is loaded,
+ * (before interactions start), so that the iframes can be properly
+ * displayed. Remark: the lazy-loaded code should use the function
+ * from the `website_cookies` service.
+ *
+ * @param {HTMLIFrameElement} iframeEl
+ * @param {string} src
+ */
+function manageIframeSrcOnLoad(iframeEl, src) {
+    if (!iframeEl.closest("[data-need-cookies-approval]")) {
+        iframeEl.setAttribute("src", src);
+    } else {
+        iframeEl.dataset.nocookieSrc = src;
+        iframeEl.setAttribute("src", "about:blank");
+        iframeEl.dataset.needCookiesApproval = "true";
+    }
+}
+
+/**
  * Builds a video iframe for a saved `src` and appends it to the DOM.
  *
  * @param {HTMLElement} parentEl The iframe container.
+ * @param {function} manageIframeSrcFct The iframe `src` handler.
  * @returns {HTMLIframeElement}
  */
-export function generateVideoIframe(parentEl) {
+export function generateVideoIframe(parentEl, manageIframeSrcFct) {
+    // Depending on version / compatibility / instance, the src is saved in the
+    // 'data-src' attribute or the 'data-oe-expression' one.
+    const src = parentEl.dataset.oeExpression || parentEl.dataset.src;
+    // Do not generate an iframe if there is no src, as it means that the
+    // container only contains the SVG placeholder.
+    if (!src) {
+        return;
+    }
+
     // Bug fix / compatibility: empty the <div/> element as all information
     // to rebuild the iframe should have been saved on the <div/> element
     parentEl.replaceChildren();
@@ -29,9 +57,7 @@ export function generateVideoIframe(parentEl) {
     extraSizeEl.className = "media_iframe_video_size";
     parentEl.append(extraEditionEl, extraSizeEl);
 
-    // Rebuild the iframe. Depending on version / compatibility / instance, the
-    // src is saved in the 'data-src' attribute or the 'data-oe-expression' one.
-    const src = parentEl.dataset.oeExpression || parentEl.dataset.src;
+    // Rebuild the iframe.
     // Validate the src to only accept supported domains we can trust
     const m = src.match(/^(?:https?:)?\/\/([^/?#]+)/);
     if (!m) {
@@ -48,8 +74,8 @@ export function generateVideoIframe(parentEl) {
     iframeEl.setAttribute("allowfullscreen", "allowfullscreen");
     iframeEl.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
     parentEl.appendChild(iframeEl);
+    manageIframeSrcFct ? manageIframeSrcFct(iframeEl, src) : manageIframeSrcOnLoad(iframeEl, src);
 
-    _manageIframeSrc(parentEl, src);
     return iframeEl;
 }
 

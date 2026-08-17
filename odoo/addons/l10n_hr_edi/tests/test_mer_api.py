@@ -277,7 +277,7 @@ class TestL10nHrEdiMerApi(TestL10nHrEdiCommon, TestAccountMoveSendCommon):
             'l10n_hr_mer_username': 'WRONG USERNAME',
             'l10n_hr_mer_password': 'WRONG PASSWORD',
         })
-        with self.assertRaisesRegex(UserError, r"MER service returned an error: Username 'WRONG USERNAME': \['Korisničko ime i lozinka nisu ispravni\.'\]"):
+        with self.assertRaisesRegex(UserError, r"MER service returned an error: Username 'WRONG USERNAME': Korisničko ime i lozinka nisu ispravni\."):
             _mer_api_query_inbox(self.env.company)
-        with self.assertRaisesRegex(UserError, r"MER service returned an error: Username 'WRONG USERNAME': \['Korisničko ime i lozinka nisu ispravni\.\. Trace ID:.*'\]"):
+        with self.assertRaisesRegex(UserError, r"MER service returned an error: Username 'WRONG USERNAME': Korisničko ime i lozinka nisu ispravni\.\. Trace ID:.*"):
             _mer_api_send(self.env.company, xml_file='Totally a file')

@@ -32,7 +32,7 @@ class TestMarketingCardMail(MailCase, MarketingCardCommon):
     def assertSentMailCorrectCard(self, sent_mails, cards):
         IrHttp = self.env['ir.http']
         sent_cards = self.env['card.card']
-        for sent_mail in self._mails:
+        for sent_mail in sent_mails:
             record_id = int(sent_mail['object_id'].split('-')[0])
             card = cards.filtered(lambda card: card.res_id == record_id)
             self.assertEqual(len(card), 1)
@@ -49,7 +49,7 @@ class TestMarketingCardMail(MailCase, MarketingCardCommon):
     @mute_logger('odoo.addons.mail.models.mail_mail')
     def test_campaign_send_mailing(self):
         campaign = self.campaign.with_user(self.env.user)
-        self.env.user.sudo().groups_id += self.env.ref('mass_mailing.group_mass_mailing_user')
+        self.env.user.sudo().group_ids += self.env.ref('mass_mailing.group_mass_mailing_user')
         partners = self.env['res.partner'].sudo().create([{'name': f'Part{n}', 'email': f'partn{n}@test.lan'} for n in range(7)])
         mailing_context = campaign.action_share().get('context') | {
             'default_email_from': 'test@test.lan',
@@ -98,7 +98,7 @@ class TestMarketingCardMail(MailCase, MarketingCardCommon):
             mailing.action_update_cards()
         self.assertEqual(len(self._wkhtmltoimage_bodies), 5)
 
-        with self.mock_mail_gateway(), self.assertQueryCount(57):
+        with self.mock_mail_gateway(), self.assertQueryCount(55):
             mailing._action_send_mail()
 
         cards = self.env['card.card'].search([('campaign_id', '=', campaign.id)])
@@ -117,7 +117,7 @@ class TestMarketingCardMail(MailCase, MarketingCardCommon):
         self.env['ir.config_parameter'].sudo().set_param('mail.batch_size', 5)
 
         campaign = self.campaign.with_user(self.env.user)
-        self.env.user.sudo().groups_id += self.env.ref('mass_mailing.group_mass_mailing_user')
+        self.env.user.sudo().group_ids += self.env.ref('mass_mailing.group_mass_mailing_user')
         partners = self.env['res.partner'].sudo().create([{'name': f'Part{n}', 'email': f'email{n % 3}@test.lan'} for n in range(10)])
         mailing_context = campaign.action_share().get('context') | {
             'default_email_from': 'test@test.lan',
@@ -247,8 +247,8 @@ class TestMarketingCardRender(MarketingCardCommon):
         for tz in timezones:
             # force find different timezones to check the returned time
             with patch(
-                    'odoo.addons.mail.models.models.BaseModel._mail_get_timezone_with_default',
-                    lambda model, default_tz: tz
+                    'odoo.addons.mail.models.models.Base._mail_get_timezone',
+                    lambda model: tz
             ):
                 timezone_result_headers.append(
                     campaign._get_card_element_values(campaign.preview_record_ref)['header']
@@ -330,7 +330,7 @@ class TestMarketingCardRouting(HttpCase, MarketingCardCommon):
         redirect_response = self.url_open(card._get_redirect_url(), allow_redirects=False)
         self.assertEqual(redirect_response.status_code, 303)
         self.assertEqual(redirect_response._next.url, self.campaign.link_tracker_id.short_url)
-        self.opener.send(redirect_response._next, allow_redirects=False)
+        self.url_open(redirect_response._next.url, allow_redirects=False)
         self.assertEqual(self.campaign.target_url_click_count, 1)
 
         cards[1:10].share_status = 'visited'
@@ -346,26 +346,28 @@ class TestMarketingCardSecurity(MarketingCardCommon):
     @mute_logger('odoo.addons.mail.models.mail_render_mixin')
     def test_campaign_field_paths(self):
         """Check that card updates are performed as the current user."""
-        # restrict reading from partner titles (flush to apply new rule)
+        # restrict reading from partner states (flush to apply new rule)
         rules = self.env['ir.rule'].sudo().create([{
-            'name': 'marketing card user read partner title',
+            'name': 'marketing card user read partner state',
             'domain_force': repr([(0, '=', 1)]),
             'groups': self.env.ref('marketing_card.marketing_card_group_user').ids,
-            'model_id': self.env['ir.model']._get_id('res.partner.title'),
+            'model_id': self.env['ir.model']._get_id('res.country.state'),
             'perm_read': True,
         }, {
-            'name': 'system user read partner title',
+            'name': 'system user read partner state',
             'domain_force': repr([(1, '=', 1)]),
             'groups': self.env.ref('base.group_system').ids,
-            'model_id': self.env['ir.model']._get_id('res.partner.title'),
+            'model_id': self.env['ir.model']._get_id('res.country.state'),
             'perm_read': True,
         }])
         rules.flush_recordset()
-        # set a title as sudo and invalidate to force fetch as test user
-        self.marketing_card_user.partner_id.title = self.env['res.partner.title'].sudo().create({
-            'name': 'test marketing card title',
+        # set a state as sudo and invalidate to force fetch as test user
+        self.marketing_card_user.partner_id.state_id = self.env['res.country.state'].sudo().create({
+            'name': 'test marketing card state',
+            'code': 'ZZ',
+            'country_id': self.env.ref('base.be').id,
         })
-        self.marketing_card_user.partner_id.title.invalidate_recordset()
+        self.marketing_card_user.partner_id.state_id.invalidate_recordset()
 
         campaign = self.campaign.with_user(self.env.user)
         campaign.preview_record_ref = self.marketing_card_user.partner_id
@@ -374,18 +376,18 @@ class TestMarketingCardSecurity(MarketingCardCommon):
         with self.assertRaises(exceptions.UserError):
             campaign.write({
                 'content_header_dyn': True,
-                'content_header_path': 'title.name',
+                'content_header_path': 'state_id.name',
             })
             # flush to compute image_preview
             campaign.flush_recordset()
 
         campaign.with_user(self.system_admin).write({
             'content_header_dyn': True,
-            'content_header_path': 'title.name',
+            'content_header_path': 'state_id.name',
         })
         campaign.with_user(self.system_admin).flush_recordset()
-        # clear title from cache as it was fetched by the admin for the preview render
-        self.marketing_card_user.partner_id.title.invalidate_recordset()
+        # clear state from cache as it was fetched by the admin for the preview render
+        self.marketing_card_user.partner_id.state_id.invalidate_recordset()
 
         with self.assertRaises(exceptions.UserError), self.mock_image_renderer():
             campaign._update_cards([('id', '=', self.marketing_card_user.partner_id.id)])
@@ -393,7 +395,7 @@ class TestMarketingCardSecurity(MarketingCardCommon):
 
         with self.mock_image_renderer():
             campaign.with_user(self.system_admin)._update_cards([('id', '=', self.marketing_card_user.partner_id.id)])
-        self.assertIn('test marketing card title', self._wkhtmltoimage_bodies[0])
+        self.assertIn('test marketing card state', self._wkhtmltoimage_bodies[0])
 
     def test_campaign_ownership(self):
         campaign_as_manager = self.campaign.with_user(self.marketing_card_manager)

@@ -30,8 +30,8 @@ class TestWebsiteSitemap(TransactionCase):
                 "UPDATE ir_ui_view SET write_date = %s WHERE id = %s",
                 (view_date, page.view_id.id)
             )
-            Page.invalidate_model(['write_date'])
             View.invalidate_model(['write_date'])
+            Page.invalidate_model(['write_date', 'view_write_date'])
             self.assertEqual(str(page.write_date), page_date)
             self.assertEqual(str(page.view_id.write_date), view_date)
 
@@ -68,7 +68,7 @@ class TestWebsiteSitemap(TransactionCase):
                 return [FakeRule()]
 
         # Patch routing_map to return our fake router so only our fake rules are considered
-        with patch('odoo.addons.website.models.ir_http.Http.routing_map', autospec=True, return_value=FakeRouter()):
+        with patch('odoo.addons.website.models.ir_http.IrHttp.routing_map', autospec=True, return_value=FakeRouter()):
             locs = list(website.with_user(website.user_id)._enumerate_pages())
 
         dupes = [l['loc'] for l in locs if l['loc'].startswith('/dupe')]
@@ -115,7 +115,7 @@ class TestWebsiteSitemap(TransactionCase):
             def iter_rules(self):
                 return [RuleBound(), RulePartial()]
 
-        with patch('odoo.addons.website.models.ir_http.Http.routing_map', autospec=True, return_value=FakeRouter()):
+        with patch('odoo.addons.website.models.ir_http.IrHttp.routing_map', autospec=True, return_value=FakeRouter()):
             locs = list(website.with_user(website.user_id)._enumerate_pages())
 
         # The sitemap callable should have been executed only once

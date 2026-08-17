@@ -18,7 +18,6 @@ SUPPORTED_IMAGE_MIMETYPES = {
 
 
 class IrAttachment(models.Model):
-
     _inherit = "ir.attachment"
 
     local_url = fields.Char("Attachment URL", compute='_compute_local_url')

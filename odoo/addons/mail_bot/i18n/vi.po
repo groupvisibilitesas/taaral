@@ -1,23 +1,28 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* mail_bot
+# * mail_bot
 #
 # Translators:
-# Wil Odoo, 2024
+# Martin Trigaux, 2022
 #
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# "Thi Huong Nguyen (thng)" <thng@odoo.com>, 2025.
+# Deleted User <noreply+31@weblate.org>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Wil Odoo, 2024\n"
-"Language-Team: Vietnamese (https://app.transifex.com/odoo/teams/41243/vi/)\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-03 10:44+0000\n"
+"Last-Translator: Deleted User <noreply+31@weblate.org>\n"
+"Language-Team: Vietnamese <https://translate.odoo.com/projects/odoo-19/"
+"mail_bot/vi/>\n"
 "Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: mail_bot
 #. odoo-python
@@ -40,20 +45,19 @@ msgid "Discussion Channel"
 msgstr "Kênh thảo luận"
 
 #. module: mail_bot
+#: model:ir.model.fields,field_description:mail_bot.field_discuss_channel__display_name
+#: model:ir.model.fields,field_description:mail_bot.field_mail_bot__display_name
+#: model:ir.model.fields,field_description:mail_bot.field_res_users__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: mail_bot
 #. odoo-python
 #: code:addons/mail_bot/models/mail_bot.py:0
 msgid ""
-"Good, you can customize canned responses in the Discuss application.%"
-"(new_line)s%(new_line)s%(bold_start)sIt's the end of this overview%"
-"(bold_end)s, you can now %(bold_start)sclose this conversation%(bold_end)s "
-"or start the tour again with typing %(command_start)sstart the tour%"
-"(command_end)s. Enjoy discovering Odoo!"
+"Great! You can customize %(bold_start)scanned responses%(bold_end)s in the "
+"Discuss app."
 msgstr ""
-"Tuyệt, bạn có thể tùy chỉnh các câu trả lời soạn sẵn trong ứng dụng Thảo "
-"luận.%(new_line)s%(new_line)s%(bold_start)sPhần tổng quan này đã kết thúc%"
-"(bold_end)s, bây giờ bạn có thể %(bold_start)sđóng cuộc trò chuyện này%"
-"(bold_end)s hoặc bắt đầu lại tour bằng cách nhập %(command_start)sbắt đầu "
-"tour%(command_end)s. Hãy tận hưởng quá trình khám phá Odoo!"
 
 #. module: mail_bot
 #. odoo-python
@@ -93,8 +97,15 @@ msgid ""
 "ask: %(command_start)sstart the tour%(command_end)s."
 msgstr ""
 "Tôi không có đủ trí thông minh để trả lời câu hỏi của bạn.%(new_line)sĐể làm "
-"theo hướng dẫn của tôi, hãy hỏi: %(command_start)sbắt đầu tour%"
-"(command_end)s."
+"theo hướng dẫn của tôi, hãy hỏi: %(command_start)sbắt đầu tour%(command_end)"
+"s."
+
+#. module: mail_bot
+#: model:ir.model.fields,field_description:mail_bot.field_discuss_channel__id
+#: model:ir.model.fields,field_description:mail_bot.field_mail_bot__id
+#: model:ir.model.fields,field_description:mail_bot.field_res_users__id
+msgid "ID"
+msgstr "ID"
 
 #. module: mail_bot
 #: model:ir.model.fields.selection,name:mail_bot.selection__res_users__odoobot_state__idle
@@ -209,9 +220,9 @@ msgid ""
 "him%(bold_end)s. Write %(command_start)s@OdooBot%(command_end)s and select "
 "me."
 msgstr ""
-"Xin lỗi tôi không để ý. Để thu hút sự chú ý của ai đó, hãy %"
-"(bold_start)sping người đó%(bold_end)s. Viết %(command_start)s@OdooBot%"
-"(command_end)s và chọn tôi."
+"Xin lỗi tôi không để ý. Để thu hút sự chú ý của ai đó, hãy %(bold_start)"
+"sping người đó%(bold_end)s. Viết %(command_start)s@OdooBot%(command_end)s và "
+"chọn tôi."
 
 #. module: mail_bot
 #. odoo-python
@@ -230,6 +241,18 @@ msgstr "Cảm ơn bạn đã phản hồi! Tạm biệt!"
 #: code:addons/mail_bot/models/mail_bot.py:0
 msgid "That's not nice! I'm a bot but I have feelings... 💔"
 msgstr "Điều đó không tốt! Tôi là một bot nhưng tôi có cảm xúc ... 💔"
+
+#. module: mail_bot
+#. odoo-python
+#: code:addons/mail_bot/models/mail_bot.py:0
+msgid ""
+"That’s the end of this overview. You can %(bold_start)sclose this "
+"conversation%(bold_end)s or type %(command_start)sstart the tour%"
+"(command_end)s to see it again. Enjoy exploring Odoo!"
+msgstr ""
+"Đây là phần kết của tổng quan này. Bạn có thể %(bold_start)sđóng cuộc trò "
+"chuyện này%(bold_end)s hoặc gõ %(command_start)sbắt đầu tour%(command_end)s "
+"để xem lại. Chúc bạn khám phá Odoo vui vẻ!"
 
 #. module: mail_bot
 #. odoo-python
@@ -272,8 +295,8 @@ msgid ""
 msgstr ""
 "Rất tiếc, tôi chỉ là bot 😞, nên hiểu biết còn hạn chế! Nếu bạn muốn được "
 "trợ giúp khám phá sản phẩm của chúng tôi, vui lòng tham khảo %"
-"(document_link_start)stài liệu%(document_link_end)s hoặc %"
-"(slides_link_start)svideo%(slides_link_end)s."
+"(document_link_start)stài liệu%(document_link_end)s hoặc %(slides_link_start)"
+"svideo%(slides_link_end)s."
 
 #. module: mail_bot
 #: model:ir.model,name:mail_bot.model_res_users
@@ -284,10 +307,10 @@ msgstr "Người dùng"
 #. odoo-python
 #: code:addons/mail_bot/models/mail_bot.py:0
 msgid ""
-"Wonderful! 😇%(new_line)sTry typing %(command_start)s:%(command_end)s to use "
-"canned responses. I've created a temporary one for you."
+"Wonderful! 😇%(new_line)sTry typing %(command_start)s::%(command_end)s to "
+"use canned responses. I've created a temporary one for you."
 msgstr ""
-"Tuyệt vời! 😇%(new_line)sHãy thử nhập %(command_start)s:%(command_end)s để "
+"Tuyệt vời! 😇%(new_line)sHãy thử nhập %(command_start)s::%(command_end)s để "
 "sử dụng câu trả lời soạn sẵn. Tôi đã tạo một câu trả lời tạm thời cho bạn."
 
 #. module: mail_bot
@@ -341,3 +364,78 @@ msgstr "yêu"
 #: code:addons/mail_bot/models/mail_bot.py:0
 msgid "start the tour"
 msgstr "bắt đầu tour"
+
+#~ msgid "Email Thread"
+#~ msgstr "Luồng Email"
+
+#~ msgid ""
+#~ "Great! 👍<br/>To access special commands, <b>start your sentence with</b> "
+#~ "<span class=\"o_odoobot_command\">/</span>. Try getting help."
+#~ msgstr ""
+#~ "Great! 👍<br/>To access special commands, <b>start your sentence with</b> "
+#~ "<span class=\"o_odoobot_command\">/</span>. Try getting help."
+
+#~ msgid "HTTP Routing"
+#~ msgstr "HTTP Routing"
+
+#~ msgid ""
+#~ "I am a simple bot, but if that's a dog, he is the cutest 😊 <br/"
+#~ ">Congratulations, you finished this tour. You can now <b>close this chat "
+#~ "window</b>. Enjoy discovering Odoo."
+#~ msgstr ""
+#~ "I am a simple bot, but if that's a dog, he is the cutest 😊 <br/"
+#~ ">Congratulations, you finished this tour. You can now <b>close this chat "
+#~ "window</b>. Enjoy discovering Odoo."
+
+#~ msgid ""
+#~ "I'm not smart enough to answer your question.<br/>To follow my guide, "
+#~ "ask: <span class=\"o_odoobot_command\">start the tour</span>."
+#~ msgstr ""
+#~ "I'm not smart enough to answer your question.<br/>To follow my guide, "
+#~ "ask: <span class=\"o_odoobot_command\">start the tour</span>."
+
+#~ msgid ""
+#~ "Not exactly. To continue the tour, send an emoji: <b>type</b> <span "
+#~ "class=\"o_odoobot_command\">:)</span> and press enter."
+#~ msgstr ""
+#~ "Not exactly. To continue the tour, send an emoji: <b>type</b> <span "
+#~ "class=\"o_odoobot_command\">:)</span> and press enter."
+
+#~ msgid ""
+#~ "Not sure what you are doing. Please, type <span "
+#~ "class=\"o_odoobot_command\">/</span> and wait for the propositions. "
+#~ "Select <span class=\"o_odoobot_command\">help</span> and press enter"
+#~ msgstr ""
+#~ "Not sure what you are doing. Please, type <span "
+#~ "class=\"o_odoobot_command\">/</span> and wait for the propositions. "
+#~ "Select <span class=\"o_odoobot_command\">help</span> and press enter"
+
+#~ msgid ""
+#~ "Sorry I'm sleepy. Or not! Maybe I'm just trying to hide my unawareness of "
+#~ "human language...<br/>I can show you features if you write: <span "
+#~ "class=\"o_odoobot_command\">start the tour</span>."
+#~ msgstr ""
+#~ "Sorry I'm sleepy. Or not! Maybe I'm just trying to hide my unawareness of "
+#~ "human language...<br/>I can show you features if you write: <span "
+#~ "class=\"o_odoobot_command\">start the tour</span>."
+
+#~ msgid ""
+#~ "Sorry, I am not listening. To get someone's attention, <b>ping him</b>. "
+#~ "Write <span class=\"o_odoobot_command\">@OdooBot</span> and select me."
+#~ msgstr ""
+#~ "Sorry, I am not listening. To get someone's attention, <b>ping him</b>. "
+#~ "Write <span class=\"o_odoobot_command\">@OdooBot</span> and select me."
+
+#~ msgid ""
+#~ "To <b>send an attachment</b>, click on the <i class=\"fa fa-paperclip\" "
+#~ "aria-hidden=\"true\"></i> icon and select a file."
+#~ msgstr ""
+#~ "To <b>send an attachment</b>, click on the <i class=\"fa fa-paperclip\" "
+#~ "aria-hidden=\"true\"></i> icon and select a file."
+
+#~ msgid ""
+#~ "Yep, I am here! 🎉 <br/>Now, try <b>sending an attachment</b>, like a "
+#~ "picture of your cute dog..."
+#~ msgstr ""
+#~ "Yep, I am here! 🎉 <br/>Now, try <b>sending an attachment</b>, like a "
+#~ "picture of your cute dog..."

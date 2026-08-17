@@ -1,7 +1,7 @@
 {
     'name': 'Barcode',
     'version': '2.0',
-    'category': 'Hidden',
+    'category': 'Supply Chain/Inventory',
     'summary': 'Scan and Parse Barcodes',
     'depends': ['web'],
     'data': [
@@ -15,10 +15,11 @@
         'web.assets_backend': [
             'barcodes/static/src/**/*',
         ],
-        'web.tests_assets': ['barcodes/static/tests/helpers.js'],
+        'web.tests_assets': ['barcodes/static/tests/legacy/helpers.js'],
         'web.assets_unit_tests': [
             'barcodes/static/tests/*.test.js',
         ],
     },
+    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 }

@@ -2,23 +2,16 @@
 # This file contains the translation of the following modules:
 # * website_event_track_quiz
 #
-# Translators:
-# Petko Karamotchev, 2024
-# Albena Mincheva <albena_vicheva@abv.bg>, 2024
-# KeyVillage, 2024
-# Elena Varbanova, 2024
-# Maria Boyadjieva <marabo2000@gmail.com>, 2024
-# Martin Trigaux, 2024
-# Martin Dinovski, 2025
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:38+0000\n"
-"PO-Revision-Date: 2026-08-04 18:36+0000\n"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-08 01:31+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-19/"
 "website_event_track_quiz/bg/>\n"
 "Language: bg\n"
 "MIME-Version: 1.0\n"
@@ -53,8 +46,13 @@ msgid "Add Quiz"
 msgstr "Добавяне на тест"
 
 #. module: website_event_track_quiz
+#: model_terms:ir.ui.view,arch_db:website_event_track_quiz.event_quiz_view_form
+msgid "All Events"
+msgstr "Всички събития"
+
+#. module: website_event_track_quiz
 #. odoo-javascript
-#: code:addons/website_event_track_quiz/static/src/js/event_quiz.js:0
+#: code:addons/website_event_track_quiz/static/src/interactions/quiz.js:0
 msgid "All questions must be answered!"
 msgstr "Всички въпроси трябва да бъдат отговорени!"
 
@@ -123,7 +121,7 @@ msgstr "Вярно."
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_answer__create_uid
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_question__create_uid
 msgid "Created by"
-msgstr "Създаден от"
+msgstr "Създадено от"
 
 #. module: website_event_track_quiz
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz__create_date
@@ -133,9 +131,12 @@ msgid "Created on"
 msgstr "Създадено на"
 
 #. module: website_event_track_quiz
+#: model:ir.model.fields,field_description:website_event_track_quiz.field_event_event__display_name
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz__display_name
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_answer__display_name
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_question__display_name
+#: model:ir.model.fields,field_description:website_event_track_quiz.field_event_track__display_name
+#: model:ir.model.fields,field_description:website_event_track_quiz.field_event_track_visitor__display_name
 msgid "Display Name"
 msgstr "Име за показване"
 
@@ -201,12 +202,6 @@ msgid "Go to Quiz"
 msgstr "Към теста"
 
 #. module: website_event_track_quiz
-#: model_terms:ir.ui.view,arch_db:website_event_track_quiz.event_quiz_question_view_search
-#: model_terms:ir.ui.view,arch_db:website_event_track_quiz.event_quiz_view_search
-msgid "Group By"
-msgstr "Групиране по"
-
-#. module: website_event_track_quiz
 #: model:event.quiz.answer,text_value:website_event_track_quiz.event_7_track_5_question_1_0
 msgid "Hammer"
 msgstr "Чук"
@@ -217,9 +212,12 @@ msgid "Hammer won't be of any help here!"
 msgstr "Чукът няма да помогне тук!"
 
 #. module: website_event_track_quiz
+#: model:ir.model.fields,field_description:website_event_track_quiz.field_event_event__id
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz__id
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_answer__id
 #: model:ir.model.fields,field_description:website_event_track_quiz.field_event_quiz_question__id
+#: model:ir.model.fields,field_description:website_event_track_quiz.field_event_track__id
+#: model:ir.model.fields,field_description:website_event_track_quiz.field_event_track_visitor__id
 msgid "ID"
 msgstr "ID"
 
@@ -408,7 +406,7 @@ msgstr "Въпроси от тестове"
 
 #. module: website_event_track_quiz
 #. odoo-javascript
-#: code:addons/website_event_track_quiz/static/src/js/event_quiz.js:0
+#: code:addons/website_event_track_quiz/static/src/interactions/quiz.js:0
 msgid "Quiz validation error"
 msgstr "Грешка при валидиране на теста"
 
@@ -434,7 +432,7 @@ msgstr "Тиксо"
 #. module: website_event_track_quiz
 #: model_terms:ir.ui.view,arch_db:website_event_track_quiz.leaderboard_search_bar
 msgid "Search"
-msgstr "Tyrsene"
+msgstr "Потърсете"
 
 #. module: website_event_track_quiz
 #: model_terms:ir.ui.view,arch_db:website_event_track_quiz.leaderboard_search_bar
@@ -470,7 +468,7 @@ msgstr "Магазини!"
 #. module: website_event_track_quiz
 #: model_terms:ir.ui.view,arch_db:website_event_track_quiz.event_track_content
 msgid "Take the Quiz"
-msgstr "Реши теста"
+msgstr "Решете теста"
 
 #. module: website_event_track_quiz
 #. odoo-javascript
@@ -485,7 +483,7 @@ msgstr "В момента няма налична класация"
 
 #. module: website_event_track_quiz
 #. odoo-javascript
-#: code:addons/website_event_track_quiz/static/src/js/event_quiz.js:0
+#: code:addons/website_event_track_quiz/static/src/interactions/quiz.js:0
 msgid "There was an error validating this quiz."
 msgstr "Възникна грешка при валидирането на този тест."
 
@@ -504,7 +502,7 @@ msgstr ""
 
 #. module: website_event_track_quiz
 #. odoo-javascript
-#: code:addons/website_event_track_quiz/static/src/js/event_quiz.js:0
+#: code:addons/website_event_track_quiz/static/src/interactions/quiz.js:0
 msgid "This quiz is already done. Retaking it is not possible."
 msgstr "Този тест вече е завършен. Повторното му решаване не е възможно."
 
@@ -578,7 +576,7 @@ msgstr "Откъде идва дървеният материал?"
 #. module: website_event_track_quiz
 #: model:event.quiz.answer,text_value:website_event_track_quiz.event_7_track_1_question_0_0
 msgid "Wood"
-msgstr "Дърво"
+msgstr "Дървесина"
 
 #. module: website_event_track_quiz
 #: model:event.quiz.answer,text_value:website_event_track_quiz.event_7_track_5_question_0_0

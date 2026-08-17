@@ -127,8 +127,9 @@ class TestMyInvoisPoS(TestPoSCommon):
             wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                 'date_from': '2025-01-01',
                 'date_to': '2025-01-31',
+                'consolidation_type': 'pos',
             })
-            wizard.button_consolidate_orders()
+            wizard.button_consolidate()
             # Assert the amount of consolidated invoices
             consolidated_invoice = (first_order | second_order).consolidated_invoice_ids
             self.assertEqual(len(consolidated_invoice), 1)  # One consolidated invoice holds up to 100 lines
@@ -153,8 +154,9 @@ class TestMyInvoisPoS(TestPoSCommon):
             wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                 'date_from': '2025-01-01',
                 'date_to': '2025-01-31',
+                'consolidation_type': 'pos',
             })
-            wizard.button_consolidate_orders()
+            wizard.button_consolidate()
             consolidated_invoice = (first_order | third_order).consolidated_invoice_ids
             # Get the XML File, and assert the amount of lines
             consolidated_invoice.action_generate_xml_file()
@@ -168,20 +170,33 @@ class TestMyInvoisPoS(TestPoSCommon):
     @mute_logger('odoo.addons.point_of_sale.models.pos_order')
     def test_consolidate_invoices_from_multiple_configs(self):
         """ When consolidating from multiple configs at once, we expect one Consolidated Invoice per config. """
+        orders = self.env['pos.order']
         with freeze_time("2025-01-01"):
             with self.with_pos_session():
-                first_order = self._create_order({'pos_order_lines_ui_args': [(self.product_one, 1.0)]})
+                orders |= self._create_order({'pos_order_lines_ui_args': [(self.product_one, 1.0)]})
             self.config = self.other_config  # Switch config
             with self.with_pos_session():
-                second_order = self._create_order({'pos_order_lines_ui_args': [(self.product_two, 1.0)]})
-            # Consolidate them
-            wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
-                'date_from': '2025-01-01',
-                'date_to': '2025-01-31',
-            })
-            wizard.button_consolidate_orders()
-            consolidated_invoice = (first_order | second_order).consolidated_invoice_ids
-            self.assertEqual(len(consolidated_invoice), 2)  # One consolidated invoice holds up to 100 lines
+                orders |= self._create_order({'pos_order_lines_ui_args': [(self.product_two, 1.0)]})
+
+        with freeze_time("2025-01-02"):
+            with self.with_pos_session():
+                orders |= self._create_order({'pos_order_lines_ui_args': [(self.product_one, 1.0)]})
+                orders |= self._create_order({'pos_order_lines_ui_args': [(self.product_two, 1.0)]})
+            self.config = self.basic_config  # Switch config
+            with self.with_pos_session():
+                orders |= self._create_order({'pos_order_lines_ui_args': [(self.product_two, 1.0)]})
+        # Consolidate them
+        wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
+            'date_from': '2025-01-01',
+            'date_to': '2025-01-31',
+            'consolidation_type': 'pos',
+        })
+        wizard.button_consolidate()
+        consolidated_invoice = orders.consolidated_invoice_ids
+        self.assertEqual(len(consolidated_invoice), 2)  # One consolidated invoice holds up to 100 lines
+        config1, config2 = consolidated_invoice
+        self.assertEqual(config1.linked_order_count, 2)
+        self.assertEqual(config2.linked_order_count, 3)
 
     @mute_logger('odoo.addons.point_of_sale.models.pos_order')
     def test_consolidate_invoices_limit(self):
@@ -198,14 +213,16 @@ class TestMyInvoisPoS(TestPoSCommon):
                 wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                     'date_from': '2025-01-01',
                     'date_to': '2025-01-31',
+                    'consolidation_type': 'pos',
                 })
-                wizard.button_consolidate_orders()
+                wizard.button_consolidate()
                 consolidated_invoice = (first_order | third_order).consolidated_invoice_ids
                 self.assertEqual(len(consolidated_invoice), 2)  # Two consolidated invoices of a single line due to the MAX_LINE_COUNT_PER_INVOICE
 
     @mute_logger('odoo.addons.point_of_sale.models.pos_order')
     def test_consolidate_invoices_prepayment_unlink(self):
-        """Ensure that consolidated invoices have a PaidAmount of 0.00 and the correct PayableAmount."""
+        """Ensure that consolidated invoices omit the PrepaidPayment node entirely and report the correct
+        PayableAmount."""
         with freeze_time("2025-01-01"):
             with self.with_pos_session():
                 first_order = self._create_order({'pos_order_lines_ui_args': [(self.product_one, 1.0)]})
@@ -214,8 +231,9 @@ class TestMyInvoisPoS(TestPoSCommon):
             wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                 'date_from': '2025-01-01',
                 'date_to': '2025-01-31',
+                'consolidation_type': 'pos',
             })
-            wizard.button_consolidate_orders()
+            wizard.button_consolidate()
 
             consolidated_invoice = (first_order | second_order).consolidated_invoice_ids
             self.assertEqual(len(consolidated_invoice), 1)
@@ -226,7 +244,7 @@ class TestMyInvoisPoS(TestPoSCommon):
             self.assertTrue(tax_inclusive_node, "TaxInclusiveAmount node is missing from the XML.")
             expected_total = tax_inclusive_node[0].text
 
-            self._assert_node_values(xml_tree, "cac:PrepaidPayment/cbc:PaidAmount", '0.00')
+            self.assertFalse(xml_tree.xpath("cac:PrepaidPayment", namespaces=NS_MAP), "PrepaidPayment node should be omitted when there is no genuine prepayment.")
             self._assert_node_values(xml_tree, "cac:LegalMonetaryTotal/cbc:PayableAmount", expected_total)
 
     @mute_logger('odoo.addons.point_of_sale.models.pos_order')
@@ -238,7 +256,7 @@ class TestMyInvoisPoS(TestPoSCommon):
                 order = self._create_order({'pos_order_lines_ui_args': [(self.product_two, 1.0)], 'customer': self.invoicing_customer, 'is_invoiced': True})
 
             invoice = order.account_move
-            xml_tree = etree.fromstring(invoice.l10n_my_edi_file_id.raw)
+            xml_tree = etree.fromstring(invoice._get_active_myinvois_document().myinvois_file_id.raw)
             tax_inclusive_node = xml_tree.xpath("cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount", namespaces=NS_MAP)
             self.assertTrue(tax_inclusive_node, "TaxInclusiveAmount node is missing from the XML.")
             expected_total = tax_inclusive_node[0].text
@@ -257,8 +275,9 @@ class TestMyInvoisPoS(TestPoSCommon):
             wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                 'date_from': '2025-01-01',
                 'date_to': '2025-01-31',
+                'consolidation_type': 'pos',
             })
-            wizard.button_consolidate_orders()
+            wizard.button_consolidate()
             consolidated_invoice = (first_order | second_order).consolidated_invoice_ids
             with patch(CONTACT_PROXY_METHOD, new=self._mock_successful_submission):
                 consolidated_invoice.action_submit_to_myinvois()
@@ -280,8 +299,9 @@ class TestMyInvoisPoS(TestPoSCommon):
             wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                 'date_from': '2025-01-01',
                 'date_to': '2025-01-31',
+                'consolidation_type': 'pos',
             })
-            wizard.button_consolidate_orders()
+            wizard.button_consolidate()
             consolidated_invoice = (first_order | second_order).consolidated_invoice_ids
             with patch(CONTACT_PROXY_METHOD, new=self._mock_successful_submission):
                 consolidated_invoice.action_submit_to_myinvois()
@@ -300,11 +320,11 @@ class TestMyInvoisPoS(TestPoSCommon):
         with freeze_time("2025-01-01"):
             with self.with_pos_session(), patch(CONTACT_PROXY_METHOD, new=self._mock_successful_submission):
                 order = self._create_order({'pos_order_lines_ui_args': [(self.product_two, 1.0)], 'customer': self.invoicing_customer, 'is_invoiced': True})
-            self.assertRecordValues(order.account_move, [{
-                'l10n_my_edi_submission_uid': '123456789',
-                'l10n_my_edi_external_uuid': '123458974513518',
-                'l10n_my_edi_validation_time': fields.Datetime.from_string('2025-01-01 01:00:00'),
-                'l10n_my_edi_invoice_long_id': '123-789-654',
+            self.assertRecordValues(order.account_move._get_active_myinvois_document(), [{
+                'myinvois_submission_uid': '123456789',
+                'myinvois_external_uuid': '123458974513518',
+                'myinvois_validation_time': fields.Datetime.from_string('2025-01-01 01:00:00'),
+                'myinvois_document_long_id': '123-789-654',
             }])
 
     @mute_logger('odoo.addons.point_of_sale.models.pos_order')
@@ -316,14 +336,15 @@ class TestMyInvoisPoS(TestPoSCommon):
             wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                 'date_from': '2025-01-01',
                 'date_to': '2025-01-31',
+                'consolidation_type': 'pos',
             })
-            wizard.button_consolidate_orders()
+            wizard.button_consolidate()
             consolidated_invoice = (first_order | second_order).consolidated_invoice_ids
             # We can delete consolidated orders that are in Draft (unsent)
             consolidated_invoice.unlink()
             self.assertFalse(consolidated_invoice.exists())
             # Redo another consolidated invoice, but send it.
-            wizard.button_consolidate_orders()
+            wizard.button_consolidate()
             consolidated_invoice = (first_order | second_order).consolidated_invoice_ids
             with patch(CONTACT_PROXY_METHOD, new=self._mock_successful_submission):
                 consolidated_invoice.action_submit_to_myinvois()
@@ -348,10 +369,11 @@ class TestMyInvoisPoS(TestPoSCommon):
                 wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                     'date_from': '2025-01-01',
                     'date_to': '2025-01-31',
+                    'consolidation_type': 'pos',
                 })
                 # As the session isn't closed yet, the order isn't available to consolidate so we raise an exception.
                 with self.assertRaises(ValidationError):
-                    wizard.button_consolidate_orders()
+                    wizard.button_consolidate()
 
     @mute_logger('odoo.addons.point_of_sale.models.pos_order')
     def test_consolidate_invoices_in_foreign_currency(self):
@@ -370,8 +392,9 @@ class TestMyInvoisPoS(TestPoSCommon):
             wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                 'date_from': '2025-01-01',
                 'date_to': '2025-01-31',
+                'consolidation_type': 'pos',
             })
-            wizard.button_consolidate_orders()
+            wizard.button_consolidate()
             # Assert the amount of consolidated invoices
             consolidated_invoice = (first_order | second_order).consolidated_invoice_ids
             self.assertEqual(len(consolidated_invoice), 1)  # One consolidated invoice holds up to 100 lines
@@ -398,8 +421,9 @@ class TestMyInvoisPoS(TestPoSCommon):
             wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                 'date_from': '2025-01-01',
                 'date_to': '2025-01-31',
+                'consolidation_type': 'pos',
             })
-            wizard.button_consolidate_orders()
+            wizard.button_consolidate()
             # Assert the amount of consolidated invoices
             consolidated_invoice = (first_order | second_order).consolidated_invoice_ids
             self.assertEqual(len(consolidated_invoice), 1)  # One consolidated invoice holds up to 100 lines
@@ -436,8 +460,9 @@ class TestMyInvoisPoS(TestPoSCommon):
             wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                 'date_from': '2025-01-01',
                 'date_to': '2025-01-31',
+                'consolidation_type': 'pos',
             })
-            wizard.button_consolidate_orders()
+            wizard.button_consolidate()
             order.consolidated_invoice_ids.action_generate_xml_file()
             root = etree.fromstring(order.consolidated_invoice_ids.myinvois_file_id.raw)
             with file_open('l10n_my_edi_pos/tests/expected_xmls/consolidated_invoice_tax_included.xml', 'rb') as f:
@@ -462,8 +487,9 @@ class TestMyInvoisPoS(TestPoSCommon):
             wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                 'date_from': '2025-01-01',
                 'date_to': '2025-01-31',
+                'consolidation_type': 'pos',
             })
-            wizard.button_consolidate_orders()
+            wizard.button_consolidate()
             order.consolidated_invoice_ids.action_generate_xml_file()
             root = etree.fromstring(order.consolidated_invoice_ids.myinvois_file_id.raw)
             with file_open('l10n_my_edi_pos/tests/expected_xmls/consolidated_invoice_tax_included_with_discount.xml', 'rb') as f:
@@ -494,8 +520,9 @@ class TestMyInvoisPoS(TestPoSCommon):
             wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                 'date_from': '2025-01-01',
                 'date_to': '2025-01-31',
+                'consolidation_type': 'pos',
             })
-            wizard.button_consolidate_orders()
+            wizard.button_consolidate()
             consolidated_invoice = self.env['myinvois.document'].search([])
             consolidated_invoice.action_generate_xml_file()
             xml_tree = etree.fromstring(consolidated_invoice.myinvois_file_id.raw)
@@ -524,8 +551,9 @@ class TestMyInvoisPoS(TestPoSCommon):
             wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                 'date_from': '2025-01-01',
                 'date_to': '2025-01-31',
+                'consolidation_type': 'pos',
             })
-            wizard.button_consolidate_orders()
+            wizard.button_consolidate()
             consolidated_invoice = self.env['myinvois.document'].search([])
             consolidated_invoice.action_generate_xml_file()
             xml_tree = etree.fromstring(consolidated_invoice.myinvois_file_id.raw)
@@ -542,8 +570,9 @@ class TestMyInvoisPoS(TestPoSCommon):
             wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                 'date_from': '2025-01-01',
                 'date_to': '2025-01-31',
+                'consolidation_type': 'pos',
             })
-            wizard.button_consolidate_orders()
+            wizard.button_consolidate()
             consolidated_invoice = self.env["myinvois.document"].search([])
             with patch(CONTACT_PROXY_METHOD, new=self._mock_successful_submission):
                 consolidated_invoice.action_submit_to_myinvois()
@@ -551,6 +580,9 @@ class TestMyInvoisPoS(TestPoSCommon):
                 # Fails, the order should be invoiced in such a case
                 with self.assertRaises(UserError):
                     self._create_order({
+                        'pos_order_ui_args': {
+                            'is_refund': True,
+                        },
                         'pos_order_lines_ui_args': [
                             {
                                 'product': self.product_one,
@@ -560,8 +592,11 @@ class TestMyInvoisPoS(TestPoSCommon):
                         ],
                     })
                 # If it is, it will work
-                self.invoicing_customer.vat = 'EI00000000010'
+                self.invoicing_customer.write({'vat': 'EI00000000010', 'l10n_my_identification_number': 'NA'})
                 self._create_order({
+                    'pos_order_ui_args': {
+                        'is_refund': True,
+                    },
                     'pos_order_lines_ui_args': [
                         {
                             'product': self.product_one,
@@ -582,6 +617,9 @@ class TestMyInvoisPoS(TestPoSCommon):
                 # Fails, the order should be invoiced in such a case
                 with self.assertRaises(UserError):
                     self._create_order({
+                        'pos_order_ui_args': {
+                            'is_refund': True,
+                        },
                         'pos_order_lines_ui_args': [
                             {
                                 'product': self.product_one,
@@ -592,6 +630,9 @@ class TestMyInvoisPoS(TestPoSCommon):
                     })
                 # If invoicing is checked, it will work.
                 self._create_order({
+                    'pos_order_ui_args': {
+                        'is_refund': True,
+                    },
                     'pos_order_lines_ui_args': [
                         {
                             'product': self.product_one,
@@ -644,14 +685,18 @@ class TestMyInvoisPoS(TestPoSCommon):
             wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                 'date_from': '2025-01-01',
                 'date_to': '2025-01-31',
+                'consolidation_type': 'pos',
             })
-            wizard.button_consolidate_orders()
+            wizard.button_consolidate()
             with patch(CONTACT_PROXY_METHOD, new=self._mock_successful_submission):
                 first_order.consolidated_invoice_ids.action_submit_to_myinvois()
 
             # We then create the refund for the order
             with self.with_pos_session(), patch(CONTACT_PROXY_METHOD, new=self._mock_successful_submission):
                 self._create_order({
+                    'pos_order_ui_args': {
+                        'is_refund': True,
+                    },
                     'pos_order_lines_ui_args': [
                         {
                             'product': self.product_one,
@@ -663,7 +708,7 @@ class TestMyInvoisPoS(TestPoSCommon):
 
             refund = self.env['account.move'].search([('move_type', '=', 'out_refund')], limit=1, order='id desc')
             self.assertEqual(refund.partner_id, self.invoicing_customer)  # We have the correct customer on the refund.
-            xml_tree = etree.fromstring(refund.l10n_my_edi_file_id.raw)
+            xml_tree = etree.fromstring(refund._get_active_myinvois_document().myinvois_file_id.raw)
             # But in the xml, we have the general public.
             self._assert_node_values(xml_tree, "cac:AccountingCustomerParty//cac:PartyIdentification/cbc:ID", 'EI00000000010')
 
@@ -706,8 +751,9 @@ class TestMyInvoisPoS(TestPoSCommon):
             wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                 'date_from': '2025-01-01',
                 'date_to': '2025-01-31',
+                'consolidation_type': 'pos',
             })
-            wizard.button_consolidate_orders()
+            wizard.button_consolidate()
             consolidated_invoice = (first_order | second_order | third_order | fourth_order | fifth_order).consolidated_invoice_ids
             # We expect a single invoice
             self.assertEqual(len(consolidated_invoice), 1)
@@ -756,8 +802,9 @@ class TestMyInvoisPoS(TestPoSCommon):
             wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                 'date_from': '2025-01-01',
                 'date_to': '2025-01-31',
+                'consolidation_type': 'pos',
             })
-            wizard.button_consolidate_orders()
+            wizard.button_consolidate()
             consolidated_invoice = (first_order | second_order | third_order | fourth_order | fifth_order).consolidated_invoice_ids
             # We expect a single invoice
             self.assertEqual(len(consolidated_invoice), 1)
@@ -769,6 +816,9 @@ class TestMyInvoisPoS(TestPoSCommon):
             # We then create the refund for the first_order
             with self.with_pos_session(), patch(CONTACT_PROXY_METHOD, new=self._mock_successful_submission):
                 self._create_order({
+                    'pos_order_ui_args': {
+                        'is_refund': True,
+                    },
                     'pos_order_lines_ui_args': [
                         {
                             'product': product_1,
@@ -779,7 +829,7 @@ class TestMyInvoisPoS(TestPoSCommon):
                 })
 
             refund = self.env['account.move'].search([('move_type', '=', 'out_refund')], limit=1, order='id desc')
-            root = etree.fromstring(refund.l10n_my_edi_file_id.raw)
+            root = etree.fromstring(refund._get_active_myinvois_document().myinvois_file_id.raw)
             with file_open('l10n_my_edi_pos/tests/expected_xmls/consolidated_invoice_refund.xml', 'rb') as f:
                 expected_xml = etree.fromstring(f.read())
             self.assertXmlTreeEqual(root, expected_xml)
@@ -793,8 +843,9 @@ class TestMyInvoisPoS(TestPoSCommon):
             wizard = self.env['myinvois.consolidate.invoice.wizard'].create({
                 'date_from': '2026-01-01',
                 'date_to': '2026-01-31',
+                'consolidation_type': 'pos',
             })
-            wizard.button_consolidate_orders()
+            wizard.button_consolidate()
             consolidated_invoice = first_order.consolidated_invoice_ids
             consolidated_invoice.name = "POS/2025-2026/000001"
             with patch(CONTACT_PROXY_METHOD, new=self._mock_successful_submission):

@@ -244,7 +244,7 @@ class AccountMove(models.Model):
             'res_model': 'account.move',
             'res_id': move.id,
             'views': [(self.env.ref('account.view_move_form').id, 'form')],
-            'context': self._context,
+            'context': self.env.context,
         }
 
     def l10n_es_edi_verifactu_button_cancel(self):

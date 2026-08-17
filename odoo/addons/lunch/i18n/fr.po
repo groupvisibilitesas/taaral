@@ -3,18 +3,19 @@
 # * lunch
 #
 # Translators:
-# Wil Odoo, 2024
-# Manon Rondou, 2025
-#
-# "Manon Rondou (ronm)" <ronm@odoo.com>, 2026.
+# Martin Trigaux, 2022
+# Cécile Collart <cco@odoo.com>, 2022
+# Jolien De Paepe, 2023
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# "Manon Rondou (ronm)" <ronm@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-20 18:37+0000\n"
-"PO-Revision-Date: 2026-05-27 15:25+0000\n"
-"Last-Translator: \"Manon Rondou (ronm)\" <ronm@odoo.com>\n"
-"Language-Team: French <https://translate.odoo.com/projects/odoo-18/lunch/fr/>"
+"POT-Creation-Date: 2026-04-10 18:38+0000\n"
+"PO-Revision-Date: 2026-08-03 18:43+0000\n"
+"Last-Translator: \"Dylan Kiss (dyki)\" <dyki@odoo.com>\n"
+"Language-Team: French <https://translate.odoo.com/projects/odoo-19/lunch/fr/>"
 "\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -22,7 +23,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : ((n != 0 && n % "
 "1000000 == 0) ? 1 : 2);\n"
-"X-Generator: Weblate 5.17\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: lunch
 #: model_terms:lunch.product,description:lunch.product_temaki
@@ -91,8 +92,8 @@ msgstr ""
 msgid ""
 "<i class=\"fa fa-money\" role=\"img\" aria-label=\"Money\" title=\"Money\"/>"
 msgstr ""
-"<i class=\"fa fa-money\" role=\"img\" aria-label=\"Argent\" title=\"Argent\"/"
-">"
+"<i class=\"fa fa-money\" role=\"img\" aria-label=\"Argent\" "
+"title=\"Argent\"/>"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_kanban
@@ -165,7 +166,7 @@ msgid ""
 "                    <td valign=\"top\" style=\"font-size: 13px;\">\n"
 "    <div>\n"
 "        <t t-set=\"lines\" t-value=\"ctx.get('lines', [])\"/>\n"
-"        <t t-set=\"order\" t-value=\"ctx.get('order')\"/>\n"
+"        <t t-set=\"order\" t-value=\"ctx.get('order', {})\"/>\n"
 "        <t t-set=\"currency\" t-"
 "value=\"user.env['res.currency'].browse(order.get('currency_id'))\"/>\n"
 "        <p>\n"
@@ -234,9 +235,9 @@ msgid ""
 "                    <td style=\"width: 100%; font-size: 13px; border-top: "
 "1px solid black;\"><strong>Total</strong></td>\n"
 "                    <td style=\"width: 100%; font-size: 13px; border-top: "
-"1px solid black;\" align=\"right\"><strong t-"
-"out=\"format_amount(order['amount_total'], currency) or ''\">$ 10.00</"
-"strong></td>\n"
+"1px solid black;\" align=\"right\"><strong t-out=\"order.get('amount_total') "
+"and format_amount(order['amount_total'], currency) or ''\">$ 10.00</strong></"
+"td>\n"
 "                </tr>\n"
 "            </tbody>\n"
 "        </table>\n"
@@ -295,8 +296,9 @@ msgid ""
 "style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; "
 "padding: 8px; border-collapse:separate;\">\n"
 "      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
-"        Powered by <a target=\"_blank\" href=\"https://www.odoo.com\" "
-"style=\"color: #875A7B;\">Odoo</a>\n"
+"        Powered by <a target=\"_blank\" href=\"https://www.odoo.com\" t-attf-"
+"style=\"color: {{user.company_id.email_secondary_color or '#875A7B'}};"
+"\">Odoo</a>\n"
 "      </td></tr>\n"
 "    </table>\n"
 "</td></tr>\n"
@@ -318,18 +320,18 @@ msgstr ""
 "width=\"590\" style=\"min-width: 590px; background-color: white; padding: "
 "0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tr><td valign=\"middle\">\n"
-"                    <span style=\"font-size: 10px;\">Commande de lunch</"
-"span><br/>\n"
+"                    <span style=\"font-size: 10px;\">Commande de lunch</span>"
+"<br/>\n"
 "                </td><td valign=\"middle\" align=\"right\" t-if=\"not "
 "user.company_id.uses_default_logo\">\n"
-"                    <img t-attf-src=\"/logo.png?"
-"company={{ user.company_id.id }}\" style=\"padding: 0px; margin: 0px; "
-"height: auto; width: 80px;\" t-att-alt=\"user.company_id.name\"/>\n"
+"                    <img t-attf-src=\"/logo.png?company={{ "
+"user.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; "
+"width: 80px;\" t-att-alt=\"user.company_id.name\"/>\n"
 "                </td></tr>\n"
 "                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-"
-"color:rgb(204,204,204);border:medium none;clear:both;display:block;font-"
-"size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+"                  <hr width=\"100%\" style=\"background-color:rgb"
+"(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-"
+"height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
 "                </td></tr>\n"
 "            </table>\n"
 "        </td>\n"
@@ -345,11 +347,11 @@ msgstr ""
 "    <div>\n"
 "        <t t-set=\"lines\" t-value=\"ctx.get('lines', [])\"/>\n"
 "        <t t-set=\"order\" t-value=\"ctx.get('order')\"/>\n"
-"        <t t-set=\"currency\" t-"
-"value=\"user.env['res.currency'].browse(order.get('currency_id'))\"/>\n"
+"        <t t-set=\"currency\" t-value=\"user.env['res.currency'].browse"
+"(order.get('currency_id'))\"/>\n"
 "        <p>\n"
-"        Bonjour <t t-out=\"order.get('supplier_name', '')\">Laurie Poiret</"
-"t>,\n"
+"        Bonjour <t t-out=\"order.get('supplier_name', '')\">Laurie Poiret</t>"
+",\n"
 "        </p><p>\n"
 "        Voici la commande du jour pour <t t-out=\"order.get('company_name', "
 "'')\">LunchCompany</t>:\n"
@@ -414,9 +416,9 @@ msgstr ""
 "                    <td style=\"width: 100%; font-size: 13px; border-top: "
 "1px solid black;\"><strong>Total</strong></td>\n"
 "                    <td style=\"width: 100%; font-size: 13px; border-top: "
-"1px solid black;\" align=\"right\"><strong t-"
-"out=\"format_amount(order['amount_total'], currency) or ''\">10.00 €</"
-"strong></td>\n"
+"1px solid black;\" align=\"right\"><strong t-out=\"order.get('amount_total') "
+"and format_amount(order['amount_total'], currency) or ''\">10,00 €</strong></"
+"td>\n"
 "                </tr>\n"
 "            </tbody>\n"
 "        </table>\n"
@@ -427,9 +429,9 @@ msgstr ""
 "                </tr>\n"
 "                <tr>\n"
 "                    <td style=\"text-align:center;\">\n"
-"                        <hr width=\"100%\" style=\"background-"
-"color:rgb(204,204,204);border:medium none;clear:both;display:block;font-"
-"size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                        <hr width=\"100%\" style=\"background-color:rgb"
+"(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-"
+"height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
 "                    </td>\n"
 "                </tr>\n"
 "            </table>\n"
@@ -446,14 +448,14 @@ msgstr ""
 "                </td></tr>\n"
 "                <tr><td valign=\"middle\" align=\"left\" style=\"opacity: "
 "0.7;\">\n"
-"                    <t t-out=\"user.company_id.phone or ''\">+1 "
-"650-123-4567</t>\n"
+"                    <t t-out=\"user.company_id.phone or ''\">+1 650-123-"
+"4567</t>\n"
 "                    <t t-if=\"user.company_id.phone and "
 "(user.company_id.email or user.company_id.website)\">|</t>\n"
 "                    <t t-if=\"user.company_id.email\">\n"
-"                        <a t-attf-href=\"'mailto:%s' % "
-"{{ user.company_id.email }}\" style=\"text-decoration:none; color: "
-"#454748;\" t-out=\"user.company_id.email or ''\">info@yourcompany.com</a>\n"
+"                        <a t-attf-href=\"'mailto:%s' % {{ "
+"user.company_id.email }}\" style=\"text-decoration:none; color: #454748;\" t-"
+"out=\"user.company_id.email or ''\">info@yourcompany.com</a>\n"
 "                    </t>\n"
 "                    <t t-if=\"user.company_id.email and "
 "user.company_id.website\">|</t>\n"
@@ -475,8 +477,9 @@ msgstr ""
 "style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; "
 "padding: 8px; border-collapse:separate;\">\n"
 "      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
-"        Généré par <a target=\"_blank\" href=\"https://www.odoo.com\" "
-"style=\"color: #875A7B;\">Odoo</a>\n"
+"        Généré par <a target=\"_blank\" href=\"https://www.odoo.com\" t-attf-"
+"style=\"color: {{user.company_id.email_secondary_color or '#875A7B'}};\">"
+"Odoo</a>\n"
 "      </td></tr>\n"
 "    </table>\n"
 "</td></tr>\n"
@@ -626,6 +629,12 @@ msgid "Availability"
 msgstr "Disponibilité"
 
 #. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Available Balance"
+msgstr "Solde disponible"
+
+#. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__available_on_date
 msgid "Available On Date"
 msgstr "Disponible à la date"
@@ -655,6 +664,14 @@ msgstr "Garnitures disponibles 3"
 #: model:lunch.product,name:lunch.product_bacon_0
 msgid "Bacon"
 msgstr "Bacon"
+
+#. module: lunch
+#: model:res.groups,comment:lunch.group_lunch_manager
+msgid ""
+"Be able to create new products, cashmoves and to confirm or cancel orders."
+msgstr ""
+"Pouvoir créer de nouveaux produits, mouvements de trésorerie et confirmer ou "
+"annuler des commandes."
 
 #. module: lunch
 #: model_terms:lunch.product,description:lunch.product_bacon
@@ -771,6 +788,12 @@ msgid "City"
 msgstr "Ville"
 
 #. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Clear Order"
+msgstr "Effacer la commande"
+
+#. module: lunch
 #: model_terms:ir.actions.act_window,help:lunch.lunch_order_action_control_suppliers
 msgid ""
 "Click on the <span class=\"fa fa-phone text-success\" title=\"Order "
@@ -790,6 +813,12 @@ msgstr ""
 "                Cliquez sur <span class=\"fa fa-times-circle text-danger\" "
 "title=\"Bouton d'annulation\"></span> pour annoncer que la commande n'est "
 "pas disponible."
+
+#. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Close"
+msgstr "Fermer"
 
 #. module: lunch
 #: model:lunch.product,name:lunch.product_club
@@ -875,12 +904,12 @@ msgstr "Créer une nouvelle catégorie de produits"
 #: model_terms:ir.actions.act_window,help:lunch.lunch_product_action
 #: model_terms:ir.actions.act_window,help:lunch.lunch_product_action_statbutton
 msgid "Create a new product for lunch"
-msgstr "Créer un nouveau produit pour le déjeuner"
+msgstr "Créer un nouveau produit pour le lunch"
 
 #. module: lunch
 #: model_terms:ir.actions.act_window,help:lunch.lunch_alert_action
 msgid "Create new lunch alerts"
-msgstr "Créer des nouvelles alertes déjeuner"
+msgstr "Créer des nouvelles alertes lunch"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__create_uid
@@ -935,6 +964,12 @@ msgid "Date"
 msgstr "Date"
 
 #. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Decrease quantity"
+msgstr "Diminuer la quantité"
+
+#. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__delivery
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__delivery__delivery
 msgid "Delivery"
@@ -973,6 +1008,9 @@ msgstr "Afficher le bouton d'ajout"
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__display_name
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__display_name
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__display_name
+#: model:ir.model.fields,field_description:lunch.field_res_company__display_name
+#: model:ir.model.fields,field_description:lunch.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:lunch.field_res_users__display_name
 msgid "Display Name"
 msgstr "Nom d'affichage"
 
@@ -985,12 +1023,6 @@ msgstr "Afficher le bouton de renouvellement de commande"
 #: model:lunch.product.category,name:lunch.categ_drinks
 msgid "Drinks"
 msgstr "Boissons"
-
-#. module: lunch
-#. odoo-javascript
-#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
-msgid "Edit order"
-msgstr "Modifier la commande"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__email
@@ -1077,7 +1109,7 @@ msgstr "Extras 3"
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_res_users__favorite_lunch_product_ids
 msgid "Favorite Lunch Product"
-msgstr "Produit de déjeuner favori"
+msgstr "Produit de lunch favori"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_product__favorite_user_ids
@@ -1131,13 +1163,6 @@ msgid "Gouda Cheese"
 msgstr "Fromage Gouda"
 
 #. module: lunch
-#: model_terms:ir.ui.view,arch_db:lunch.lunch_cashmove_report_view_search_2
-#: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
-#: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
-msgid "Group By"
-msgstr "Regrouper par"
-
-#. module: lunch
 #: model_terms:lunch.product,description:lunch.product_club
 #: model_terms:lunch.product,description:lunch.product_club_0
 msgid "Ham, Cheese, Vegetables"
@@ -1149,25 +1174,14 @@ msgid "Has Message"
 msgstr "A un message"
 
 #. module: lunch
-#: model:ir.module.category,description:lunch.module_lunch_category
-msgid ""
-"Helps you handle your lunch needs, if you are a manager you will be able to "
-"create new products, cashmoves and to confirm or cancel orders."
-msgstr ""
-"Vous aide à gérer les commandes de déjeuner, si vous êtes manager vous aurez "
-"la possibilité de créer de nouveaux produits, mouvements de trésorerie et de "
-"confirmer ou annuler des commandes."
-
-#. module: lunch
 #: model_terms:ir.actions.act_window,help:lunch.lunch_product_category_action
 msgid "Here you can access all categories for the lunch products."
-msgstr ""
-"Ici vous pouvez accéder à toutes les catégories de produits de déjeuner."
+msgstr "Ici vous pouvez accéder à toutes les catégories de produits lunch."
 
 #. module: lunch
 #: model_terms:ir.actions.act_window,help:lunch.lunch_order_action_by_supplier
 msgid "Here you can see today's orders grouped by vendors."
-msgstr "Ici vous pouvez voir les commandes de aujourd’hui par fournisseur. "
+msgstr "Ici vous pouvez voir les commandes de aujourd’hui par fournisseur."
 
 #. module: lunch
 #: model_terms:ir.actions.act_window,help:lunch.lunch_cashmove_report_action_account
@@ -1193,6 +1207,9 @@ msgstr ""
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__id
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__id
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__id
+#: model:ir.model.fields,field_description:lunch.field_res_company__id
+#: model:ir.model.fields,field_description:lunch.field_res_config_settings__id
+#: model:ir.model.fields,field_description:lunch.field_res_users__id
 msgid "ID"
 msgstr "ID"
 
@@ -1253,6 +1270,12 @@ msgid "Image 512"
 msgstr "Image 512"
 
 #. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Increase quantity"
+msgstr "Augmenter la quantité"
+
+#. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_form
 msgid "Information, allergens, ..."
 msgstr "Informations, allergènes, ..."
@@ -1280,7 +1303,7 @@ msgstr "Est nouveau"
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_res_users__last_lunch_location_id
 msgid "Last Lunch Location"
-msgstr "Lieu du dernier déjeuner"
+msgstr "Lieu du dernier lunch"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_product__last_order_date
@@ -1328,21 +1351,21 @@ msgid "Locations"
 msgstr "Lieux"
 
 #. module: lunch
-#: model:ir.module.category,name:lunch.module_lunch_category
 #: model:ir.ui.menu,name:lunch.menu_lunch
+#: model:res.groups.privilege,name:lunch.res_groups_privilege_lunch
 #: model_terms:ir.ui.view,arch_db:lunch.res_config_settings_view_form
 msgid "Lunch"
-msgstr "Déjeuner"
+msgstr "Lunch"
 
 #. module: lunch
 #: model:ir.model,name:lunch.model_lunch_alert
 msgid "Lunch Alert"
-msgstr "Alerte de déjeuner"
+msgstr "Alerte lunch"
 
 #. module: lunch
 #: model:ir.actions.act_window,name:lunch.lunch_alert_action
 msgid "Lunch Alerts"
-msgstr "Alertes de déjeuner"
+msgstr "Alertes lunch"
 
 #. module: lunch
 #. odoo-python
@@ -1350,134 +1373,134 @@ msgstr "Alertes de déjeuner"
 #: code:addons/lunch/report/lunch_cashmove_report.py:0
 #: model:ir.model,name:lunch.model_lunch_cashmove
 msgid "Lunch Cashmove"
-msgstr "Mouvement de trésorerie d'un déjeuner"
+msgstr "Mouvement de trésorerie d'un lunch"
 
 #. module: lunch
 #: model:ir.model,name:lunch.model_lunch_topping
 msgid "Lunch Extras"
-msgstr "Extras déjeuner"
+msgstr "Extras lunch"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__lunch_location_id
 msgid "Lunch Location"
-msgstr "Lieu du déjeuner"
+msgstr "Lieu du lunch"
 
 #. module: lunch
 #: model:ir.actions.act_window,name:lunch.lunch_location_action
 #: model:ir.model,name:lunch.model_lunch_location
 msgid "Lunch Locations"
-msgstr "Lieux du déjeuner"
+msgstr "Lieux du lunch"
 
 #. module: lunch
 #: model:lunch.product,name:lunch.product_maki
 msgid "Lunch Maki 18pc"
-msgstr "Déjeuner Maki 18 pcs"
+msgstr "Lunch Maki 18 pcs"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_res_company__lunch_minimum_threshold
 msgid "Lunch Minimum Threshold"
-msgstr "Seuil minimum du déjeuner"
+msgstr "Seuil minimum pour le lunch"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_res_company__lunch_notify_message
 msgid "Lunch Notify Message"
-msgstr "Message de notification du déjeuner"
+msgstr "Message de notification du lunch"
 
 #. module: lunch
 #: model:ir.model,name:lunch.model_lunch_order
 msgid "Lunch Order"
-msgstr "Commande du déjeuner"
+msgstr "Commande du lunch"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.res_config_settings_view_form
 msgid "Lunch Overdraft"
-msgstr "Découvert du déjeuner"
+msgstr "Découvert du lunch"
 
 #. module: lunch
 #: model:ir.model,name:lunch.model_lunch_product
 msgid "Lunch Product"
-msgstr "Produit déjeuner"
+msgstr "Produit lunch"
 
 #. module: lunch
 #: model:ir.model,name:lunch.model_lunch_product_category
 msgid "Lunch Product Category"
-msgstr "Catégorie de produit déjeuner"
+msgstr "Catégorie de produit lunch"
 
 #. module: lunch
 #: model:lunch.product,name:lunch.product_salmon
 msgid "Lunch Salmon 20pc"
-msgstr "Déjeuner Saumon 20 pcs"
+msgstr "Lunch Saumon 20 pcs"
 
 #. module: lunch
 #: model:ir.model,name:lunch.model_lunch_supplier
 msgid "Lunch Supplier"
-msgstr "Fournisseur déjeuner"
+msgstr "Fournisseur lunch"
 
 #. module: lunch
 #: model:lunch.product,name:lunch.product_temaki
 msgid "Lunch Temaki mix 3pc"
-msgstr "Déjeuner Mix Temaki 3 pcs"
+msgstr "Lunch Mix Temaki 3 pcs"
 
 #. module: lunch
 #. odoo-python
 #: code:addons/lunch/models/lunch_order.py:0
 msgid "Lunch notification"
-msgstr "Notification du déjeuner"
+msgstr "Notification du lunch"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_res_config_settings__company_lunch_notify_message
 msgid "Lunch notification message"
-msgstr "Message de notification du déjeuner"
+msgstr "Message de notification du lunch"
 
 #. module: lunch
 #: model:ir.actions.server,name:lunch.lunch_order_action_cancel
 msgid "Lunch: Cancel meals"
-msgstr "Déjeuner : Annuler des repas"
+msgstr "Lunch : annuler des repas"
 
 #. module: lunch
 #: model:ir.actions.server,name:lunch.lunch_order_action_confirm
 msgid "Lunch: Receive meals"
-msgstr "Déjeuner : Recevoir des repas"
+msgstr "Lunch : recevoir des repas"
 
 #. module: lunch
 #: model:ir.actions.server,name:lunch.lunch_order_action_notify
 msgid "Lunch: Send notifications"
-msgstr "Déjeuner : Envoyer des notifications"
+msgstr "Lunch : envoyer des notifications"
 
 #. module: lunch
 #: model:mail.template,name:lunch.lunch_order_mail_supplier
 msgid "Lunch: Supplier Order"
-msgstr "Déjeuner : Commande du fournisseur"
+msgstr "Lunch : commande du fournisseur"
 
 #. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_alert_cron_sa_229
+#: model:ir.actions.server,name:lunch.lunch_alert_cron_sa_231
 msgid "Lunch: alert chat notification (Alert for Office 3)"
-msgstr "Déjeuner : Alerte notification via Chat (Alerte pour le bureau 3)"
-
-#. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_230
-msgid "Lunch: send automatic email to Coin gourmand"
-msgstr "Déjeuner : Envoyer un e-mail automatique à Coin gourmand"
-
-#. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_225
-msgid "Lunch: send automatic email to Lunch Supplier"
-msgstr "Déjeuner : Envoyer un e-mail automatique au fournisseur de déjeuner"
-
-#. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_231
-msgid "Lunch: send automatic email to Pizza Inn"
-msgstr "Déjeuner : Envoyer un e-mail automatique à Pizza Inn"
-
-#. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_233
-msgid "Lunch: send automatic email to Sushi Shop"
-msgstr "Déjeuner : Envoyer un e-mail automatique à Sushi Shop"
+msgstr "Lunch : alerte notification via Chat (Alerte pour le bureau 3)"
 
 #. module: lunch
 #: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_232
+msgid "Lunch: send automatic email to Coin gourmand"
+msgstr "Lunch : envoyer un e-mail automatique à Coin gourmand"
+
+#. module: lunch
+#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_227
+msgid "Lunch: send automatic email to Lunch Supplier"
+msgstr "Lunch : envoyer un e-mail automatique au fournisseur de lunch"
+
+#. module: lunch
+#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_233
+msgid "Lunch: send automatic email to Pizza Inn"
+msgstr "Lunch : envoyer un e-mail automatique à Pizza Inn"
+
+#. module: lunch
+#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_235
+msgid "Lunch: send automatic email to Sushi Shop"
+msgstr "Lunch : envoyer un e-mail automatique à Sushi Shop"
+
+#. module: lunch
+#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_234
 msgid "Lunch: send automatic email to The Corner"
-msgstr "Déjeuner : Envoyer un e-mail automatique à The Corner"
+msgstr "Lunch : envoyer un e-mail automatique à The Corner"
 
 #. module: lunch
 #: model:ir.model.fields,help:lunch.field_res_config_settings__currency_id
@@ -1564,7 +1587,7 @@ msgstr "Échéance de mon activité"
 #. module: lunch
 #: model:ir.ui.menu,name:lunch.menu_lunch_title
 msgid "My Lunch"
-msgstr "Mon déjeuner"
+msgstr "Mon lunch"
 
 #. module: lunch
 #: model:ir.ui.menu,name:lunch.lunch_order_menu_tree
@@ -1611,7 +1634,7 @@ msgstr "Activité suivante de l'événement du calendrier"
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__activity_date_deadline
 msgid "Next Activity Deadline"
-msgstr "Échéance de la prochaine activité"
+msgstr "Date limite de l'activité à venir"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__activity_summary
@@ -1648,7 +1671,7 @@ msgstr "Aucun emplacement de lunch disponible."
 #. module: lunch
 #: model_terms:ir.actions.act_window,help:lunch.lunch_order_action_control_suppliers
 msgid "No lunch order yet"
-msgstr "Pas de commande déjeuner pour l'instant"
+msgstr "Pas de commande de lunch pour l'instant"
 
 #. module: lunch
 #: model_terms:ir.actions.act_window,help:lunch.lunch_order_action
@@ -1676,6 +1699,12 @@ msgstr "Notes"
 #: model_terms:ir.actions.act_window,help:lunch.lunch_order_action_by_supplier
 msgid "Nothing to order today"
 msgstr "Rien à commander aujourd'hui"
+
+#. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Nothing to order, add some meals to begin."
+msgstr "Rien à commander, ajoutez des plats pour commencer."
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__notification_moment
@@ -1718,6 +1747,17 @@ msgid "Number of messages with delivery error"
 msgstr "Nombre de messages avec des erreurs d'envoi"
 
 #. module: lunch
+#. odoo-python
+#: code:addons/lunch/models/lunch_order.py:0
+msgid ""
+"Oh no! You don’t have enough money in your wallet to order your selected "
+"lunch! Contact your lunch manager to add some money to your wallet."
+msgstr ""
+"Oh non ! Vous n’avez pas assez d’argent dans votre portefeuille pour "
+"commander le lunch choisi. Contactez votre responsable lunch pour recharger "
+"votre portefeuille."
+
+#. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__topping_quantity_1__1_more
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__topping_quantity_2__1_more
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__topping_quantity_3__1_more
@@ -1729,7 +1769,7 @@ msgstr "Un ou plus"
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__topping_quantity_2__1
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__topping_quantity_3__1
 msgid "Only One"
-msgstr "Un seul "
+msgstr "Un seul"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_kanban
@@ -1762,7 +1802,7 @@ msgstr "Heure de commande"
 #. module: lunch
 #: model:ir.actions.act_window,name:lunch.lunch_product_action_order
 msgid "Order Your Lunch"
-msgstr "Commander votre déjeuner"
+msgstr "Commander votre lunch"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_tree
@@ -1781,8 +1821,8 @@ msgstr "Commandes"
 
 #. module: lunch
 #: model:mail.template,subject:lunch.lunch_order_mail_supplier
-msgid "Orders for {{ ctx['order']['company_name'] }}"
-msgstr "Commandes pour {{ ctx['order']['company_name'] }}"
+msgid "Orders for {{ ctx.get('order', {}).get('company_name') }}"
+msgstr "Commandes pour {{ ctx.get('order', {}).get('company_name') }}"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.res_config_settings_view_form
@@ -1794,6 +1834,12 @@ msgstr "Découvert"
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__moment__pm
 msgid "PM"
 msgstr "PM"
+
+#. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Passed orders"
+msgstr "Commandes passées"
 
 #. module: lunch
 #: model:lunch.product.category,name:lunch.categ_pasta
@@ -1813,7 +1859,7 @@ msgid ""
 msgstr ""
 "Les paiements sont utilisés pour enregistrer les mouvements de liquidité. "
 "Vous pouvez traiter ces paiements par vos propres moyens ou en utilisant les "
-"applications installées. "
+"applications installées."
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__phone
@@ -1840,7 +1886,7 @@ msgstr "Pizza italiana"
 #: model:lunch.product,name:lunch.product_margherita
 #: model:lunch.product,name:lunch.product_pizza_0
 msgid "Pizza Margherita"
-msgstr "Pizza margherita"
+msgstr "Pizza Margherita"
 
 #. module: lunch
 #: model:lunch.product,name:lunch.product_vege
@@ -2047,8 +2093,7 @@ msgstr "Envoyer les commandes"
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.res_config_settings_view_form
 msgid "Send this message to your users when their order has been delivered."
-msgstr ""
-"Envoyer ce message à vos utilisateurs quand leur commande a été livrée."
+msgstr "Envoyer ce message à vos utilisateurs quand leur commande a été livrée."
 
 #. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_order__state__sent
@@ -2134,8 +2179,8 @@ msgstr "Rue 2"
 #: model_terms:ir.actions.act_window,help:lunch.lunch_order_action_control_suppliers
 msgid "Summary of all lunch orders, grouped by vendor and by date."
 msgstr ""
-"Résumé de toutes les commandes de déjeuner, regroupées par fournisseur et "
-"par date."
+"Résumé de toutes les commandes de lunch, regroupées par fournisseur et par "
+"date."
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__sun
@@ -2220,8 +2265,8 @@ msgid ""
 "The responsible is the person that will order lunch for everyone. It will be "
 "used as the 'from' when sending the automatic email."
 msgstr ""
-"Le responsable est la personne qui commandera le déjeuner pour tout le "
-"monde. Cette personne sera utilisée dans le champ \"De\" lors de l'envoi du "
+"Le responsable est la personne qui commandera le lunch pour tout le monde. "
+"Cette personne sera utilisée dans le champ \"De\" lors de l'envoi du "
 "courrier électronique automatique."
 
 #. module: lunch
@@ -2243,8 +2288,8 @@ msgid ""
 "There is no previous order recorded. Click on \"My Lunch\" and then create a "
 "new lunch order."
 msgstr ""
-"Il n'y a aucune commande précédente enregistrée. Cliquez sur \"Mon "
-"déjeuner\" puis créez une nouvelle commande de déjeuner."
+"Il n'y a aucune commande précédente enregistrée. Cliquez sur \"Mon lunch\" "
+"puis créez une nouvelle commande de lunch."
 
 #. module: lunch
 #: model_terms:ir.actions.act_window,help:lunch.lunch_product_action_order
@@ -2295,7 +2340,7 @@ msgstr "À payer"
 msgid "To add some money to your wallet, please contact your lunch manager."
 msgstr ""
 "Pour ajouter de l'argent à votre portefeuille, veuillez contacter votre "
-"Manager déjeuner."
+"responsable lunch."
 
 #. module: lunch
 #: model_terms:ir.actions.act_window,help:lunch.lunch_location_action
@@ -2309,11 +2354,9 @@ msgid ""
 "have configured some products"
 msgstr ""
 "Pour voir certains produits, vérifiez si vos fournisseurs sont disponibles "
-"aujourd'hui et que vous avez configuré certains produits. "
+"aujourd'hui et que vous avez configuré certains produits."
 
 #. module: lunch
-#. odoo-javascript
-#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
 msgid "Today"
 msgstr "Aujourd'hui"
@@ -2454,6 +2497,14 @@ msgid "Vendors"
 msgstr "Fournisseurs"
 
 #. module: lunch
+#: model_terms:ir.ui.view,arch_db:lunch.lunch_location_form_view
+#: model_terms:ir.ui.view,arch_db:lunch.lunch_product_category_view_form
+#: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_form
+#: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+msgid "Visible to all"
+msgstr "Visible pour tous"
+
+#. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__wed
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__wed
 msgid "Wed"
@@ -2472,7 +2523,7 @@ msgid ""
 "lunch manager"
 msgstr ""
 "Vous essayez d'usurper l'identité d'un autre utilisateur, mais cela ne peut "
-"être fait que par un manager déjeuner."
+"être fait que par un responsable lunch"
 
 #. module: lunch
 #. odoo-python
@@ -2489,12 +2540,6 @@ msgstr "Vous devez commander au moins un %s"
 #. module: lunch
 #. odoo-javascript
 #: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
-msgid "Your Account"
-msgstr "Votre compte"
-
-#. module: lunch
-#. odoo-javascript
-#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
 msgid "Your Cart ("
 msgstr "Votre panier ("
 
@@ -2502,7 +2547,7 @@ msgstr "Votre panier ("
 #. odoo-python
 #: code:addons/lunch/models/lunch_alert.py:0
 msgid "Your Lunch Order"
-msgstr "Votre commande de déjeuner"
+msgstr "Votre commande de lunch"
 
 #. module: lunch
 #. odoo-javascript
@@ -2511,16 +2556,14 @@ msgid "Your Order"
 msgstr "Votre commande"
 
 #. module: lunch
-#. odoo-python
-#: code:addons/lunch/models/lunch_order.py:0
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_form
 msgid ""
 "Your wallet does not contain enough money to order that. To add some money "
 "to your wallet, please contact your lunch manager."
 msgstr ""
 "Votre portefeuille ne contient pas assez d'argent pour commander ceci. Pour "
-"ajouter de l'argent à votre portefeuille, veuillez contacter votre manager "
-"déjeuner."
+"ajouter de l'argent à votre portefeuille, veuillez contacter votre "
+"responsable lunch."
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
@@ -2563,13 +2606,13 @@ msgstr "par ex. The Pizzaria Inn"
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_cashmove_report_view_search_2
 msgid "lunch cashmove"
-msgstr "mouvement de trésorerie d'un déjeuner"
+msgstr "mouvement de caisse lunch"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_cashmove_report_view_search
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_cashmove_view_search
 msgid "lunch employee payment"
-msgstr "paiement d'un déjeuner par un employé"
+msgstr "paiement d'un lunch par un employé"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_alert_view_kanban
@@ -2580,3 +2623,44 @@ msgstr "le"
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_alert_view_kanban
 msgid "to"
 msgstr "au"
+
+#. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "x"
+msgstr "x"
+
+#~ msgid "Edit order"
+#~ msgstr "Éditer la commande"
+
+#~ msgid "Group By"
+#~ msgstr "Regrouper par"
+
+#~ msgid ""
+#~ "Helps you handle your lunch needs, if you are a manager you will be able "
+#~ "to create new products, cashmoves and to confirm or cancel orders."
+#~ msgstr ""
+#~ "Vous aide à gérer les commandes de déjeuner, si vous êtes manager vous "
+#~ "aurez la possibilité de créer de nouveaux produits, mouvements de "
+#~ "trésorerie et de confirmer ou annuler des commandes."
+
+#~ msgid "Number of messages which requires an action"
+#~ msgstr "Nombre de messages exigeant une action"
+
+#~ msgid "Order lines Tree"
+#~ msgstr "Liste des lignes de commande"
+
+#~ msgid "Orders for {{ ctx['order']['company_name'] }}"
+#~ msgstr "Commandes pour {{ ctx['order']['company_name'] }}"
+
+#~ msgid "Products Tree"
+#~ msgstr "Liste des produits"
+
+#~ msgid "Save"
+#~ msgstr "Sauvegarder"
+
+#~ msgid "Your Account"
+#~ msgstr "Votre compte"
+
+#~ msgid "cashmove tree"
+#~ msgstr "liste des mouvements de trésorerie"

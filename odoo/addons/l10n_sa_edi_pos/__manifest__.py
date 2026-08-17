@@ -2,6 +2,7 @@
 
 {
     'name': 'Saudi Arabia - E-invoicing (Simplified)',
+    'author': 'Odoo S.A.',
     'countries': ['sa'],
     'version': '0.2',
     'depends': [

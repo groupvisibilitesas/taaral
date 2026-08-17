@@ -5,7 +5,7 @@ import re
 
 from odoo import _
 
-from odoo.addons.base.models.ir_qweb import QWebException
+from odoo.addons.base.models.ir_qweb import QWebError
 from odoo.exceptions import UserError
 from odoo.http import request, route, Controller, content_disposition
 
@@ -38,7 +38,7 @@ class HrEmployeeCV(Controller):
                 'show_contact': 'show_contact' in post,
                 'show_others': 'show_others' in post,
             })
-        except QWebException as error:
+        except QWebError as error:
             raise UserError(error)
 
         if len(employees) == 1:

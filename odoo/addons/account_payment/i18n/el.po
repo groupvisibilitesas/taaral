@@ -1,29 +1,27 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* account_payment
+# * account_payment
 #
 # Translators:
-# Alexandros Kapetanios <alexandros@gnugr.org>, 2024
-# Stefanos Nikou <stefanos.nikou@gmail.com>, 2024
-# George Tarasidis <george_tarasidis@yahoo.com>, 2024
-# Martin Trigaux, 2024
-# Kostas Goutoudis <goutoudis@gmail.com>, 2024
-# Charalampos Loukas, 2025
-# Anastasia Mimou, 2025
-#
+# Martin Trigaux, 2018
+# Kostas Goutoudis <goutoudis@gmail.com>, 2018
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# Panagiotis karampaglis <panosdotk@gmail.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~11.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Anastasia Mimou, 2025\n"
-"Language-Team: Greek (https://app.transifex.com/odoo/teams/41243/el/)\n"
+"POT-Creation-Date: 2026-05-29 17:36+0000\n"
+"PO-Revision-Date: 2026-08-02 12:22+0000\n"
+"Last-Translator: Panagiotis karampaglis <panosdotk@gmail.com>\n"
+"Language-Team: Greek <https://translate.odoo.com/projects/odoo-19/"
+"account_payment/el/>\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: account_payment
 #. odoo-python
@@ -35,7 +33,7 @@ msgstr ""
 
 #. module: account_payment
 #. odoo-javascript
-#: code:addons/account_payment/static/src/js/portal_my_invoices_payment.js:0
+#: code:addons/account_payment/static/src/interactions/portal_my_invoices_payment_list.js:0
 msgid "%s day(s) overdue"
 msgstr ""
 
@@ -141,7 +139,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_payment/models/account_payment.py:0
 msgid "A payment transaction with reference %s already exists."
-msgstr "Η συναλλαγή πληρωμής με αναφορά %sυπάρχει ήδη. "
+msgstr "Η συναλλαγή πληρωμής με αναφορά %sυπάρχει ήδη."
 
 #. module: account_payment
 #. odoo-python
@@ -150,11 +148,6 @@ msgid "A token is required to create a new payment transaction."
 msgstr ""
 "Απαιτείται ένας κωδικός ασφαλείας για να δημιουργηθεί μια νέα συναλλαγή "
 "πληρωμής."
-
-#. module: account_payment
-#: model:onboarding.onboarding.step,button_text:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Activate Stripe"
-msgstr "Ενεργοποιήστε το Stripe"
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
@@ -194,6 +187,11 @@ msgid "Authorized Transactions"
 msgstr "Εξουσιοδοτημένες Συναλλαγές"
 
 #. module: account_payment
+#: model:ir.model,name:account_payment.model_account_bank_statement_line
+msgid "Bank Statement Line"
+msgstr ""
+
+#. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.account_invoice_view_form_inherit_payment
 msgid "Capture Transaction"
 msgstr "Καταγραφή Συναλλαγής"
@@ -231,7 +229,18 @@ msgid "Discount Date"
 msgstr "Ημερομηνία Έκπτωσης"
 
 #. module: account_payment
+#: model:ir.model.fields,field_description:account_payment.field_account_bank_statement_line__display_name
+#: model:ir.model.fields,field_description:account_payment.field_account_journal__display_name
+#: model:ir.model.fields,field_description:account_payment.field_account_move__display_name
+#: model:ir.model.fields,field_description:account_payment.field_account_payment__display_name
+#: model:ir.model.fields,field_description:account_payment.field_account_payment_method__display_name
+#: model:ir.model.fields,field_description:account_payment.field_account_payment_method_line__display_name
+#: model:ir.model.fields,field_description:account_payment.field_account_payment_register__display_name
+#: model:ir.model.fields,field_description:account_payment.field_payment_link_wizard__display_name
+#: model:ir.model.fields,field_description:account_payment.field_payment_provider__display_name
 #: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard__display_name
+#: model:ir.model.fields,field_description:account_payment.field_payment_transaction__display_name
+#: model:ir.model.fields,field_description:account_payment.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr "Εμφάνιση Ονόματος"
 
@@ -247,7 +256,7 @@ msgid ""
 "your order."
 msgstr ""
 "Ολοκληρώθηκε, η διαδικτυακή σας πληρωμή έχει επεξεργαστεί επιτυχώς. "
-"Ευχαριστούμε για την παραγγελία σας"
+"Ευχαριστούμε για την παραγγελία σας."
 
 #. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_payment_link_wizard__epd_info
@@ -258,13 +267,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
 msgid "Early Payment Discount of"
 msgstr ""
-
-#. module: account_payment
-#: model:onboarding.onboarding.step,description:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Enable credit & debit card payments supported by Stripe."
-msgstr ""
-"Ενεργοποιήστε τις πληρωμές με πιστωτικές και χρεωστικές κάρτες που "
-"υποστηρίζονται από το Stripe."
 
 #. module: account_payment
 #: model:ir.model.fields.selection,name:account_payment.selection__payment_refund_wizard__support_refund__full_only
@@ -292,7 +294,18 @@ msgid "Has a pending refund"
 msgstr "Έχει εκκρεμή επιστροφή χρημάτων"
 
 #. module: account_payment
+#: model:ir.model.fields,field_description:account_payment.field_account_bank_statement_line__id
+#: model:ir.model.fields,field_description:account_payment.field_account_journal__id
+#: model:ir.model.fields,field_description:account_payment.field_account_move__id
+#: model:ir.model.fields,field_description:account_payment.field_account_payment__id
+#: model:ir.model.fields,field_description:account_payment.field_account_payment_method__id
+#: model:ir.model.fields,field_description:account_payment.field_account_payment_method_line__id
+#: model:ir.model.fields,field_description:account_payment.field_account_payment_register__id
+#: model:ir.model.fields,field_description:account_payment.field_payment_link_wizard__id
+#: model:ir.model.fields,field_description:account_payment.field_payment_provider__id
 #: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard__id
+#: model:ir.model.fields,field_description:account_payment.field_payment_transaction__id
+#: model:ir.model.fields,field_description:account_payment.field_res_config_settings__id
 msgid "ID"
 msgstr "Κωδικός"
 
@@ -394,21 +407,6 @@ msgstr ""
 "Σημειώστε ότι οι κωδικοί ασφαλείας από παρόχους που είναι ρυθμισμένοι να "
 "εξουσιοδοτούν μόνο συναλλαγές (αντί να καταγράφουν το ποσό) δεν είναι "
 "διαθέσιμοι."
-
-#. module: account_payment
-#: model:onboarding.onboarding.step,step_image_alt:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Onboarding Online Payments"
-msgstr "Εγγραφή για Διαδικτυακές Πληρωμές"
-
-#. module: account_payment
-#: model:ir.model,name:account_payment.model_onboarding_onboarding_step
-msgid "Onboarding Step"
-msgstr "Βήμα Εγγραφής"
-
-#. module: account_payment
-#: model:onboarding.onboarding.step,title:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Online Payments"
-msgstr "Online Πληρωμές"
 
 #. module: account_payment
 #. odoo-python
@@ -606,11 +604,6 @@ msgid "State"
 msgstr "Νομός/Πολιτεία"
 
 #. module: account_payment
-#: model:onboarding.onboarding.step,done_text:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Step Completed!"
-msgstr "Βήμα Ολοκληρωμένο!"
-
-#. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_account_payment__suitable_payment_token_ids
 #: model:ir.model.fields,field_description:account_payment.field_account_payment_register__suitable_payment_token_ids
 msgid "Suitable Payment Token"
@@ -639,12 +632,8 @@ msgstr "Το ημερολόγιο στο οποίο καταχωρούνται �
 #. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/models/payment_transaction.py:0
-msgid ""
-"The payment related to the transaction with reference %(ref)s has been "
-"posted: %(link)s"
+msgid "The payment related to transaction %(ref)s has been posted: %(link)s"
 msgstr ""
-"Η πληρωμή που σχετίζεται με τη συναλλαγή με αναφορά %(ref)s έχει "
-"καταχωρηθεί: %(link)s"
 
 #. module: account_payment
 #. odoo-python
@@ -682,7 +671,7 @@ msgid ""
 "There was an error processing your payment: issue with credit card ID "
 "validation."
 msgstr ""
-"Παρουσιάστηκε σφάλμα κατά την επεξεργασία της πληρωμής σας:  πρόβλημα με την "
+"Παρουσιάστηκε σφάλμα κατά την επεξεργασία της πληρωμής σας: πρόβλημα με την "
 "επικύρωση ταυτότητας της πιστωτικής κάρτας."
 
 #. module: account_payment
@@ -760,8 +749,8 @@ msgid ""
 "Linked providers(s): %s"
 msgstr ""
 "Δεν μπορείτε να διαγράψετε μια μέθοδο πληρωμής που είναι συνδεδεμένη με έναν "
-"πάροχο στην ενεργοποιημένη ή δοκιμαστική κατάσταση. Συνδεδεμένος "
-"πάροχος(οι): %s"
+"πάροχο στην ενεργοποιημένη ή δοκιμαστική κατάσταση. Συνδεδεμένος πάροχος(οι)"
+": %s"
 
 #. module: account_payment
 #. odoo-python
@@ -786,13 +775,13 @@ msgstr ""
 
 #. module: account_payment
 #. odoo-javascript
-#: code:addons/account_payment/static/src/js/portal_my_invoices_payment.js:0
+#: code:addons/account_payment/static/src/interactions/portal_my_invoices_payment_list.js:0
 msgid "due in %s day(s)"
 msgstr ""
 
 #. module: account_payment
 #. odoo-javascript
-#: code:addons/account_payment/static/src/js/portal_my_invoices_payment.js:0
+#: code:addons/account_payment/static/src/interactions/portal_my_invoices_payment_list.js:0
 msgid "due today"
 msgstr ""
 
@@ -808,3 +797,6 @@ msgstr ""
 
 #~ msgid "Code"
 #~ msgstr "Κωδικός"
+
+#~ msgid "Pay with"
+#~ msgstr "Πληρωμή με"

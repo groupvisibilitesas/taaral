@@ -2,26 +2,22 @@
 # This file contains the translation of the following modules:
 # * pos_mercado_pago
 #
-# Translators:
-# Wil Odoo, 2024
-# Fernanda Alvarez, 2025
-#
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
 # "Fernanda Alvarez (mfar)" <mfar@odoo.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~18.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-03 17:38+0000\n"
-"PO-Revision-Date: 2026-07-17 17:15+0000\n"
+"POT-Creation-Date: 2026-07-03 17:35+0000\n"
+"PO-Revision-Date: 2026-08-07 05:08+0000\n"
 "Last-Translator: \"Fernanda Alvarez (mfar)\" <mfar@odoo.com>\n"
 "Language-Team: Spanish (Latin America) <https://translate.odoo.com/projects/"
-"odoo-18/pos_mercado_pago/es_419/>\n"
+"odoo-19/pos_mercado_pago/es_419/>\n"
 "Language: es_419\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == "
-"0) ? 1 : 2);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2026.6.1\n"
 
 #. module: pos_mercado_pago
@@ -35,6 +31,12 @@ msgstr "APP_USR-..."
 msgid "Cannot decode Mercado Pago POS response. Error: %s"
 msgstr ""
 "No es posible decodificar la respuesta del PdV de Mercado Pago. Error: %s"
+
+#. module: pos_mercado_pago
+#: model:ir.model.fields,field_description:pos_mercado_pago.field_pos_payment_method__display_name
+#: model:ir.model.fields,field_description:pos_mercado_pago.field_pos_session__display_name
+msgid "Display Name"
+msgstr "Mostrar nombre"
 
 #. module: pos_mercado_pago
 #. odoo-python
@@ -57,8 +59,14 @@ msgid "Force PDV"
 msgstr "Forzar PDV"
 
 #. module: pos_mercado_pago
+#: model:ir.model.fields,field_description:pos_mercado_pago.field_pos_payment_method__id
+#: model:ir.model.fields,field_description:pos_mercado_pago.field_pos_session__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pos_mercado_pago
 #. odoo-javascript
-#: code:addons/pos_mercado_pago/static/src/app/payment_mercado_pago.js:0
+#: code:addons/pos_mercado_pago/static/src/app/utils/payment/payment_mercado_pago.js:0
 msgid "Mercado Pago %s"
 msgstr "Mercado Pago %s"
 
@@ -87,37 +95,37 @@ msgstr "ID de Mercado Pago para Point Smart completo"
 
 #. module: pos_mercado_pago
 #. odoo-javascript
-#: code:addons/pos_mercado_pago/static/src/app/payment_mercado_pago.js:0
+#: code:addons/pos_mercado_pago/static/src/app/utils/payment/payment_mercado_pago.js:0
 msgid "Payment has been canceled"
 msgstr "El pago ha sido cancelado"
 
 #. module: pos_mercado_pago
 #. odoo-javascript
-#: code:addons/pos_mercado_pago/static/src/app/payment_mercado_pago.js:0
+#: code:addons/pos_mercado_pago/static/src/app/utils/payment/payment_mercado_pago.js:0
 msgid "Payment has been processed"
 msgstr "El pago ha sido procesado"
 
 #. module: pos_mercado_pago
 #. odoo-javascript
-#: code:addons/pos_mercado_pago/static/src/app/payment_mercado_pago.js:0
+#: code:addons/pos_mercado_pago/static/src/app/utils/payment/payment_mercado_pago.js:0
 msgid "Payment has been rejected"
 msgstr "El pago ha sido rechazado"
 
 #. module: pos_mercado_pago
 #. odoo-javascript
-#: code:addons/pos_mercado_pago/static/src/app/payment_mercado_pago.js:0
+#: code:addons/pos_mercado_pago/static/src/app/utils/payment/payment_mercado_pago.js:0
 msgid "Payment has to be canceled on terminal"
 msgstr "Cancela el pago en la terminal"
 
 #. module: pos_mercado_pago
 #. odoo-javascript
-#: code:addons/pos_mercado_pago/static/src/app/payment_mercado_pago.js:0
+#: code:addons/pos_mercado_pago/static/src/app/utils/payment/payment_mercado_pago.js:0
 msgid "Payment not found (canceled/finished on terminal)"
 msgstr "No se encontró el pago (fue cancelado o finalizado en la terminal)"
 
 #. module: pos_mercado_pago
 #. odoo-javascript
-#: code:addons/pos_mercado_pago/static/src/app/payment_mercado_pago.js:0
+#: code:addons/pos_mercado_pago/static/src/app/utils/payment/payment_mercado_pago.js:0
 msgid "Payment status could not be confirmed"
 msgstr "No se pudo confirmar el estado del pago"
 
@@ -149,7 +157,7 @@ msgstr "Token de usuario de producción"
 
 #. module: pos_mercado_pago
 #. odoo-javascript
-#: code:addons/pos_mercado_pago/static/src/app/payment_mercado_pago.js:0
+#: code:addons/pos_mercado_pago/static/src/app/utils/payment/payment_mercado_pago.js:0
 msgid "System error"
 msgstr "Error del sistema"
 
@@ -172,7 +180,7 @@ msgstr "Respuesta inesperada de Mercado Pago: %s"
 
 #. module: pos_mercado_pago
 #. odoo-javascript
-#: code:addons/pos_mercado_pago/static/src/app/payment_mercado_pago.js:0
+#: code:addons/pos_mercado_pago/static/src/app/utils/payment/payment_mercado_pago.js:0
 msgid "Unknown payment status"
 msgstr "Estado de pago desconocido"
 

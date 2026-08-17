@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import date, timedelta
+from datetime import timedelta
 
-from odoo import Command
+from odoo.fields import Command, Date
+from odoo.tests.common import tagged
 
 from odoo.addons.sale_loyalty.tests.common import TestSaleCouponCommon
-from odoo.tests.common import tagged
 
 
 @tagged('-at_install', 'post_install')
@@ -38,13 +38,11 @@ class TestUnlinkReward(TestSaleCouponCommon):
             Command.create({
                 'product_id': self.product_A.id,
                 'name': 'Ordinary Product A',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             }),
             Command.create({
                 'product_id': self.product_B.id,
                 'name': '2 Product B',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             }),
         ]})
@@ -68,6 +66,6 @@ class TestUnlinkReward(TestSaleCouponCommon):
         coupon = coupon_program.coupon_ids
         self._apply_promo_code(order, coupon.code)
         self.assertTrue(order.order_line.coupon_id)
-        coupon.expiration_date = date.today() - timedelta(days=1)
+        coupon.expiration_date = Date.today() - timedelta(days=1)
         order._update_programs_and_rewards()
         self.assertFalse(order.order_line.coupon_id)

@@ -6,15 +6,12 @@
 Nigerian localization.
 =========================================================
     """,
-    'website': 'https://www.odoo.com/documentation/master/applications/finance/fiscal_localizations.html',
+    'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations.html',
     'version': '1.0',
     'icon': '/account/static/description/l10n.png',
     'countries': ['ng'],
     'category': 'Accounting/Localizations/Account Charts',
-    'depends': [
-        'account',
-        'base_vat',
-    ],
+    'depends': ['base_vat', 'account'],
     'auto_install': ['account'],
     'data': [
         'data/tax_report.xml',
@@ -23,5 +20,6 @@ Nigerian localization.
     'demo': [
         'demo/demo_company.xml',
     ],
+    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 }

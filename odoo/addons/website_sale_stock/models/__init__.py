@@ -3,7 +3,9 @@
 
 from . import website
 from . import product_combo
+from . import product_feed
 from . import product_product
+from . import product_ribbon
 from . import product_template
 from . import res_config_settings
 from . import sale_order

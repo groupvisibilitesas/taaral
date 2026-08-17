@@ -27,7 +27,6 @@ import { session } from "@web/session";
  * @typedef Config
  * @property {number | false} actionId
  * @property {string | false} actionType
- * @property {Record<string, any>} actionFlags
  * @property {() => []} breadcrumbs
  * @property {() => string} getDisplayName
  * @property {(string) => any} setDisplayName
@@ -107,10 +106,11 @@ export function getDefaultConfig() {
     const config = {
         actionId: false,
         actionType: false,
+        cache: true,
+        actionXmlId: false,
         embeddedActions: [],
         currentEmbeddedActionId: false,
         parentActionId: false,
-        actionFlags: {},
         breadcrumbs: reactive([
             {
                 get name() {
@@ -163,7 +163,6 @@ const STANDARD_PROPS = [
     "irFilters",
     "loadIrFilters",
 
-    "comparison",
     "context",
     "domain",
     "groupBy",
@@ -415,6 +414,9 @@ export class View extends Component {
 
         const searchMenuTypes =
             props.searchMenuTypes || descr.searchMenuTypes || this.constructor.searchMenuTypes;
+        const defaultGroupBy = archXmlDoc.hasAttribute("default_group_by")
+            ? archXmlDoc.getAttribute("default_group_by").split(",")
+            : null;
         viewProps.searchMenuTypes = searchMenuTypes;
         const canOrderByCount = descr.canOrderByCount || this.constructor.canOrderByCount;
 
@@ -457,6 +459,10 @@ export class View extends Component {
             this.withSearchProps.display = display;
         }
 
+        if (defaultGroupBy && defaultGroupBy.length) {
+            this.withSearchProps.defaultGroupBy = defaultGroupBy;
+        }
+
         for (const key in this.withSearchProps) {
             if (!(key in WithSearch.props)) {
                 delete this.withSearchProps[key];
@@ -474,8 +480,8 @@ export class View extends Component {
             return this.loadView(nextProps);
         }
         // we assume that nextProps can only vary in the search keys:
-        // comparison, context, domain, groupBy, orderBy
-        const { comparison, context, domain, groupBy, orderBy } = nextProps;
-        Object.assign(this.withSearchProps, { comparison, context, domain, groupBy, orderBy });
+        // context, domain, groupBy, orderBy
+        const { context, domain, groupBy, orderBy } = nextProps;
+        Object.assign(this.withSearchProps, { context, domain, groupBy, orderBy });
     }
 }

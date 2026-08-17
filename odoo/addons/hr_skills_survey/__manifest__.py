@@ -2,7 +2,7 @@
 
 {
     'name': 'Skills Certification',
-    'category': 'Hidden',
+    'category': 'Human Resources/Employees',
     'version': '1.0',
     'summary': 'Add certification to resume of your employees',
     'description':
@@ -14,20 +14,14 @@ This module adds certification to resume for employees.
         """,
     'depends': ['hr_skills', 'survey'],
     'data': [
-        'views/hr_templates.xml',
         'data/hr_resume_data.xml',
-        'views/hr_employee_certification_views.xml',
+        'views/hr_templates.xml',
         'views/survey_survey_views.xml',
     ],
     'auto_install': True,
-    'assets': {
-        'web.assets_backend': [
-            'hr_skills_survey/static/src/fields/**/*',
-            'hr_skills_survey/static/src/xml/**/*',
-        ],
-    },
     'demo': [
         'data/hr_resume_demo.xml',
     ],
+    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 }

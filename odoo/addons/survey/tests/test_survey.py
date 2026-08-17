@@ -699,7 +699,7 @@ class TestSurveyInternals(common.TestSurveyCommon, MailCase):
         expected_correct_answer = {
             qtype_mapping['numerical_box'].id: 5,
             qtype_mapping['date'].id: '10/16/2023',
-            qtype_mapping['datetime'].id: '11/17/2023 08:00:00',
+            qtype_mapping['datetime'].id: '11/17/2023 08:00:00 AM',
             qtype_mapping['simple_choice'].id:
                 qtype_mapping['simple_choice'].suggested_answer_ids.filtered_domain([('value', '=', 'SChoice0')]).ids,
             qtype_mapping['multiple_choice'].id:
@@ -800,7 +800,7 @@ class TestSurveyInternals(common.TestSurveyCommon, MailCase):
 
     def test_survey_session_leaderboard(self):
         """Check leaderboard rendering with small (max) scores values."""
-        start_time = fields.datetime(2023, 7, 7, 12, 0, 0)
+        start_time = datetime.datetime(2023, 7, 7, 12, 0, 0)
         test_survey = self.env['survey.survey'].create({
             'title': 'Test This Survey',
             'scoring_type': 'scoring_with_answers',
@@ -983,6 +983,8 @@ class TestSurveyInternals(common.TestSurveyCommon, MailCase):
             'time_limit': 60,
             'title': 'Where is india?',
         }])
+        test_survey.session_question_id = q_01
+
         answer_correct, answer_incorrect = q_01.suggested_answer_ids
         user_input = self.env['survey.user_input'].create({'survey_id': test_survey.id, 'is_session_answer': True})
         for (seconds_since_start, answer), expected_score in zip(

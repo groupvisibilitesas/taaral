@@ -6,8 +6,8 @@ from odoo.tools import SQL
 from odoo.exceptions import UserError
 
 
-class PurchaseBillMatch(models.Model):
-    _name = "purchase.bill.line.match"
+class PurchaseBillLineMatch(models.Model):
+    _name = 'purchase.bill.line.match'
     _description = "Purchase Line and Vendor Bill line matching view"
     _auto = False
     _order = 'product_id, aml_id, pol_id'
@@ -20,6 +20,7 @@ class PurchaseBillMatch(models.Model):
     line_qty = fields.Float(readonly=True)
     line_uom_id = fields.Many2one(comodel_name='uom.uom', readonly=True)
     qty_invoiced = fields.Float(readonly=True)
+    qty_to_invoice = fields.Float('Qty to invoice', readonly=True)
     purchase_order_id = fields.Many2one(comodel_name='purchase.order', readonly=True)
     account_move_id = fields.Many2one(comodel_name='account.move', readonly=True)
     line_amount_untaxed = fields.Monetary(readonly=True)
@@ -68,7 +69,10 @@ class PurchaseBillMatch(models.Model):
 
     def _compute_product_uom_qty(self):
         for line in self:
-            line.product_uom_qty = line.line_uom_id._compute_quantity(line.line_qty, line.product_uom_id)
+            if line.product_id:
+                line.product_uom_qty = line.line_uom_id._compute_quantity(line.line_qty, line.product_uom_id)
+            else:
+                line.product_uom_qty = line.line_qty
 
     @api.depends('aml_id.price_unit', 'pol_id.price_unit')
     def _compute_product_uom_price(self):
@@ -85,16 +89,17 @@ class PurchaseBillMatch(models.Model):
                    pol.partner_id as partner_id,
                    pol.product_id as product_id,
                    pol.product_qty as line_qty,
-                   pol.product_uom as line_uom_id,
+                   pol.product_uom_id as line_uom_id,
                    pol.qty_invoiced as qty_invoiced,
+                   pol.qty_to_invoice as qty_to_invoice,
                    po.id as purchase_order_id,
                    NULL as account_move_id,
                    pol.price_subtotal as line_amount_untaxed,
-                   pol.currency_id as currency_id,
+                   po.currency_id as currency_id,
                    po.state as state
               FROM purchase_order_line pol
          LEFT JOIN purchase_order po ON pol.order_id = po.id
-             WHERE pol.state in ('purchase', 'done')
+             WHERE po.state = 'purchase'
                AND (pol.product_qty > pol.qty_invoiced OR pol.qty_to_invoice != 0)
                 OR ((pol.display_type = '' OR pol.display_type IS NULL) AND pol.is_downpayment AND pol.qty_invoiced > 0)
         """)
@@ -106,11 +111,12 @@ class PurchaseBillMatch(models.Model):
                    NULL as pol_id,
                    aml.id as aml_id,
                    aml.company_id as company_id,
-                   aml.partner_id as partner_id,
+                   am.partner_id as partner_id,
                    aml.product_id as product_id,
                    aml.quantity as line_qty,
                    aml.product_uom_id as line_uom_id,
                    NULL as qty_invoiced,
+                   NULL as qty_to_invoice,
                    NULL as purchase_order_id,
                    am.id as account_move_id,
                    aml.amount_currency as line_amount_untaxed,
@@ -140,9 +146,16 @@ class PurchaseBillMatch(models.Model):
     @api.model
     def _action_create_bill_from_po_lines(self, partner, po_lines):
         """ Create a new vendor bill with the selected PO lines and returns an action to open it """
+        if len(po_lines.currency_id) == 1:
+            currency = po_lines.currency_id
+        elif len(po_lines.company_id) == 1:
+            currency = po_lines.company_id.currency_id
+        else:
+            currency = self.env.company.currency_id
         bill = self.env['account.move'].create({
             'move_type': 'in_invoice',
             'partner_id': partner.id,
+            'currency_id': currency.id,
         })
         bill._add_purchase_order_lines(po_lines)
         return bill._get_records_action()
@@ -152,14 +165,11 @@ class PurchaseBillMatch(models.Model):
             raise UserError(_("You must select at least one Purchase Order line to match or create bill."))
         if not self.aml_id:  # select POL(s) without AML -> create a draft bill with the POL(s)
             return self._action_create_bill_from_po_lines(self.partner_id, self.pol_id)
-        if len(self.aml_id.move_id) > 1:  # for purchase matching, disallow matching multiple bills at the same time
-            raise UserError(_("You can't select lines from multiple Vendor Bill to do the matching."))
 
         pol_by_product = self.pol_id.grouped('product_id')
         aml_by_product = self.aml_id.grouped('product_id')
         residual_purchase_order_lines = self.pol_id
         residual_account_move_lines = self.aml_id
-        residual_bill = self.aml_id.move_id
 
         # Match all matchable POL-AML lines and remove them from the residual group
         po_lines_to_remove = self.env['purchase.order.line']
@@ -181,12 +191,13 @@ class PurchaseBillMatch(models.Model):
         residual_purchase_order_lines -= po_lines_to_remove
         residual_account_move_lines -= matching_bill_line_to_remove
 
-        # Delete all unmatched selected AML
-        if residual_account_move_lines:
-            residual_account_move_lines.unlink()
+        if len(residual_bill := self.aml_id.move_id) == 1:
+            # Delete all unmatched selected AML
+            if residual_account_move_lines:
+                residual_account_move_lines.unlink()
 
-        # Add all remaining POL to the residual bill
-        residual_bill._add_purchase_order_lines(residual_purchase_order_lines)
+            # Add all remaining POL to the residual bill
+            residual_bill._add_purchase_order_lines(residual_purchase_order_lines)
 
     def action_add_to_po(self):
         if not self or not self.aml_id:

@@ -14,14 +14,13 @@ import { rpcBus } from "@web/core/network/rpc";
 class Dev extends models.Model {
     _name = "dev";
     _rec_name = "display_name";
-
-    active = fields.Boolean({ default: true });
-
     _records = [
         { id: 1, display_name: "Julien" },
         { id: 2, display_name: "Pierre" },
-        { id: 5, display_name: "Paul", active: false },
+        { id: 3, display_name: "Paul", active: false },
     ];
+
+    active = fields.Boolean({ default: true });
 }
 
 class PO extends models.Model {
@@ -36,8 +35,8 @@ describe.current.tags("headless");
 
 test("single loadDisplayNames", async () => {
     await makeMockEnv();
-    const displayNames = await getService("name").loadDisplayNames("dev", [1, 2]);
-    expect(displayNames).toEqual({ 1: "Julien", 2: "Pierre" });
+    const displayNames = await getService("name").loadDisplayNames("dev", [1, 2, 3]);
+    expect(displayNames).toEqual({ 1: "Julien", 2: "Pierre", 3: "Paul" });
 });
 
 test("loadDisplayNames is done in silent mode", async () => {
@@ -128,25 +127,9 @@ test("inaccessible or missing id", async () => {
         expect.step(`${model}:${method}:${kwargs.domain[0][2]}`);
     });
 
-    const displayNames = await getService("name").loadDisplayNames("dev", [3]);
-    expect(displayNames).toEqual({ 3: ERROR_INACCESSIBLE_OR_MISSING });
-    expect.verifySteps(["dev:web_search_read:3"]);
-});
-
-test("loadDisplayNames fetches archived records", async () => {
-    await makeMockEnv();
-    onRpc(({ method, model, kwargs }) => {
-        if (method === "web_search_read") {
-            expect.step(method);
-            expect(model).toBe("dev");
-            expect(kwargs.domain).toEqual([["id", "in", [5]]]);
-            expect(kwargs.context.active_test).toBe(false);
-        }
-    });
-
-    const displayNames = await getService("name").loadDisplayNames("dev", [5]);
-    expect(displayNames).toEqual({ 5: "Paul" });
-    expect.verifySteps(["web_search_read"]);
+    const displayNames = await getService("name").loadDisplayNames("dev", [4]);
+    expect(displayNames).toEqual({ 4: ERROR_INACCESSIBLE_OR_MISSING });
+    expect.verifySteps(["dev:web_search_read:4"]);
 });
 
 test("batch + inaccessible/missing", async () => {
@@ -155,13 +138,13 @@ test("batch + inaccessible/missing", async () => {
         expect.step(`${model}:${method}:${kwargs.domain[0][2]}`);
     });
 
-    const loadPromise1 = getService("name").loadDisplayNames("dev", [1, 3]);
+    const loadPromise1 = getService("name").loadDisplayNames("dev", [1, 4]);
     expect.verifySteps([]);
-    const loadPromise2 = getService("name").loadDisplayNames("dev", [2, 4]);
+    const loadPromise2 = getService("name").loadDisplayNames("dev", [2, 5]);
     expect.verifySteps([]);
 
     const [displayNames1, displayNames2] = await Promise.all([loadPromise1, loadPromise2]);
-    expect(displayNames1).toEqual({ 1: "Julien", 3: ERROR_INACCESSIBLE_OR_MISSING });
-    expect(displayNames2).toEqual({ 2: "Pierre", 4: ERROR_INACCESSIBLE_OR_MISSING });
-    expect.verifySteps(["dev:web_search_read:1,3,2,4"]);
+    expect(displayNames1).toEqual({ 1: "Julien", 4: ERROR_INACCESSIBLE_OR_MISSING });
+    expect(displayNames2).toEqual({ 2: "Pierre", 5: ERROR_INACCESSIBLE_OR_MISSING });
+    expect.verifySteps(["dev:web_search_read:1,4,2,5"]);
 });

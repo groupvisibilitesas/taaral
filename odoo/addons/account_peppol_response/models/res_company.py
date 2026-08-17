@@ -5,7 +5,7 @@ class ResCompany(models.Model):
     _inherit = 'res.company'
 
     def _inverse_peppol_purchase_journal_id(self):
-        # If the user removed his import journal in his Peppol settings, we need to tell IAP the user can't support
+        # If the user removed his Import journal in his Peppol settings, we need to tell IAP the user can't support
         # responses anymore. If a journal is added when it was empty before, we also need to tell IAP the user can support
         # responses again.
         super()._inverse_peppol_purchase_journal_id()

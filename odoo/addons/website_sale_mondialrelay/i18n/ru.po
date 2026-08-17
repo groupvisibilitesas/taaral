@@ -3,18 +3,16 @@
 # * website_sale_mondialrelay
 #
 # Translators:
-# Wil Odoo, 2024
-# Anastasiia Koroleva, 2025
-#
-# "Anastasiia Koroleva (koan)" <koan@odoo.com>, 2025.
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# "Anastasiia Koroleva (koan)" <koan@odoo.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 17.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:38+0000\n"
-"PO-Revision-Date: 2025-10-22 09:41+0000\n"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-08 03:55+0000\n"
 "Last-Translator: \"Anastasiia Koroleva (koan)\" <koan@odoo.com>\n"
-"Language-Team: Russian <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Russian <https://translate.odoo.com/projects/odoo-19/"
 "website_sale_mondialrelay/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -23,7 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
 "(n%100>=11 && n%100<=14)? 2 : 3);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: website_sale_mondialrelay
 #. odoo-python
@@ -61,9 +59,11 @@ msgid "Close"
 msgstr "Закрыть"
 
 #. module: website_sale_mondialrelay
-#: model:ir.model,name:website_sale_mondialrelay.model_res_partner
-msgid "Contact"
-msgstr "Контакты"
+#. odoo-python
+#: code:addons/website_sale_mondialrelay/controllers/controllers.py:0
+msgid "Customer of the order cannot be the public user at this step."
+msgstr ""
+"Покупатель в заказе не может быть публичным пользователем на данном этапе."
 
 #. module: website_sale_mondialrelay
 #. odoo-python
@@ -73,16 +73,20 @@ msgstr ""
 "Способ доставки Mondial Relay может быть отправлен только в Point Relais®."
 
 #. module: website_sale_mondialrelay
-#: model_terms:ir.ui.view,arch_db:website_sale_mondialrelay.delivery_carrier_view_search
-#: model_terms:ir.ui.view,arch_db:website_sale_mondialrelay.website_sale_mondialrelay_address_kanban
-#: model_terms:ir.ui.view,arch_db:website_sale_mondialrelay.website_sale_mondialrelay_address_on_payment
-msgid "Mondial Relay"
-msgstr "Эстафета Мондиаль"
+#: model:ir.model.fields,field_description:website_sale_mondialrelay.field_sale_order__display_name
+msgid "Display Name"
+msgstr "Отображаемое название"
 
 #. module: website_sale_mondialrelay
-#: model_terms:ir.ui.view,arch_db:website_sale_mondialrelay.res_config_settings_view_form
-msgid "Mondial Relay Shipping Methods"
-msgstr "Способы доставки Mondial Relay"
+#: model:ir.model.fields,field_description:website_sale_mondialrelay.field_sale_order__id
+msgid "ID"
+msgstr "ID"
+
+#. module: website_sale_mondialrelay
+#: model_terms:ir.ui.view,arch_db:website_sale_mondialrelay.address_on_checkout
+#: model_terms:ir.ui.view,arch_db:website_sale_mondialrelay.delivery_carrier_view_search
+msgid "Mondial Relay"
+msgstr "Эстафета Мондиаль"
 
 #. module: website_sale_mondialrelay
 #. odoo-python
@@ -103,7 +107,7 @@ msgid "Send to this Parcel Point"
 msgstr "Отправить в этот пункт посылки"
 
 #. module: website_sale_mondialrelay
-#: model_terms:ir.ui.view,arch_db:website_sale_mondialrelay.website_sale_mondialrelay_billing_address_row
+#: model_terms:ir.ui.view,arch_db:website_sale_mondialrelay.website_sale_mondialrelay_billing_address_list
 msgid "Unavailable with Mondial Relay"
 msgstr "Недоступно для Mondial Relay"
 
@@ -112,3 +116,12 @@ msgstr "Недоступно для Mondial Relay"
 #: code:addons/website_sale_mondialrelay/controllers/controllers.py:0
 msgid "You cannot edit the address of a Point Relais®."
 msgstr "Вы не можете редактировать адрес Point Relais®."
+
+#~ msgid "Contact"
+#~ msgstr "Контакты"
+
+#~ msgid "Mondial Relay Shipping Methods"
+#~ msgstr "Способы доставки Mondial Relay"
+
+#~ msgid "Website"
+#~ msgstr "Сайт"

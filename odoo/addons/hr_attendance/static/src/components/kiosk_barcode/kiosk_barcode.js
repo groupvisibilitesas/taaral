@@ -1,5 +1,3 @@
-/** @odoo-module **/
-
 import { BarcodeScanner } from "@barcodes/components/barcode_scanner";
 import { scanBarcode } from "@web/core/barcode/barcode_dialog";
 import { isDisplayStandalone } from "@web/core/browser/feature_detection";
@@ -9,6 +7,8 @@ export class KioskBarcodeScanner extends BarcodeScanner {
         ...BarcodeScanner.props,
         barcodeSource: String,
         token: String,
+        kioskMode: String,
+        fromTrialMode: Boolean,
     };
     static template = "hr_attendance.BarcodeScanner";
     setup() {

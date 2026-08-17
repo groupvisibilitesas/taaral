@@ -1,9 +1,9 @@
-import { App, whenReady, Component, useState, onWillStart } from "@odoo/owl";
+import { App, whenReady, Component, useState } from "@odoo/owl";
 import { CardLayout } from "@hr_attendance/components/card_layout/card_layout";
 import { KioskManualSelection } from "@hr_attendance/components/manual_selection/manual_selection";
 import { makeEnv, startServices } from "@web/env";
 import { getTemplate } from "@web/core/templates";
-import { _t } from "@web/core/l10n/translation";
+import { _t, appTranslateFn } from "@web/core/l10n/translation";
 import { MainComponentsContainer } from "@web/core/main_components_container";
 import { rpc } from "@web/core/network/rpc";
 import { useService, useBus } from "@web/core/utils/hooks";
@@ -13,6 +13,7 @@ import { KioskPinCode } from "@hr_attendance/components/pin_code/pin_code";
 import { KioskBarcodeScanner } from "@hr_attendance/components/kiosk_barcode/kiosk_barcode";
 import { browser } from "@web/core/browser/browser";
 import { DocumentationLink } from "@web/views/widgets/documentation_link/documentation_link";
+import { NewEmployeeDialog } from "@hr_attendance/components/new_employee_dialog/new_employee_dialog";
 import { session } from "@web/session";
 
 class kioskAttendanceApp extends Component{
@@ -25,6 +26,7 @@ class kioskAttendanceApp extends Component{
         kioskMode: { type: String },
         barcodeSource: { type: String },
         fromTrialMode: { type: Boolean },
+        deviceTrackingEnabled: { type: Boolean },
     };
     static components = {
         KioskBarcodeScanner,
@@ -37,6 +39,7 @@ class kioskAttendanceApp extends Component{
     };
 
     setup() {
+        this.dialogService = useService("dialog");
         this.barcode = useService("barcode");
         this.notification = useService("notification");
         this.ui = useService("ui");
@@ -44,8 +47,6 @@ class kioskAttendanceApp extends Component{
             company: this.props.companyId,
         });
         this.state = useState({
-            barcode: false,
-            barcodeIsSet: false,
             active_display: "settings",
             displayDemoMessage: browser.localStorage.getItem("hr_attendance.ShowDemoMessage") !== "false",
         });
@@ -62,22 +63,6 @@ class kioskAttendanceApp extends Component{
             this.manualKioskMode = true;
             this.state.active_display = "manual";
         }
-        onWillStart( async () => {
-            this.isFreshDb = await rpc("/hr_attendance/is_fresh_db", { token: this.props.token });
-        });
-    }
-
-    async setBadgeID() {
-        let barcode = this.state.barcode;
-        if (barcode) {
-            const result = await rpc("/hr_attendance/set_user_barcode", { token: this.props.token, barcode, });
-            if (result) {
-                this.notification.add(_t("Your badge Id is now set, you can scan your badge."), { type: 'success', });
-            } else {
-                this.notification.add(_t("Your badge has already been set."), { type: 'danger', });
-            }
-            this.state.barcodeIsSet = true;
-        }
     }
 
     switchDisplay(screen) {
@@ -87,6 +72,10 @@ class kioskAttendanceApp extends Component{
         } else {
             this.state.active_display = "main";
         }
+    }
+
+    newSetUp() {
+        this.dialogService.add(NewEmployeeDialog, { 'token': this.props.token });
     }
 
     async setSetting(mode) {
@@ -144,9 +133,10 @@ class kioskAttendanceApp extends Component{
     }
 
     async makeRpcWithGeolocation(route, params) {
-        if (!navigator.geolocation) {
-            return rpc(route, {...params})
+        if (!this.props.deviceTrackingEnabled || !navigator.geolocation) {
+            return rpc(route, { ...params });
         }
+
         return new Promise((resolve) => {
             navigator.geolocation.getCurrentPosition(
                 async ({ coords: { latitude, longitude } }) => {
@@ -240,9 +230,10 @@ export async function createPublicKioskAttendance(document, kiosk_backend_info) 
                 kioskMode: kiosk_backend_info.kiosk_mode,
                 barcodeSource: kiosk_backend_info.barcode_source,
                 fromTrialMode: kiosk_backend_info.from_trial_mode,
+                deviceTrackingEnabled: kiosk_backend_info.device_tracking_enabled,
             },
         dev: env.debug,
-        translateFn: _t,
+        translateFn: appTranslateFn,
         translatableAttributes: ["data-tooltip"],
     });
     return app.mount(document.body);

@@ -1,6 +1,8 @@
-import { parseDateTime, deserializeDateTime } from "@web/core/l10n/dates";
-import { roundDecimals, floatIsZero } from "@web/core/utils/numbers";
+/* global QRCode */
 
+import { session } from "@web/session";
+import { getDataURLFromFile } from "@web/core/utils/urls";
+import { deserializeDateTime } from "@web/core/l10n/dates";
 /*
  * comes from o_spreadsheet.js
  * https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
@@ -22,7 +24,6 @@ export function uuidv4() {
  */
 export function deduceUrl(url) {
     const protocol = odoo.use_lna ? "http:" : window.location.protocol;
-    url = odoo.use_lna ? url.replace(/^(\d+)-(\d+)-(\d+)-(\d+).*/, "$1.$2.$3.$4") : url;
     if (!url.includes("//")) {
         url = `${protocol}//${url}`;
     }
@@ -32,7 +33,7 @@ export function deduceUrl(url) {
     return url;
 }
 
-export function constructFullProductName(line) {
+export function constructAttributeString(line) {
     let attributeString = "";
 
     if (line.attribute_value_ids && line.attribute_value_ids.length > 0) {
@@ -51,10 +52,23 @@ export function constructFullProductName(line) {
         }
 
         attributeString = attributeString.slice(0, -2);
-        attributeString = ` (${attributeString})`;
+    } else if (
+        attributeString === "" &&
+        line?.product_id?.product_template_variant_value_ids?.length > 0
+    ) {
+        attributeString = line.product_id.product_template_variant_value_ids
+            ?.map((attr) => attr.name)
+            .join(", ");
     }
 
-    return `${line?.product_id?.display_name}${attributeString}`;
+    return attributeString;
+}
+
+export function constructFullProductName(line) {
+    const attributeString = constructAttributeString(line);
+    return attributeString
+        ? `${line?.product_id?.name} (${attributeString})`
+        : `${line?.product_id?.name}`;
 }
 /**
  * Returns a random 5 digits alphanumeric code
@@ -89,10 +103,6 @@ export function getMin(entries, options) {
     return getMax(entries, { ...options, inverted: true });
 }
 export function getOnNotified(bus, channel) {
-    if (!channel || typeof channel !== "string") {
-        return () => false;
-    }
-
     bus.addChannel(channel);
     return (notif, callback) => bus.subscribe(`${channel}-${notif}`, callback);
 }
@@ -122,137 +132,139 @@ export function loadImage(url, options = {}) {
  * Load all images in the given element.
  * @param {HTMLElement} el
  */
-export function loadAllImages(el) {
-    if (!el) {
-        return Promise.resolve();
-    }
 
-    const images = el.querySelectorAll("img");
-    return Promise.all(Array.from(images).map((img) => loadImage(img.src)));
-}
-export function parseUTCString(utcStr) {
-    return parseDateTime(utcStr, { format: "yyyy-MM-dd HH:mm:ss", tz: "utc" });
-}
+export function waitImages(containerElement, timeoutMs = 3000) {
+    return new Promise((resolve) => {
+        const images = containerElement.querySelectorAll("img");
+        const total = images.length;
+        let loadedCount = 0;
+        let timedOut = false;
 
-export function floatCompare(a, b, { decimals } = {}) {
-    if (decimals === undefined) {
-        throw new Error("decimals must be provided");
-    }
-    a = roundDecimals(a, decimals);
-    b = roundDecimals(b, decimals);
-    const delta = a - b;
-    if (floatIsZero(delta, decimals)) {
-        return 0;
-    }
-    return delta < 0 ? -1 : 1;
-}
-
-export function gte(a, b, { decimals } = {}) {
-    return floatCompare(a, b, { decimals }) >= 0;
-}
-
-export function gt(a, b, { decimals } = {}) {
-    return floatCompare(a, b, { decimals }) > 0;
-}
-
-export function lte(a, b, { decimals } = {}) {
-    return floatCompare(a, b, { decimals }) <= 0;
-}
-
-export function lt(a, b, { decimals } = {}) {
-    return floatCompare(a, b, { decimals }) < 0;
-}
-
-export function computeProductPricelistCache(service, data = []) {
-    // This function is called via the addEventListener callback initiated in the
-    // processServerData function when new products or pricelists are loaded into the PoS.
-    // It caches the heavy pricelist calculation when there are many products and pricelists.
-    const date = luxon.DateTime.now();
-    let pricelistItems = service.models["product.pricelist.item"].getAll();
-    let products = service.models["product.product"].getAll();
-
-    if (data.length > 0) {
-        if (data[0].model.modelName === "product.product") {
-            products = data;
+        if (total === 0) {
+            resolve({ timedOut: false });
+            return;
         }
 
-        if (data[0].model.modelName === "product.pricelist.item") {
-            pricelistItems = data;
-            // it needs only to compute for the products that are affected by the pricelist items
-            const productTmplIds = new Set(data.map((item) => item.raw.product_tmpl_id));
-            const productIds = new Set(data.map((item) => item.raw.product_id));
-            products = products.filter(
-                (product) =>
-                    productTmplIds.has(product.raw.product_tmpl_id) || productIds.has(product.id)
-            );
-        }
-    }
+        const timeoutId = setTimeout(() => {
+            timedOut = true;
+            resolve({ timedOut: true });
+        }, timeoutMs);
 
-    const pushItem = (targetArray, key, item) => {
-        if (!targetArray[key]) {
-            targetArray[key] = [];
-        }
-        targetArray[key].push(item);
-    };
-
-    const pricelistRules = {};
-
-    for (const item of pricelistItems) {
-        if (
-            (item.date_start && deserializeDateTime(item.date_start) > date) ||
-            (item.date_end && deserializeDateTime(item.date_end) < date)
-        ) {
-            continue;
-        }
-        const pricelistId = item.pricelist_id.id;
-
-        if (!pricelistRules[pricelistId]) {
-            pricelistRules[pricelistId] = {
-                productItems: {},
-                productTmlpItems: {},
-                categoryItems: {},
-                globalItems: [],
-            };
-        }
-
-        const productId = item.raw.product_id;
-        if (productId) {
-            pushItem(pricelistRules[pricelistId].productItems, productId, item);
-            continue;
-        }
-        const productTmplId = item.raw.product_tmpl_id;
-        if (productTmplId) {
-            pushItem(pricelistRules[pricelistId].productTmlpItems, productTmplId, item);
-            continue;
-        }
-        const categId = item.raw.categ_id;
-        if (categId) {
-            pushItem(pricelistRules[pricelistId].categoryItems, categId, item);
-        } else {
-            pricelistRules[pricelistId].globalItems.push(item);
-        }
-    }
-
-    for (const product of products) {
-        const applicableRules = product.getApplicablePricelistRules(pricelistRules);
-        for (const pricelistId in applicableRules) {
-            if (product.cachedPricelistRules[pricelistId]) {
-                const existingRuleIds = product.cachedPricelistRules[pricelistId].map(
-                    (rule) => rule.id
-                );
-                const newRules = applicableRules[pricelistId].filter(
-                    (rule) => !existingRuleIds.includes(rule.id)
-                );
-                product.cachedPricelistRules[pricelistId] = [
-                    ...newRules,
-                    ...product.cachedPricelistRules[pricelistId],
-                ];
-            } else {
-                product.cachedPricelistRules[pricelistId] = applicableRules[pricelistId];
+        const onLoadOrError = () => {
+            loadedCount++;
+            if (loadedCount === total && !timedOut) {
+                clearTimeout(timeoutId);
+                resolve({ timedOut: false });
             }
-        }
+        };
+
+        images.forEach((img) => {
+            if (img.complete) {
+                onLoadOrError();
+            } else {
+                img.addEventListener("load", onLoadOrError);
+                img.addEventListener("error", onLoadOrError);
+            }
+        });
+    });
+}
+
+export class Counter {
+    constructor(start = 0) {
+        this.value = start;
     }
-    if (data.length > 0 && data[0].model.modelName === "product.product") {
-        service._loadMissingPricelistItems(products);
+    next() {
+        this.value++;
+        return this.value;
     }
+}
+
+export function isValidPhone(string) {
+    const phone = string.replace(/[\s.\-()]/g, "");
+    const pattern = /^\+\d{8,18}$/;
+    return pattern.test(phone);
+}
+
+export function isValidEmail(email) {
+    return email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// Checks whether an ip address is on the local network. So one of the ranges:
+// 10.0.0.0 - 10.255.255.255
+// 127.0.0.0 - 127.255.255.255
+// 172.16.0.0 - 172.31.255.255
+// 169.254.0.0 - 169.254.255.255
+// 192.168.0.0 - 192.168.255.255
+export function isPrivateIp(ip) {
+    if (!ip || typeof ip !== "string") {
+        return false;
+    }
+    const blocks = ip.split(".");
+    if (blocks.length !== 4) {
+        return false;
+    }
+
+    const [a, b, c, d] = blocks.map(Number);
+    const invalidBlock = blocks.some(
+        (b, i) => isNaN([a, b, c, d][i]) || [a, b, c, d][i] < 0 || [a, b, c, d][i] > 255
+    );
+
+    if (invalidBlock) {
+        return false;
+    }
+
+    return (
+        a === 10 ||
+        a === 127 ||
+        (a === 172 && b >= 16 && b <= 31) ||
+        (a === 192 && b === 168) ||
+        (a === 169 && b === 254)
+    );
+}
+
+export const LONG_PRESS_DURATION = session.test_mode ? 100 : 500;
+
+export async function getImageDataUrl(imageUrl) {
+    const res = await fetch(imageUrl);
+    const blob = await res.blob();
+    return await getDataURLFromFile(blob);
+}
+
+export function orderUsageUTCtoLocalUtil(data) {
+    const result = {};
+    for (const [datetime, usage] of Object.entries(data)) {
+        const dt = deserializeDateTime(datetime);
+        const formattedDt = dt.toFormat("yyyy-MM-dd HH:mm:ss");
+        result[formattedDt] = usage;
+    }
+    return result;
+}
+
+/**
+ * Generates a QR code as a data URL in SVG format for a given URL.
+ *
+ * @param {string} url - The URL or text to encode in the QR code.
+ * @param {Object} [options={}] - Optional configuration for the QR code.
+ * @param {number} [options.width=150] - The width of the QR code.
+ * @param {number} [options.height=150] - The height of the QR code.
+ * @param {number} [options.correctLevel=QRCode.CorrectLevel.L] - The error correction level for the QR code.
+ * @param {boolean} [options.useSVG=true] - Whether to generate the QR code as SVG.
+ * @param {Object} [options.rest] - Additional options to pass to the QRCode constructor.
+ * @returns {string} The QR code as a data URL in SVG format.
+ */
+export function generateQRCodeDataUrl(
+    url,
+    { width = 150, height = 150, correctLevel = QRCode.CorrectLevel.L, ...rest } = {}
+) {
+    const tempDiv = document.createElement("div");
+    const options = { width, height, correctLevel, ...rest };
+
+    new QRCode(tempDiv, { text: url, useSVG: true, ...options });
+
+    const svg = tempDiv.querySelector("svg");
+    svg.setAttribute("width", width);
+    svg.setAttribute("height", height);
+
+    const qr_code_svg = new XMLSerializer().serializeToString(svg);
+    return "data:image/svg+xml;base64," + window.btoa(qr_code_svg);
 }

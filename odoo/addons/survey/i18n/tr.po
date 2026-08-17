@@ -3,49 +3,46 @@
 # * survey
 #
 # Translators:
-# emre oktem, 2024
-# Tiffany Chang, 2024
-# Fırat Kaya <firat.kaya@mechsoft.com.tr>, 2024
-# Nadir Gazioglu <nadirgazioglu@gmail.com>, 2024
-# Erdal Mutlu, 2024
-# Melih Melik Sonmez, 2024
-# Buket Şeker <buket_skr@hotmail.com>, 2024
-# Yedigen, 2024
-# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2024
-# Sinem Cil, 2024
-# abc Def <hdogan1974@gmail.com>, 2024
-# Saban Yildiz <sabany@projetgrup.com>, 2024
-# Tugay Hatıl <tugayh@projetgrup.com>, 2024
-# Gökhan Erdoğdu <gokhan.erdogdu@mechsoft.com.tr>, 2024
-# Umur Akın <umura@projetgrup.com>, 2024
-# Ediz Duman <neps1192@gmail.com>, 2024
-# Martin Trigaux, 2024
-# Ahmet Altinisik <aaltinisik@altinkaya.com.tr>, 2024
-# Ozlem Cikrikci <ozlemc@eskayazilim.com.tr>, 2024
-# Murat Kaplan <muratk@projetgrup.com>, 2024
-# Levent Karakaş <levent@mektup.at>, 2024
-# İlknur Gözütok, 2024
-# Murat Durmuş <muratd@projetgrup.com>, 2024
-# Halil, 2024
-# Wil Odoo, 2025
-# Deniz Guvener_Odoo <degu@odoo.com>, 2025
-# "Deniz Guvener Unal (degu)" <degu@odoo.com>, 2025.
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Ramiz Deniz Öner <deniz@denizoner.com>, 2022
+# Yedigen, 2022
+# Erdal Mutlu, 2022
+# Buket Şeker <buket_skr@hotmail.com>, 2022
+# Nadir Gazioglu <nadirgazioglu@gmail.com>, 2022
+# abc Def <hdogan1974@gmail.com>, 2022
+# Fırat Kaya <firat.kaya@mechsoft.com.tr>, 2022
+# Ahmet Altinisik <aaltinisik@altinkaya.com.tr>, 2022
+# Levent Karakaş <levent@mektup.at>, 2022
+# Gökhan Erdoğdu <gokhan.erdogdu@mechsoft.com.tr>, 2022
+# Ozlem Cikrikci <ozlemc@eskayazilim.com.tr>, 2022
+# Saban Yildiz <sabany@projetgrup.com>, 2022
+# Tugay Hatıl <tugayh@projetgrup.com>, 2022
+# Umur Akın <umura@projetgrup.com>, 2022
+# Murat Kaplan <muratk@projetgrup.com>, 2022
+# Martin Trigaux, 2022
+# Murat Durmuş <muratd@projetgrup.com>, 2022
+# Halil, 2022
+# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2023
+# Ediz Duman <neps1192@gmail.com>, 2023
+# İlknur Gözütok, 2023
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# DeepL <noreply-mt-deepl@weblate.org>, 2025.
+# Odoo Turkish Import <dyki+tr@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-10 18:37+0000\n"
-"PO-Revision-Date: 2025-11-25 09:49+0000\n"
+"PO-Revision-Date: 2026-08-02 19:43+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Turkish <https://translate.odoo.com/projects/odoo-18/survey/"
+"Language-Team: Turkish <https://translate.odoo.com/projects/odoo-19/survey/"
 "tr/>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_survey__question_count
@@ -261,8 +258,8 @@ msgstr ""
 "''\">Mobilya Yapımı</strong>\n"
 "                    sertifikanız ekte sunulmuştur.\n"
 "                </p>\n"
-"                <p>Testi <strong t-out=\"object.scoring_percentage\"/"
-">%puanla geçtiğiniz için tebrikler!</p> \n"
+"                <p>Testi <strong t-out=\"object.scoring_percentage\"/>"
+"%puanla geçtiğiniz için tebrikler!</p> \n"
 "            </td></tr>\n"
 "        </tbody>\n"
 "    </table>\n"
@@ -284,9 +281,11 @@ msgid ""
 "appreciated.\n"
 "        </t>\n"
 "        </p><div style=\"margin: 16px 0px 16px 0px;\">\n"
-"            <a t-att-href=\"(object.get_start_url())\" style=\"background-"
-"color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: "
-"#fff; border-radius: 5px; font-size:13px;\">\n"
+"            <a t-att-href=\"(object.get_start_url())\" t-attf-"
+"style=\"background-color: {{user.company_id.email_secondary_color or "
+"'#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: "
+"{{user.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
+"font-size:13px;\">\n"
 "                <t t-if=\"object.survey_id.certification\">\n"
 "                    Start Certification\n"
 "                </t>\n"
@@ -311,37 +310,39 @@ msgid ""
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"        Sayın <t t-out=\"object.partner_id.name or "
-"'participant'\">katılımcı</t><br/><br/>\n"
+"        Sayın <t t-out=\"object.partner_id.name or 'participant'\">"
+"katılımcısı</t><br/><br/>\n"
 "        <t t-if=\"object.survey_id.certification\">\n"
 "            Yeni bir sertifika almaya davet edildiniz.\n"
-"        </t>\n"
+"       </t>\n"
 "        <t t-else=\"\">\n"
-"            Bir anket yürütüyoruz ve geri bildiriminiz bizim için "
-"değerlidir.\n"
-"        </t>\n"
+"            Bir anket yürütüyoruz ve yanıtınız takdir edilecektir.\n"
+"       </t>\n"
 "        </p><div style=\"margin: 16px 0px 16px 0px;\">\n"
-"            <a t-att-href=\"(object.get_start_url())\" style=\"background-"
-"color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: "
-"#fff; border-radius: 5px; font-size:13px;\">\n"
-"                <t t-if=\"object.survey_id.certification\">\n"
-"                    Sertifikasyonu Başlat\n"
-"                </t>\n"
+"            <a t-att-href=\"(object.get_start_url())\" t-attf-"
+"style=\"background-color: {{user.company_id.email_secondary_color or "
+"'#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: {"
+"{user.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
+"font-size:13px;\">{{user.company_id.email_primary_color or '#FFFFFF'}}; "
+"border-radius: 5px; font-size:13px;\">\n"
+"               <t t-if=\"object.survey_id.certification\">\n"
+"                    Sertifikasyona Başlayın\n"
+"               </t>\n"
 "                <t t-else=\"\">\n"
 "                    Anketi Başlat\n"
-"                </t>\n"
+"               </t>\n"
 "            </a>\n"
-"        </div>\n"
+"       </div>\n"
 "        <t t-if=\"object.deadline\">\n"
-"            Lütfen <t t-out=\"format_date(object.deadline) or "
-"''\">05/05/2021</t> tarihine kadar anketi yanıtlayınız.<br/><br/>\n"
-"        </t>\n"
+"            Lütfen <t t-out=\"format_date(object.deadline) or ''\">05/05/"
+"2021</t> için anketi yanıtlayın.<br/><br/>\n"
+"       </t>\n"
 "        <t t-if=\"object.survey_id.certification\">\n"
-"            Bol şans dileriz!\n"
-"        </t>\n"
+"            Size iyi şanslar dileriz!\n"
+"       </t>\n"
 "        <t t-else=\"\">\n"
-"            Katılımınız için şimdiden teşekkürler.\n"
-"        </t>\n"
+"            Katılımınız için şimdiden teşekkür ederiz.\n"
+"       </t>\n"
 "    \n"
 "</div>\n"
 "            "
@@ -511,8 +512,8 @@ msgid ""
 "                        <span class=\"o_stat_text\" "
 "invisible=\"certifications_count &gt; 1\">Certification</span>"
 msgstr ""
-"<span class=\"o_stat_text\" invisible=\"certifications_count &lt; "
-"2\">Sertifikalar</span>\n"
+"<span class=\"o_stat_text\" invisible=\"certifications_count &lt; 2\">"
+"Sertifikalar</span>\n"
 "                        <span class=\"o_stat_text\" "
 "invisible=\"certifications_count &gt; 1\">Sertifika</span>"
 
@@ -522,8 +523,8 @@ msgid ""
 "<span class=\"o_survey_enter fw-bold text-muted ms-2 d-none d-md-inline\">or "
 "press Enter</span>"
 msgstr ""
-"<span class=\"o_survey_enter fw-bold text-muted ms-2 d-none d-md-"
-"inline\">veya Enter'a basın </span>"
+"<span class=\"o_survey_enter fw-bold text-muted ms-2 d-none d-md-inline\">"
+"veya Enter'a basın </span>"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_selection_key
@@ -569,21 +570,6 @@ msgstr ""
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_kanban
-msgid "<span class=\"text-break text-muted\">Completed</span>"
-msgstr "<span class=\"text-break text-muted\">Tamamlandı</span>"
-
-#. module: survey
-#: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_kanban
-msgid "<span class=\"text-break text-muted\">Registered</span>"
-msgstr "<span class=\"text-break text-muted\">Kayıtlı</span>"
-
-#. module: survey
-#: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_kanban
-msgid "<span class=\"text-break text-muted\">Success</span>"
-msgstr "<span class=\"text-break text-muted\">Başarılı</span>"
-
-#. module: survey
-#: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_kanban
 msgid "<span class=\"text-muted\">Average Duration</span>"
 msgstr "<span class=\"text-muted\">Ortalama Süre</span>"
 
@@ -613,14 +599,6 @@ msgid "<span invisible=\"not is_scored_question\">Points</span>"
 msgstr "<span invisible=\"not is_scored_question\">Puan</span>"
 
 #. module: survey
-#: model_terms:survey.question,description:survey.survey_demo_quiz_p3_q1
-msgid ""
-"<span>\"Red\" is not a category, I know what you are trying to do ;)</span>"
-msgstr ""
-"<span>\"Kırmızı\" bir kategori değil, ne yapmaya çalıştığınızı biliyorum ;)</"
-"span>"
-
-#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_user_input_view_form
 msgid "<span>%</span>"
 msgstr "<span>%</span>"
@@ -629,12 +607,6 @@ msgstr "<span>%</span>"
 #: model_terms:ir.ui.view,arch_db:survey.survey_results_filters
 msgid "<span>All surveys</span>"
 msgstr "<span>Tüm anketler</span>"
-
-#. module: survey
-#: model_terms:survey.question,description:survey.survey_demo_quiz_p3_q6
-msgid "<span>Best time to do it, is the right time to do it.</span>"
-msgstr ""
-"<span>Bunu yapmak için en iyi zaman, bunu yapmak için doğru zamandır.</span>"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_results_filters
@@ -672,14 +644,6 @@ msgstr ""
 "role=\"img\" aria-label=\"Numeric\"/>"
 
 #. module: survey
-#: model_terms:survey.question,description:survey.survey_demo_quiz_p5_q1
-msgid ""
-"<span>If you don't like us, please try to be as objective as possible.</span>"
-msgstr ""
-"<span>Bizi sevmiyorsanız, lütfen mümkün olduğunca objektif olmaya çalışın.</"
-"span>"
-
-#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_question_form
 msgid ""
 "<span>Name all the animals</span><br/>\n"
@@ -707,17 +671,6 @@ msgid "<span>Number of attempts left</span>:"
 msgstr "<span>Kalan deneme sayısı</span>:"
 
 #. module: survey
-#: model_terms:survey.question,description:survey.survey_demo_quiz_p2_q1
-msgid "<span>Our famous Leader!</span>"
-msgstr "<span>Ünlü liderimiz!</span>"
-
-#. module: survey
-#: model_terms:survey.question,description:survey.survey_demo_quiz_p3_q3
-msgid "<span>Our sales people have an advantage, but you can do it!</span>"
-msgstr ""
-"<span>Satış ekibimizin bir avantajı var, ama siz de yapabilirsiniz!</span>"
-
-#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_results_filters
 msgid "<span>Passed and Failed</span>"
 msgstr "<span>Geçti ve Kaldı</span>"
@@ -735,11 +688,6 @@ msgid ""
 msgstr ""
 "<span>Bu sertifika, şu kişiye sunulmuştur:</span>\n"
 "                                <br/>"
-
-#. module: survey
-#: model_terms:ir.actions.act_window,help:survey.action_survey_form
-msgid "<span>Try It</span>"
-msgstr "<span>Deneyin</span>"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.user_input_session_manage_content
@@ -774,11 +722,6 @@ msgid ""
 msgstr ""
 "<span>başarıyla tamamladığı için</span>\n"
 "                                <br/>"
-
-#. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p3_q4
-msgid "A \"Citrus\" could give you ..."
-msgstr "Bir \"Narenciye\" size verebilir ..."
 
 #. module: survey
 #. odoo-python
@@ -821,7 +764,8 @@ msgstr ""
 "bir cevabı gösterir"
 
 #. module: survey
-#: model_terms:ir.ui.view,arch_db:survey.survey_fill_form
+#. odoo-javascript
+#: code:addons/survey/static/src/interactions/survey_form.js:0
 msgid "A problem has occurred"
 msgstr "Bir sorun oluştu"
 
@@ -918,11 +862,6 @@ msgid "Add existing contacts..."
 msgstr "Varolan kişileri ekle..."
 
 #. module: survey
-#: model_terms:ir.actions.act_window,help:survey.action_survey_form
-msgid "Add some fun to your presentations by sharing questions live"
-msgstr "Soruları canlı olarak paylaşarak sunumlarınıza biraz eğlence katın"
-
-#. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_invite__emails
 msgid "Additional emails"
 msgstr "Ek e-postalar"
@@ -931,20 +870,6 @@ msgstr "Ek e-postalar"
 #: model:res.groups,name:survey.group_survey_manager
 msgid "Administrator"
 msgstr "Yönetici"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q4_sug1
-msgid "Africa"
-msgstr "Afrika"
-
-#. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p4_q6
-msgid ""
-"After watching this video, will you swear that you are not going to "
-"procrastinate to trim your hedge this year?"
-msgstr ""
-"Bu videoyu izledikten sonra bu yıl çitinizi budamayı ertelemeyeceğinize "
-"yemin eder misiniz?"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_feedback_p2_q2_col3
@@ -968,6 +893,11 @@ msgid ""
 msgstr ""
 "Tüm \"Puanlanan soru mu = Doğru\" ve \"Soru Türü: Datetime\" sorularının "
 "yanıtlanması gerekir"
+
+#. module: survey
+#: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
+msgid "All installed languages"
+msgstr "Yüklü tüm diller"
 
 #. module: survey
 #: model:ir.model.fields.selection,name:survey.selection__survey_survey__questions_selection__all
@@ -1013,11 +943,6 @@ msgstr "Bir erişim belirteci benzersiz olmalıdır!"
 #: model:ir.model.constraint,message:survey.constraint_survey_question_positive_answer_score
 msgid "An answer score for a non-multiple choice question cannot be negative!"
 msgstr "Çoktan seçmeli olmayan bir sorunun cevap puanı negatif olamaz!"
-
-#. module: survey
-#: model_terms:survey.question,description:survey.survey_demo_quiz_p3
-msgid "An apple a day keeps the doctor away."
-msgstr "Günde bir elma, sizi doktordan uzak tutar."
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.user_input_session_leaderboard
@@ -1074,21 +999,17 @@ msgid "Appears in"
 msgstr "Görüneceği Yer"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q3_sug1
-msgid "Apple Trees"
-msgstr "Elma Ağaçları"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q6_row1
-msgid "Apples"
-msgstr "Elmalar"
-
-#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_kanban
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_search
 msgid "Archived"
 msgstr "Arşivlendi"
+
+#. module: survey
+#. odoo-javascript
+#: code:addons/survey/static/src/interactions/survey_form.js:0
+msgid "Are you sure you want to submit the survey?"
+msgstr "Anketi göndermek istediğinizden emin misiniz?"
 
 #. module: survey
 #: model:survey.question,title:survey.survey_demo_food_preferences_q1
@@ -1107,13 +1028,9 @@ msgid "Arthur B. McDonald"
 msgstr "Arthur B. McDonald"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q4_sug2
-msgid "Asia"
-msgstr "Asya"
-
-#. module: survey
+#. odoo-python
+#: code:addons/survey/models/templates/survey_survey.py:0
 #: model:ir.model.fields.selection,name:survey.selection__survey_survey__survey_type__assessment
-#: model_terms:ir.actions.act_window,help:survey.action_survey_form
 msgid "Assessment"
 msgstr "Değerlendirme"
 
@@ -1180,11 +1097,6 @@ msgstr ""
 "otomatik e-posta gönderilir."
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q6_sug3
-msgid "Autumn"
-msgstr "Sonbahar"
-
-#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_page_statistics_question
 msgid "Average"
 msgstr "Ortalama"
@@ -1233,23 +1145,13 @@ msgid "Badge"
 msgstr "Rozet"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q3_sug3
-msgid "Baobab Trees"
-msgstr "Baobab Ağaçları"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q2_sug1
-msgid "Bees"
-msgstr "Arı"
-
-#. module: survey
 #: model:survey.question,question_placeholder:survey.vendor_certification_page_3_question_3
 msgid "Beware of leap years!"
 msgstr "Artık yıllara dikkat edin!"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Blue Pen"
 msgstr "Mavi Kalem"
 
@@ -1259,19 +1161,9 @@ msgid "Body content is the same as the template"
 msgstr "Gövde içeriği şablonla aynı"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q4_sug4
-msgid "Bricks"
-msgstr "Tuğla"
-
-#. module: survey
 #: model:survey.question,question_placeholder:survey.survey_feedback_p1_q1
 msgid "Brussels"
 msgstr "Brüksel"
-
-#. module: survey
-#: model:survey.question,question_placeholder:survey.survey_demo_quiz_p1_q3
-msgid "Brussels, Belgium"
-msgstr "Brüksel, Belçika"
 
 #. module: survey
 #: model:survey.survey,title:survey.survey_demo_burger_quiz
@@ -1280,7 +1172,7 @@ msgstr "Burger Testi"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "But first, keep listening to the host."
 msgstr "Ama önce sunucuyu dinlemeye devam edin."
 
@@ -1288,11 +1180,6 @@ msgstr "Ama önce sunucuyu dinlemeye devam edin."
 #: model:survey.question.answer,value:survey.vendor_certification_page_2_question_2_choice_3
 msgid "Cabinet with Doors"
 msgstr "Kapılı Dolap"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q5_row1
-msgid "Cactus"
-msgstr "Kaktüs"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_invite__can_edit_body
@@ -1306,7 +1193,27 @@ msgstr "İnsanlar doğrudan bir fotonu görebilir mi?"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/res_lang.py:0
+msgid ""
+"Cannot deactivate a language currently used by survey(s) only supporting "
+"that language."
+msgstr ""
+"Şu anda sadece o dili destekleyen anket(ler) tarafından kullanılan bir dil "
+"devre dışı bırakılamaz."
+
+#. module: survey
+#. odoo-python
+#: code:addons/survey/models/res_lang.py:0
+msgid ""
+"Cannot deactivate languages currently used by survey(s) only supporting "
+"those languages."
+msgstr ""
+"Şu anda yalnızca bu dilleri destekleyen anket(ler) tarafından kullanılan "
+"diller devre dışı bırakılamaz."
+
+#. module: survey
+#. odoo-python
+#: code:addons/survey/models/templates/survey_survey.py:0
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_tree
 msgid "Certification"
 msgstr "Sertifikasyon"
@@ -1382,7 +1289,7 @@ msgstr "Sandalye zemini koruması"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Cheating on your neighbors will not help!"
 msgstr "Komşularınızı aldatmanın size bir faydası olmaz!"
 
@@ -1399,11 +1306,6 @@ msgstr ""
 #: code:addons/survey/static/src/views/widgets/boolean_update_flag_field/boolean_update_flag_fields.js:0
 msgid "Checkbox updating comparison flag"
 msgstr "Onay kutusu karşılaştırma bayrağını güncelliyor"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q2_sug2
-msgid "China"
-msgstr "Çin"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_question_form
@@ -1442,9 +1344,10 @@ msgid "Classic Purple"
 msgstr "Klasik Mor"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q6_row3
-msgid "Clementine"
-msgstr "Klementin"
+#. odoo-javascript
+#: code:addons/survey/static/src/interactions/survey_session_manage.js:0
+msgid "Click to copy link"
+msgstr "Bağlantıyı kopyalamak için tıklayın"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p5_q1_sug4
@@ -1452,7 +1355,6 @@ msgid "Cliff Burton"
 msgstr "Cliff Burton"
 
 #. module: survey
-#: model_terms:ir.ui.view,arch_db:survey.survey_fill_form
 #: model_terms:ir.ui.view,arch_db:survey.survey_invite_view_form
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
 msgid "Close"
@@ -1530,12 +1432,6 @@ msgid "Compose Email"
 msgstr "E-posta Oluştur"
 
 #. module: survey
-#. odoo-python
-#: code:addons/survey/models/survey_user_input.py:0
-msgid "Computing score requires a question in arguments."
-msgstr "Hesaplama puanı, bağımsız değişkenlerde bir soru gerektirir."
-
-#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_question_form
 msgid "Conditional display"
 msgstr "Koşullu görüntüleme"
@@ -1591,30 +1487,23 @@ msgid "Contents"
 msgstr "İçerikler"
 
 #. module: survey
+#. odoo-javascript
+#: code:addons/survey/static/src/interactions/survey_form.js:0
 #: model_terms:ir.ui.view,arch_db:survey.survey_fill_form_in_progress
 msgid "Continue"
 msgstr "Devam Et"
 
 #. module: survey
-#: model_terms:ir.ui.view,arch_db:survey.survey_fill_form
+#. odoo-javascript
+#: code:addons/survey/static/src/interactions/survey_form.js:0
 msgid "Continue here"
 msgstr "Devamı burada"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q3_sug4
-msgid "Cookies"
-msgstr "Çerezler"
-
-#. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/js/survey_session_manage.js:0
+#: code:addons/survey/static/src/interactions/survey_session_manage.js:0
 msgid "Copied!"
 msgstr "Kopyalandı!"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q1_sug3
-msgid "Cornaceae"
-msgstr "Kızılcıkgiller"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.vendor_certification_page_2_question_2_choice_1
@@ -1625,7 +1514,7 @@ msgstr "Sağ Köşe Çalışma Masası"
 #. odoo-javascript
 #. odoo-python
 #: code:addons/survey/models/survey_user_input.py:0
-#: code:addons/survey/static/src/js/survey_result.js:0
+#: code:addons/survey/static/src/interactions/survey_result_chart.js:0
 #: model:ir.model.fields,field_description:survey.field_survey_question_answer__is_correct
 #: model:ir.model.fields,field_description:survey.field_survey_user_input_line__answer_is_correct
 msgid "Correct"
@@ -1672,19 +1561,14 @@ msgid "Correctly priced"
 msgstr "Doğru fiyatlı"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q4_sug3
-msgid "Cosmic rays"
-msgstr "Kozmik ışınlar"
-
-#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
 msgid "Create Live Session"
 msgstr "Canlı Oturum Oluştur"
 
 #. module: survey
-#: model_terms:ir.actions.act_window,help:survey.action_survey_form
-msgid "Create a custom survey from scratch"
-msgstr "Sıfırdan özel bir anket oluştur"
+#: model:ir.model,website_form_label:survey.model_res_partner
+msgid "Create a Customer"
+msgstr "Müşteri Oluştur"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_invite__create_uid
@@ -1761,7 +1645,6 @@ msgstr "Şu anda yalnızca canlı oturumlar için desteklenmektedir."
 
 #. module: survey
 #: model:ir.model.fields.selection,name:survey.selection__survey_survey__survey_type__custom
-#: model_terms:ir.actions.act_window,help:survey.action_survey_form
 msgid "Custom"
 msgstr "Özel"
 
@@ -1866,6 +1749,11 @@ msgid "Disagree"
 msgstr "Katılmıyorum"
 
 #. module: survey
+#: model:ir.model.fields,field_description:survey.field_gamification_badge__display_name
+#: model:ir.model.fields,field_description:survey.field_gamification_challenge__display_name
+#: model:ir.model.fields,field_description:survey.field_ir_http__display_name
+#: model:ir.model.fields,field_description:survey.field_res_lang__display_name
+#: model:ir.model.fields,field_description:survey.field_res_partner__display_name
 #: model:ir.model.fields,field_description:survey.field_survey_invite__display_name
 #: model:ir.model.fields,field_description:survey.field_survey_question__display_name
 #: model:ir.model.fields,field_description:survey.field_survey_question_answer__display_name
@@ -1905,26 +1793,6 @@ msgstr "Başka yorum, soru veya endişeniz var mı?"
 #: model:survey.question,title:survey.vendor_certification_page_1_question_5
 msgid "Do you think we have missing products in our catalog? (not rated)"
 msgstr "Kataloğumuzda eksik ürünler olduğunu düşünüyor musunuz? (oylanmamış)"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q2_sug2
-msgid "Dogs"
-msgstr "Köpekler"
-
-#. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p4_q1
-msgid "Dogwood is from which family of trees?"
-msgstr "Kızılcık hangi ağaç ailesindendir?"
-
-#. module: survey
-#: model:survey.question,question_placeholder:survey.survey_demo_quiz_p1_q2
-msgid "Don't be shy, be wild!"
-msgstr "Utanmayın, vahşi olun!"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q5_sug1
-msgid "Douglas Fir"
-msgstr "Duglas Göknarı"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.vendor_certification_page_1_question_2_choice_4
@@ -1970,7 +1838,7 @@ msgstr "Bitiş tarihi ve saati"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/js/survey_session_manage.js:0
+#: code:addons/survey/static/src/interactions/survey_session_manage.js:0
 msgid "End of Survey"
 msgstr "Anket Sonu"
 
@@ -1983,16 +1851,6 @@ msgstr "Oturum Kodunu Girin"
 #: model:ir.model.fields,field_description:survey.field_survey_question__constr_error_msg
 msgid "Error message"
 msgstr "Hata Mesajı"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q4_sug3
-msgid "Europe"
-msgstr "Avrupa"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q5_sug3
-msgid "European Yew"
-msgstr "Avrupa Porsuk ağacı"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_user_input_view_search
@@ -2036,27 +1894,20 @@ msgstr "Fanta"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 #: model:survey.survey,title:survey.survey_feedback
 msgid "Feedback Form"
 msgstr "Geri Bildirim Formu"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q5_row2
-msgid "Ficus"
-msgstr "Ficus"
-
-#. module: survey
+#. odoo-javascript
+#: code:addons/survey/static/src/xml/survey_paginated_results_rows_template.xml:0
 #: model_terms:ir.ui.view,arch_db:survey.question_result_choice
 #: model_terms:ir.ui.view,arch_db:survey.question_result_matrix
-#: model_terms:ir.ui.view,arch_db:survey.question_result_number_or_date_or_datetime
-#: model_terms:ir.ui.view,arch_db:survey.question_result_text
 msgid "Filter surveys"
 msgstr "Anketleri filtreleyin"
 
 #. module: survey
-#. odoo-javascript
-#: code:addons/survey/static/src/js/survey_session_manage.js:0
 #: model_terms:ir.ui.view,arch_db:survey.user_input_session_manage_content
 msgid "Final Leaderboard"
 msgstr "Son Liderlik Tablosu"
@@ -2106,21 +1957,6 @@ msgid "Free Text answer"
 msgstr "Serbest Yazı cevabı"
 
 #. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p4_q4
-msgid "From which continent is native the Scots pine (pinus sylvestris)?"
-msgstr "İskoç çamı (pinus sylvestris) hangi kıtaya özgüdür?"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q1_sug1
-msgid "Fruits"
-msgstr "Meyve"
-
-#. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p3
-msgid "Fruits and vegetables"
-msgstr "Meyve ve sebzeler"
-
-#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.certification_report_view_general
 msgid "Functional Training"
 msgstr "Fonksiyonel Eğitim"
@@ -2136,7 +1972,8 @@ msgid "Gamification Challenge"
 msgstr "Oyunlaştırma Yarışması"
 
 #. module: survey
-#: model_terms:ir.actions.act_window,help:survey.action_survey_form
+#. odoo-python
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Gather feedbacks from your employees and customers"
 msgstr "Çalışanlarınızdan ve müşterilerinizden geri bildirim toplayın"
 
@@ -2157,18 +1994,8 @@ msgid "Give Badge"
 msgstr "Rozet Ver"
 
 #. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p2_q3
-msgid "Give the list of all types of wood we sell."
-msgstr "Sattığımız her türlü ahşabın listesini verin."
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p5_q1_sug1
-msgid "Good"
-msgstr "İyi"
-
-#. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Good luck!"
 msgstr "İyi şanslar!"
 
@@ -2183,20 +2010,6 @@ msgid "Got it!"
 msgstr "Anlaşıldı!"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q4_sug2
-msgid "Grapefruits"
-msgstr "Greyfurt"
-
-#. module: survey
-#: model_terms:ir.ui.view,arch_db:survey.survey_question_answer_view_search
-#: model_terms:ir.ui.view,arch_db:survey.survey_question_search
-#: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_search
-#: model_terms:ir.ui.view,arch_db:survey.survey_user_input_line_view_search
-#: model_terms:ir.ui.view,arch_db:survey.survey_user_input_view_search
-msgid "Group By"
-msgstr "Grupla"
-
-#. module: survey
 #: model:ir.model,name:survey.model_ir_http
 msgid "HTTP Routing"
 msgstr "HTTP Yönlendirme"
@@ -2208,14 +2021,10 @@ msgid "Handle existing"
 msgstr "Mevcut olanları ele al"
 
 #. module: survey
-#: model_terms:ir.actions.act_window,help:survey.action_survey_form
-msgid "Handle quiz &amp; certifications"
-msgstr "sınav &amp; sertifikaları ele alın"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q3_sug1
-msgid "Hard"
-msgstr "Zor"
+#. odoo-python
+#: code:addons/survey/models/templates/survey_survey.py:0
+msgid "Handle quiz & certifications"
+msgstr "Sınav ve sertifikaları yönet"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_survey__has_message
@@ -2246,8 +2055,8 @@ msgstr "Hemiunu"
 #. module: survey
 #. odoo-javascript
 #: code:addons/survey/static/src/js/tours/survey_tour.js:0
-msgid "Here, you can overview all the participations."
-msgstr "Burada tüm katılımları gözden geçirebilirsiniz."
+msgid "Here, you can view the participants."
+msgstr "Buradan katılımcıları görüntüleyebilirsiniz."
 
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_feedback_p2_q1_sug1
@@ -2267,19 +2076,19 @@ msgstr "Ne sıklıkla çevrim içi ürün satın alıyorsunuz?"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "How frequently do you use our products?"
 msgstr "Ürünlerimizi ne sıklıkla kullanıyorsunuz?"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "How good of a presenter are you? Let's find out!"
 msgstr "Ne kadar iyi bir sunucusunuz? Hadi öğrenelim!"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "How likely are you to recommend the following products to a friend?"
 msgstr "Aşağıdaki ürünleri bir arkadaşınıza tavsiye etme olasılığınız nedir?"
 
@@ -2301,7 +2110,7 @@ msgstr "Para iade garantimiz kaç gündür?"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "How many orders did you pass during the last 6 months?"
 msgstr "Son 6 ay içinde kaç sipariş geçtiniz?"
 
@@ -2324,16 +2133,6 @@ msgstr "Yüz Yıl Savaşı kaç yıl sürdü?"
 #: model:survey.question,title:survey.vendor_certification_page_2_question_1
 msgid "How much do we sell our Cable Management Box?"
 msgstr "Kablo Yönetim Kutumuzu ne kadar satıyoruz?"
-
-#. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p3_q5
-msgid "How often should you water those plants"
-msgstr "Bu bitkileri ne sıklıkla sulamalısınız?"
-
-#. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p1_q4
-msgid "How old are you?"
-msgstr "Kaç yaşındasınız?"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p5_q3_sug4
@@ -2359,16 +2158,16 @@ msgid "I have added products to my wishlist"
 msgstr "İstek listeme ürün ekledim"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p5_q1_sug4
-msgid "I have no idea, I'm a dog!"
-msgstr "Hiçbir fikrim yok, ben bir köpeğim!"
-
-#. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p5_q3_sug3
 msgid "I've been noticing gravity since I was very young!"
 msgstr "Yer çekiminin çok küçük yaşlardan beri farkındayım!"
 
 #. module: survey
+#: model:ir.model.fields,field_description:survey.field_gamification_badge__id
+#: model:ir.model.fields,field_description:survey.field_gamification_challenge__id
+#: model:ir.model.fields,field_description:survey.field_ir_http__id
+#: model:ir.model.fields,field_description:survey.field_res_lang__id
+#: model:ir.model.fields,field_description:survey.field_res_partner__id
 #: model:ir.model.fields,field_description:survey.field_survey_invite__id
 #: model:ir.model.fields,field_description:survey.field_survey_question__id
 #: model:ir.model.fields,field_description:survey.field_survey_question_answer__id
@@ -2491,8 +2290,7 @@ msgstr ""
 #. module: survey
 #: model:survey.question,question_placeholder:survey.vendor_certification_page_1_question_5
 msgid "If yes, explain what you think is missing, give examples."
-msgstr ""
-"Evet ise, neyin eksik olduğunu düşündüğünüzü açıklayın, örnekler verin."
+msgstr "Evet ise, neyin eksik olduğunu düşündüğünüzü açıklayın, örnekler verin."
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_question_answer__value_image
@@ -2507,7 +2305,7 @@ msgstr "Resim Dosya Adı"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/xml/survey_image_zoomer_templates.xml:0
+#: code:addons/survey/static/src/interactions/survey_image_zoomer_templates.xml:0
 msgid "Image Zoom Dialog"
 msgstr "Görüntü Yakınlaştırma İletişim Kutusu"
 
@@ -2529,16 +2327,6 @@ msgid "In Progress"
 msgstr "İşlemde"
 
 #. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p4_q5
-msgid "In the list below, select all the coniferous."
-msgstr "Aşağıdaki listede, tüm iğne yapraklı olanları seçin."
-
-#. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p4_q2
-msgid "In which country did the bonsai technique develop?"
-msgstr "Bonsai tekniği hangi ülkede gelişmiştir?"
-
-#. module: survey
 #: model:ir.model.fields,help:survey.field_survey_question__is_scored_question
 msgid ""
 "Include this question as part of quiz scoring. Requires an answer and answer "
@@ -2551,7 +2339,7 @@ msgstr ""
 #. odoo-javascript
 #. odoo-python
 #: code:addons/survey/models/survey_user_input.py:0
-#: code:addons/survey/static/src/js/survey_result.js:0
+#: code:addons/survey/static/src/interactions/survey_result_chart.js:0
 msgid "Incorrect"
 msgstr "Yanlış"
 
@@ -2624,15 +2412,9 @@ msgid "Is that user input part of a survey session or not."
 msgstr "Bu kullanıcı girişi bir anket oturumunun parçası mı değil mi?"
 
 #. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p4_q3
-msgid "Is the wood of a coniferous hard or soft?"
-msgstr "İbreli ağaçların odunu sert midir, yumuşak mı?"
-
-#. module: survey
 #: model:ir.model.fields,help:survey.field_survey_question__is_placed_before_trigger
 msgid "Is this question placed before any of its trigger questions?"
-msgstr ""
-"Bu soru, tetikleyici sorularından herhangi birinden önce mi yer alıyor?"
+msgstr "Bu soru, tetikleyici sorularından herhangi birinden önce mi yer alıyor?"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p2_q2_sug4
@@ -2646,25 +2428,25 @@ msgstr "Duruma göre değişir"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "It does not mean anything specific"
 msgstr "Belirli bir anlamı yok"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "It helps attendees focus on what you are saying"
 msgstr "Katılımcıların söylediklerinize odaklanmasına yardımcı olur"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "It helps attendees remember the content of your presentation"
 msgstr "Katılımcıların sunumunuzun içeriğini hatırlamasına yardımcı olur"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "It is a small bit of text, displayed to help participants answer"
 msgstr ""
 "Katılımcıların cevaplamasına yardımcı olmak için görüntülenen küçük bir "
@@ -2672,7 +2454,7 @@ msgstr ""
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "It is an option that can be different for each Survey"
 msgstr "Her Anket için farklı olabilecek bir seçenektir"
 
@@ -2683,20 +2465,15 @@ msgstr "İstediğim ürünü bulmak çok kolay"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "It is more engaging for your audience"
 msgstr "Hedef kitleniz için daha ilgi çekicidir"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "It's a Belgian word for \"Management\""
 msgstr "\"Yönetim\" anlamına gelen Belçikaca bir kelime."
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p5_q1_sug3
-msgid "Iznogoud"
-msgstr "Iznogoud"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p5_q3_sug1
@@ -2708,19 +2485,9 @@ msgstr ""
 "Afrika'da çok popüler olduğunu biliyorum."
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q2_sug1
-msgid "Japan"
-msgstr "Japonya"
-
-#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_session_code
 msgid "Join Session"
 msgstr "Oturuma Katıl"
-
-#. module: survey
-#: model_terms:survey.question,description:survey.survey_demo_quiz_p1_q4
-msgid "Just to categorize your answers, don't worry."
-msgstr "Endişelenmeyin; yalnızca cevaplarınızı kategorize etmek için."
 
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p5_q1_sug2
@@ -2758,8 +2525,18 @@ msgstr ""
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_invite__lang
+#: model:ir.model.fields,field_description:survey.field_survey_user_input__lang_id
+#: model:ir.model.fields,field_description:survey.field_survey_user_input_line__lang_id
+#: model_terms:ir.ui.view,arch_db:survey.survey_user_input_line_view_search
+#: model_terms:ir.ui.view,arch_db:survey.survey_user_input_view_search
 msgid "Language"
 msgstr "Dil"
+
+#. module: survey
+#: model:ir.model,name:survey.model_res_lang
+#: model:ir.model.fields,field_description:survey.field_survey_survey__lang_ids
+msgid "Languages"
+msgstr "Diller"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.vendor_certification_page_2_question_2_choice_4
@@ -2813,14 +2590,14 @@ msgid "Leave"
 msgstr "Ayrıl"
 
 #. module: survey
+#: model:ir.model.fields,help:survey.field_survey_survey__lang_ids
+msgid "Leave the field empty to support all installed languages."
+msgstr "Yüklü tüm dilleri desteklemek için alanı boş bırakın."
+
+#. module: survey
 #: model:survey.question.answer,value:survey.vendor_certification_page_1_question_3_choice_4
 msgid "Legs"
 msgstr "Bacaklar"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q3_sug2
-msgid "Lemon Trees"
-msgstr "Limon Ağaçları"
 
 #. module: survey
 #. odoo-javascript
@@ -2848,7 +2625,7 @@ msgstr "Az önce gönderdiğiniz anketi açalım."
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Likely"
 msgstr "Muhtemelen"
 
@@ -2865,8 +2642,7 @@ msgstr "Sınırlı sayıda deneme"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
-#: model_terms:ir.actions.act_window,help:survey.action_survey_form
+#: code:addons/survey/models/templates/survey_survey.py:0
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
 msgid "Live Session"
 msgstr "Canlı Oturum"
@@ -2906,6 +2682,12 @@ msgstr "Üye Girişi Gerekli"
 #: model:ir.model.fields,field_description:survey.field_survey_invite__template_id
 msgid "Mail Template"
 msgstr "E-Posta Şablonu"
+
+#. module: survey
+#. odoo-python
+#: code:addons/survey/models/templates/survey_survey.py:0
+msgid "Make your presentations more fun by sharing questions live"
+msgstr "Soruları canlı paylaşarak sunumlarınızı daha eğlenceli hale getirin"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_question__constr_mandatory
@@ -3043,11 +2825,6 @@ msgid "Modern Purple"
 msgstr "Modern Mor"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q2_sug3
-msgid "Mooses"
-msgstr "Geyikler"
-
-#. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p2_q3_sug4
 msgid "Mount Elbrus (Russia)"
 msgstr "Elbruz Dağı (Rusya)"
@@ -3061,11 +2838,6 @@ msgstr "Etna Dağı (İtalya - Sicilya)"
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p2_q3_sug1
 msgid "Mount Teide (Spain - Tenerife)"
 msgstr "Teide Dağı (İspanya - Tenerife)"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q5_sug4
-msgid "Mountain Pine"
-msgstr "Dağ Çamı"
 
 #. module: survey
 #: model:ir.model.fields.selection,name:survey.selection__survey_question__question_type__text_box
@@ -3098,6 +2870,11 @@ msgid "Multiple choices per row"
 msgstr "Her satır için birden çok seçenek"
 
 #. module: survey
+#: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_search
+msgid "My Activities"
+msgstr "Aktivitelerim"
+
+#. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_survey__my_activity_date_deadline
 #: model:ir.model.fields,field_description:survey.field_survey_user_input__my_activity_date_deadline
 msgid "My Activity Deadline"
@@ -3115,14 +2892,14 @@ msgstr "MyCompany  Satıcı Sertifikası"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 #: model_terms:ir.ui.view,arch_db:survey.survey_question_form
 msgid "Neutral"
 msgstr "Nötr"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Never (less than once a month)"
 msgstr "Hiçbir zaman (ayda bir kereden az)"
 
@@ -3149,7 +2926,7 @@ msgstr "Yeni katılım tamamlandı."
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/js/survey_session_manage.js:0
+#: code:addons/survey/static/src/interactions/survey_session_manage.js:0
 #: model_terms:ir.ui.view,arch_db:survey.survey_fill_form_in_progress
 msgid "Next"
 msgstr "Sonraki"
@@ -3191,7 +2968,6 @@ msgstr "Kullanıcı Adı"
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_food_preferences_q1_sug2
 #: model:survey.question.answer,value:survey.survey_demo_food_preferences_q2_sug2
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q6_sug2
 #: model:survey.question.answer,value:survey.vendor_certification_page_1_question_1_choice_1
 msgid "No"
 msgstr "Hayır"
@@ -3202,7 +2978,8 @@ msgid "No Questions yet!"
 msgstr "Henüz soru yok!"
 
 #. module: survey
-#: model_terms:ir.actions.act_window,help:survey.action_survey_form
+#. odoo-javascript
+#: code:addons/survey/static/src/views/components/survey_survey_action_helper/survey_survey_action_helper.xml:0
 msgid "No Survey Found"
 msgstr "Anket Bulunamadı"
 
@@ -3242,16 +3019,6 @@ msgstr "Kullanıcı giriş satırı bulunamadı"
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p4_q3_sug2
 msgid "No, it's too small for the human eye."
 msgstr "Hayır, insan gözü için çok küçük."
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q5_sug2
-msgid "Norway Spruce"
-msgstr "Norveç Ladini"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p5_q1_sug2
-msgid "Not Good, Not Bad"
-msgstr "İyi Değil, Kötü Değil"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_question_form
@@ -3324,7 +3091,7 @@ msgstr "Sayısal cevap"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Object-Directed Open Organization"
 msgstr "Nesne Yönelimli Açık Organizasyon"
 
@@ -3340,7 +3107,7 @@ msgstr "Odoo"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Odoo Certification"
 msgstr "Odoo Sertifikasyonu"
 
@@ -3351,13 +3118,13 @@ msgstr "Siyah Ofis Koltuğu"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Often (1-3 times per week)"
 msgstr "Sıklıkla (haftada 1-3 kez)"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid ""
 "On Survey questions, one can define \"placeholders\". But what are they for?"
 msgstr ""
@@ -3369,13 +3136,11 @@ msgid "Once a day"
 msgstr "Günde bir kez"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q5_sug1
 #: model:survey.question.answer,value:survey.survey_feedback_p1_q3_sug3
 msgid "Once a month"
 msgstr "Ayda bir"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q5_sug2
 #: model:survey.question.answer,value:survey.survey_feedback_p1_q3_sug2
 msgid "Once a week"
 msgstr "Haftada bir"
@@ -3392,13 +3157,13 @@ msgstr "Her satır için bir seçim"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "One needs to answer at least half the questions correctly"
 msgstr "Soruların en az yarısını doğru cevaplamak gerekir"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "One needs to get 50% of the total score"
 msgstr "One needs to get 50% of the total score"
 
@@ -3424,10 +3189,10 @@ msgid "Only a single question left!"
 msgstr "Sadece tek bir soru kaldı!"
 
 #. module: survey
+#. odoo-javascript
+#: code:addons/survey/static/src/xml/survey_paginated_results_rows_template.xml:0
 #: model_terms:ir.ui.view,arch_db:survey.question_result_choice
 #: model_terms:ir.ui.view,arch_db:survey.question_result_matrix
-#: model_terms:ir.ui.view,arch_db:survey.question_result_number_or_date_or_datetime
-#: model_terms:ir.ui.view,arch_db:survey.question_result_text
 msgid "Only show survey results having selected this answer"
 msgstr "Yalnızca bu yanıtı seçen anket sonuçlarını göster"
 
@@ -3473,13 +3238,14 @@ msgstr "İsteğe bağlı önceki cevaplar gerekli"
 #: model:ir.model.fields,help:survey.field_survey_invite__lang
 msgid ""
 "Optional translation language (ISO code) to select when sending out an "
-"email. If not set, the english version will be used. This should usually be "
-"a placeholder expression that provides the appropriate language, e.g. "
-"{{ object.partner_id.lang }}."
+"email. If not set, the main partner's language will be used. This should "
+"usually be a placeholder expression that provides the appropriate language, "
+"e.g. {{ object.partner_id.lang }}."
 msgstr ""
-"E-posta gönderirken seçmek için isteğe bağlı çeviri dili (ISO kodu). "
-"Ayarlanmazsa, İngilizce sürüm kullanılacaktır. Bu genellikle uygun dili "
-"sağlayan bir yer tutucu ifadesi olmalıdır, örn. {{ object.partner_id.lang }}."
+"Bir e-posta gönderirken seçmek için isteğe bağlı çeviri dili (ISO kodu). "
+"Ayarlanmazsa, ana ortağın dili kullanılacaktır. Bu genellikle uygun dili "
+"sağlayan bir yer tutucu ifade olmalıdır, örneğin {{ object.partner_id.lang }}"
+"."
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_question_form
@@ -3489,7 +3255,7 @@ msgstr "Seçenekler"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Organizational Development for Operation Officers"
 msgstr "Operasyon Görevlileri için Organizasyonel Gelişim"
 
@@ -3500,18 +3266,13 @@ msgid "Other (see comments)"
 msgstr "Diğer (yorumlara bakın)"
 
 #. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p2
-msgid "Our Company in a few questions ..."
-msgstr "Firmamız birkaç soruda..."
-
-#. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_invite__mail_server_id
 msgid "Outgoing mail server"
 msgstr "Giden mail sunucusu"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/js/survey_result.js:0
+#: code:addons/survey/static/src/interactions/survey_result_chart.js:0
 msgid "Overall Performance"
 msgstr "Genel Performans"
 
@@ -3544,7 +3305,7 @@ msgstr "Papirüs"
 #. odoo-javascript
 #. odoo-python
 #: code:addons/survey/models/survey_user_input.py:0
-#: code:addons/survey/static/src/js/survey_result.js:0
+#: code:addons/survey/static/src/interactions/survey_result_chart.js:0
 msgid "Partially"
 msgstr "Kısmen"
 
@@ -3554,6 +3315,8 @@ msgid "Participant"
 msgstr "Katılımcı"
 
 #. module: survey
+#: model:ir.actions.act_window,name:survey.action_survey_user_input
+#: model:ir.ui.menu,name:survey.menu_survey_type_form1
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
 msgid "Participants"
 msgstr "Katılımcılar"
@@ -3579,13 +3342,6 @@ msgstr "Katılım tamamlandı"
 #: model:mail.message.subtype,description:survey.mt_survey_user_input_completed
 msgid "Participation completed."
 msgstr "Katılım tamamlandı."
-
-#. module: survey
-#: model:ir.actions.act_window,name:survey.action_survey_user_input
-#: model:ir.ui.menu,name:survey.menu_survey_type_form1
-#: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
-msgid "Participations"
-msgstr "Katılımcılar"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_user_input_view_search
@@ -3620,14 +3376,9 @@ msgstr "Kalan yüzde"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/js/survey_result.js:0
+#: code:addons/survey/static/src/interactions/survey_result_chart.js:0
 msgid "Performance by Section"
 msgstr "Bölümlere Göre Performans"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q6_sug3
-msgid "Perhaps"
-msgstr "Belki"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p4_q1_sug2
@@ -3650,6 +3401,12 @@ msgid "Pick a Template..."
 msgstr "Bir Şablon Seçin..."
 
 #. module: survey
+#. odoo-javascript
+#: code:addons/survey/static/src/views/components/survey_survey_action_helper/survey_survey_action_helper.xml:0
+msgid "Pick a sample or"
+msgstr "Bir örnek seçin veya"
+
+#. module: survey
 #: model:survey.question,title:survey.survey_demo_burger_quiz_p1_q1
 msgid "Pick a subject"
 msgstr "Bir konu seçin"
@@ -3664,18 +3421,13 @@ msgstr ""
 "Soru her zaman görüntülenecekse alanı boş bırakın."
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q1_sug1
-msgid "Pinaceae"
-msgstr "Çamgiller"
-
-#. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_question__question_placeholder
 msgid "Placeholder"
 msgstr "Yer tutucu"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid ""
 "Please complete this very short survey to let us know how satisfied your are "
 "with our products."
@@ -3709,18 +3461,13 @@ msgid "Policies"
 msgstr "Kurallar"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q4_sug1
-msgid "Pomelos"
-msgstr "Pomelos Adası"
-
-#. module: survey
 #: model:survey.question.answer,value:survey.survey_feedback_p2_q1_sug8
 msgid "Poor quality"
 msgstr "Düşük Kalite"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Practice in front of a mirror"
 msgstr "Ayna karşısında pratik yapın"
 
@@ -3840,19 +3587,14 @@ msgstr ""
 "Mevcut soruyu görüntülemek için tetikleyici cevabı/cevapları içeren sorular."
 
 #. module: survey
-#: model:survey.survey,title:survey.survey_demo_quiz
-msgid "Quiz about our Company"
-msgstr "Şirketimiz Hakkında Bilgi Yarışması"
-
-#. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_user_input__scoring_success
-msgid "Quizz Passed"
-msgstr "Sınav Geçti"
+msgid "Quiz Passed"
+msgstr "Sınav Başarılı"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_user_input_view_search
-msgid "Quizz passed"
-msgstr "Sınav geçti"
+msgid "Quiz passed"
+msgstr "Sınav başarılı"
 
 #. module: survey
 #. odoo-javascript
@@ -3867,7 +3609,7 @@ msgstr "Bölüm Başına Rastgele"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Rarely (1-3 times per month)"
 msgstr "Nadiren (ayda 1-3 kez)"
 
@@ -3889,20 +3631,13 @@ msgid "Ready to change the way you <b>gather data</b>?"
 msgstr "<b>Veri toplama yönteminizi</b> değiştirmeye hazır mısınız?"
 
 #. module: survey
-#: model_terms:ir.actions.act_window,help:survey.action_survey_form
-msgid "Ready to test? Pick a sample or create one from scratch..."
-msgstr ""
-"Test etmeye hazır mısınız? Bir örnek seçin veya sıfırdan bir tane "
-"oluşturun..."
-
-#. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_invite__partner_ids
 msgid "Recipients"
 msgstr "Alıcılar"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Red Pen"
 msgstr "Kırmızı Kalem"
 
@@ -4017,11 +3752,6 @@ msgstr "Satırlar"
 #: model:ir.model.fields,field_description:survey.field_survey_user_input__message_has_sms_error
 msgid "SMS Delivery error"
 msgstr "SMS İleti hatası"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q1_sug4
-msgid "Salicaceae"
-msgstr "Salicaceae"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_question__save_as_email
@@ -4180,6 +3910,11 @@ msgid "See you soon!"
 msgstr "Yakında görüşmek üzere!"
 
 #. module: survey
+#: model_terms:ir.ui.view,arch_db:survey.survey_fill_header
+msgid "Select a language"
+msgstr "Bir dil seç"
+
+#. module: survey
 #: model:survey.question,title:survey.vendor_certification_page_1_question_3
 msgid "Select all the available customizations for our Customizable Desk"
 msgstr "Özelleştirilebilir Masamız için mevcut tüm özelleştirmeleri seçin"
@@ -4193,11 +3928,6 @@ msgstr "Mevcut tüm ürünleri seçin"
 #: model:survey.question,title:survey.vendor_certification_page_2_question_2
 msgid "Select all the products that sell for $100 or more"
 msgstr "100 dolara veya daha yüksek fiyata satılan tüm ürünleri seçin"
-
-#. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p3_q3
-msgid "Select trees that made more than 20K sales this year"
-msgstr "Bu yıl 20 binden fazla satış yapan ağaçları seçin"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_invite_view_form
@@ -4279,25 +4009,25 @@ msgstr "Yorum Alanını Göster"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/js/survey_session_manage.js:0
+#: code:addons/survey/static/src/interactions/survey_session_manage.js:0
 msgid "Show Correct Answer(s)"
 msgstr "Doğru Cevabı/Cevapları Göster"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/js/survey_session_manage.js:0
+#: code:addons/survey/static/src/interactions/survey_session_manage.js:0
 msgid "Show Final Leaderboard"
 msgstr "Lider Tablosunun Son Halini Göster"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/js/survey_session_manage.js:0
+#: code:addons/survey/static/src/interactions/survey_session_manage.js:0
 msgid "Show Leaderboard"
 msgstr "Lider Tablosunu Göster"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/js/survey_session_manage.js:0
+#: code:addons/survey/static/src/interactions/survey_session_manage.js:0
 msgid "Show Results"
 msgstr "Sonuçları Göster"
 
@@ -4308,12 +4038,12 @@ msgstr "Oturum Lider Tablosunu Göster"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_search
-msgid "Show all records which has next action date is before today"
-msgstr "Bir sonraki eylem tarihi bugünden önce olan tüm kayıtları göster"
+msgid "Show all records whose next activity date is past"
+msgstr "Bir sonraki etkinlik tarihi geçmiş olan tüm kayıtları göster"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Show them slides with a ton of text they need to read fast"
 msgstr "Onlara hızlı okumaları gereken bir ton metin içeren slaytlar gösterin"
 
@@ -4331,29 +4061,10 @@ msgid "Skipped"
 msgstr "Bir soru cevapsız ve atlandı"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q3_sug2
-msgid "Soft"
-msgstr "Hafif"
-
-#. module: survey
 #. odoo-python
 #: code:addons/survey/wizard/survey_invite.py:0
 msgid "Some emails you just entered are incorrect: %s"
 msgstr "Yeni girdiğiniz e-postalar yanlış: %s"
-
-#. module: survey
-#: model_terms:survey.question,description:survey.survey_demo_quiz_p1
-msgid ""
-"Some general information about you. It will be used internally for "
-"statistics only."
-msgstr ""
-"Hakkınızda bazı genel bilgiler. Yalnızca dahili istatistikler için "
-"kullanılacaktır."
-
-#. module: survey
-#: model_terms:survey.question,description:survey.survey_demo_quiz_p2
-msgid "Some questions about our company. Do you really know us?"
-msgstr "Şirketimiz hakkında bazı sorular. Bizi gerçekten tanıyor musunuz?"
 
 #. module: survey
 #. odoo-python
@@ -4372,40 +4083,20 @@ msgid "Sorry, you have not been fast enough."
 msgstr "Üzgünüz, yeterince hızlı olamadın."
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q4_sug4
-msgid "South America"
-msgstr "Güney Amerika"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q2_sug4
-msgid "South Korea"
-msgstr "Güney Kore"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q1_sug3
-msgid "Space stations"
-msgstr "Uzay istasyonları"
-
-#. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Speak softly so that they need to focus to hear you"
 msgstr "Sizi duymak için odaklanmaları gerekecek şekilde alçak sesle konuşun"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Speak too fast"
 msgstr "Çok hızlı konuşma"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q6_sug1
-msgid "Spring"
-msgstr "Bahar"
-
-#. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/js/survey_session_manage.js:0
+#: code:addons/survey/static/src/interactions/survey_session_manage.js:0
 #: model:survey.question,title:survey.survey_demo_burger_quiz_p1
 msgid "Start"
 msgstr "Başla"
@@ -4428,7 +4119,13 @@ msgstr "Anketi Başlat"
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_user_input__start_datetime
 msgid "Start date and time"
-msgstr "Başlangıç ​​tarihi ve saati"
+msgstr "Başlangıç tarihi ve saati"
+
+#. module: survey
+#. odoo-javascript
+#: code:addons/survey/static/src/views/components/survey_survey_action_helper/survey_survey_action_helper.xml:0
+msgid "Start from scratch"
+msgstr "Sıfırdan başlayın"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_user_input__state
@@ -4455,11 +4152,6 @@ msgid "Steak with french fries"
 msgstr "Biftek ve patates kızartması"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q6_row2
-msgid "Strawberries"
-msgstr "Çilek"
-
-#. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_invite__subject
 msgid "Subject"
 msgstr "Konu"
@@ -4470,9 +4162,18 @@ msgid "Subject..."
 msgstr "Konu..."
 
 #. module: survey
+#. odoo-javascript
+#: code:addons/survey/static/src/interactions/survey_form.js:0
 #: model_terms:ir.ui.view,arch_db:survey.survey_fill_form_in_progress
+#: model_terms:ir.ui.view,arch_db:survey.survey_navigation
 msgid "Submit"
 msgstr "Gönder"
+
+#. module: survey
+#. odoo-javascript
+#: code:addons/survey/static/src/interactions/survey_form.js:0
+msgid "Submit confirmation"
+msgstr "Onay gönderin"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_survey__success_count
@@ -4519,11 +4220,8 @@ msgid "Suggestion"
 msgstr "Öneri"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q6_sug2
-msgid "Summer"
-msgstr "Yaz"
-
-#. module: survey
+#. odoo-python
+#: code:addons/survey/models/templates/survey_survey.py:0
 #: model:ir.model,name:survey.model_survey_survey
 #: model:ir.model.fields,field_description:survey.field_gamification_badge__survey_id
 #: model:ir.model.fields,field_description:survey.field_survey_invite__survey_id
@@ -4531,7 +4229,6 @@ msgstr "Yaz"
 #: model:ir.model.fields,field_description:survey.field_survey_user_input__survey_id
 #: model:ir.model.fields,field_description:survey.field_survey_user_input_line__survey_id
 #: model:ir.model.fields.selection,name:survey.selection__survey_survey__survey_type__survey
-#: model_terms:ir.actions.act_window,help:survey.action_survey_form
 #: model_terms:ir.ui.view,arch_db:survey.survey_question_search
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_activity
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_form
@@ -4577,12 +4274,6 @@ msgstr "Anket Etiketi"
 #: model_terms:ir.ui.view,arch_db:survey.survey_invite_view_form
 msgid "Survey Link"
 msgstr "Anket Bağlantısı"
-
-#. module: survey
-#. odoo-python
-#: code:addons/survey/models/survey_user_input.py:0
-msgid "Survey Participant"
-msgstr "Anket Katılımcısı"
 
 #. module: survey
 #: model:ir.model,name:survey.model_survey_question
@@ -4633,6 +4324,12 @@ msgid "Survey User inputs"
 msgstr "Anket Kullanıcı Girişi"
 
 #. module: survey
+#. odoo-python
+#: code:addons/survey/models/res_lang.py:0
+msgid "Survey(s): %(surveys_list)s"
+msgstr "Anket(ler): %(surveys_list)s"
+
+#. module: survey
 #: model:mail.template,name:survey.mail_template_certification
 msgid "Survey: Certification Success"
 msgstr "Anket: Sertifikasyon Başarısı"
@@ -4646,6 +4343,7 @@ msgstr "Anket: Davet Et"
 #: model:ir.actions.act_window,name:survey.action_survey_form
 #: model:ir.ui.menu,name:survey.menu_survey_form
 #: model:ir.ui.menu,name:survey.menu_surveys
+#: model:res.groups.privilege,name:survey.res_groups_privilege_surveys
 msgid "Surveys"
 msgstr "Anketler"
 
@@ -4708,13 +4406,13 @@ msgstr "Metin cevap"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Thank you for your participation, hope you had a blast!"
 msgstr "Katılımınız için teşekkür ederiz, umarız eğlenmişsinizdir!"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Thank you very much for your feedback. We highly value your opinion!"
 msgstr ""
 "Geri bildiriminiz için çok teşekkür ederiz. Düşüncelerinizi çok önemsiyoruz!"
@@ -4727,7 +4425,7 @@ msgstr "Teşekkürler!"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Thank you. We will contact you soon."
 msgstr "Teşekkür ederiz. Yakında sizinle iletişime geçeceğiz."
 
@@ -4841,8 +4539,7 @@ msgstr "Soru zamanla sınırlıdır"
 #: model:ir.model.constraint,message:survey.constraint_survey_question_scale
 msgid ""
 "The scale must be a growing non-empty range between 0 and 10 (inclusive)"
-msgstr ""
-"Ölçek, 0 ile 10 (dahil) arasında boş olmayan artan bir aralık olmalıdır"
+msgstr "Ölçek, 0 ile 10 (dahil) arasında boş olmayan artan bir aralık olmalıdır"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_session_code
@@ -4893,20 +4590,22 @@ msgid "The user has not succeeded the certification"
 msgstr "Kullanıcı sertifikayı geçemedi"
 
 #. module: survey
+#. odoo-javascript
+#: code:addons/survey/static/src/interactions/survey_form.js:0
 #: model_terms:ir.ui.view,arch_db:survey.survey_fill_form
 msgid "There was an error during the validation of the survey."
 msgstr "Anketin doğrulanması sırasında bir hata oluştu."
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "They are a default answer, used if the participant skips the question"
 msgstr ""
 "Katılımcının soruyu atlaması durumunda kullanılan varsayılan bir cevaptır"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid ""
 "They are technical parameters that guarantees the responsiveness of the page"
 msgstr "Sayfanın yanıt verebilirliğini garanti eden teknik parametrelerdir"
@@ -4926,7 +4625,7 @@ msgstr "Bu cevap e-posta adresi olmalıdır"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/js/survey_form.js:0
+#: code:addons/survey/static/src/interactions/survey_form.js:0
 msgid "This answer must be an email address."
 msgstr "Bu yanıt bir e-posta adresi olmalıdır."
 
@@ -4948,7 +4647,7 @@ msgstr "Bu bir Test Anket Girdisidir."
 #. odoo-javascript
 #. odoo-python
 #: code:addons/survey/models/survey_question.py:0
-#: code:addons/survey/static/src/js/survey_form.js:0
+#: code:addons/survey/static/src/interactions/survey_form.js:0
 #: code:addons/survey/tests/test_survey.py:0
 msgid "This is not a date"
 msgstr "Bu bir tarih değildir"
@@ -4991,12 +4690,6 @@ msgstr ""
 #: model_terms:survey.question,description:survey.survey_feedback_p2
 msgid "This section is about our eCommerce experience itself."
 msgstr "Bu bölüm, eTicaret deneyimimiz hakkındadır."
-
-#. module: survey
-#: model_terms:survey.survey,description:survey.survey_demo_quiz
-msgid ""
-"This small quiz will test your knowledge about our Company. Be prepared!"
-msgstr "Bu küçük test, Şirketimiz hakkındaki bilginizi ölçecek. Hazır olun!"
 
 #. module: survey
 #: model_terms:survey.survey,description:survey.survey_feedback
@@ -5081,13 +4774,10 @@ msgid "To join:"
 msgstr "Katılmak için:"
 
 #. module: survey
-#: model_terms:ir.ui.view,arch_db:survey.survey_fill_form
-msgid ""
-"To take this survey, please close all other tabs on <strong class=\"text-"
-"danger\"/>."
-msgstr ""
-"Bu ankete katılmak için lütfen diğer tüm sekmeleri kapatın <strong "
-"class=\"text-danger\"/>."
+#. odoo-javascript
+#: code:addons/survey/static/src/interactions/survey_form.js:0
+msgid "To take this survey, please close all other tabs on %(hostname)s"
+msgstr "Bu ankete katılmak için lütfen diğer tüm sekmeleri kapatın %(hostname)s"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_survey_view_search
@@ -5118,11 +4808,6 @@ msgstr "Kabul et"
 #: model:survey.question.answer,value:survey.survey_feedback_p2_q2_col1
 msgid "Totally disagree"
 msgstr "Kabul et"
-
-#. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p4
-msgid "Trees"
-msgstr "Ağaçlar"
 
 #. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_question__triggering_answer_ids
@@ -5163,11 +4848,6 @@ msgid "Types of answers"
 msgstr "Yanıt türleri"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q1_sug2
-msgid "Ulmaceae"
-msgstr "Ulmaceae"
-
-#. module: survey
 #. odoo-python
 #: code:addons/survey/wizard/survey_invite.py:0
 msgid "Unable to post message, please configure the sender's email address."
@@ -5177,7 +4857,7 @@ msgstr "Mesaj gönderilemiyor, lütfen gönderenin e-posta adresini yapılandır
 #. odoo-javascript
 #. odoo-python
 #: code:addons/survey/models/survey_user_input.py:0
-#: code:addons/survey/static/src/js/survey_result.js:0
+#: code:addons/survey/static/src/interactions/survey_result_chart.js:0
 msgid "Unanswered"
 msgstr "Yanıtlanmamış"
 
@@ -5204,7 +4884,7 @@ msgstr "Benzersiz"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Unlikely"
 msgstr "Mümkün değil"
 
@@ -5215,13 +4895,13 @@ msgstr "Yaklaşan Aktiviteler"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Use a fun visual support, like a live presentation"
 msgstr "Canlı bir sunum gibi eğlenceli bir görsel destek kullanın"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Use humor and make jokes"
 msgstr "Mizahı kullanın ve şakalar yapın"
 
@@ -5322,11 +5002,6 @@ msgid "Value Label"
 msgstr "Değer Etiketi"
 
 #. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q1_sug2
-msgid "Vegetables"
-msgstr "Sebze"
-
-#. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_food_preferences_q3_sug2
 msgid "Vegetarian burger"
 msgstr "Vejetaryen burger"
@@ -5340,11 +5015,6 @@ msgstr "Vejetaryen pizza"
 #: model:survey.question.answer,value:survey.vendor_certification_page_2_question_3_choice_1
 msgid "Very underpriced"
 msgstr "Çok düşük fiyatlı"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q2_sug3
-msgid "Vietnam"
-msgstr "Vietnam"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.user_input_session_open
@@ -5361,18 +5031,6 @@ msgstr ""
 "bekleyin."
 
 #. module: survey
-#: model_terms:survey.question,description:survey.survey_demo_quiz_p4
-msgid ""
-"We like to say that the apple doesn't fall far from the tree, so here are "
-"trees."
-msgstr "'Armut dibine düşer' denir; işte kanıtı."
-
-#. module: survey
-#: model_terms:survey.question,description:survey.survey_demo_quiz_p5
-msgid "We may be interested by your input."
-msgstr "Görüşlerinizi merak ediyor olmamız, mümkün."
-
-#. module: survey
 #: model:ir.model.fields,field_description:survey.field_survey_survey__website_message_ids
 #: model:ir.model.fields,field_description:survey.field_survey_user_input__website_message_ids
 msgid "Website Messages"
@@ -5386,7 +5044,7 @@ msgstr "Websitesi iletişim geçmişi"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid ""
 "Welcome to this Odoo certification. You will receive 2 random questions out "
 "of a pool of 3."
@@ -5423,31 +5081,26 @@ msgid "What do you think about our prices (not rated)?"
 msgstr "Fiyatlarımız (derecelendirilmemiş) hakkında ne düşünüyorsunuz?"
 
 #. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p5_q1
-msgid "What do you think about this survey?"
-msgstr "Bu anket hakkında ne düşünüyorsunuz?"
-
-#. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "What does \"ODOO\" stand for?"
 msgstr "\"ODOO\" ne anlama geliyor?"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "What does one need to get to pass an Odoo Survey?"
 msgstr "Bir Odoo Anketini geçmek için nelere ihtiyaç vardır?"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "What is a frequent mistake public speakers do?"
 msgstr "Halka açık konuşmacıların sıkça yaptığı hata nedir?"
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "What is the best way to catch the attention of an audience?"
 msgstr "Bir dinleyicinin dikkatini çekmenin en iyi yolu nedir?"
 
@@ -5455,16 +5108,6 @@ msgstr "Bir dinleyicinin dikkatini çekmenin en iyi yolu nedir?"
 #: model:survey.question,title:survey.survey_demo_burger_quiz_p2_q2
 msgid "What is the biggest city in the world?"
 msgstr "Dünyanın en büyük şehri hangisidir?"
-
-#. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p1_q1
-msgid "What is your email?"
-msgstr "E-posta adresiniz nedir?"
-
-#. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p1_q2
-msgid "What is your nickname?"
-msgstr "Takma adınız nedir?"
 
 #. module: survey
 #: model:survey.question,title:survey.survey_demo_burger_quiz_p4_q2
@@ -5477,21 +5120,6 @@ msgid "When did Genghis Khan die?"
 msgstr "Cengiz Han ne zaman öldü?"
 
 #. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p2_q2
-msgid "When did precisely Marc Demo crop its first apple tree?"
-msgstr "Marc Demo ilk elma ağacını tam olarak ne zaman dikti?"
-
-#. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p3_q6
-msgid "When do you harvest those fruits"
-msgstr "Bu meyveleri ne zaman hasat edersiniz?"
-
-#. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p2_q1
-msgid "When is Mitchell Admin born?"
-msgstr "Mitchell Admin ne zaman doğdu?"
-
-#. module: survey
 #: model:survey.question,title:survey.survey_feedback_p1_q2
 msgid "When is your date of birth?"
 msgstr "Doğum tarihiniz nedir?"
@@ -5501,11 +5129,6 @@ msgstr "Doğum tarihiniz nedir?"
 #: code:addons/survey/static/src/js/tours/survey_tour.js:0
 msgid "Whenever you pick an answer, Odoo saves it for you."
 msgstr "Bir yanıt seçtiğinizde, Odoo bunu sizin için kaydeder."
-
-#. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p1_q3
-msgid "Where are you from?"
-msgstr "Nerelisiniz?"
 
 #. module: survey
 #: model:survey.question,title:survey.survey_feedback_p1_q1
@@ -5526,11 +5149,6 @@ msgid "Which Musician is not in the 27th Club?"
 msgstr "Hangi müzisyen 27’ler Kulübü'ne mensup değildir?"
 
 #. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p3_q1
-msgid "Which category does a tomato belong to"
-msgstr "Bir domates hangi kategoriye aittir?"
-
-#. module: survey
 #: model:survey.question,title:survey.survey_demo_burger_quiz_p2_q3
 msgid "Which is the highest volcano in Europe?"
 msgstr "Avrupa’daki en yüksek volkan hangisidir?"
@@ -5543,11 +5161,6 @@ msgstr ""
 "kullanırsınız?"
 
 #. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p3_q2
-msgid "Which of the following would you use to pollinate"
-msgstr "Tozlaşmak için aşağıdakilerden hangisini kullanırsınız?"
-
-#. module: survey
 #: model:survey.question,title:survey.survey_demo_burger_quiz_p5_q2
 msgid "Which painting/drawing was not made by Pablo Picasso?"
 msgstr "Hangi tablo/çizim Pablo Picasso tarafından yapılmamıştır?"
@@ -5556,11 +5169,6 @@ msgstr "Hangi tablo/çizim Pablo Picasso tarafından yapılmamıştır?"
 #: model:survey.question,title:survey.survey_demo_burger_quiz_p5_q3
 msgid "Which quote is from Jean-Claude Van Damme"
 msgstr "Jean-Claude Van Damme'dan hangi alıntı"
-
-#. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p1
-msgid "Who are you?"
-msgstr "Kimsiniz?"
 
 #. module: survey
 #: model:survey.question,title:survey.survey_demo_burger_quiz_p3_q2
@@ -5578,7 +5186,7 @@ msgstr ""
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid ""
 "Why should you consider making your presentation more fun with a small quiz?"
 msgstr ""
@@ -5594,11 +5202,6 @@ msgstr "Genişlik"
 #: model:survey.question.answer,value:survey.survey_demo_burger_quiz_p4_q1_sug4
 msgid "Willard S. Boyle"
 msgstr "Willard S. Boyle"
-
-#. module: survey
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p3_q6_sug4
-msgid "Winter"
-msgstr "Kış"
 
 #. module: survey
 #: model:survey.question,title:survey.survey_demo_food_preferences_q2
@@ -5629,14 +5232,13 @@ msgstr ""
 
 #. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid "Yellow Pen"
 msgstr "Sarı Kalem"
 
 #. module: survey
 #: model:survey.question.answer,value:survey.survey_demo_food_preferences_q1_sug1
 #: model:survey.question.answer,value:survey.survey_demo_food_preferences_q2_sug1
-#: model:survey.question.answer,value:survey.survey_demo_quiz_p4_q6_sug1
 #: model:survey.question.answer,value:survey.vendor_certification_page_1_question_1_choice_2
 msgid "Yes"
 msgstr "Evet"
@@ -5716,13 +5318,8 @@ msgid "You scored"
 msgstr "Seni attı"
 
 #. module: survey
-#: model:survey.question,title:survey.survey_demo_quiz_p5
-msgid "Your feeling"
-msgstr "Duygularınız"
-
-#. module: survey
 #. odoo-python
-#: code:addons/survey/models/survey_survey_template.py:0
+#: code:addons/survey/models/templates/survey_survey.py:0
 msgid ""
 "Your responses will help us improve our product range to serve you even "
 "better."
@@ -5732,19 +5329,19 @@ msgstr ""
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/xml/survey_image_zoomer_templates.xml:0
+#: code:addons/survey/static/src/interactions/survey_image_zoomer_templates.xml:0
 msgid "Zoom in"
 msgstr "Yakınlaştır"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/xml/survey_image_zoomer_templates.xml:0
+#: code:addons/survey/static/src/interactions/survey_image_zoomer_templates.xml:0
 msgid "Zoom out"
 msgstr "Uzaklaştır"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/xml/survey_image_zoomer_templates.xml:0
+#: code:addons/survey/static/src/interactions/survey_image_zoomer_templates.xml:0
 msgid "Zoomed Image"
 msgstr "Yakınlaştırılmış Görüntü"
 
@@ -5771,7 +5368,7 @@ msgstr "denemeler"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/xml/survey_image_zoomer_templates.xml:0
+#: code:addons/survey/static/src/interactions/survey_image_zoomer_templates.xml:0
 msgid "close"
 msgstr "kapat"
 
@@ -5825,11 +5422,6 @@ msgid "e.g. Satisfaction Survey"
 msgstr "Örn. Memnuniyet anketi"
 
 #. module: survey
-#: model:survey.question,question_placeholder:survey.survey_demo_quiz_p1_q1
-msgid "ex@mple.com"
-msgstr "ex@mple.com"
-
-#. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_auth_required
 msgid "log in"
 msgstr "Giriş"
@@ -5842,7 +5434,7 @@ msgstr "dakika"
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.survey_progression
 msgid "of"
-msgstr " ile ilgili"
+msgstr "ile ilgili"
 
 #. module: survey
 #: model_terms:ir.ui.view,arch_db:survey.certification_report_view_general
@@ -5851,19 +5443,19 @@ msgstr "başarı"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/js/survey_form.js:0
+#: code:addons/survey/static/src/interactions/survey_enter_tooltip.js:0
 msgid "or press CTRL+Enter"
 msgstr "veya CTRL+Enter tuşlarına basın"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/js/survey_form.js:0
+#: code:addons/survey/static/src/interactions/survey_enter_tooltip.js:0
 msgid "or press Enter"
 msgstr "veya Enter tuşuna basın"
 
 #. module: survey
 #. odoo-javascript
-#: code:addons/survey/static/src/js/survey_form.js:0
+#: code:addons/survey/static/src/interactions/survey_enter_tooltip.js:0
 msgid "or press ⌘+Enter"
 msgstr "or press ⌘+Enter"
 
@@ -5933,3 +5525,464 @@ msgstr ""
 
 #~ msgid "2023-08-18"
 #~ msgstr "2023-08-18"
+
+#~ msgid ""
+#~ "<br/>\n"
+#~ "                                <span class=\"text-muted\">Average "
+#~ "Duration</span>"
+#~ msgstr ""
+#~ "<br/>\n"
+#~ "                                <span class=\"text-muted\">Ortalama Süre</"
+#~ "span>"
+
+#~ msgid "<i class=\"fa fa-bar-chart me-1\"/>Graph"
+#~ msgstr "<i class=\"fa fa-bar-chart me-1\"/>Grafik"
+
+#~ msgid "<i class=\"fa fa-list-alt me-1\"/>All Data"
+#~ msgstr "<i class=\"fa fa-list-alt me-1\"/>Tüm Veriler"
+
+#~ msgid "<i class=\"fa fa-list-alt me-1\"/>Data"
+#~ msgstr "<i class=\"fa fa-list-alt me-1\"/>Veriler"
+
+#~ msgid "<i class=\"fa fa-list-ol me-1\"/>Most Common"
+#~ msgstr "<i class=\"fa fa-list-ol me-1\"/>En Yaygın"
+
+#~ msgid "<i class=\"fa fa-trash me-1\"/>Remove all filters"
+#~ msgstr "<i class=\"fa fa-trash me-1\"/>Tüm filtreleri kaldır"
+
+#~ msgid ""
+#~ "<span attrs=\"{'invisible': [('is_scored_question', '!=', True)]}"
+#~ "\">Points</span>"
+#~ msgstr ""
+#~ "<span attrs=\"{'invisible': [('is_scored_question', '!=', True)]}"
+#~ "\">Puanlar</span>"
+
+#~ msgid ""
+#~ "<span attrs=\"{'invisible': [('is_time_limited', '=', False)]}\"> "
+#~ "seconds</span>"
+#~ msgstr ""
+#~ "<span attrs=\"{'invisible': [('is_time_limited', '=', False)]}\"> saniye</"
+#~ "span>"
+
+#~ msgid ""
+#~ "<span class=\"badge text-bg-secondary only_left_radius px-2 "
+#~ "pt-1\">Average </span>"
+#~ msgstr ""
+#~ "<span class=\"badge text-bg-secondary only_left_radius px-2 "
+#~ "pt-1\">Ortalama </span>"
+
+#~ msgid ""
+#~ "<span class=\"badge text-bg-secondary only_left_radius px-2 "
+#~ "pt-1\">Maximum </span>"
+#~ msgstr ""
+#~ "<span class=\"badge text-bg-secondary only_left_radius px-2 "
+#~ "pt-1\">Maksimum </span>"
+
+#~ msgid ""
+#~ "<span class=\"badge text-bg-secondary only_left_radius px-2 "
+#~ "pt-1\">Minimum </span>"
+#~ msgstr ""
+#~ "<span class=\"badge text-bg-secondary only_left_radius px-2 "
+#~ "pt-1\">Minimum </span>"
+
+#~ msgid "<span class=\"fa fa-filter me-1\"/>Filters"
+#~ msgstr "<span class=\"fa fa-filter me-1\"/>Filtreler"
+
+#~ msgid ""
+#~ "<span class=\"fw-bold text-muted ms-2 d-none d-md-inline\" id=\"enter-"
+#~ "tooltip\"> or press Enter</span>"
+#~ msgstr ""
+#~ "<span class=\"fw-bold text-muted ms-2 d-none d-md-inline\" id=\"enter-"
+#~ "tooltip\"> veya Enter'a basın</span>"
+
+#~ msgid ""
+#~ "<span class=\"fw-bold text-muted ms-2 d-none d-md-inline\">\n"
+#~ "                        <span id=\"enter-tooltip\">or press Enter</span>\n"
+#~ "                    </span>"
+#~ msgstr ""
+#~ "<span class=\"fw-bold text-muted ms-2 d-none d-md-inline\">\n"
+#~ "                        <span id=\"enter-tooltip\">veya Enter'a basın </"
+#~ "span>\n"
+#~ "                    </span>"
+
+#~ msgid ""
+#~ "<span class=\"o_stat_text\" attrs=\"{'invisible': "
+#~ "[('certifications_company_count', '&lt;', 2)]}\">Certifications</span>\n"
+#~ "                        <span class=\"o_stat_text\" attrs=\"{'invisible': "
+#~ "[('certifications_company_count', '&gt;', 1)]}\">Certification</span>"
+#~ msgstr ""
+#~ "<span class=\"o_stat_text\" attrs=\"{'invisible': "
+#~ "[('certifications_company_count', '&lt;', 2)]}\">Sertifikalar</span>\n"
+#~ "                        <span class=\"o_stat_text\" attrs=\"{'invisible': "
+#~ "[('certifications_company_count', '&gt;', 1)]}\">Sertifikasyon</span>"
+
+#~ msgid ""
+#~ "<span class=\"o_stat_text\" attrs=\"{'invisible': "
+#~ "[('certifications_count', '&lt;', 2)]}\">Certifications</span>\n"
+#~ "                        <span class=\"o_stat_text\" attrs=\"{'invisible': "
+#~ "[('certifications_count', '&gt;', 1)]}\">Certification</span>"
+#~ msgstr ""
+#~ "<span class=\"o_stat_text\" attrs=\"{'invisible': "
+#~ "[('certifications_count', '&lt;', 2)]}\">Sertifikalar</span>\n"
+#~ "                        <span class=\"o_stat_text\" attrs=\"{'invisible': "
+#~ "[('certifications_count', '&gt;', 1)]}\">Sertifikasyon</span>"
+
+#~ msgid "<span class=\"text-muted\">Completed</span>"
+#~ msgstr "<span class=\"text-muted\">Tamamlandı</span>"
+
+#~ msgid "<span class=\"text-muted\">Registered</span>"
+#~ msgstr "<span class=\"text-muted\">Kayıtlı</span>"
+
+#~ msgid "<span class=\"text-muted\">Success</span>"
+#~ msgstr "<span class=\"text-muted\">Başarı</span>"
+
+#~ msgid ""
+#~ "<span>\"Red\" is not a category, I know what you are trying to do ;)</"
+#~ "span>"
+#~ msgstr ""
+#~ "<span>\"Kırmızı\" bir kategori değil, ne yapmaya çalıştığınızı "
+#~ "biliyorum ;)</span>"
+
+#~ msgid "<span>Best time to do it, is the right time to do it.</span>"
+#~ msgstr ""
+#~ "<span>Bunu yapmak için en iyi zaman, bunu yapmak için doğru zamandır.</"
+#~ "span>"
+
+#~ msgid ""
+#~ "<span>Click on the filter icon (<span class=\"fa fa-filter text-primary\"/"
+#~ ">)\n"
+#~ "                                    next to an answer to filter surveys "
+#~ "on similar answers only.</span>"
+#~ msgstr ""
+#~ "<span>Filtre simgesine tıklayın (<span class=\"fa fa-filter text-"
+#~ "primary\"/>)\n"
+#~ "                                    anketleri yalnızca benzer yanıtlara "
+#~ "göre filtrelemek için bir yanıtın yanında.</span>"
+
+#~ msgid ""
+#~ "<span>If you don't like us, please try to be as objective as possible.</"
+#~ "span>"
+#~ msgstr ""
+#~ "<span>Bizi sevmiyorsanız, lütfen mümkün olduğunca objektif olmaya çalışın."
+#~ "</span>"
+
+#~ msgid "<span>Try It</span>"
+#~ msgstr "<span>Deneyin</span>"
+
+#~ msgid "A \"Citrus\" could give you ..."
+#~ msgstr "Bir \"Narenciye\" size verebilir ..."
+
+#~ msgid "Add some fun to your presentations by sharing questions live"
+#~ msgstr "Soruları canlı olarak paylaşarak sunumlarınıza biraz eğlence katın"
+
+#~ msgid "Africa"
+#~ msgstr "Afrika"
+
+#~ msgid "Answer that will trigger the display of the current question."
+#~ msgstr "Geçerli sorunun görüntülenmesini tetikleyecek yanıt."
+
+#~ msgid "Apple Trees"
+#~ msgstr "Elma Ağaçları"
+
+#~ msgid "Apples"
+#~ msgstr "Elmalar"
+
+#~ msgid "Asia"
+#~ msgstr "Asya"
+
+#~ msgid "Autumn"
+#~ msgstr "Sonbahar"
+
+#~ msgid "Back Button"
+#~ msgstr "Geri butonu"
+
+#~ msgid "Baobab Trees"
+#~ msgstr "Baobab Ağaçları"
+
+#~ msgid "Bees"
+#~ msgstr "Arı"
+
+#~ msgid "Bricks"
+#~ msgstr "Tuğla"
+
+#~ msgid "Brussels, Belgium"
+#~ msgstr "Brüksel, Belçika"
+
+#~ msgid "Cactus"
+#~ msgstr "Kaktüs"
+
+#~ msgid "Chart"
+#~ msgstr "Plan"
+
+#~ msgid "China"
+#~ msgstr "Çin"
+
+#~ msgid "Clementine"
+#~ msgstr "Klementin"
+
+#~ msgid "Computing score requires a question in arguments."
+#~ msgstr "Hesaplama puanı, bağımsız değişkenlerde bir soru gerektirir."
+
+#~ msgid "Conditional Display"
+#~ msgstr "Koşullu Görüntüleme"
+
+#~ msgid "Cookies"
+#~ msgstr "Çerezler"
+
+#~ msgid "Cornaceae"
+#~ msgstr "Kızılcıkgiller"
+
+#~ msgid "Cosmic rays"
+#~ msgstr "Kozmik ışınlar"
+
+#~ msgid "Dogs"
+#~ msgstr "Köpekler"
+
+#~ msgid "Don't be shy, be wild!"
+#~ msgstr "Utanmayın, vahşi olun!"
+
+#~ msgid "Douglas Fir"
+#~ msgstr "Duglas Göknarı"
+
+#~ msgid "Europe"
+#~ msgstr "Avrupa"
+
+#~ msgid "European Yew"
+#~ msgstr "Avrupa Porsuk ağacı"
+
+#~ msgid "Ficus"
+#~ msgstr "Ficus"
+
+#~ msgid "Fruits"
+#~ msgstr "Meyve"
+
+#~ msgid "Fruits and vegetables"
+#~ msgstr "Meyve ve sebzeler"
+
+#~ msgid "Give the list of all types of wood we sell."
+#~ msgstr "Sattığımız her türlü ahşabın listesini verin."
+
+#~ msgid "Good"
+#~ msgstr "İyi"
+
+#~ msgid "Grapefruits"
+#~ msgstr "Greyfurt"
+
+#~ msgid "Graph"
+#~ msgstr "Grafik"
+
+#~ msgid "Group By"
+#~ msgstr "Grupla"
+
+#~ msgid "Handle quiz &amp; certifications"
+#~ msgstr "sınav &amp; sertifikaları ele alın"
+
+#~ msgid "Hard"
+#~ msgstr "Zor"
+
+#~ msgid "Here, you can overview all the participations."
+#~ msgstr "Burada tüm katılımları gözden geçirebilirsiniz."
+
+#~ msgid "How often should you water those plants"
+#~ msgstr "Bu bitkileri ne sıklıkla sulamalısınız?"
+
+#~ msgid "I have no idea, I'm a dog!"
+#~ msgstr "Hiçbir fikrim yok, ben bir köpeğim!"
+
+#~ msgid ""
+#~ "If checked, this question will be displayed only\n"
+#~ "        if the specified conditional answer have been selected in a "
+#~ "previous question"
+#~ msgstr ""
+#~ "İşaretlenirse, bu soru yalnızca\n"
+#~ "        belirtilen koşullu cevap önceki bir soruda seçilmişse"
+
+#~ msgid "If you wish, you can"
+#~ msgstr "Eğer isterseniz, şunları yapabilirsiniz"
+
+#~ msgid "In the list below, select all the coniferous."
+#~ msgstr "Aşağıdaki listede, tüm iğne yapraklı olanları seçin."
+
+#~ msgid "Iznogoud"
+#~ msgstr "Iznogoud"
+
+#~ msgid "Japan"
+#~ msgstr "Japonya"
+
+#~ msgid "Layout"
+#~ msgstr "Düzen"
+
+#~ msgid "Lemon Trees"
+#~ msgstr "Limon Ağaçları"
+
+#~ msgid "Mooses"
+#~ msgstr "Geyikler"
+
+#~ msgid "Mountain Pine"
+#~ msgstr "Dağ Çamı"
+
+#~ msgid "No, it's to small for the human eye."
+#~ msgstr "Hayır, insan gözü için küçük."
+
+#~ msgid "Norway Spruce"
+#~ msgstr "Norveç Ladini"
+
+#~ msgid "Not Good, Not Bad"
+#~ msgstr "İyi Değil, Kötü Değil"
+
+#~ msgid "Not started yet"
+#~ msgstr "Henüz başlatılmadı"
+
+#~ msgid "Number of messages which requires an action"
+#~ msgstr "Eylem gerektiren mesaj adedi"
+
+#~ msgid ""
+#~ "Optional translation language (ISO code) to select when sending out an "
+#~ "email. If not set, the english version will be used. This should usually "
+#~ "be a placeholder expression that provides the appropriate language, e.g. "
+#~ "{{ object.partner_id.lang }}."
+#~ msgstr ""
+#~ "E-posta gönderirken seçmek için isteğe bağlı çeviri dili (ISO kodu). "
+#~ "Ayarlanmazsa, İngilizce sürüm kullanılacaktır. Bu genellikle uygun dili "
+#~ "sağlayan bir yer tutucu ifadesi olmalıdır, örn. "
+#~ "{{ object.partner_id.lang }}."
+
+#~ msgid "Our Company in a few questions ..."
+#~ msgstr "Firmamız birkaç soruda..."
+
+#~ msgid "Partial"
+#~ msgstr "Parçalı"
+
+#~ msgid "Participations"
+#~ msgstr "Katılımcılar"
+
+#~ msgid "Perhaps"
+#~ msgstr "Belki"
+
+#~ msgid "Pie Graph"
+#~ msgstr "Pasta Grafik"
+
+#~ msgid "Pinaceae"
+#~ msgstr "Çamgiller"
+
+#~ msgid "Pomelos"
+#~ msgstr "Pomelos Adası"
+
+#~ msgid "Question Time Limit"
+#~ msgstr "Soru Zaman Sınırı"
+
+#~ msgid ""
+#~ "Question containing the triggering answer to display the current question."
+#~ msgstr "Geçerli soruyu görüntülemek için tetikleyici yanıtı içeren soru."
+
+#~ msgid "Quiz about our Company"
+#~ msgstr "Şirketimiz Hakkında Bilgi Yarışması"
+
+#~ msgid "Quizz Passed"
+#~ msgstr "Sınav Geçti"
+
+#~ msgid "Quizz passed"
+#~ msgstr "Sınav geçti"
+
+#~ msgid "Responded"
+#~ msgstr "Yanıtlandı"
+
+#~ msgid "Results Overview"
+#~ msgstr "Sonuçlara Genel Bakış"
+
+#~ msgid "Salicaceae"
+#~ msgstr "Salicaceae"
+
+#~ msgid "Scoring without answers at the end"
+#~ msgstr "Sonunda cevapsız puanlama"
+
+#~ msgid "Select trees that made more than 20K sales this year"
+#~ msgstr "Bu yıl 20 binden fazla satış yapan ağaçları seçin"
+
+#~ msgid "Show all records which has next action date is before today"
+#~ msgstr "Bir sonraki eylem tarihi bugünden önce olan tüm kayıtları göster"
+
+#~ msgid "Soft"
+#~ msgstr "Hafif"
+
+#~ msgid "South America"
+#~ msgstr "Güney Amerika"
+
+#~ msgid "South Korea"
+#~ msgstr "Güney Kore"
+
+#~ msgid "Space stations"
+#~ msgstr "Uzay istasyonları"
+
+#~ msgid "Spring"
+#~ msgstr "Bahar"
+
+#~ msgid "Strawberries"
+#~ msgstr "Çilek"
+
+#~ msgid "Success rate:"
+#~ msgstr "Başarı oranı:"
+
+#~ msgid "Summer"
+#~ msgstr "Yaz"
+
+#~ msgid "Survey Participant"
+#~ msgstr "Anket Katılımcısı"
+
+#~ msgid "The date you selected is greater than the maximum date: "
+#~ msgstr "Seçtiğiniz tarih maksimum tarihten büyük: "
+
+#~ msgid "The date you selected is lower than the minimum date: "
+#~ msgstr "Seçtiğiniz tarih minimum tarihten düşük: "
+
+#~ msgid "This is a Test Survey."
+#~ msgstr "Bu bir Test Anketidir."
+
+#~ msgid ""
+#~ "To take this survey, please close all other tabs on <strong class=\"text-"
+#~ "danger\"/>."
+#~ msgstr ""
+#~ "Bu ankete katılmak için lütfen diğer tüm sekmeleri kapatın <strong "
+#~ "class=\"text-danger\"/>."
+
+#~ msgid "Trees"
+#~ msgstr "Ağaçlar"
+
+#~ msgid "Triggering Answer"
+#~ msgstr "Tetikleyici Yanıt"
+
+#~ msgid "Triggering Question"
+#~ msgstr "Tetikleyici Soru"
+
+#~ msgid "Ulmaceae"
+#~ msgstr "Ulmaceae"
+
+#~ msgid "Vegetables"
+#~ msgstr "Sebze"
+
+#~ msgid "Vietnam"
+#~ msgstr "Vietnam"
+
+#~ msgid "When do you harvest those fruits"
+#~ msgstr "Bu meyveleri ne zaman hasat edersiniz?"
+
+#~ msgid "Which category does a tomato belong to"
+#~ msgstr "Bir domates hangi kategoriye aittir?"
+
+#~ msgid "Which of the following would you use to pollinate"
+#~ msgstr "Tozlaşmak için aşağıdakilerden hangisini kullanırsınız?"
+
+#~ msgid "Winter"
+#~ msgstr "Kış"
+
+#~ msgid "Your feeling"
+#~ msgstr "Duygularınız"
+
+#~ msgid "dropdown-item d-flex align-items-center justify-content-between"
+#~ msgstr "dropdown-item d-flex align-items-center justify-content-between"
+
+#~ msgid "ex@mple.com"
+#~ msgstr "ex@mple.com"
+
+#~ msgid "review your answers"
+#~ msgstr "verdiğiniz yanıtları gözden geçirin"

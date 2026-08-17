@@ -6,7 +6,7 @@ import { getContent, setSelection } from "../_helpers/selection";
 describe("range collapsed, remove by popover unlink button", () => {
     test("should remove the link if collapsed range at the end of a link (1)", async () => {
         await testEditor({
-            contentBefore: '<p>a<a href="exist">bcd[]</a>e</p>',
+            contentBefore: '<p>a<a href="http://test.test/">bcd[]</a>e</p>',
             stepFunction: unlinkFromPopover,
             contentAfter: "<p>abcd[]e</p>",
         });
@@ -16,7 +16,7 @@ describe("range collapsed, remove by popover unlink button", () => {
         // With fontawesome at the start of the link.
         await testEditor({
             contentBefore:
-                '<p>a<a href="exist"><span class="fa fa-music" contenteditable="false">\u200B</span>bcd[]</a>e</p>',
+                '<p>a<a href="http://test.test/"><span class="fa fa-music" contenteditable="false">\u200B</span>bcd[]</a>e</p>',
             stepFunction: unlinkFromPopover,
             contentAfter: '<p>a<span class="fa fa-music"></span>bcd[]e</p>',
         });
@@ -26,7 +26,7 @@ describe("range collapsed, remove by popover unlink button", () => {
         // With fontawesome at the middle of the link.
         await testEditor({
             contentBefore:
-                '<p>a<a href="exist">bc<span class="fa fa-music" contenteditable="false">\u200B</span>d[]</a>e</p>',
+                '<p>a<a href="http://test.test/">bc<span class="fa fa-music" contenteditable="false">\u200B</span>d[]</a>e</p>',
             stepFunction: unlinkFromPopover,
             contentAfter: '<p>abc<span class="fa fa-music"></span>d[]e</p>',
         });
@@ -36,7 +36,7 @@ describe("range collapsed, remove by popover unlink button", () => {
         // With fontawesome at the end of the link.
         await testEditor({
             contentBefore:
-                '<p>a<a href="exist">bcd[]<span class="fa fa-music" contenteditable="false">\u200B</span></a>e</p>',
+                '<p>a<a href="http://test.test/">bcd[]<span class="fa fa-music" contenteditable="false">\u200B</span></a>e</p>',
             stepFunction: unlinkFromPopover,
             contentAfter: '<p>abcd[]<span class="fa fa-music"></span>e</p>',
         });
@@ -44,7 +44,7 @@ describe("range collapsed, remove by popover unlink button", () => {
 
     test("should remove the link if collapsed range in the middle a link (1)", async () => {
         await testEditor({
-            contentBefore: '<p>a<a href="exist">b[]cd</a>e</p>',
+            contentBefore: '<p>a<a href="http://test.test/">b[]cd</a>e</p>',
             stepFunction: unlinkFromPopover,
             contentAfter: "<p>ab[]cde</p>",
         });
@@ -54,7 +54,7 @@ describe("range collapsed, remove by popover unlink button", () => {
         // With fontawesome at the start of the link.
         await testEditor({
             contentBefore:
-                '<p>a<a href="exist"><span class="fa fa-music" contenteditable="false">\u200B</span>b[]cd</a>e</p>',
+                '<p>a<a href="http://test.test/"><span class="fa fa-music" contenteditable="false">\u200B</span>b[]cd</a>e</p>',
             stepFunction: unlinkFromPopover,
             contentAfter: '<p>a<span class="fa fa-music"></span>b[]cde</p>',
         });
@@ -64,7 +64,7 @@ describe("range collapsed, remove by popover unlink button", () => {
         // With fontawesome at the middle of the link.
         await testEditor({
             contentBefore:
-                '<p>a<a href="exist">b[]c<span class="fa fa-music" contenteditable="false">\u200B</span>d</a>e</p>',
+                '<p>a<a href="http://test.test/">b[]c<span class="fa fa-music" contenteditable="false">\u200B</span>d</a>e</p>',
             stepFunction: unlinkFromPopover,
             contentAfter: '<p>ab[]c<span class="fa fa-music"></span>de</p>',
         });
@@ -74,7 +74,7 @@ describe("range collapsed, remove by popover unlink button", () => {
         // With fontawesome at the end of the link.
         await testEditor({
             contentBefore:
-                '<p>a<a href="exist">b[]cd<span class="fa fa-music" contenteditable="false">\u200B</span></a>e</p>',
+                '<p>a<a href="http://test.test/">b[]cd<span class="fa fa-music" contenteditable="false">\u200B</span></a>e</p>',
             stepFunction: unlinkFromPopover,
             contentAfter: '<p>ab[]cd<span class="fa fa-music"></span>e</p>',
         });
@@ -82,7 +82,7 @@ describe("range collapsed, remove by popover unlink button", () => {
 
     test("should remove the link if collapsed range at the start of a link (1)", async () => {
         await testEditor({
-            contentBefore: '<p>a<a href="exist">[]bcd</a>e</p>',
+            contentBefore: '<p>a<a href="http://test.test/">[]bcd</a>e</p>',
             stepFunction: unlinkFromPopover,
             contentAfter: "<p>a[]bcde</p>",
         });
@@ -93,7 +93,7 @@ describe("range collapsed, remove by popover unlink button", () => {
         // With fontawesome at the start of the link.
         await testEditor({
             contentBefore:
-                '<p>a<a href="exist"><span class="fa fa-music" contenteditable="false">\u200B</span>[]bcd</a>e</p>',
+                '<p>a<a href="http://test.test/"><span class="fa fa-music" contenteditable="false">\u200B</span>[]bcd</a>e</p>',
             stepFunction: unlinkFromPopover,
             contentAfter: '<p>a<span class="fa fa-music"></span>[]bcde</p>',
         });
@@ -103,7 +103,7 @@ describe("range collapsed, remove by popover unlink button", () => {
         // With fontawesome at the middle of the link.
         await testEditor({
             contentBefore:
-                '<p>a<a href="exist">[]bc<span class="fa fa-music" contenteditable="false">\u200B</span>d</a>e</p>',
+                '<p>a<a href="http://test.test/">[]bc<span class="fa fa-music" contenteditable="false">\u200B</span>d</a>e</p>',
             stepFunction: unlinkFromPopover,
             contentAfter: '<p>a[]bc<span class="fa fa-music"></span>de</p>',
         });
@@ -113,7 +113,7 @@ describe("range collapsed, remove by popover unlink button", () => {
         // With fontawesome at the end of the link.
         await testEditor({
             contentBefore:
-                '<p>a<a href="exist">[]bcd<span class="fa fa-music" contenteditable="false">\u200B</span></a>e</p>',
+                '<p>a<a href="http://test.test/">[]bcd<span class="fa fa-music" contenteditable="false">\u200B</span></a>e</p>',
             stepFunction: unlinkFromPopover,
             contentAfter: '<p>a[]bcd<span class="fa fa-music"></span>e</p>',
         });
@@ -122,9 +122,10 @@ describe("range collapsed, remove by popover unlink button", () => {
     test("should remove only the current link if collapsed range in the middle of a link (1)", async () => {
         await testEditor({
             contentBefore:
-                '<p><a href="exist">a</a>b<a href="exist">c[]d</a>e<a href="exist">f</a></p>',
+                '<p><a href="http://test.test/">a</a>b<a href="http://test.test/">c[]d</a>e<a href="http://test.test/">f</a></p>',
             stepFunction: unlinkFromPopover,
-            contentAfter: '<p><a href="exist">a</a>bc[]de<a href="exist">f</a></p>',
+            contentAfter:
+                '<p><a href="http://test.test/">a</a>bc[]de<a href="http://test.test/">f</a></p>',
         });
         // With fontawesome at the start of the link.
     });
@@ -133,10 +134,10 @@ describe("range collapsed, remove by popover unlink button", () => {
         // With fontawesome at the start of the link.
         await testEditor({
             contentBefore:
-                '<p><a href="exist">a</a>b<a href="exist"><span class="fa fa-music" contenteditable="false">\u200B</span>c[]d</a>e<a href="exist">f</a></p>',
+                '<p><a href="http://test.test/">a</a>b<a href="http://test.test/"><span class="fa fa-music" contenteditable="false">\u200B</span>c[]d</a>e<a href="http://test.test/">f</a></p>',
             stepFunction: unlinkFromPopover,
             contentAfter:
-                '<p><a href="exist">a</a>b<span class="fa fa-music"></span>c[]de<a href="exist">f</a></p>',
+                '<p><a href="http://test.test/">a</a>b<span class="fa fa-music"></span>c[]de<a href="http://test.test/">f</a></p>',
         });
     });
 
@@ -144,10 +145,10 @@ describe("range collapsed, remove by popover unlink button", () => {
         // With fontawesome at the middle of the link.
         await testEditor({
             contentBefore:
-                '<p><a href="exist">a</a>b<a href="exist">c<span class="fa fa-music" contenteditable="false">\u200B</span>d[]e</a>f<a href="exist">g</a></p>',
+                '<p><a href="http://test.test/">a</a>b<a href="http://test.test/">c<span class="fa fa-music" contenteditable="false">\u200B</span>d[]e</a>f<a href="http://test.test/">g</a></p>',
             stepFunction: unlinkFromPopover,
             contentAfter:
-                '<p><a href="exist">a</a>bc<span class="fa fa-music"></span>d[]ef<a href="exist">g</a></p>',
+                '<p><a href="http://test.test/">a</a>bc<span class="fa fa-music"></span>d[]ef<a href="http://test.test/">g</a></p>',
         });
     });
 
@@ -155,10 +156,10 @@ describe("range collapsed, remove by popover unlink button", () => {
         // With fontawesome at the end of the link.
         await testEditor({
             contentBefore:
-                '<p><a href="exist">a</a>b<a href="exist">c[]d<span class="fa fa-music" contenteditable="false">\u200B</span></a>e<a href="exist">f</a></p>',
+                '<p><a href="http://test.test/">a</a>b<a href="http://test.test/">c[]d<span class="fa fa-music" contenteditable="false">\u200B</span></a>e<a href="http://test.test/">f</a></p>',
             stepFunction: unlinkFromPopover,
             contentAfter:
-                '<p><a href="exist">a</a>bc[]d<span class="fa fa-music"></span>e<a href="exist">f</a></p>',
+                '<p><a href="http://test.test/">a</a>bc[]d<span class="fa fa-music"></span>e<a href="http://test.test/">f</a></p>',
         });
     });
 });
@@ -331,6 +332,65 @@ describe("range not collapsed", () => {
                 contentAfter: '<p>[ab<a contenteditable="false" href="exist">cd</a>ef]</p>',
             });
         });
+
+        test("should not unlink editable links with selection in non-editable", async () => {
+            await testEditor({
+                contentBefore:
+                    '<p contenteditable="false">ab<a contenteditable="true" href="http://test.test">[cd]</a>ef</p>',
+                stepFunction: unlinkByCommand,
+                contentAfter:
+                    '<p contenteditable="false">ab<a contenteditable="true" href="http://test.test">[cd]</a>ef</p>',
+            });
+        });
+
+        test("should not remove unremovable links when inside selection with other links", async () => {
+            await testEditor({
+                contentBefore:
+                    '<p>[a<a href="http://test.test">b</a>c<a class="oe_unremovable" href="http://test.test">d</a>e<a href="http://test.test">f]</a></p>',
+                stepFunction: unlinkByCommand,
+                contentAfter:
+                    '<p>[abc<a class="oe_unremovable" href="http://test.test">d</a>ef]</p>',
+            });
+        });
+
+        test("should not remove selected part of unremovable links when partially selected with other links", async () => {
+            await testEditor({
+                contentBefore:
+                    '<p><a class="oe_unremovable" href="http://test.test">a[b</a>c<a href="http://test.test">d</a>e<a class="oe_unremovable" href="http://test.test">f]g</a></p>',
+                stepFunction: unlinkByCommand,
+                contentAfter:
+                    '<p><a class="oe_unremovable" href="http://test.test">a[b</a>cde<a class="oe_unremovable" href="http://test.test">f]g</a></p>',
+            });
+        });
+        test("should not remove unremovable links when fully selected with other links", async () => {
+            await testEditor({
+                contentBefore:
+                    '<p>a<a class="oe_unremovable" href="http://test.test">[b</a>c<a href="http://test.test">d</a>e<a class="oe_unremovable" href="http://test.test">f]</a></p>',
+                stepFunction: unlinkByCommand,
+                contentAfter:
+                    '<p>a<a class="oe_unremovable" href="http://test.test">[b</a>cde<a class="oe_unremovable" href="http://test.test">f]</a></p>',
+            });
+        });
+        test("should not remove unremovable links when fully selected (including feff) with other links", async () => {
+            await testEditor({
+                contentBefore:
+                    '<p>a<a class="oe_unremovable" href="http://test.test">[b</a>c<a href="http://test.test">d</a>e<a class="oe_unremovable" href="http://test.test">f]</a></p>',
+                /** @param {import("@html_editor/plugin").Editor} editor */
+                stepFunction: (editor) => {
+                    const selection = editor.shared.selection.getEditableSelection();
+                    // extends selection to contain the feffs
+                    editor.shared.selection.setSelection({
+                        anchorNode: selection.anchorNode.previousSibling,
+                        anchorOffset: 0,
+                        focusNode: selection.focusNode.nextSibling,
+                        focusOffset: 1,
+                    });
+                    unlinkByCommand(editor);
+                },
+                contentAfter:
+                    '<p>a<a class="oe_unremovable" href="http://test.test">[b</a>cde<a class="oe_unremovable" href="http://test.test">f]</a></p>',
+            });
+        });
     });
     test("should be able to remove link if selection has FEFF character", async () => {
         const { el } = await setupEditor(
@@ -350,7 +410,7 @@ describe("range not collapsed", () => {
     });
     test("should be able to remove link if selection has FEFF character (2)", async () => {
         const { el } = await setupEditor(
-            '<p><a href="google.com" class="btn btn-primary">[]test</a></p>'
+            '<p><a href="http://test.test/" class="btn btn-primary">[]test</a></p>'
         );
         const link = el.querySelector("a");
         const firstFeffChar = link.firstChild;

@@ -6,31 +6,27 @@
     xsi:schemaLocation="___ignore___"
     versione="FPR12"
 >
-  <FatturaElettronicaHeader>
+    <FatturaElettronicaHeader>
         <DatiTrasmissione>
             <IdTrasmittente>
                 <IdPaese>IT</IdPaese>
-                <IdCodice>01234560157</IdCodice>
+                <IdCodice>05979361218</IdCodice>
             </IdTrasmittente>
-            <ProgressivoInvio>V202200001</ProgressivoInvio>
+            <ProgressivoInvio>00001</ProgressivoInvio>
             <FormatoTrasmissione>FPR12</FormatoTrasmissione>
             <CodiceDestinatario>0000000</CodiceDestinatario>
-            <ContattiTrasmittente>
-                <Telefono>0266766700</Telefono>
-                <Email>test@test.it</Email>
-            </ContattiTrasmittente>
+            <ContattiTrasmittente />
         </DatiTrasmissione>
         <CedentePrestatore>
             <DatiAnagrafici>
                 <IdFiscaleIVA>
                     <IdPaese>IT</IdPaese>
-                    <IdCodice>00313371213</IdCodice>
+                    <IdCodice>02780790107</IdCodice>
                 </IdFiscaleIVA>
-                <CodiceFiscale>93026890017</CodiceFiscale>
                 <Anagrafica>
                     <Denominazione>SOCIETA' ALPHA SRL</Denominazione>
                 </Anagrafica>
-                <RegimeFiscale>RF19</RegimeFiscale>
+                <RegimeFiscale>RF01</RegimeFiscale>
             </DatiAnagrafici>
             <Sede>
                 <Indirizzo>VIALE ROMA 543</Indirizzo>
@@ -42,9 +38,12 @@
         </CedentePrestatore>
         <CessionarioCommittente>
             <DatiAnagrafici>
-                <CodiceFiscale>01234560157</CodiceFiscale>
+                <IdFiscaleIVA>
+                    <IdPaese>IT</IdPaese>
+                    <IdCodice>01234560157</IdCodice>
+                </IdFiscaleIVA>
                 <Anagrafica>
-                    <Denominazione>DITTA BETA</Denominazione>
+                    <Denominazione>company_2_data</Denominazione>
                 </Anagrafica>
             </DatiAnagrafici>
             <Sede>
@@ -59,36 +58,21 @@
     <FatturaElettronicaBody>
         <DatiGenerali>
             <DatiGeneraliDocumento>
-                <TipoDocumento>TD04</TipoDocumento>
+                <TipoDocumento>TD01</TipoDocumento>
                 <Divisa>EUR</Divisa>
                 <Data>2014-12-18</Data>
-                <Numero>01234567890</Numero>
-                <Causale>LA FATTURA FA RIFERIMENTO AD UNA OPERAZIONE AAAA BBBBBBBBBBBBBBBBBB CCC DDDDDDDDDDDDDDD E
-                    FFFFFFFFFFFFFFFFFFFF GGGGGGGGGG HHHHHHH II LLLLLLLLLLLLLLLLL MMM NNNNN OO PPPPPPPPPPP QQQQ RRRR
-                    SSSSSSSSSSSSSS
-                </Causale>
-                <Causale>SEGUE DESCRIZIONE CAUSALE NEL CASO IN CUI NON SIANO STATI SUFFICIENTI 200 CARATTERI AAAAAAAAAAA
-                    BBBBBBBBBBBBBBBBB
-                </Causale>
+                <Numero>___ignore___</Numero>
             </DatiGeneraliDocumento>
             <DatiOrdineAcquisto>
                 <RiferimentoNumeroLinea>1</RiferimentoNumeroLinea>
-                <IdDocumento>PO-001</IdDocumento>
+                <IdDocumento>___ignore___</IdDocumento>
                 <NumItem>1</NumItem>
             </DatiOrdineAcquisto>
-            <DatiContratto>
-                <RiferimentoNumeroLinea>1</RiferimentoNumeroLinea>
-                <IdDocumento>01234567890</IdDocumento>
-                <Data>2012-09-01</Data>
-                <NumItem>5</NumItem>
-                <CodiceCUP>01234567890abc</CodiceCUP>
-                <CodiceCIG>456def</CodiceCIG>
-            </DatiContratto>
             <DatiTrasporto>
                 <DatiAnagraficiVettore>
                     <IdFiscaleIVA>
                         <IdPaese>IT</IdPaese>
-                        <IdCodice>24681012141</IdCodice>
+                        <IdCodice>04507990150</IdCodice>
                     </IdFiscaleIVA>
                     <Anagrafica>
                         <Denominazione>Trasporto spa</Denominazione>
@@ -100,16 +84,28 @@
         <DatiBeniServizi>
             <DettaglioLinee>
                 <NumeroLinea>1</NumeroLinea>
+                <CodiceArticolo>
+                    <CodiceTipo>INT</CodiceTipo>
+                    <CodiceValore>ART123</CodiceValore>
+                </CodiceArticolo>
                 <Descrizione>DESCRIZIONE DELLA FORNITURA</Descrizione>
                 <Quantita>5.00</Quantita>
                 <PrezzoUnitario>1.00</PrezzoUnitario>
                 <PrezzoTotale>5.00</PrezzoTotale>
                 <AliquotaIVA>22.00</AliquotaIVA>
             </DettaglioLinee>
+            <DettaglioLinee>
+                <NumeroLinea>2</NumeroLinea>
+                <Descrizione>FORNITURE VARIE PER UFFICIO</Descrizione>
+                <Quantita>10.00</Quantita>
+                <PrezzoUnitario>2.00</PrezzoUnitario>
+                <PrezzoTotale>20.00</PrezzoTotale>
+                <AliquotaIVA>22.00</AliquotaIVA>
+            </DettaglioLinee>
             <DatiRiepilogo>
                 <AliquotaIVA>22.00</AliquotaIVA>
-                <ImponibileImporto>5.00</ImponibileImporto>
-                <Imposta>1.10</Imposta>
+                <ImponibileImporto>25.00</ImponibileImporto>
+                <Imposta>5.50</Imposta>
                 <EsigibilitaIVA>I</EsigibilitaIVA>
             </DatiRiepilogo>
         </DatiBeniServizi>
@@ -118,7 +114,45 @@
             <DettaglioPagamento>
                 <ModalitaPagamento>MP01</ModalitaPagamento>
                 <DataScadenzaPagamento>2015-01-30</DataScadenzaPagamento>
-                <ImportoPagamento>6.10</ImportoPagamento>
+                <ImportoPagamento>32.50</ImportoPagamento>
+            </DettaglioPagamento>
+        </DatiPagamento>
+    </FatturaElettronicaBody>
+    <FatturaElettronicaBody>
+        <DatiGenerali>
+            <DatiGeneraliDocumento>
+                <TipoDocumento>TD01</TipoDocumento>
+                <Divisa>EUR</Divisa>
+                <Data>2014-12-20</Data>
+                <Numero>___ignore___</Numero>
+            </DatiGeneraliDocumento>
+            <DatiOrdineAcquisto>
+                <RiferimentoNumeroLinea>1</RiferimentoNumeroLinea>
+                <IdDocumento>___ignore___</IdDocumento>
+                <NumItem>1</NumItem>
+            </DatiOrdineAcquisto>
+        </DatiGenerali>
+        <DatiBeniServizi>
+            <DettaglioLinee>
+                <NumeroLinea>1</NumeroLinea>
+                <Descrizione>DESCRIZIONE DEL SERVIZIO</Descrizione>
+                <PrezzoUnitario>2000.00</PrezzoUnitario>
+                <PrezzoTotale>2000.00</PrezzoTotale>
+                <AliquotaIVA>22.00</AliquotaIVA>
+            </DettaglioLinee>
+            <DatiRiepilogo>
+                <AliquotaIVA>22.00</AliquotaIVA>
+                <ImponibileImporto>2000.00</ImponibileImporto>
+                <Imposta>440.00</Imposta>
+                <EsigibilitaIVA>I</EsigibilitaIVA>
+            </DatiRiepilogo>
+        </DatiBeniServizi>
+        <DatiPagamento>
+            <CondizioniPagamento>TP01</CondizioniPagamento>
+            <DettaglioPagamento>
+                <ModalitaPagamento>MP19</ModalitaPagamento>
+                <DataScadenzaPagamento>___ignore___</DataScadenzaPagamento>
+                <ImportoPagamento>2440.00</ImportoPagamento>
             </DettaglioPagamento>
         </DatiPagamento>
     </FatturaElettronicaBody>

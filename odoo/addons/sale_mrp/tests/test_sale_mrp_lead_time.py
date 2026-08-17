@@ -3,7 +3,7 @@
 
 from datetime import timedelta
 
-from odoo import fields, Command
+from odoo import fields
 from odoo.addons.stock.tests.common import TestStockCommon
 
 from odoo.tests import Form
@@ -14,7 +14,7 @@ class TestSaleMrpLeadTime(TestStockCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.env.ref('stock.route_warehouse0_mto').active = True
+        cls.route_mto.active = True
         # Update the product_1 with type, route, Manufacturing Lead Time and Customer Lead Time
         with Form(cls.product_1) as p1:
             # `type` is invisible in the view,
@@ -63,8 +63,7 @@ class TestSaleMrpLeadTime(TestStockCommon):
         company = self.env.ref('base.main_company')
 
         # Update company with Manufacturing Lead Time and Sales Safety Days
-        company.write({'manufacturing_lead': 3.0,
-                       'security_lead': 3.0})
+        company.security_lead = 3
 
         # Create sale order of product_1
         order_form = Form(self.env['sale.order'])
@@ -95,7 +94,7 @@ class TestSaleMrpLeadTime(TestStockCommon):
         )
 
         # Check schedule date and deadline of manufacturing order
-        mo_date_start = out_date - timedelta(days=manufacturing_order.bom_id.produce_delay) - timedelta(days=company.manufacturing_lead)
+        mo_date_start = out_date - timedelta(days=manufacturing_order.bom_id.produce_delay)
         self.assertAlmostEqual(
             fields.Datetime.from_string(manufacturing_order.date_start), mo_date_start,
             delta=timedelta(seconds=1),
@@ -107,7 +106,7 @@ class TestSaleMrpLeadTime(TestStockCommon):
             msg="Deadline date of manufacturing order should be equal to the deadline of sale picking"
         )
 
-    def test_01_product_route_level_delays(self):
+    def test_01_product_route_mrp_delays(self):
         """ In order to check schedule dates, set product's Manufacturing Lead Time
             and Customer Lead Time and also set warehouse route's delay."""
 
@@ -129,10 +128,10 @@ class TestSaleMrpLeadTime(TestStockCommon):
         order.action_confirm()
 
         # Run scheduler
-        self.env['procurement.group'].run_scheduler()
+        self.env['stock.rule'].run_scheduler()
 
         # Check manufacturing order created or not
-        manufacturing_order = self.env['mrp.production'].search([('product_id', '=', self.product_1.id)]) 
+        manufacturing_order = self.env['mrp.production'].search([('product_id', '=', self.product_1.id)])
         self.assertTrue(manufacturing_order, 'Manufacturing order should be created.')
 
         # Check the picking crated or not
@@ -168,7 +167,7 @@ class TestSaleMrpLeadTime(TestStockCommon):
         )
 
         # Check schedule date and deadline date of manufacturing order
-        mo_date_start = out_date - timedelta(days=manufacturing_order.bom_id.produce_delay) - timedelta(days=warehouse.delivery_route_id.rule_ids[0].delay) - timedelta(days=self.env.ref('base.main_company').manufacturing_lead)
+        mo_date_start = out_date - timedelta(days=manufacturing_order.bom_id.produce_delay) - timedelta(days=warehouse.delivery_route_id.rule_ids[0].delay)
         self.assertAlmostEqual(
             fields.Datetime.from_string(manufacturing_order.date_start), mo_date_start,
             delta=timedelta(seconds=1),
@@ -179,47 +178,3 @@ class TestSaleMrpLeadTime(TestStockCommon):
             delta=timedelta(seconds=1),
             msg="Deadline date of manufacturing order should be equal to the deadline of sale picking"
         )
-
-    def test_mutiple_resupply_warehouse_delays(self):
-        """
-        Test the behavior of a sale order with multiple warehouse resupply routes
-        and ensure that manufacturing lead times is made into calculations only once
-        """
-        self.env.company.write({'manufacturing_lead': 3.0})
-        wh_supply_sale_order = self.env['stock.warehouse'].create({
-            'name': 'wh_supply_sale_order',
-            'code': 'wh_supply_sale_order',
-            'resupply_wh_ids': self.warehouse_1.ids,
-            'manufacture_to_resupply': False,
-        })
-        wh_supply_sale_order.resupply_route_ids.rule_ids[0].procure_method = 'mts_else_mto'
-        wh_supply_sale_order.resupply_route_ids.rule_ids.filtered(
-            lambda r: r.warehouse_id == self.warehouse_1
-        ).procure_method = 'mts_else_mto'
-        routes = [
-            wh_supply_sale_order.resupply_route_ids.id,
-            self.env.ref('stock.route_warehouse0_mto').id,
-            self.warehouse_1.manufacture_pull_id.route_id.id,
-        ]
-        product = self.env['product.product'].create({
-            'name': 'test',
-            'is_storable': True,
-            'route_ids': routes,
-        })
-        self.env['mrp.bom'].create({
-            'product_tmpl_id': product.product_tmpl_id.id,
-            'product_qty': 1,
-        })
-        order = self.env['sale.order'].create({
-            'partner_id': self.partner_1.id,
-            'warehouse_id': wh_supply_sale_order.id,
-            'order_line': [
-                Command.create({
-                    'product_id': product.id,
-                    'tax_id': None,
-                    'price_unit': product.list_price,
-                }),
-            ]
-        })
-        order.action_confirm()
-        self.assertEqual(order.mrp_production_ids.date_finished, order.date_order - timedelta(days=3))

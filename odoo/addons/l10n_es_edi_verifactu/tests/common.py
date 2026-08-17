@@ -44,6 +44,8 @@ class TestL10nEsEdiVerifactuCommon(AccountTestInvoicingCommon):
             'l10n_es_edi_verifactu_certificate_ids': [Command.set(cls.certificate.ids)],
             'l10n_es_edi_verifactu_test_environment': True,
         })
+        # Create a second Spanish Company. To ensure we set `IndicadorMultiplesOT` correctly
+        cls.company_data_2 = cls.setup_other_company(country_id=cls.env.ref('base.es').id)
 
         cls.partner_a.write({
             'vat': 'BE0477472701',
@@ -76,7 +78,7 @@ class TestL10nEsEdiVerifactuCommon(AccountTestInvoicingCommon):
 
         # Everything in the tests should be possible without being administrator.
         # We do not want to hide access errors the user may have in production (i.e. with access to the certificates)
-        cls.user.groups_id = [Command.unlink(cls.env.ref('base.group_system').id)]
+        cls.user.group_ids = [Command.unlink(cls.env.ref('base.group_system').id)]
 
         # Do not do any zeep operations by default.
         # I.e. do not do xml / xsd validation during tests (needs network connection to create the client).
@@ -93,7 +95,8 @@ class TestL10nEsEdiVerifactuCommon(AccountTestInvoicingCommon):
 
     def _json_file_to_dict(self, json_file):
         json_string = self._read_file(json_file, 'rb')
-        return json.loads(json_string)
+        res = json.loads(json_string)
+        return self.replace_ignore(res)
 
     def _mock_response(self, status_code, response_file, content_type='text/xml;charset=UTF-8'):
         response = mock.Mock(spec=requests.Response)
@@ -120,9 +123,11 @@ class TestL10nEsEdiVerifactuCommon(AccountTestInvoicingCommon):
 
         return mock.patch(request_function_path, mocked_get_zeep_operation)
 
-    def _mock_zeep_registration_operation(self, response_file_json):
+    def _mock_zeep_registration_operation(self, response_file_json, name=""):
         # Note: The real result is of type 'odoo.tools.zeep.client.SerialProxy'; here it is a dict
         zeep_response_dict = json.loads(self._read_file(response_file_json))
+        if name:
+            zeep_response_dict['RespuestaLinea'][0]['IDFactura']['NumSerieFactura'] = name
         return self._mock_get_zeep_operation(registration_return_value=lambda *args, **kwargs: zeep_response_dict)
 
     def _mock_zeep_registration_operation_certificate_issue(self):
@@ -133,7 +138,7 @@ class TestL10nEsEdiVerifactuCommon(AccountTestInvoicingCommon):
         return self._mock_get_zeep_operation(registration_return_value=_raise_certificate_error)
 
     def _mock_cron_trigger(self, cron_trigger_result_dict):
-        trigger_function_path = 'odoo.addons.base.models.ir_cron.ir_cron._trigger'
+        trigger_function_path = 'odoo.addons.base.models.ir_cron.IrCron._trigger'
 
         def _put_at_in_dict(self, at=None):
             cron_trigger_result_dict['at'] = at
@@ -190,3 +195,16 @@ class TestL10nEsEdiVerifactuCommon(AccountTestInvoicingCommon):
         invoice.action_post()
 
         return invoice
+
+    def _mock_zeep_registration_operation_single_accept_no_wait(self):
+        # Note: The real result is of type 'odoo.tools.zeep.client.SerialProxy'; here it is a dict
+        zeep_response_dict = json.loads(self._read_file('l10n_es_edi_verifactu/tests/responses/batch_single_accepted_registration.json'))
+        self.env.company.sudo().l10n_es_edi_verifactu_next_batch_time = False  # to not get blocked by the wait time
+
+        def _mock_register_accept(*args, **kwargs):
+            document_id_factura = args[1][0]['RegistroAlta']['IDFactura']
+            response_id_factura = zeep_response_dict['RespuestaLinea'][0]['IDFactura']
+            response_id_factura.update(document_id_factura)
+            return zeep_response_dict
+
+        return self._mock_get_zeep_operation(registration_return_value=_mock_register_accept)

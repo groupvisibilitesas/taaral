@@ -44,25 +44,6 @@ async function performAction(trigger, action) {
     }
 }
 
-export async function waitForStable(target = document, timeout = 1000 / 16) {
-    return new Promise((resolve) => {
-        let observer;
-        let timer;
-        const mutationList = [];
-        function onMutation(mutations) {
-            mutationList.push(...(mutations || []));
-            clearTimeout(timer);
-            timer = setTimeout(() => {
-                observer.disconnect();
-                resolve(mutationList);
-            }, timeout);
-        }
-        observer = new MacroMutationObserver(onMutation);
-        observer.observe(target);
-        onMutation([]);
-    });
-}
-
 async function waitForTrigger(trigger) {
     if (!trigger) {
         return;
@@ -84,7 +65,7 @@ async function waitForTrigger(trigger) {
     }
 }
 
-async function waitUntil(predicate) {
+export async function waitUntil(predicate) {
     const result = predicate();
     if (result) {
         return Promise.resolve(result);
@@ -135,18 +116,19 @@ export class Macro {
             return;
         }
         try {
-            const currentStep = this.steps[this.currentIndex];
+            const step = this.steps[this.currentIndex];
+            const timeoutDelay = step.timeout || this.timeout || 10000;
             const executeStep = async () => {
-                const trigger = await waitForTrigger(currentStep.trigger);
-                await this.onStep(currentStep, trigger, this.currentIndex);
-                return await performAction(trigger, currentStep.action);
+                const trigger = await waitForTrigger(step.trigger);
+                const result = await performAction(trigger, step.action);
+                await this.onStep({ step, trigger, index: this.currentIndex });
+                return result;
             };
             const launchTimer = async () => {
-                const timeout_delay = currentStep.timeout || this.timeout || 10000;
-                await delay(timeout_delay);
+                await delay(timeoutDelay);
                 throw new MacroError(
                     "Timeout",
-                    `TIMEOUT step failed to complete within ${timeout_delay} ms.`
+                    `TIMEOUT step failed to complete within ${timeoutDelay} ms.`
                 );
             };
             // If falsy action result, it means the action worked properly.
@@ -170,7 +152,8 @@ export class Macro {
         }
         this.isComplete = true;
         if (error) {
-            this.onError(error, this.steps[this.currentIndex], this.currentIndex);
+            const step = this.steps[this.currentIndex];
+            this.onError({ error, step, index: this.currentIndex });
         } else if (this.currentIndex === this.steps.length) {
             this.onComplete();
         }

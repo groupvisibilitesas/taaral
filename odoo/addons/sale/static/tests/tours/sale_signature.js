@@ -1,6 +1,3 @@
-/** @odoo-module **/
-
-import { waitUntil } from "@odoo/hoot-dom";
 import { registry } from "@web/core/registry";
 import { redirect } from "@web/core/utils/urls";
 
@@ -42,15 +39,7 @@ registry.category("web_tour.tours").add('sale_signature', {
     },
     {
         trigger: ".modal canvas.o_web_sign_signature",
-        async run(helpers) {
-            await waitUntil(() => {
-                const canvas = helpers.anchor;
-                const context = canvas.getContext("2d");
-                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-                const pixels = new Uint32Array(imageData.data.buffer);
-                return pixels.some((pixel) => pixel !== 0);
-            });
-        },
+        run: "canvasNotEmpty",
     },
     {
         content: "click select style",
@@ -86,6 +75,10 @@ registry.category("web_tour.tours").add('sale_signature', {
 
 registry.category("web_tour.tours").add("sale_signature_without_name", {
     steps: () => [
+        {
+            content: "Wait for interactions to load",
+            trigger: `body[is-ready=true], :iframe body[is-ready=true]`,
+        },
         {
             content: "Sign & Pay",
             trigger:

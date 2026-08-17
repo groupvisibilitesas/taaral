@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import models
-from odoo.osv import expression
+from odoo.fields import Domain
 
 
 class StockMove(models.Model):
@@ -10,7 +9,7 @@ class StockMove(models.Model):
 
     def _search_picking_for_assignation_domain(self):
         domain = super()._search_picking_for_assignation_domain()
-        domain = expression.AND([domain, ['|', ('batch_id', '=', False), ('batch_id.is_wave', '=', False)]])
+        domain = Domain.AND([domain, ['|', ('batch_id', '=', False), ('batch_id.is_wave', '=', False)]])
         return domain
 
     def _action_cancel(self):
@@ -41,8 +40,8 @@ class StockMove(models.Model):
         super()._action_assign(force_qty=force_qty)
         self.move_line_ids._auto_wave()
 
-    def _get_batch_moves(self):
-        moves = super()._get_batch_moves()
+    def action_show_details(self):
+        action = super().action_show_details()
         if self.picking_id.batch_id:
-            moves |= self.picking_id.batch_id.move_ids
-        return moves
+            action['context']['default_picking_id'] = self.picking_id.id
+        return action

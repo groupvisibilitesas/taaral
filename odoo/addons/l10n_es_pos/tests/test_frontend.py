@@ -40,7 +40,7 @@ class TestUi(TestPointOfSaleHttpCommon):
         num_of_simp_invoices = self.env['account.move'].search_count([('journal_id', '=', simp.id), ('l10n_es_is_simplified', '=', True)])
         num_of_regular_invoices = get_number_of_regular_invoices() - initial_number_of_regular_invoices
         self.assertEqual(num_of_simp_invoices, 3)
-        self.assertEqual(num_of_regular_invoices, 1)
+        self.assertEqual(num_of_regular_invoices, 2)
 
     def test_l10n_es_pos_reconcile(self):
         if not self.env["ir.module.module"].search([("name", "=", "pos_settle_due"), ("state", "=", "installed")]):
@@ -92,7 +92,7 @@ class TestUi(TestPointOfSaleHttpCommon):
         current_session.action_pos_session_closing_control()
 
         self.main_pos_config.with_user(self.pos_admin).open_ui()
-        self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'l10n_es_pos_settle_account_due', login="accountman")
+        self.start_tour("/pos/ui/%d" % self.main_pos_config.id, 'l10n_es_pos_settle_account_due', login="accountman")
 
     def test_spanish_pos_invoice_no_certificate(self):
         """This test make sure that the invoice generated in spanish PoS are not proforma invoices when no certificate exists"""
@@ -156,8 +156,3 @@ class TestUi(TestPointOfSaleHttpCommon):
         order = self.env['pos.order'].search([('partner_id', '=', self.main_pos_config.simplified_partner_id.id)])
         self.assertNotEqual(order.pricelist_id, self.main_pos_config.simplified_partner_id.property_product_pricelist)
         self.assertNotEqual(order.fiscal_position_id, self.fiscal_pos_a)
-
-    def test_simplified_partner_inactive_case(self):
-        self.main_pos_config.simplified_partner_id.active = False
-        self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id,
-                        'test_simplified_partner_inactive_case', login="pos_user")

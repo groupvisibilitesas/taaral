@@ -27,6 +27,7 @@
         'views/snippets/s_quotes_carousel.xml',
         'views/snippets/s_quotes_carousel_minimal.xml',
         'views/snippets/s_freegrid.xml',
+        'views/snippets/s_company_team_grid.xml',
         'views/snippets/s_text_block.xml',
         'views/snippets/s_features_wall.xml',
         'views/snippets/s_masonry_block.xml',
@@ -49,29 +50,62 @@
         'views/snippets/s_shape_image.xml',
         'views/snippets/s_images_constellation.xml',
         'views/snippets/s_empowerment.xml',
+        'views/snippets/s_numbers_boxed.xml',
+        'views/snippets/s_split_intro.xml',
+        'views/snippets/s_numbers_framed.xml',
         'views/new_page_template.xml',
     ],
     'images': [
         'static/description/real_estate_description.png',
-        'static/description/real_estate_screenshot.jpg',
+        'static/description/real_estate_screenshot.webp',
     ],
     'images_preview_theme': {
-        'website.s_cover_default_image': '/theme_real_estate/static/src/img/snippets/s_cover.jpg',
-        'website.s_text_image_default_image': '/theme_real_estate/static/src/img/snippets/s_text_image.jpg',
-        'website.s_image_text_default_image': '/theme_real_estate/static/src/img/snippets/s_image_text.jpg',
-        'website.s_three_columns_default_image_1': '/theme_real_estate/static/src/img/snippets/library_image_11.jpg',
-        'website.s_three_columns_default_image_2': '/theme_real_estate/static/src/img/snippets/library_image_13.jpg',
-        'website.s_three_columns_default_image_3': '/theme_real_estate/static/src/img/snippets/library_image_07.jpg',
-        'website.s_quotes_carousel_demo_image_0': '/theme_real_estate/static/src/img/snippets/s_quotes_carousel_1.jpg',
+        'website.s_cover_default_image': '/theme_real_estate/static/src/img/snippets/s_cover.webp',
+        'website.s_text_image_default_image': '/theme_real_estate/static/src/img/snippets/s_text_image.webp',
+        'website.s_image_text_default_image': '/theme_real_estate/static/src/img/snippets/s_image_text.webp',
+        'website.s_three_columns_default_image_1': '/theme_real_estate/static/src/img/snippets/library_image_11.webp',
+        'website.s_three_columns_default_image_2': '/theme_real_estate/static/src/img/snippets/library_image_13.webp',
+        'website.s_three_columns_default_image_3': '/theme_real_estate/static/src/img/snippets/library_image_07.webp',
+        'website.s_quotes_carousel_demo_image_0': '/theme_real_estate/static/src/img/snippets/s_quotes_carousel_1.webp',
     },
     'configurator_snippets': {
         'homepage': ['s_cover', 's_text_image', 's_image_text', 's_three_columns', 's_title', 's_references', 's_numbers_showcase', 's_quotes_carousel', 's_call_to_action'],
+    },
+    'configurator_snippets_addons': {
+        'website_sale': {
+            'homepage': [
+                ('website_sale.s_dynamic_snippet_category_list', 'after', 's_cover'),
+            ],
+        },
+    },
+    'theme_customizations': {
+        'website_sale.s_dynamic_snippet_category_list': {
+            'data_attributes': {
+                'gap': '4',
+                'rounded': '0',
+                'size': 'small',
+                'alignment': 'left',
+            },
+            'background': {
+                'color': 'o_cc2',
+            },
+            'add_classes': [
+                'pt96', 'pb96',
+                {
+                    's_dynamic_snippet_title': 'd-none',
+                },
+            ],
+            'remove_classes': [
+                'pt64', 'pb64',
+            ],
+        },
     },
     'new_page_templates': {
         'about': {
             'personal': ['s_text_cover', 's_image_text', 's_text_block_h2', 's_numbers', 's_features', 's_call_to_action'],
         },
     },
+    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
     'assets': {
         'website.assets_editor': [

@@ -1,8 +1,9 @@
-from odoo.tests import TransactionCase
+from odoo.tests import TransactionCase, tagged
 from unittest import mock
 import smtplib
 
 
+@tagged('mail_mail')
 class MailCase(TransactionCase):
 
     def test_mail_send_non_connected_smtp_session(self):
@@ -19,7 +20,7 @@ class MailCase(TransactionCase):
         disconnected_smtpsession = mock.MagicMock()
         disconnected_smtpsession.quit.side_effect = smtplib.SMTPServerDisconnected
         mail = self.env["mail.mail"].create({})
-        with mock.patch("odoo.addons.base.models.ir_mail_server.IrMailServer.connect", return_value=disconnected_smtpsession):
+        with mock.patch("odoo.addons.base.models.ir_mail_server.IrMail_Server._connect__", return_value=disconnected_smtpsession):
             with mock.patch("odoo.addons.mail.models.mail_mail._logger.info") as mock_logging_info:
                 mail.send()
         disconnected_smtpsession.quit.assert_called_once()
@@ -27,9 +28,4 @@ class MailCase(TransactionCase):
             "Ignoring SMTPServerDisconnected while trying to quit non open session"
         )
         # if we get here SMTPServerDisconnected was not raised
-        self.assertEqual(mail.state, "exception")
-        self.assertEqual(
-            mail.failure_reason,
-            "Error without exception. Probably due to sending "
-            "an email without computed recipients."
-        )
+        self.assertEqual(mail.state, "outgoing")

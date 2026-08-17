@@ -3,26 +3,28 @@
 # * crm
 #
 # Translators:
-# Wil Odoo, 2024
-# Manon Rondou, 2025
-# Erwin van der Ploeg <erwin@odooexperts.nl>, 2025
-# "Manon Rondou (ronm)" <ronm@odoo.com>, 2025.
-# Bren Driesen <brdri@odoo.com>, 2026.
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Gunther Clauwaert <gclauwae@hotmail.com>, 2022
+# Martin Trigaux, 2022
+# Dylan Kiss, 2022
+# Jolien De Paepe, 2023
+# Erwin van der Ploeg <erwin@odooexperts.nl>, 2023, 2025, 2026.
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# Bren Driesen <brdri@odoo.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-20 18:37+0000\n"
-"PO-Revision-Date: 2026-05-27 15:26+0000\n"
-"Last-Translator: Bren Driesen <brdri@odoo.com>\n"
-"Language-Team: Dutch <https://translate.odoo.com/projects/odoo-18/crm/nl/>\n"
+"POT-Creation-Date: 2026-02-20 18:35+0000\n"
+"PO-Revision-Date: 2026-08-05 03:06+0000\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"Language-Team: Dutch <https://translate.odoo.com/projects/odoo-19/crm/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.17\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_team__lead_all_assigned_month_count
@@ -33,16 +35,6 @@ msgstr "# Leads/Verkoopkansen toegewezen deze maand"
 #: model:ir.model.fields,field_description:crm.field_crm_recurring_plan__number_of_months
 msgid "# Months"
 msgstr "# Maanden"
-
-#. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_team__opportunities_count
-msgid "# Opportunities"
-msgstr "# Verkoopkansen"
-
-#. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_team__opportunities_overdue_count
-msgid "# Overdue Opportunities"
-msgstr "# Verkoopkansen te laat"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_team__lead_unassigned_count
@@ -87,6 +79,18 @@ msgid "%s's opportunity"
 msgstr "%s's verkoopkans"
 
 #. module: crm
+#. odoo-python
+#: code:addons/crm/models/res_users.py:0
+msgid "(Team Leader)"
+msgstr "(Teamleider)"
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "(sample data)"
+msgstr "(voorbeeldgegevens)"
+
+#. module: crm
 #. odoo-javascript
 #: code:addons/crm/static/src/js/tours/crm.js:0
 msgid "<b>Create your first opportunity.</b>"
@@ -107,33 +111,48 @@ msgstr ""
 #: code:addons/crm/static/src/js/tours/crm.js:0
 msgid "<b>Write a few letters</b> to look for a company, or create a new one."
 msgstr ""
-"<b>Type enkele letters</b> om een bedrijf te vinden, of maak een nieuw "
+"<b>Typ enkele letters</b> om een bedrijf te vinden, of maak een nieuw "
 "bedrijf."
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
-msgid ""
-"<i class=\"fa fa-gear\" role=\"img\" title=\"Switch to automatic "
-"probability\" aria-label=\"Switch to automatic probability\"/>"
-msgstr ""
-"<i class=\"fa fa-gear\" role=\"img\" title=\"Overschakelen naar automatische "
-"waarschijnlijkheid\" aria-label=\"Overschakelen naar automatische "
-"waarschijnlijkheid\"/>"
+#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
+msgid "<i class=\"fa fa-briefcase\" title=\"Opportunity Name\"/>"
+msgstr "<i class=\"fa fa-briefcase\" title=\"Naam verkoopkans\"/>"
+
+#. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
+msgid "<i class=\"fa fa-building\" title=\"Company\"/>"
+msgstr "<i class=\"fa fa-building\" title=\"Bedrijf\"/>"
+
+#. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
+msgid "<i class=\"fa fa-envelope\" title=\"Contact Email\"/>"
+msgstr "<i class=\"fa fa-envelope\" title=\"Contact-e-mail\"/>"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.sales_team_form_view_in_crm
 msgid "<i class=\"fa fa-info-circle me-2\" title=\"Assigned Lead Count\"/>"
-msgstr ""
-"<i class=\"fa fa-info-circle me-2\" title=\"Aantal toegewezen leads\"/>"
+msgstr "<i class=\"fa fa-info-circle me-2\" title=\"Aantal toegewezen leads\"/>"
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_lead_partner_kanban_view
-msgid ""
-"<i class=\"fa fa-star me-1\" aria-label=\"Opportunities\" role=\"img\" "
-"title=\"Opportunities\"/>"
-msgstr ""
-"<i class=\"fa fa-star me-1\" aria-label=\"Mogelijkheden\" role=\"img\" "
-"title=\"Mogelijkheden\"/>"
+#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
+msgid "<i class=\"fa fa-mobile fa-lg\" title=\"Contact Phone\"/>"
+msgstr "<i class=\"fa fa-mobile fa-lg\" title=\"Contacttelefoon\"/>"
+
+#. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
+msgid "<i class=\"fa fa-money\" title=\"Expected Revenue\"/>"
+msgstr "<i class=\"fa fa-money\" title=\"Verwachte omzet\"/>"
+
+#. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
+msgid "<i class=\"fa fa-refresh\" title=\"Recurring Revenue\"/>"
+msgstr "<i class=\"fa fa-refresh\" title=\"Terugkerende inkomsten\"/>"
+
+#. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
+msgid "<i class=\"fa fa-user\" title=\"Contact\"/>"
+msgstr "<i class=\"fa fa-user\" title=\"Contact\"/>"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
@@ -183,9 +202,10 @@ msgid ""
 "                                    <span class=\"o_stat_text\" "
 "invisible=\"duplicate_lead_count &gt; 1\">Similar Lead</span>"
 msgstr ""
-"<span class=\"o_stat_text\" invisible=\"duplicate_lead_count &lt; "
-"2\">Soortgelijke leads</span> <span class=\"o_stat_text\" "
-"invisible=\"duplicate_lead_count &gt; 1\">Soortgelijke leads</span>"
+"<span class=\"o_stat_text\" invisible=\"duplicate_lead_count &lt; 2\">"
+"Soortgelijke leads</span> \n"
+"<span class=\"o_stat_text\" invisible=\"duplicate_lead_count &gt; 1\">"
+"Soortgelijke lead</span>"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.utm_campaign_view_form
@@ -195,8 +215,8 @@ msgid ""
 "invisible=\"use_leads\">Opportunities</span>"
 msgstr ""
 "<span class=\"o_stat_text\" invisible=\"not use_leads\">Leads</span>\n"
-"                        <span class=\"o_stat_text\" "
-"invisible=\"use_leads\">Verkoopkansen</span>"
+"                        <span class=\"o_stat_text\" invisible=\"use_leads\">"
+"Verkoopkansen</span>"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lost_reason_view_form
@@ -205,23 +225,21 @@ msgstr "<span class=\"o_stat_text\"> Leads</span>"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
-msgid "<span class=\"oe_grey p-2 text-nowrap d-none d-sm-block\"> at </span>"
-msgstr "<span class=\"oe_grey p-2 text-nowrap d-none d-sm-block\"> bij </span>"
+msgid ""
+"<span class=\"opacity-50 p-2 text-nowrap d-none d-sm-block\"> at </span>"
+msgstr ""
+"<span class=\"opacity-50 p-2 text-nowrap d-none d-sm-block\"> bij </span>"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
-msgid "<span class=\"oe_grey p-2\"> %</span>"
-msgstr "<span class=\"oe_grey p-2\"> %</span>"
+msgid "<span class=\"opacity-50 p-2\"> %</span>"
+msgstr "<span class=\"opacity-50 p-2\"> %</span>"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_team_member_view_form
-msgid "<span class=\"oe_inline\"> (max) </span>"
-msgstr "<span class=\"oe_inline\"> (max) </span>"
-
-#. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_team_member_view_form
-msgid "<span class=\"oe_inline\"> / </span>"
-msgstr "<span class=\"oe_inline\"> / </span>"
+msgid "<span> leads assigned the last 30 days out of a maximum of </span>"
+msgstr ""
+"<span> leads toegewezen in de afgelopen 30 dagen, van een maximum van </span>"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.sales_team_form_view_in_crm
@@ -245,7 +263,8 @@ msgstr "<span>De lead/verkoopkans samengevoegd:</span>"
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
 msgid ""
-"<span>Periodically assign leads based on rules</span><br/>\n"
+"<span>Periodically assign leads based on priorities and filters.</span><br/"
+">\n"
 "                                <span invisible=\"not "
 "crm_use_auto_assignment\">\n"
 "                                    All sales teams will use this setting by "
@@ -253,9 +272,14 @@ msgid ""
 "                                    specified otherwise.\n"
 "                                </span>"
 msgstr ""
-"<span>Wijs periodiek leads toe op basis van regels</span><br/> <span "
-"invisible=\"not crm_use_auto_assignment\">Alle verkoopteams gebruiken deze "
-"instelling standaard, tenzij anders aangegeven.</span>"
+"<span>Leads periodiek toewijzen op basis van prioriteiten en filters.</span>"
+"<br/>\n"
+"                                <span invisible=\"not "
+"crm_use_auto_assignment\">\n"
+"                                    Deze instelling wordt standaard gebruikt "
+"door alle verkoopteams, tenzij\n"
+"                                    anders opgegeven.\n"
+"                                </span>"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_merge_summary
@@ -366,7 +390,8 @@ msgid ""
 "<!-- POWERED BY -->\n"
 "<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
 "    Powered by <a target=\"_blank\" href=\"https://www.odoo.com?"
-"utm_source=db&amp;utm_medium=email\" style=\"color: #875A7B;\">Odoo</a>\n"
+"utm_source=db&amp;utm_medium=email\" t-attf-style=\"color: "
+"{{object.company_id.email_secondary_color or '#875A7B'}};;\">Odoo</a>\n"
 "</td></tr>\n"
 "</table>\n"
 "        "
@@ -386,10 +411,10 @@ msgstr ""
 "width=\"100%\" style=\"background-color: white; padding: 0; border-"
 "collapse:separate;\">\n"
 "                <tr><td valign=\"middle\">\n"
-"                    <span style=\"font-size: 10px;\">Jouw lead/verkoopkans</"
+"                    <span style=\"font-size: 10px;\">Je lead/verkoopkans</"
 "span><br/>\n"
 "                    <span style=\"font-size: 20px; font-weight: bold;\" t-"
-"out=\"object.name or ''\">Interesse in jullie producten</span>\n"
+"out=\"object.name or ''\">Interesse in je producten</span>\n"
 "                </td><td valign=\"middle\" align=\"right\">\n"
 "                    <img t-attf-src=\"/logo.png?company={{ "
 "object.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: 48px;\" "
@@ -415,14 +440,15 @@ msgstr ""
 "                            Hallo <t t-out=\"object.partner_id and "
 "object.partner_id.name or ''\">Acme Corporation</t>,<br/><br/>\n"
 "                            Welkom bij <t t-out=\"object.company_id.name or "
-"''\">Mijn Bedrijf (San Francisco)</t>.\n"
+"''\">My Company (San Francisco)</t>.\n"
 "                            Leuk om kennis te maken! Nu je aan boord bent, "
-"ontdek je wat <t t-out=\"object.company_id.name or ''\">Mijn Bedrijf (San "
-"Francisco)</t> te bieden heeft. Mijn naam is <t t-out=\"object.user_id.name "
-"or ''\">Marc Demo</t> en ik zal je helpen het meeste uit Odoo te halen. "
-"Kunnen we binnenkort een snelle demo plannen?<br/>\n"
-"                            Je mag altijd contact met mij opnemen!<br/><br/>"
+"ontdek je wat <t t-out=\"object.company_id.name or ''\">My Company (San "
+"Francisco)</t> allemaal te bieden heeft. Mijn naam is <t t-"
+"out=\"object.user_id.name or ''\">Marc Demo</t> en ik help je graag om het "
+"meeste uit Odoo te halen. Zullen we binnenkort een korte demo inplannen?<br/>"
 "\n"
+"                            Voel je vrij om op elk moment contact met me op "
+"te nemen!<br/><br/>\n"
 "                            Met vriendelijke groet,<br/>\n"
 "                            <t t-if=\"object.user_id\">\n"
 "                                <b><t t-out=\"object.user_id.name or ''\">"
@@ -433,8 +459,8 @@ msgstr ""
 "out=\"object.user_id.phone or ''\">+1 650-123-4567</t>\n"
 "                            </t>\n"
 "                            <t t-else=\"\">\n"
-"                                <t t-out=\"object.company_id.name or ''\">"
-"Mijn Bedrijf (San Francisco)</t>\n"
+"                                <t t-out=\"object.company_id.name or ''\">My "
+"Company (San Francisco)</t>\n"
 "                            </t>\n"
 "                        </div>\n"
 "                    </td>\n"
@@ -449,7 +475,7 @@ msgstr ""
 "            <hr width=\"100%\" style=\"background-color:rgb(204,204,204)"
 ";border:medium none;clear:both;display:block;font-size:0px;min-"
 "height:1px;line-height:0; margin: 16px 0px 4px 0px;\"/>\n"
-"            <b t-out=\"object.company_id.name or ''\">Mijn Bedrijf (San "
+"            <b t-out=\"object.company_id.name or ''\">My Company (San "
 "Francisco)</b><br/>\n"
 "            <div style=\"color: #999999;\">\n"
 "                <t t-out=\"object.company_id.phone or ''\">+1 650-123-4567</"
@@ -473,8 +499,8 @@ msgstr ""
 "<!-- POWERED BY -->\n"
 "<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
 "    Aangeboden door <a target=\"_blank\" href=\"https://"
-"www.odoo.com?utm_source=db&amp;utm_medium=email\" style=\"color: #875A7B;\">"
-"Odoo</a>\n"
+"www.odoo.com?utm_source=db&amp;utm_medium=email\" t-attf-style=\"color: {"
+"{object.company_id.email_secondary_color or '#875A7B'}};;\">Odoo</a>\n"
 "</td></tr>\n"
 "</table>\n"
 "        "
@@ -506,6 +532,14 @@ msgstr ""
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
+msgid "A lead in a Won stage cannot be lost. Move it to another stage first."
+msgstr ""
+"Een lead in de gewonnen fase kan niet verloren gaan. Verplaats deze eerst "
+"naar een andere fase."
+
+#. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0
 msgid "A new lead has been created and is not assigned to any team."
 msgstr "Een nieuwe lead is aangemaakt en is niet aan een team toegewezen."
 
@@ -514,6 +548,25 @@ msgstr "Een nieuwe lead is aangemaakt en is niet aan een team toegewezen."
 #: code:addons/crm/models/crm_lead.py:0
 msgid "A new lead has been created for the team \"%(team_name)s\"."
 msgstr "Een nieuwe lead is aangemaakt voor het team \"%(team_name)s\"."
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
+msgid "AI"
+msgstr "AI"
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "AI-computed chances of winning"
+msgstr "Door AI berekende winkansen"
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "AI-computed chances of winning for"
+msgstr "Door AI berekende winkansen voor"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.sales_team_form_view_in_crm
@@ -557,11 +610,6 @@ msgid "Activities Analysis"
 msgstr "Analyse van activiteiten"
 
 #. module: crm
-#: model:ir.model.fields,field_description:crm.field_res_users__target_sales_done
-msgid "Activities Done Target"
-msgstr "Doel afgehandelde activiteiten"
-
-#. module: crm
 #: model_terms:ir.actions.act_window,help:crm.crm_activity_report_action
 #: model_terms:ir.actions.act_window,help:crm.crm_activity_report_action_team
 msgid ""
@@ -570,6 +618,11 @@ msgid ""
 msgstr ""
 "Activiteiten die zijn gemarkeerd als Voltooid voor leads worden hier "
 "weergegeven, zodat je een overzicht krijgt van de interacties met leads."
+
+#. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.view_crm_case_leads_filter
+msgid "Activities of"
+msgstr "Activiteiten van"
 
 #. module: crm
 #: model:ir.model,name:crm.model_mail_activity
@@ -601,17 +654,17 @@ msgstr "Activiteitsfase"
 #: model:ir.model.fields,field_description:crm.field_crm_activity_report__mail_activity_type_id
 #: model_terms:ir.ui.view,arch_db:crm.crm_activity_report_view_search
 msgid "Activity Type"
-msgstr "Soort activiteit"
+msgstr "Activiteitstype"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__activity_type_icon
 msgid "Activity Type Icon"
-msgstr "Activiteitensoort icoon"
+msgstr "Activiteitstype icoon"
 
 #. module: crm
 #: model:ir.ui.menu,name:crm.crm_team_menu_config_activity_types
 msgid "Activity Types"
-msgstr "Activiteitensoorten"
+msgstr "Activiteitstypes"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_case_tree_view_oppor
@@ -630,6 +683,11 @@ msgstr ""
 "                    (bijv 'Demovoorbereidingsproces', 'Kwalificatie', ...)"
 
 #. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.view_crm_case_leads_filter
+msgid "Activity type"
+msgstr "Activiteitstype"
+
+#. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
 msgid "Add a description..."
 msgstr "Voeg een omschrijving toe..."
@@ -640,10 +698,9 @@ msgid "Add a qualification step before the creation of an opportunity"
 msgstr "Voeg een kwalificatiestap toe alvorens een verkoopkans aan te maken"
 
 #. module: crm
-#. odoo-javascript
-#: code:addons/crm/static/src/views/forecast_kanban/forecast_kanban_column_quick_create.js:0
-msgid "Add next %s"
-msgstr "Volgende %s toevoegen"
+#: model:ir.actions.act_window,name:crm.mail_followers_edit_action_from_lead
+msgid "Add/Remove Followers"
+msgstr "Volgers toevoegen/verwijderen"
 
 #. module: crm
 #: model:ir.model.fields,help:crm.field_crm_team__assignment_domain
@@ -728,6 +785,8 @@ msgstr "Ontdubbelen toepassen"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_activity_report_view_search
+#: model_terms:ir.ui.view,arch_db:crm.crm_case_kanban_view_leads
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
 #: model_terms:ir.ui.view,arch_db:crm.crm_lost_reason_view_form
 #: model_terms:ir.ui.view,arch_db:crm.crm_lost_reason_view_search
 #: model_terms:ir.ui.view,arch_db:crm.crm_opportunity_report_view_search
@@ -859,14 +918,15 @@ msgid "Average Leads Capacity (on 30 days)"
 msgstr "Gemiddelde leadcapaciteit (op 30 dagen)"
 
 #. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0
+msgid "Belgium"
+msgstr "België"
+
+#. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__is_blacklisted
 msgid "Blacklist"
 msgstr "Blacklist"
-
-#. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_lead__mobile_blacklisted
-msgid "Blacklisted Phone Is Mobile"
-msgstr "Telefoon op blacklist is een mobiel nummer"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__phone_blacklisted
@@ -914,12 +974,7 @@ msgstr "CRM: Leadtoewijzing"
 #. module: crm
 #: model:ir.model,name:crm.model_calendar_event
 msgid "Calendar Event"
-msgstr "Agenda gebeurtenis"
-
-#. module: crm
-#: model:mail.activity.type,name:crm.mail_activity_demo_call_demo
-msgid "Call for Demo"
-msgstr "Bel voor demo"
+msgstr "Agenda-afspraak"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__campaign_id
@@ -935,13 +990,28 @@ msgid "Campaign:"
 msgstr "Campagne:"
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_lead_lost_view_form
-#: model_terms:ir.ui.view,arch_db:crm.crm_lead_pls_update_view_form
 #: model_terms:ir.ui.view,arch_db:crm.merge_opportunity_form
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_lead2opportunity_partner
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_lead2opportunity_partner_mass
 msgid "Cancel"
 msgstr "Annuleren"
+
+#. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.crm_team_member_view_form
+msgid "Capacity"
+msgstr "Capaciteit"
+
+#. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_stage.py:0
+msgid ""
+"Changing the value of 'Is Won Stage' may induce a large number of "
+"operations, as the probabilities of opportunities in this stage will be "
+"recomputed on saving."
+msgstr ""
+"Het wijzigen van de waarde van 'Is gewonnen fase' kan veel bewerkingen "
+"veroorzaken, omdat de kansen in deze fase opnieuw worden berekend bij het "
+"opslaan."
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lost_reason_view_tree
@@ -1001,6 +1071,12 @@ msgstr ""
 "wijzigingen op terwijl je navigeert."
 
 #. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "Close opportunities to get insights."
+msgstr "Sluit kansen om inzichten te krijgen."
+
+#. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_activity_report__date_closed
 #: model:ir.model.fields,field_description:crm.field_crm_lead__date_closed
 #: model_terms:ir.ui.view,arch_db:crm.crm_activity_report_view_search
@@ -1018,8 +1094,14 @@ msgstr "Gesloten leads kunnen niet worden geconverteerd naar verkoopkansen."
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead_lost__lost_feedback
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_lost_view_form
 msgid "Closing Note"
 msgstr "Afsluitingsnotitie"
+
+#. module: crm
+#: model:ir.model.fields,field_description:crm.field_crm_lead_scoring_frequency_field__color
+msgid "Color"
+msgstr "Kleur"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__color
@@ -1028,15 +1110,26 @@ msgstr "Kleurindex"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_activity_report__company_id
+#: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner__commercial_partner_id
+#: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner_mass__commercial_partner_id
 #: model:ir.model.fields,field_description:crm.field_crm_lead__company_id
 #: model_terms:ir.ui.view,arch_db:crm.crm_activity_report_view_search
 #: model_terms:ir.ui.view,arch_db:crm.crm_opportunity_report_view_search
+#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_leads_filter
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
+#: model_terms:ir.ui.view,arch_db:crm.view_crm_lead2opportunity_partner
 msgid "Company"
 msgstr "Bedrijf"
 
 #. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
+msgid "Company Information"
+msgstr "Bedrijfsgegevens"
+
+#. module: crm
+#: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner__lead_partner_name
+#: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner_mass__lead_partner_name
 #: model:ir.model.fields,field_description:crm.field_crm_lead__partner_name
 msgid "Company Name"
 msgstr "Bedrijfsnaam"
@@ -1056,6 +1149,12 @@ msgstr "Bedrijf:"
 #: model_terms:ir.ui.view,arch_db:crm.crm_activity_report_view_search
 msgid "Completion Date"
 msgstr "Voltooiingsdatum"
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "Computed by Odoo AI using your data."
+msgstr "Berekend door Odoo AI met jouw gegevens."
 
 #. module: crm
 #: model:ir.model,name:crm.model_res_config_settings
@@ -1078,8 +1177,14 @@ msgid "Consider leads created as of the:"
 msgstr "Overweeg leads die zijn gemaakt vanaf de:"
 
 #. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0
+msgid "Consulting"
+msgstr "Consulting"
+
+#. module: crm
 #: model:ir.model,name:crm.model_res_partner
-#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
+#: model:ir.model.fields,field_description:crm.field_crm_lead__partner_id
 #: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
 msgid "Contact"
 msgstr "Contact"
@@ -1090,19 +1195,36 @@ msgid "Contact Details:"
 msgstr "Contactdetails:"
 
 #. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
+msgid "Contact Email"
+msgstr "E-mail adres contactpersoon"
+
+#. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
 msgid "Contact Information"
 msgstr "Contactgegevens"
 
 #. module: crm
+#: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner__lead_contact_name
+#: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner_mass__lead_contact_name
 #: model:ir.model.fields,field_description:crm.field_crm_lead__contact_name
 msgid "Contact Name"
 msgstr "Naam contactpersoon"
 
 #. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
+msgid "Contact Phone"
+msgstr "Contact telefoon"
+
+#. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_merge_summary
 msgid "Contact:"
 msgstr "Contact:"
+
+#. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
+msgid "Contacts"
+msgstr "Contacten"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner__name
@@ -1156,8 +1278,6 @@ msgid "Convert to opportunities"
 msgstr "Converteer naar verkoopkansen"
 
 #. module: crm
-#. odoo-python
-#: code:addons/crm/models/crm_lead.py:0
 #: model:ir.actions.act_window,name:crm.action_crm_lead2opportunity_partner
 #: model:ir.model.fields.selection,name:crm.selection__crm_lead2opportunity_partner__name__convert
 #: model:ir.model.fields.selection,name:crm.selection__crm_lead2opportunity_partner_mass__name__convert
@@ -1205,6 +1325,11 @@ msgid "Create Opportunity"
 msgstr "Maak verkoopkans"
 
 #. module: crm
+#: model:ir.model,website_form_label:crm.model_res_partner
+msgid "Create a Customer"
+msgstr "Een klant aanmaken"
+
+#. module: crm
 #: model_terms:ir.actions.act_window,help:crm.crm_lead_all_leads
 msgid "Create a Lead"
 msgstr "Een lead maken"
@@ -1222,7 +1347,7 @@ msgstr "Maak een verliesreden aan"
 #. module: crm
 #: model_terms:ir.actions.act_window,help:crm.crm_recurring_plan_action
 msgid "Create a Recurring Plan"
-msgstr "Maak een herhaalplan"
+msgstr "Maak een terugkerend plan"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_res_config_settings__lead_mining_in_pipeline
@@ -1247,6 +1372,7 @@ msgstr "Maak een nieuwe lead"
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_team.py:0
+#: model:ir.model,website_form_label:crm.model_crm_lead
 msgid "Create an Opportunity"
 msgstr "Maak een verkoopkans aan"
 
@@ -1322,22 +1448,17 @@ msgid "Custom Bounced Message"
 msgstr "Aangepast bouncebericht"
 
 #. module: crm
-#. odoo-python
-#: code:addons/crm/models/crm_lead.py:0
 #: model:ir.model.fields,field_description:crm.field_crm_activity_report__partner_id
 #: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner__partner_id
 #: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner_mass__partner_id
-#: model:ir.model.fields,field_description:crm.field_crm_lead__partner_id
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
-#: model_terms:ir.ui.view,arch_db:crm.view_crm_lead2opportunity_partner
 msgid "Customer"
 msgstr "Klant"
 
 #. module: crm
-#. odoo-python
-#: code:addons/crm/models/crm_lead.py:0
-msgid "Customer Email"
-msgstr "Klant e-mail"
+#: model:ir.model.fields,field_description:crm.field_crm_lead__commercial_partner_id
+msgid "Customer Company"
+msgstr "Bedrijf klant"
 
 #. module: crm
 #: model:ir.ui.menu,name:crm.res_partner_menu_customer
@@ -1351,9 +1472,19 @@ msgid "Date Closed"
 msgstr "Datum gesloten"
 
 #. module: crm
+#: model:ir.model.fields,help:crm.field_crm_lead__rotting_days
+msgid "Day count since this resource was last updated"
+msgstr "Aantal dagen sinds deze resource voor het laatst is bijgewerkt"
+
+#. module: crm
 #: model:ir.model.fields.selection,name:crm.selection__res_config_settings__crm_auto_assignment_interval_type__days
 msgid "Days"
 msgstr "Dagen"
+
+#. module: crm
+#: model:ir.model.fields,field_description:crm.field_crm_lead__rotting_days
+msgid "Days Rotting"
+msgstr "Dagen verouderd"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__day_open
@@ -1364,6 +1495,11 @@ msgstr "Dagen om toe te wijzen"
 #: model:ir.model.fields,field_description:crm.field_crm_lead__day_close
 msgid "Days to Close"
 msgstr "Dagen om te sluiten"
+
+#. module: crm
+#: model:ir.model.fields,field_description:crm.field_crm_stage__rotting_threshold_days
+msgid "Days to rot"
+msgstr "Dagen tot verouderd"
 
 #. module: crm
 #. odoo-python
@@ -1433,6 +1569,13 @@ msgid "Digest"
 msgstr "Overzicht"
 
 #. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_lost_view_form
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_pls_update_view_form
+msgid "Discard"
+msgstr "Negeren"
+
+#. module: crm
+#: model:ir.model.fields,field_description:crm.field_calendar_event__display_name
 #: model:ir.model.fields,field_description:crm.field_crm_activity_report__display_name
 #: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner__display_name
 #: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner_mass__display_name
@@ -1445,6 +1588,15 @@ msgstr "Overzicht"
 #: model:ir.model.fields,field_description:crm.field_crm_merge_opportunity__display_name
 #: model:ir.model.fields,field_description:crm.field_crm_recurring_plan__display_name
 #: model:ir.model.fields,field_description:crm.field_crm_stage__display_name
+#: model:ir.model.fields,field_description:crm.field_crm_team__display_name
+#: model:ir.model.fields,field_description:crm.field_crm_team_member__display_name
+#: model:ir.model.fields,field_description:crm.field_digest_digest__display_name
+#: model:ir.model.fields,field_description:crm.field_ir_config_parameter__display_name
+#: model:ir.model.fields,field_description:crm.field_mail_activity__display_name
+#: model:ir.model.fields,field_description:crm.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:crm.field_res_partner__display_name
+#: model:ir.model.fields,field_description:crm.field_res_users__display_name
+#: model:ir.model.fields,field_description:crm.field_utm_campaign__display_name
 msgid "Display Name"
 msgstr "Schermnaam"
 
@@ -1457,16 +1609,32 @@ msgstr ""
 "samenvattingsmail"
 
 #. module: crm
-#: model:ir.model.fields.selection,name:crm.selection__crm_lead2opportunity_partner__action__nothing
-#: model:ir.model.fields.selection,name:crm.selection__crm_lead2opportunity_partner_mass__action__nothing
-msgid "Do not link to a customer"
-msgstr "Koppel niet aan een klant"
+#. odoo-python
+#: code:addons/crm/models/crm_stage.py:0
+msgid "Do you really want to update this stage?"
+msgstr "Wil je deze fase echt bijwerken?"
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_team_member_view_form
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "Does not have a"
+msgstr "Heeft geen"
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "Does not have an"
+msgstr "Heeft geen"
+
+#. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.sales_team_form_view_in_crm
 msgid "Domain"
 msgstr "Domein"
+
+#. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.view_crm_lead2opportunity_partner
+msgid "Don't link to a company"
+msgstr "Koppel niet aan een bedrijf"
 
 #. module: crm
 #. odoo-javascript
@@ -1496,7 +1664,6 @@ msgstr "Bewerken"
 #: model:ir.model.fields,field_description:crm.field_crm_lead__email_from
 #: model_terms:ir.ui.view,arch_db:crm.crm_case_tree_view_oppor
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
-#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
 msgid "Email"
 msgstr "E-mail"
 
@@ -1535,11 +1702,6 @@ msgstr "E-maildomein bijv. 'example.com' in 'odoo@example.com'"
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_merge_summary
 msgid "Email:"
 msgstr "E-mail:"
-
-#. module: crm
-#: model:mail.activity.type,name:crm.mail_activity_type_demo_email_with_template
-msgid "Email: Welcome Demo"
-msgstr "E-mail: Welkomst demo"
 
 #. module: crm
 #: model:ir.model.fields.selection,name:crm.selection__res_config_settings__lead_enrich_auto__auto
@@ -1583,8 +1745,7 @@ msgstr ""
 #. module: crm
 #: model:ir.model.fields,help:crm.field_crm_lead__date_deadline
 msgid "Estimate of the date on which the opportunity will be won."
-msgstr ""
-"Schat de datum in waarop je verwacht dat de verkoopkans wordt gewonnen."
+msgstr "Schat de datum in waarop je verwacht dat de verkoopkans wordt gewonnen."
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_team__lead_all_assigned_month_exceeded
@@ -1624,9 +1785,10 @@ msgid "Expected Revenues"
 msgstr "Verwachte omzet"
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_opportunity_report_view_search
-msgid "Extended Filters"
-msgstr "Uitgebreide filters"
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0
+msgid "Exploration"
+msgstr "Ontdekken"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
@@ -1634,16 +1796,13 @@ msgid "Extra Info"
 msgstr "Extra info"
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
-msgid "Extra Information"
-msgstr "Extra informatie"
-
-#. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_pls_update_view_form
 msgid "Extra fields..."
 msgstr "Extra velden..."
 
 #. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
 #: model:ir.model.fields,field_description:crm.field_crm_lead_scoring_frequency_field__field_id
 msgid "Field"
 msgstr "Veld"
@@ -1673,11 +1832,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:crm.field_crm_stage__fold
 msgid "Folded in Pipeline"
 msgstr "Gevouwen in pijplijn"
-
-#. module: crm
-#: model:mail.activity.type,name:crm.mail_activity_demo_followup_quote
-msgid "Follow-up Quote"
-msgstr "Vervolgofferte"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__message_follower_ids
@@ -1717,7 +1871,7 @@ msgstr "Forceer toewijzing"
 #: model:ir.actions.act_window,name:crm.crm_lead_action_forecast
 #: model:ir.ui.menu,name:crm.crm_menu_forecast
 msgid "Forecast"
-msgstr "Forecast"
+msgstr "Voorspelling"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_pivot_forecast
@@ -1746,13 +1900,12 @@ msgstr "Toekomstige activiteiten"
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_res_config_settings__module_crm_iap_mine
 msgid "Generate new leads based on their country, industries, size, etc."
-msgstr ""
-"Genereer nieuwe leads gebaseerd op hun land, bedrijfstak, grootte, enz."
+msgstr "Genereer nieuwe leads gebaseerd op hun land, bedrijfstak, grootte, enz."
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
 msgid "Generate new leads based on their country, industry, size, etc."
-msgstr "Genereer nieuwe leads gebaseerd op land, branche, grootte, etc."
+msgstr "Genereer nieuwe leads gebaseerd op land, bedrijfstak, grootte, etc."
 
 #. module: crm
 #: model:ir.model,name:crm.model_crm_lead_lost
@@ -1772,17 +1925,15 @@ msgid "Go, go, go! Congrats for your first deal."
 msgstr "Ga, ga ga! Gefeliciteerd met je eerste deal."
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_activity_report_view_search
-#: model_terms:ir.ui.view,arch_db:crm.crm_opportunity_report_view_search
-#: model_terms:ir.ui.view,arch_db:crm.view_crm_case_leads_filter
-#: model_terms:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
-msgid "Group By"
-msgstr "Groeperen op"
-
-#. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__has_message
 msgid "Has Message"
 msgstr "Heeft bericht"
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "Has a"
+msgstr "Heeft een"
 
 #. module: crm
 #: model:ir.model.fields.selection,name:crm.selection__crm_lead__priority__2
@@ -1790,11 +1941,30 @@ msgid "High"
 msgstr "Hoog"
 
 #. module: crm
+#: model:ir.model.fields,help:crm.field_crm_stage__rotting_threshold_days
+msgid ""
+"Highlight opportunities that haven't been updated for this many "
+"days.         Set to 0 to disable. Changing this parameter will not affect "
+"the rotting status/date of resources last updated before this change."
+msgstr ""
+"Markeer verkoopkansen die al zoveel dagen niet zijn bijgewerkt.         Stel "
+"in op 0 om uit te schakelen. Het wijzigen van deze parameter heeft geen "
+"invloed op de verouderingsstatus/-datum van resources die voor het laatst "
+"zijn bijgewerkt vóór deze wijziging."
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "Historic win rate"
+msgstr "Historisch winstpercentage"
+
+#. module: crm
 #: model:ir.model.fields.selection,name:crm.selection__res_config_settings__crm_auto_assignment_interval_type__hours
 msgid "Hours"
 msgstr "Uren"
 
 #. module: crm
+#: model:ir.model.fields,field_description:crm.field_calendar_event__id
 #: model:ir.model.fields,field_description:crm.field_crm_activity_report__id
 #: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner__id
 #: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner_mass__id
@@ -1807,6 +1977,15 @@ msgstr "Uren"
 #: model:ir.model.fields,field_description:crm.field_crm_merge_opportunity__id
 #: model:ir.model.fields,field_description:crm.field_crm_recurring_plan__id
 #: model:ir.model.fields,field_description:crm.field_crm_stage__id
+#: model:ir.model.fields,field_description:crm.field_crm_team__id
+#: model:ir.model.fields,field_description:crm.field_crm_team_member__id
+#: model:ir.model.fields,field_description:crm.field_digest_digest__id
+#: model:ir.model.fields,field_description:crm.field_ir_config_parameter__id
+#: model:ir.model.fields,field_description:crm.field_mail_activity__id
+#: model:ir.model.fields,field_description:crm.field_res_config_settings__id
+#: model:ir.model.fields,field_description:crm.field_res_partner__id
+#: model:ir.model.fields,field_description:crm.field_res_users__id
+#: model:ir.model.fields,field_description:crm.field_utm_campaign__id
 msgid "ID"
 msgstr "ID"
 
@@ -1901,17 +2080,6 @@ msgid "Incorrect"
 msgstr "Foutief"
 
 #. module: crm
-#: model:ir.model.fields,help:crm.field_crm_lead__mobile_blacklisted
-msgid ""
-"Indicates if a blacklisted sanitized phone number is a mobile number. Helps "
-"distinguish which number is blacklisted             when there is both a "
-"mobile and phone field in a model."
-msgstr ""
-"Geeft aan of een op de blacklist geplaatst telefoonnummer een mobiel nummer "
-"is. Helpt bij het onderscheiden welk nummer op de blacklist staat als het "
-"model zowel een mobiel als een telefoon veld bevat."
-
-#. module: crm
 #: model:ir.model.fields,help:crm.field_crm_lead__phone_blacklisted
 msgid ""
 "Indicates if a blacklisted sanitized phone number is a phone number. Helps "
@@ -1921,11 +2089,6 @@ msgstr ""
 "Geeft aan of een op de blacklist geplaatst nummer een telefoonnummer is. "
 "Helpt bij het onderscheiden welk nummer op de blacklist staat als een model "
 "zowel een mobiel als een telefoon veld bevat."
-
-#. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
-msgid "Internal Notes"
-msgstr "Interne notities"
 
 #. module: crm
 #: model:ir.model.fields,help:crm.field_res_config_settings__crm_auto_assignment_interval_type
@@ -1953,6 +2116,11 @@ msgstr "Is een volger"
 #: model:ir.model.fields,field_description:crm.field_crm_lead__is_partner_visible
 msgid "Is Partner Visible"
 msgstr "Is Partner Zichtbaar"
+
+#. module: crm
+#: model:ir.model.fields,field_description:crm.field_crm_activity_report__won_status
+msgid "Is Won"
+msgstr "Is gewonnen"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_stage__is_won
@@ -1998,6 +2166,12 @@ msgstr "Aantal actieve talen"
 #: model:ir.model.fields,field_description:crm.field_crm_lead__lang_id
 msgid "Language"
 msgstr "Taal"
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "Language is"
+msgstr "Taal is"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_merge_summary
@@ -2063,6 +2237,7 @@ msgid "Late Activities"
 msgstr "Te late activiteiten"
 
 #. module: crm
+#: model:ir.model,name:crm.model_crm_lead
 #: model:ir.model.fields.selection,name:crm.selection__crm_activity_report__lead_type__lead
 #: model:ir.model.fields.selection,name:crm.selection__crm_lead__type__lead
 #: model_terms:ir.ui.view,arch_db:crm.crm_case_tree_view_leads
@@ -2071,10 +2246,25 @@ msgid "Lead"
 msgstr "Lead"
 
 #. module: crm
+#: model:ir.actions.act_window,name:crm.mail_activity_plan_action_lead
+msgid "Lead Activity Plans"
+msgstr "Leadactiviteitsplannen"
+
+#. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_team__assignment_enabled
 #: model:ir.model.fields,field_description:crm.field_crm_team_member__assignment_enabled
 msgid "Lead Assign"
 msgstr "Lead toewijzen"
+
+#. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.crm_team_member_view_form
+msgid "Lead Assignment"
+msgstr "Leadtoewijzing"
+
+#. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.crm_team_member_view_form
+msgid "Lead Assignment Filter"
+msgstr "Filter voor leadtoewijzing"
 
 #. module: crm
 #. odoo-python
@@ -2103,14 +2293,14 @@ msgid "Lead Mining"
 msgstr "Leadmining"
 
 #. module: crm
-#: model:ir.actions.act_window,name:crm.mail_activity_plan_action_lead
-msgid "Lead Plans"
-msgstr "Leadplannen"
+#: model_terms:ir.ui.view,arch_db:crm.crm_team_member_view_form
+msgid "Lead Priority Filter"
+msgstr "Filter voor leadprioriteit"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_team__lead_properties_definition
 msgid "Lead Properties"
-msgstr "Leadeigenschappen"
+msgstr "Eigenschappen lead"
 
 #. module: crm
 #: model:ir.model,name:crm.model_crm_lead_scoring_frequency
@@ -2144,18 +2334,6 @@ msgid "Lead Tags"
 msgstr "Lead labels"
 
 #. module: crm
-#: model:ir.model.fields,help:crm.field_crm_team_member__lead_day_count
-msgid "Lead assigned to this member this last day (lost one excluded)"
-msgstr ""
-"Leads die de voorbije dag aan dit lid zijn toegewezen (verloren leads "
-"uitgezonderd)"
-
-#. module: crm
-#: model:ir.model.fields,help:crm.field_crm_team_member__lead_month_count
-msgid "Lead assigned to this member those last 30 days"
-msgstr "Lead toegewezen aan dit lid in de afgelopen 30 dagen"
-
-#. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
 msgid "Lead or Opportunity"
@@ -2170,11 +2348,6 @@ msgid ""
 msgstr ""
 "Automatische toewijzing van leads/kansen is beperkt tot managers of "
 "beheerders"
-
-#. module: crm
-#: model:ir.model,name:crm.model_crm_lead
-msgid "Lead/Opportunity"
-msgstr "Lead/Verkoopkans"
 
 #. module: crm
 #: model:mail.message.subtype,description:crm.mt_lead_create
@@ -2272,8 +2445,8 @@ msgid ""
 "Leads that you selected that have duplicates. If the list is empty, it means "
 "that no duplicates were found"
 msgstr ""
-"Leads welke je hebt geselecteerd hebben dubbels. Indien de lijst leeg is "
-"betekend dit dat er geen dubbels zijn gevonden."
+"Leads die je hebt geselecteerd die duplicaten hebben. Indien de lijst leeg "
+"is, zijn er geen duplicaten gevonden."
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_lead2opportunity_partner_mass
@@ -2289,6 +2462,12 @@ msgstr "Leads/verkoopkansen"
 #: model:ir.model.fields,field_description:crm.field_utm_campaign__crm_lead_count
 msgid "Leads/Opportunities count"
 msgstr "Leads / verkoopkansen aantal"
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "Learn More"
+msgstr "Meer informatie"
 
 #. module: crm
 #. odoo-javascript
@@ -2335,6 +2514,12 @@ msgid "Locale Code"
 msgstr "Code landinstellingen"
 
 #. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "Located in"
+msgstr "Gevestigd in"
+
+#. module: crm
 #: model_terms:ir.actions.act_window,help:crm.crm_lead_action_my_activities
 msgid "Looks like nothing is planned."
 msgstr "Het lijkt erop dat er niets gepland is."
@@ -2350,8 +2535,11 @@ msgstr ""
 "om alles wat je doet bij te houden!</i>"
 
 #. module: crm
+#: model:ir.model.fields.selection,name:crm.selection__crm_activity_report__won_status__lost
+#: model:ir.model.fields.selection,name:crm.selection__crm_lead__won_status__lost
+#: model_terms:ir.ui.view,arch_db:crm.crm_activity_report_view_search
+#: model_terms:ir.ui.view,arch_db:crm.crm_case_kanban_view_leads
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
-#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_kanban_forecast
 #: model_terms:ir.ui.view,arch_db:crm.crm_opportunity_report_view_search
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_leads_filter
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
@@ -2400,9 +2588,10 @@ msgid "Low"
 msgstr "Laag"
 
 #. module: crm
-#: model:mail.activity.type,name:crm.mail_activity_demo_make_quote
-msgid "Make Quote"
-msgstr "Maak offerte"
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_kanban/crm_column_progress.xml:0
+msgid "MRR"
+msgstr "MRR"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
@@ -2418,6 +2607,15 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
 msgid "Manage Recurring Plans"
 msgstr "Beheer terugkerende plannen"
+
+#. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
+msgid ""
+"Manage members or partners. Members get grades and pricelists, partners "
+"allow lead assignment and commission plans."
+msgstr ""
+"Beheer leden of partners. Leden krijgen niveaus en prijslijsten, partners "
+"maken leadtoewijzing en commissieplannen mogelijk."
 
 #. module: crm
 #: model:ir.model.fields,help:crm.field_res_config_settings__crm_auto_assignment_action
@@ -2436,17 +2634,11 @@ msgid "Manually"
 msgstr "Handmatig"
 
 #. module: crm
-#. odoo-python
-#: code:addons/crm/models/crm_lead.py:0
 #: model:ir.actions.act_window,name:crm.crm_lead_lost_action
+#: model_terms:ir.ui.view,arch_db:crm.crm_case_tree_view_leads
+#: model_terms:ir.ui.view,arch_db:crm.crm_case_tree_view_oppor
 msgid "Mark Lost"
 msgstr "Markeren als verloren"
-
-#. module: crm
-#. odoo-python
-#: code:addons/crm/models/crm_lead.py:0
-msgid "Mark Won"
-msgstr "Markeren als gewonnen"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_lost_view_form
@@ -2520,6 +2712,21 @@ msgstr ""
 "opgemaakt"
 
 #. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_team_member.py:0
+msgid ""
+"Member preferred assignment domain for user %(user)s and team %(team)s is "
+"incorrectly formatted"
+msgstr ""
+"Voorkeursdomein voor toewijzing van gebruiker %(user)s en team %(team)s is "
+"onjuist geformatteerd"
+
+#. module: crm
+#: model:ir.model.fields,field_description:crm.field_res_config_settings__module_partnership
+msgid "Membership / Partnership"
+msgstr "Lidmaatschap / Partnerschap"
+
+#. module: crm
 #: model:ir.actions.act_window,name:crm.action_merge_opportunities
 #: model_terms:ir.ui.view,arch_db:crm.merge_opportunity_form
 msgid "Merge"
@@ -2562,17 +2769,6 @@ msgid "Minutes"
 msgstr "Minuten"
 
 #. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_lead__mobile
-#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
-msgid "Mobile"
-msgstr "Mobiel"
-
-#. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_lead_merge_summary
-msgid "Mobile:"
-msgstr "Mobiel:"
-
-#. module: crm
 #: model:crm.recurring.plan,name:crm.crm_recurring_plan_monthly
 msgid "Monthly"
 msgstr "Maandelijks"
@@ -2592,6 +2788,7 @@ msgstr "Meerdere teams"
 #. module: crm
 #: model:ir.actions.act_window,name:crm.crm_lead_action_my_activities
 #: model:ir.ui.menu,name:crm.crm_lead_menu_my_activities
+#: model_terms:ir.ui.view,arch_db:crm.view_crm_case_leads_filter
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_my_activities_filter
 msgid "My Activities"
 msgstr "Mijn activiteiten"
@@ -2619,7 +2816,8 @@ msgid "My Pipeline"
 msgstr "Mijn pijplijn"
 
 #. module: crm
-#: model:crm.stage,name:crm.stage_lead1
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0 model:crm.stage,name:crm.stage_lead1
 msgid "New"
 msgstr "Nieuw"
 
@@ -2634,12 +2832,6 @@ msgid "New Leads"
 msgstr "Nieuwe leads"
 
 #. module: crm
-#. odoo-python
-#: code:addons/crm/models/crm_team.py:0
-msgid "New Opportunities"
-msgstr "Nieuwe verkoopkansen"
-
-#. module: crm
 #: model:ir.actions.act_window,name:crm.action_opportunity_form
 msgid "New Opportunity"
 msgstr "Nieuwe verkoopkans"
@@ -2647,7 +2839,7 @@ msgstr "Nieuwe verkoopkans"
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr "Volgende activiteit Agenda-afspraak"
+msgstr "Volgende activiteitenafspraak"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__activity_date_deadline
@@ -2724,10 +2916,23 @@ msgstr ""
 "van je verkoopteams en verkopers, evenals niet-toegewezen leads."
 
 #. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
+msgid "No closing estimate"
+msgstr "Geen afsluitingsprognose beschikbaar"
+
+#. module: crm
 #: model_terms:ir.actions.act_window,help:crm.crm_opportunity_report_action
 #: model_terms:ir.actions.act_window,help:crm.crm_opportunity_report_action_lead
 msgid "No data found!"
 msgstr "Geen data gevonden!"
+
+#. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0
+msgid "No detours, no delays - from %(stage_name)s straight to the win! 🚀"
+msgstr ""
+"Geen omwegen of vertragingen - van %(stage_name)s rechtstreeks naar de "
+"overwinning! 🚀"
 
 #. module: crm
 #. odoo-python
@@ -2778,7 +2983,13 @@ msgid "Not enough stock"
 msgstr "Niet genoeg voorraad"
 
 #. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
+msgid "Not specified"
+msgstr "Niet gespecificeerd"
+
+#. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__description
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
 msgid "Notes"
 msgstr "Notities"
 
@@ -2791,7 +3002,7 @@ msgstr "Opmerkingen:"
 #. odoo-javascript
 #: code:addons/crm/static/src/js/tours/crm.js:0
 msgid "Now, <b>add your Opportunity</b> to your Pipeline."
-msgstr "<b>Voeg je verkoopkans toe</b>aan je pijplijn."
+msgstr "<b>Voeg je verkoopkans toe</b> aan je pijplijn."
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__message_needaction_counter
@@ -2816,6 +3027,20 @@ msgstr ""
 #: model:ir.model.fields,help:crm.field_crm_team__lead_all_assigned_month_count
 msgid "Number of leads and opportunities assigned this last month."
 msgstr "Aantal leads en verkoopkansen dat de afgelopen maand zijn toegewezen."
+
+#. module: crm
+#: model:ir.model.fields,help:crm.field_crm_team_member__lead_day_count
+msgid ""
+"Number of leads assigned to this member in the last 24 hours (lost leads "
+"excluded)"
+msgstr ""
+"Aantal leads dat in de afgelopen 24 uur aan dit lid is toegewezen (verloren "
+"leads niet meegerekend)"
+
+#. module: crm
+#: model:ir.model.fields,help:crm.field_crm_team_member__lead_month_count
+msgid "Number of leads assigned to this member in the last 30 days"
+msgstr "Aantal leads dat de afgelopen 30 dagen aan dit lid is toegewezen"
 
 #. module: crm
 #: model:ir.model.fields,help:crm.field_crm_lead__message_needaction_counter
@@ -2857,15 +3082,9 @@ msgid "Ongoing"
 msgstr "Lopend"
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_team_view_kanban_dashboard
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
 msgid "Open Opportunities"
 msgstr "Open verkoopkansen"
-
-#. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_team_view_kanban_dashboard
-msgid "Open Opportunity"
-msgstr "Open verkoopkans"
 
 #. module: crm
 #: model:ir.model,name:crm.model_crm_lost_reason
@@ -2873,6 +3092,8 @@ msgid "Opp. Lost Reason"
 msgstr "Verkoopkans verliesreden"
 
 #. module: crm
+#. odoo-python
+#: code:addons/crm/models/res_partner.py:0
 #: model:ir.actions.act_window,name:crm.crm_case_form_view_salesteams_opportunity
 #: model:ir.actions.act_window,name:crm.crm_lead_opportunities
 #: model:ir.model.fields,field_description:crm.field_crm_lead2opportunity_partner__duplicated_lead_ids
@@ -2917,11 +3138,6 @@ msgid "Opportunities Forecast"
 msgstr "Voorspelling Verkoopkansen"
 
 #. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_team__opportunities_amount
-msgid "Opportunities Revenues"
-msgstr "Verkoopkansen omzet"
-
-#. module: crm
 #: model:ir.model.fields,field_description:crm.field_digest_digest__kpi_crm_opportunities_won
 msgid "Opportunities Won"
 msgstr "Gewonnen verkoopkansen"
@@ -2949,7 +3165,7 @@ msgstr "Verkoopkans"
 #: model:ir.model.fields,field_description:crm.field_res_partner__opportunity_count
 #: model:ir.model.fields,field_description:crm.field_res_users__opportunity_count
 msgid "Opportunity Count"
-msgstr "Kansentelling"
+msgstr "Aantal verkoopkansen"
 
 #. module: crm
 #: model:mail.message.subtype,name:crm.mt_lead_create
@@ -2996,6 +3212,11 @@ msgid "Opportunity won"
 msgstr "Verkoopkans gewonnen"
 
 #. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
+msgid "Opportunity's Name"
+msgstr "Naam verkoopkans"
+
+#. module: crm
 #: model:ir.model.fields,help:crm.field_crm_team__alias_force_thread_id
 msgid ""
 "Optional ID of a thread (record) to which all incoming messages will be "
@@ -3018,20 +3239,14 @@ msgstr "Over 5 jaar "
 
 #. module: crm
 #: model:ir.actions.act_window,name:crm.crm_lead_action_team_overdue_opportunity
-#: model_terms:ir.ui.view,arch_db:crm.crm_team_view_kanban_dashboard
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
 msgid "Overdue Opportunities"
 msgstr "Verkoopkansen te laat"
 
 #. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_team__opportunities_overdue_amount
-msgid "Overdue Opportunities Revenues"
-msgstr "Omzet te late verkoopkansen"
-
-#. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_team_view_kanban_dashboard
-msgid "Overdue Opportunity"
-msgstr "Te late verkoopkans"
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
+msgid "Ownership"
+msgstr "Eigendom"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_team__alias_parent_model_id
@@ -3051,8 +3266,7 @@ msgid ""
 "(parent_model) and task (model))"
 msgstr ""
 "Bovenliggend model dat de alias bevat. Het model dat de aliasverwijzing "
-"bevat,\n"
-"is niet noodzakelijk het model dat door alias_model_id wordt gegeven "
+"bevat is niet noodzakelijk het model dat door alias_model_id wordt gegeven "
 "(bijvoorbeeld: project (parent_model) en taak (model))"
 
 #. module: crm
@@ -3071,8 +3285,24 @@ msgid "Partner is blacklisted"
 msgstr "Partner staat op blacklist"
 
 #. module: crm
+#: model:ir.model.fields,field_description:crm.field_crm_team_member__assignment_optout
+msgid "Pause assignment"
+msgstr "Toewijzing pauzeren"
+
+#. module: crm
+#: model:ir.model.fields.selection,name:crm.selection__crm_activity_report__won_status__pending
+#: model:ir.model.fields.selection,name:crm.selection__crm_lead__won_status__pending
+msgid "Pending"
+msgstr "In behandeling"
+
+#. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0
+msgid "Phew, that took some effort — but you nailed it. Good job!"
+msgstr "Oef, dat kostte wat moeite - maar het is je gelukt. Goed gedaan!"
+
+#. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__phone
-#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
 msgid "Phone"
 msgstr "Telefoon"
 
@@ -3082,14 +3312,14 @@ msgid "Phone Blacklisted"
 msgstr "Telefoon blacklist"
 
 #. module: crm
+#: model:ir.model.fields,field_description:crm.field_crm_lead__phone_mobile_search
+msgid "Phone Number"
+msgstr "Telefoonnummer"
+
+#. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__phone_state
 msgid "Phone Quality"
 msgstr "Telefoonkwaliteit"
-
-#. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_lead__phone_mobile_search
-msgid "Phone/Mobile"
-msgstr "Telefoon/mobiel"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_merge_summary
@@ -3175,6 +3405,11 @@ msgstr "Veldlabels voor voorspellende leadscores"
 #: model:ir.actions.server,name:crm.website_crm_score_cron_ir_actions_server
 msgid "Predictive Lead Scoring: Recompute Automated Probabilities"
 msgstr "Voorspellende leadscoring: herbereken geautomatiseerde kansen"
+
+#. module: crm
+#: model:ir.model.fields,field_description:crm.field_crm_team_member__assignment_domain_preferred
+msgid "Preference assignment Domain"
+msgstr "Voorkeursdomein voor toewijzing"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__priority
@@ -3324,11 +3559,6 @@ msgid "Requirements"
 msgstr "Vereisten"
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_case_tree_view_oppor
-msgid "Reschedule"
-msgstr "Opnieuw inplannen"
-
-#. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__activity_user_id
 msgid "Responsible User"
 msgstr "Verantwoordelijke gebruiker"
@@ -3342,6 +3572,12 @@ msgstr "Terugzetten"
 #: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
 msgid "Ringover VOIP Phone"
 msgstr "Ringover VOIP Telefoon"
+
+#. module: crm
+#: model:ir.model.fields,field_description:crm.field_crm_lead__is_rotting
+#: model_terms:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
+msgid "Rotting"
+msgstr "Verouderd"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_res_config_settings__crm_use_auto_assignment
@@ -3371,7 +3607,6 @@ msgstr "Verkoop"
 #: model:ir.model.fields,field_description:crm.field_crm_lead__team_id
 #: model:ir.model.fields,field_description:crm.field_crm_lead_scoring_frequency__team_id
 #: model:ir.model.fields,field_description:crm.field_crm_merge_opportunity__team_id
-#: model:ir.model.fields,field_description:crm.field_crm_stage__team_id
 #: model_terms:ir.ui.view,arch_db:crm.crm_activity_report_view_search
 #: model_terms:ir.ui.view,arch_db:crm.crm_opportunity_report_view_search
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_leads_filter
@@ -3390,6 +3625,7 @@ msgid "Sales Team:"
 msgstr "Verkoopteam:"
 
 #. module: crm
+#: model:ir.model.fields,field_description:crm.field_crm_stage__team_ids
 #: model:ir.ui.menu,name:crm.crm_team_config
 msgid "Sales Teams"
 msgstr "Verkoopteams"
@@ -3439,6 +3675,17 @@ msgid "Search Opportunities"
 msgstr "Zoek verkoopkansen"
 
 #. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "See AI-computed chances details"
+msgstr "Bekijk details van door AI berekende kansen"
+
+#. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_lost_view_form
+msgid "Select a Lost Reason..."
+msgstr "Selecteer een reden voor verlies..."
+
+#. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
 msgid "Select at least two Leads/Opportunities from the list to merge them."
@@ -3477,6 +3724,11 @@ msgstr "Maak een nieuwe fase in je pijplijn met verkoopkansen"
 #: model:ir.ui.menu,name:crm.crm_config_settings_menu
 msgid "Settings"
 msgstr "Instellingen"
+
+#. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.crm_stage_form
+msgid "Shared with all teams"
+msgstr "Gedeeld met alle teams"
 
 #. module: crm
 #: model:res.groups,name:crm.group_use_lead
@@ -3518,14 +3770,8 @@ msgstr "Toon alleen verkoopkansen"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_team__assignment_optout
-#: model:ir.model.fields,field_description:crm.field_crm_team_member__assignment_optout
 msgid "Skip auto assignment"
 msgstr "Automatische toewijzing overslaan"
-
-#. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_case_tree_view_oppor
-msgid "Snooze 7d"
-msgstr "Snooze 7 dagen"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_lead__source_id
@@ -3536,18 +3782,15 @@ msgid "Source"
 msgstr "Bron"
 
 #. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "Source is"
+msgstr "Bron is"
+
+#. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_merge_summary
 msgid "Source:"
 msgstr "Bron:"
-
-#. module: crm
-#: model:ir.model.fields,help:crm.field_crm_stage__team_id
-msgid ""
-"Specific team that uses this stage. Other teams will not be able to see or "
-"use this stage."
-msgstr ""
-"Specifiek team dat deze fase gebruikt. Andere teams zullen deze fase niet "
-"kunnen zien en/of gebruiken."
 
 #. module: crm
 #. odoo-python
@@ -3658,6 +3901,11 @@ msgid "Subtype"
 msgstr "Subtype"
 
 #. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
+msgid "Switch to AI-computed probabilities"
+msgstr "Overschakelen naar door AI berekende kansen"
+
+#. module: crm
 #: model:ir.model,name:crm.model_ir_config_parameter
 msgid "System Parameter"
 msgstr "Systeemparameter"
@@ -3667,6 +3915,12 @@ msgstr "Systeemparameter"
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
 msgid "Tag"
 msgstr "Label"
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "Tagged as"
+msgstr "Gelabeld als"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_activity_report__tag_ids
@@ -3711,15 +3965,21 @@ msgstr ""
 "automatisch nieuwe leads aanmaken, toegewezen aan het kanaal."
 
 #. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0
+msgid "The lead %s cannot be won and lost at the same time."
+msgstr "De lead %s kan niet tegelijk gewonnen en verloren zijn."
+
+#. module: crm
 #: model:ir.model.fields,help:crm.field_crm_team__alias_model_id
 msgid ""
 "The model (Odoo Document Kind) to which this alias corresponds. Any incoming "
 "email that does not reply to an existing record will cause the creation of a "
 "new record of this model (e.g. a Project Task)"
 msgstr ""
-"Het model waar deze alias bijhoort. Iedere inkomende e-mail dat niet bij een "
-"bestaande regel hoort zal leiden tot het aanmaken van een nieuwe regel in "
-"dit model (Bijv. een projecttaak)."
+"Het model (soort Odoo-Document) waar deze alias bijhoort. Iedere inkomende e-"
+"mail die niet bij een bestaande regel hoort zal leiden tot het aanmaken van "
+"een nieuwe regel in dit model (bv. een projecttaak)"
 
 #. module: crm
 #: model:ir.model.fields,help:crm.field_crm_team__alias_name
@@ -3840,6 +4100,16 @@ msgstr ""
 "of e-mail lijst"
 
 #. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0
+msgid ""
+"This new lead created by %(creation_source)s was automatically assigned to "
+"team leader %(user_name)s"
+msgstr ""
+"Deze nieuwe lead gemaakt door %(creation_source)s werd automatisch "
+"toegewezen aan teamleider %(user_name)s"
+
+#. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
 msgid ""
 "This phone number is blacklisted for SMS Marketing. Click to unblacklist."
@@ -3910,12 +4180,6 @@ msgid "Tip: Turn a selection of opportunities into a map"
 msgstr "Tip: zet een selectie van kansen om in een kaart"
 
 #. module: crm
-#: model:ir.model.fields,field_description:crm.field_crm_lead__title
-#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
-msgid "Title"
-msgstr "Titel"
-
-#. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
 msgid ""
@@ -3938,9 +4202,16 @@ msgid "Too expensive"
 msgstr "Te duur"
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
-msgid "Tracking"
-msgstr "Traceren"
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "Top Negatives"
+msgstr "Top nadelen"
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "Top Positives"
+msgstr "Top voordelen"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_activity_report_view_search
@@ -3999,11 +4270,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:crm.view_crm_case_opportunities_filter
 msgid "Unassigned"
 msgstr "Niet toegewezen"
-
-#. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_team_view_kanban_dashboard
-msgid "Unassigned Lead"
-msgstr "Niet toegewezen lead"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_team_view_kanban_dashboard
@@ -4155,6 +4421,11 @@ msgid "Very High"
 msgstr "Zeer hoog"
 
 #. module: crm
+#: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
+msgid "Visible to all"
+msgstr "Voor iedereen zichtbaar"
+
+#. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
 msgid "Visits to Leads"
 msgstr "Bezoekers naar leads"
@@ -4206,6 +4477,8 @@ msgstr "Wat ging er mis?"
 
 #. module: crm
 #: model:crm.stage,name:crm.stage_lead4
+#: model:ir.model.fields.selection,name:crm.selection__crm_activity_report__won_status__won
+#: model:ir.model.fields.selection,name:crm.selection__crm_lead__won_status__won
 #: model_terms:ir.ui.view,arch_db:crm.crm_activity_report_view_search
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_kanban_forecast
@@ -4220,15 +4493,27 @@ msgid "Won Count"
 msgstr "Gewonnen aantal"
 
 #. module: crm
-#: model:ir.model.fields,field_description:crm.field_res_users__target_sales_won
-msgid "Won in Opportunities Target"
-msgstr "Gewonnen in functie van doelstelling"
+#: model:ir.model.fields,field_description:crm.field_crm_lead__won_status
+msgid "Won/Lost"
+msgstr "Gewonnen/Verloren"
 
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
-msgid "Yeah! Deal of the last 7 days for the team."
-msgstr "Yeah! Deal van de laatste 7 dagen van het team."
+msgid "Wow, that was fast. That deal didn’t stand a chance!"
+msgstr "Wauw, dat ging snel! Die deal was een schot in de roos!"
+
+#. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0
+msgid "Yay, your first win from %(utm_source_name)s!"
+msgstr "Joepie, je eerste overwinning van %(utm_source_name)s!"
+
+#. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0
+msgid "Yeah! Best deal out of the last 7 days for the team."
+msgstr "Super! De beste deal van de afgelopen 7 dagen voor het team."
 
 #. module: crm
 #: model:crm.recurring.plan,name:crm.crm_recurring_plan_yearly
@@ -4267,6 +4552,14 @@ msgid "You just beat your personal record for the past 7 days."
 msgstr "Je hebt zonet je persoonlijk record verbroken voor de laatste 7 dagen."
 
 #. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0
+msgid "You just expanded the map! First win in %(country)s."
+msgstr ""
+"Je hebt zojuist grenzen verlegd op de kaart! Eerste overwinning in %(country)"
+"s."
+
+#. module: crm
 #: model_terms:ir.actions.act_window,help:crm.crm_case_form_view_salesteams_opportunity
 msgid ""
 "You will be able to plan meetings and phone calls from\n"
@@ -4277,6 +4570,18 @@ msgstr ""
 "Je kunt afspraken en telefoongesprekken plannen vanuit verkoopkansen, ze "
 "omzetten in offertes, bijbehorende documenten bijvoegen, discussies opvolgen "
 "en nog veel meer."
+
+#. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0
+msgid "You're on a winning streak. 3 deals in 3 days, congrats!"
+msgstr "Je zit echt in een goede flow! 3 deals in 3 dagen, gefeliciteerd!"
+
+#. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0
+msgid "You're on fire! Fifth deal won today 🔥"
+msgstr "Je bent onstuitbaar! Al 5 deals gewonnen vandaag 🔥"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
@@ -4296,12 +4601,7 @@ msgstr "alias"
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
 msgid "at"
-msgstr "voor"
-
-#. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
-msgid "e.g. \"0123456789\""
-msgstr "bijv. \"0123456789\""
+msgstr "om"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
@@ -4310,18 +4610,12 @@ msgid "e.g. \"Monthly\""
 msgstr "bijv. \"Maandelijks\""
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
-msgid "e.g. \"email@address.com\""
-msgstr "bijv. \"email@address.com\""
-
-#. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_stage_form
 msgid "e.g. Negotiation"
 msgstr "bijv. Onderhandeling"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_lead_view_form
-#: model_terms:ir.ui.view,arch_db:crm.quick_create_opportunity_form
 msgid "e.g. Product Pricing"
 msgstr "Bijv. Productprijs"
 
@@ -4341,6 +4635,12 @@ msgid "e.g. mycompany.com"
 msgstr "bijv. mycompany.com"
 
 #. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "email address"
+msgstr "e-mailadres"
+
+#. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.res_config_settings_view_form
 msgid "for the leads created as of the"
 msgstr "voor de leads die zijn gemaakt vanaf de"
@@ -4351,14 +4651,63 @@ msgid "generate opportunities in your pipeline?<br>"
 msgstr "verkoopkanse in je pijplijn genereren?<br>"
 
 #. module: crm
-#: model_terms:ir.ui.view,arch_db:crm.crm_case_kanban_view_leads
-msgid "lost"
-msgstr "verloren"
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "has value"
+msgstr "heeft waarde"
+
+#. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0
+msgid "incoming email"
+msgstr "inkomende e-mail"
+
+#. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_lost_reason.py:0
+msgid "lost_reason_id"
+msgstr "lost_reason_id"
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/forecast_kanban/forecast_kanban_column_quick_create.js:0
+msgid "next %s"
+msgstr "volgende %s"
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "phone number"
+msgstr "telefoonnummer"
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "sample data"
+msgstr "voorbeeldgegevens"
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "stage"
+msgstr "fase"
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "team"
+msgstr "team"
 
 #. module: crm
 #: model:ir.model.fields,field_description:crm.field_crm_stage__team_count
 msgid "team_count"
 msgstr "team_count"
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "this lead"
+msgstr "deze lead"
 
 #. module: crm
 #: model_terms:ir.ui.view,arch_db:crm.crm_action_helper
@@ -4375,18 +4724,36 @@ msgstr ""
 #. module: crm
 #. odoo-python
 #: code:addons/crm/models/crm_lead.py:0
+msgid "type"
+msgstr "type"
+
+#. module: crm
+#. odoo-python
+#: code:addons/crm/models/crm_lead.py:0
 msgid "unknown"
 msgstr "onbekend"
 
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "valid email address"
+msgstr "geldig e-mailadres"
+
+#. module: crm
+#. odoo-javascript
+#: code:addons/crm/static/src/views/crm_form/crm_pls_tooltip_button.xml:0
+msgid "valid phone number"
+msgstr "geldig telefoonnummer"
+
 #~ msgid ""
-#~ "<span class=\"oe_grey p-2\" groups=\"crm.group_use_recurring_revenues\"> "
-#~ "+ </span>\n"
-#~ "                                        <span class=\"oe_grey p-2\" "
+#~ "<span class=\"opacity-50 p-2\" "
+#~ "groups=\"crm.group_use_recurring_revenues\"> + </span>\n"
+#~ "                                        <span class=\"opacity-50 p-2\" "
 #~ "groups=\"!crm.group_use_recurring_revenues\"> at </span>"
 #~ msgstr ""
-#~ "<span class=\"oe_grey p-2\" groups=\"crm.group_use_recurring_revenues\"> "
-#~ "+ </span>\n"
-#~ "                                        <span class=\"oe_grey p-2\" "
+#~ "<span class=\"opacity-50 p-2\" "
+#~ "groups=\"crm.group_use_recurring_revenues\"> + </span>\n"
+#~ "                                        <span class=\"opacity-50 p-2\" "
 #~ "groups=\"!crm.group_use_recurring_revenues\"> bij </span>"
 
 #~ msgid ""
@@ -4494,7 +4861,8 @@ msgstr "onbekend"
 #~ "<!-- POWERED BY -->\n"
 #~ "<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
 #~ "    Powered by <a target=\"_blank\" href=\"https://www.odoo.com?"
-#~ "utm_source=db&amp;utm_medium=email\" style=\"color: #875A7B;\">Odoo</a>\n"
+#~ "utm_source=db&amp;utm_medium=email\" t-attf-style=\"color: "
+#~ "{{object.company_id.email_secondary_color or '#875A7B'}};;\">Odoo</a>\n"
 #~ "</td></tr>\n"
 #~ "</table>\n"
 #~ "        "
@@ -4540,19 +4908,19 @@ msgstr "onbekend"
 #~ "                <tr>\n"
 #~ "                    <td valign=\"top\" style=\"font-size: 13px;\">\n"
 #~ "                        <div>\n"
-#~ "                            Hi <t t-out=\"object.partner_id and "
+#~ "                            Hallo <t t-out=\"object.partner_id and "
 #~ "object.partner_id.name or ''\">Deco Addict</t>,<br/><br/>\n"
 #~ "                            Welkom bij <t t-out=\"object.company_id.name "
 #~ "or ''\">My Company (San Francisco)</t>.\n"
-#~ "                           Het is geweldig je te ontmoeten! Nu je aan "
-#~ "boord bent, zul je ontdekken wat <t t-out=\"object.company_id.name or "
-#~ "''\">My Company (San Francisco)</t> heft te bieden. Mijn naam is <t t-"
-#~ "out=\"object.user_id.name or ''\">Marc Demo</t> en ik zal je helpen om "
-#~ "het meeste uit Odoo te halen. Kunnen we binnenkort een snelle demo "
-#~ "plannen?<br/>\n"
-#~ "                            Voel je vrij om op elk moment contact op te "
-#~ "nemen!<br/><br/>\n"
-#~ "                            Best,<br/>\n"
+#~ "                            Leuk om kennis te maken! Nu je aan boord "
+#~ "bent, ontdek je wat <t t-out=\"object.company_id.name or ''\">My Company "
+#~ "(San Francisco)</t> allemaal te bieden heeft. Mijn naam is <t t-"
+#~ "out=\"object.user_id.name or ''\">Marc Demo</t> en ik help je graag om "
+#~ "het meeste uit Odoo te halen. Zullen we binnenkort een korte demo "
+#~ "inplannen?<br/>\n"
+#~ "                            Voel je vrij om op elk moment contact met me "
+#~ "op te nemen!<br/><br/>\n"
+#~ "                            Met vriendelijke groet,<br/>\n"
 #~ "                            <t t-if=\"object.user_id\">\n"
 #~ "                                <b><t t-out=\"object.user_id.name or "
 #~ "''\">Marc Demo</t></b>\n"
@@ -4604,7 +4972,8 @@ msgstr "onbekend"
 #~ "<!-- POWERED BY -->\n"
 #~ "<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
 #~ "    Powered by <a target=\"_blank\" href=\"https://www.odoo.com?"
-#~ "utm_source=db&amp;utm_medium=email\" style=\"color: #875A7B;\">Odoo</a>\n"
+#~ "utm_source=db&amp;utm_medium=email\" t-attf-style=\"color: "
+#~ "{{object.company_id.email_secondary_color or '#875A7B'}};;\">Odoo</a>\n"
 #~ "</td></tr>\n"
 #~ "</table>\n"
 #~ "        "
@@ -4620,3 +4989,299 @@ msgstr "onbekend"
 #~ "specifiek zijn afgestemd op je behoeften: bedrijfsgrootte, branche, enz. "
 #~ "Om je te helpen de functie te testen, bieden wij je 200 gratis credits "
 #~ "aan."
+
+#~ msgid "# Meetings"
+#~ msgstr "# Afspraken"
+
+#~ msgid "# Opportunities"
+#~ msgstr "# Verkoopkansen"
+
+#~ msgid "# Overdue Opportunities"
+#~ msgstr "# Verkoopkansen te laat"
+
+#~ msgid "%s and %s"
+#~ msgstr "%s en %s"
+
+#~ msgid ""
+#~ "<i class=\"fa fa-fw fa-star\" aria-label=\"Opportunities\" role=\"img\" "
+#~ "title=\"Opportunities\"/>"
+#~ msgstr ""
+#~ "<i class=\"fa fa-fw fa-star\" aria-label=\"Mogelijkheden\" role=\"img\" "
+#~ "title=\"Mogelijkheden\"/>"
+
+#~ msgid ""
+#~ "<i class=\"fa fa-gear\" role=\"img\" title=\"Switch to automatic "
+#~ "probability\" aria-label=\"Switch to automatic probability\"/>"
+#~ msgstr ""
+#~ "<i class=\"fa fa-gear\" role=\"img\" title=\"Overschakelen naar "
+#~ "automatische waarschijnlijkheid\" aria-label=\"Overschakelen naar "
+#~ "automatische waarschijnlijkheid\"/>"
+
+#~ msgid ""
+#~ "<span class=\"fa fa-exclamation-triangle text-warning oe_edit_only\" "
+#~ "title=\"By saving this change, the customer email will also be updated.\" "
+#~ "attrs=\"{'invisible': [('partner_email_update', '=', False)]}\"/>"
+#~ msgstr ""
+#~ "<span class=\"fa fa-exclamation-triangle text-warning oe_edit_only\" "
+#~ "title=\"Door deze wijziging op te slaan, wordt het e-mailadres van de "
+#~ "klant ook bijgewerkt.\" attrs=\"{'onzichtbaar': [('partner_email_update', "
+#~ "'=', False)]}\"/>"
+
+#~ msgid ""
+#~ "<span class=\"fa fa-exclamation-triangle text-warning oe_edit_only\" "
+#~ "title=\"By saving this change, the customer phone number will also be "
+#~ "updated.\" attrs=\"{'invisible': [('partner_phone_update', '=', False)]}"
+#~ "\"/>"
+#~ msgstr ""
+#~ "<span class=\"fa fa-exclamation-triangle text-warning oe_edit_only\" "
+#~ "title=\"Door deze wijziging op te slaan, wordt het telefoonnummer van de "
+#~ "klant ook bijgewerkt.\" attrs=\"{'onzichtbaar': [('partner_phone_update', "
+#~ "'=', False)]}\"/>"
+
+#~ msgid ""
+#~ "<span class=\"o_stat_text\" attrs=\"{'invisible': "
+#~ "[('calendar_event_count', '&lt;', 2)]}\"> Meetings</span>\n"
+#~ "                                    <span class=\"o_stat_text\" "
+#~ "attrs=\"{'invisible': [('calendar_event_count', '&gt;', 1)]}\"> Meeting</"
+#~ "span>"
+#~ msgstr ""
+#~ "<span class=\"o_stat_text\" attrs=\"{'invisible': "
+#~ "[('calendar_event_count', '&lt;', 2)]}\"> Afspraken</span>\n"
+#~ "                                    <span class=\"o_stat_text\" "
+#~ "attrs=\"{'invisible': [('calendar_event_count', '&gt;', 1)]}\"> Afspraak</"
+#~ "span>"
+
+#~ msgid ""
+#~ "<span class=\"o_stat_text\" attrs=\"{'invisible': "
+#~ "[('duplicate_lead_count', '&lt;', 2)]}\">Similar Leads</span>\n"
+#~ "                                    <span class=\"o_stat_text\" "
+#~ "attrs=\"{'invisible': [('duplicate_lead_count', '&gt;', 1)]}\">Similar "
+#~ "Lead</span>"
+#~ msgstr ""
+#~ "<span class=\"o_stat_text\" attrs=\"{'invisible': "
+#~ "[('duplicate_lead_count', '&lt;', 2)]}\">Vergelijkbaar</span>\n"
+#~ "                                    <span class=\"o_stat_text\" "
+#~ "attrs=\"{'invisible': [('duplicate_lead_count', '&gt;', 1)]}"
+#~ "\">Vergelijkbaar</span>"
+
+#~ msgid ""
+#~ "<span class=\"o_stat_text\" attrs=\"{'invisible': [('use_leads', '=', "
+#~ "False)]}\">Leads</span>\n"
+#~ "                        <span class=\"o_stat_text\" attrs=\"{'invisible': "
+#~ "[('use_leads', '=', True)]}\">Opportunities</span>"
+#~ msgstr ""
+#~ "<span class=\"o_stat_text\" attrs=\"{'invisible': [('use_leads', '=', "
+#~ "False)]}\">Leads</span>\n"
+#~ "                        <span class=\"o_stat_text\" attrs=\"{'invisible': "
+#~ "[('use_leads', '=', True)]}\">Verkoopkansen</span>"
+
+#~ msgid ""
+#~ "<span class=\"oe_grey p-2\" groups=\"crm.group_use_recurring_revenues\"> "
+#~ "+ </span>\n"
+#~ "                                        <span class=\"oe_grey p-2\" "
+#~ "groups=\"!crm.group_use_recurring_revenues\"> at </span>"
+#~ msgstr ""
+#~ "<span class=\"oe_grey p-2\" groups=\"crm.group_use_recurring_revenues\"> "
+#~ "+ </span>\n"
+#~ "                                        <span class=\"oe_grey p-2\" "
+#~ "groups=\"!crm.group_use_recurring_revenues\"> met </span>"
+
+#~ msgid "<span class=\"oe_inline\"> (max) </span>"
+#~ msgstr "<span class=\"oe_inline\"> (max) </span>"
+
+#~ msgid "<span class=\"oe_inline\"> / </span>"
+#~ msgstr "<span class=\"oe_inline\"> / </span>"
+
+#~ msgid "Activities Done Target"
+#~ msgstr "Doel afgehandelde activiteiten"
+
+#~ msgid "Add next %s"
+#~ msgstr "Volgende %s toevoegen"
+
+#~ msgid "Alias domain"
+#~ msgstr "Aliasdomein"
+
+#~ msgid "Blacklisted Phone Is Mobile"
+#~ msgstr "Telefoon op blacklist is een mobiel nummer"
+
+#~ msgid "Call for Demo"
+#~ msgstr "Bel voor demo"
+
+#~ msgid "Configure a custom domain"
+#~ msgstr "Configureer een gepersonaliseerd domein"
+
+#~ msgid "Customer Email"
+#~ msgstr "Klant e-mail"
+
+#~ msgid "Do not link to a customer"
+#~ msgstr "Koppel niet aan een klant"
+
+#~ msgid "Email: Welcome Demo"
+#~ msgstr "E-mail: Welkomst demo"
+
+#~ msgid "Extended Filters"
+#~ msgstr "Uitgebreide filters"
+
+#~ msgid "Extra Information"
+#~ msgstr "Extra informatie"
+
+#~ msgid "Follow-up Quote"
+#~ msgstr "Vervolgofferte"
+
+#~ msgid "Group By"
+#~ msgstr "Groepeer op"
+
+#~ msgid ""
+#~ "If set, this Sales Team will be used for sales and assignments related to "
+#~ "this partner"
+#~ msgstr ""
+#~ "Indien aangevinkt, wordt dit verkoopteam gebruikt voor verkopen en "
+#~ "opdrachten met betrekking tot deze klant"
+
+#~ msgid "Include archived"
+#~ msgstr "Inclusief gearchiveerde"
+
+#~ msgid ""
+#~ "Indicates if a blacklisted sanitized phone number is a mobile number. "
+#~ "Helps distinguish which number is blacklisted             when there is "
+#~ "both a mobile and phone field in a model."
+#~ msgstr ""
+#~ "Geeft aan of een op de blacklist geplaatst telefoonnummer een mobiel "
+#~ "nummer is. Helpt bij het onderscheiden welk nummer op de blacklist staat "
+#~ "als het model zowel een mobiel als een telefoon veld bevat."
+
+#~ msgid "Internal Notes"
+#~ msgstr "Interne notities"
+
+#~ msgid "Kanban State"
+#~ msgstr "Kanban status"
+
+#~ msgid "Last Action:"
+#~ msgstr "Laatste actie:"
+
+#~ msgid "Lead assigned to this member those last 30 days"
+#~ msgstr "Lead toegewezen aan dit lid in de afgelopen 30 dagen"
+
+#~ msgid "Lead/Opportunity"
+#~ msgstr "Lead/Verkoopkans"
+
+#~ msgid ""
+#~ "Leads team allocation should be done for at least 0.2 or maximum 30 work "
+#~ "days, not %.2f."
+#~ msgstr ""
+#~ "De toewijzing van het leadteam moet worden gedaan voor ten minste 0,2 of "
+#~ "maximaal 30 werkdagen, niet voor %.2f."
+
+#~ msgid "Make Quote"
+#~ msgstr "Maak offerte"
+
+#~ msgid "Mark Won"
+#~ msgstr "Markeren als gewonnen"
+
+#~ msgid "Mobile"
+#~ msgstr "Mobiel"
+
+#~ msgid "Mobile:"
+#~ msgstr "Mobiel:"
+
+#~ msgid "New Opportunities"
+#~ msgstr "Nieuwe verkoopkansen"
+
+#~ msgid "Next activity is planned"
+#~ msgstr "Volgende activiteit is gepland"
+
+#~ msgid "Next activity late"
+#~ msgstr "Te late volgende activiteit"
+
+#~ msgid "No data yet!"
+#~ msgstr "Nog geen gegevens!"
+
+#~ msgid "No next activity planned"
+#~ msgstr "Geen volgende activiteit gepland"
+
+#~ msgid "Number of messages which requires an action"
+#~ msgstr "Aantal berichten die actie vereisen"
+
+#~ msgid "Open Opportunity"
+#~ msgstr "Open verkoopkans"
+
+#~ msgid "Opportunities Revenues"
+#~ msgstr "Verkoopkansen omzet"
+
+#~ msgid "Organization / Contact"
+#~ msgstr "Bedrijf / contact"
+
+#~ msgid "Overdue Opportunities Revenues"
+#~ msgstr "Omzet te late verkoopkansen"
+
+#~ msgid "Overdue Opportunity"
+#~ msgstr "Te late verkoopkans"
+
+#~ msgid "Owner"
+#~ msgstr "Eigenaar"
+
+#~ msgid "Phone/Mobile"
+#~ msgstr "Telefoon/mobiel"
+
+#~ msgid ""
+#~ "Please select more than one element (lead or opportunity) from the list "
+#~ "view."
+#~ msgstr ""
+#~ "Selecteer aub meer dan één element (lead of verkoopkans) uit de lijst "
+#~ "weergave."
+
+#~ msgid "Reschedule"
+#~ msgstr "Opnieuw inplannen"
+
+#~ msgid "Select Leads/Opportunities"
+#~ msgstr "Selecteer leads/verkoopkansen"
+
+#~ msgid "Snooze 7d"
+#~ msgstr "Snooze 7 dagen"
+
+#~ msgid ""
+#~ "Specific team that uses this stage. Other teams will not be able to see "
+#~ "or use this stage."
+#~ msgstr ""
+#~ "Specifiek team dat deze fase gebruikt. Andere teams zullen deze fase niet "
+#~ "kunnen zien en/of gebruiken."
+
+#~ msgid "Start scheduling activities on your opportunities"
+#~ msgstr "Begin met het plannen van taken voor je verkoopkansen."
+
+#~ msgid ""
+#~ "The owner of records created upon receiving emails on this alias. If this "
+#~ "field is not set the system will attempt to find the right owner based on "
+#~ "the sender (From) address, or will use the Administrator account if no "
+#~ "system user is found for that address."
+#~ msgstr ""
+#~ "De eigenaar van de regels welke zijn aangemaakt bij het ontvangen van de "
+#~ "e-mails op deze alias. Indien dit veld niet is ingesteld zal het systeem "
+#~ "proberen om de juiste eigenaar te vinden op basis van het verzend (van) "
+#~ "adres. Indien geen gebruiker wordt gevonden, wordt de Administrator "
+#~ "gebruiker gebruikt."
+
+#~ msgid "Title"
+#~ msgstr "Titel"
+
+#~ msgid "Tracking"
+#~ msgstr "Volgen"
+
+#~ msgid "Unassigned Lead"
+#~ msgstr "Niet toegewezen lead"
+
+#~ msgid "Use the top left <i>Create</i> button, or send an email to"
+#~ msgstr "Gebruik de <i>Aanmaken</i>-knop linksboven of stuur een e-mail naar"
+
+#~ msgid ""
+#~ "Use the top left Create button, or configure an email alias to test the "
+#~ "email gateway."
+#~ msgstr ""
+#~ "Gebruik de knop Maken linksboven of configureer een e-mailalias om de e-"
+#~ "mailgateway te testen."
+
+#~ msgid "Won in Opportunities Target"
+#~ msgstr "Gewonnen in functie van doelstelling"
+
+#~ msgid "Yeah! Deal of the last 7 days for the team."
+#~ msgstr "Yeah! Deal van de laatste 7 dagen van het team."

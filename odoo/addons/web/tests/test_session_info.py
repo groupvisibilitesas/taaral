@@ -55,6 +55,7 @@ class TestSessionInfo(common.HttpCase):
                 'name': company.name,
                 'sequence': company.sequence,
                 'child_ids': company.child_ids.ids,
+                'currency_id': company.currency_id.id,
                 'parent_id': company.parent_id.id,
             } for company in self.allowed_companies
         }
@@ -74,6 +75,9 @@ class TestSessionInfo(common.HttpCase):
             'allowed_companies': expected_allowed_companies,
             'disallowed_ancestor_companies': expected_disallowed_ancestor_companies,
         }
+        self.assertEqual(result["groups"], {
+            'base.group_allow_export': self.user.has_group('base.group_allow_export')
+        })
         self.assertEqual(
             result['user_companies'],
             expected_user_companies,

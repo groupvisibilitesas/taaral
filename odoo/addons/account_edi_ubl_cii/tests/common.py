@@ -274,6 +274,7 @@ class TestUblCiiFRCommon(TestUblCiiCommon):
             'zip': "35400",
             'city': "Saint-Malo",
             'vat': 'FR23334175221',
+            'company_registry': '40678483500521',
             'country_id': cls.env.ref('base.fr').id,
         })
         return company

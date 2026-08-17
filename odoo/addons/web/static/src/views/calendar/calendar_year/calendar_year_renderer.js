@@ -1,9 +1,10 @@
+import { getLocalYearAndWeek } from "@web/core/l10n/dates";
 import { localization } from "@web/core/l10n/localization";
-import { getColor } from "../colors";
-import { useCalendarPopover, useFullCalendar } from "../hooks";
-import { CalendarYearPopover } from "./calendar_year_popover";
+import { convertRecordToEvent, getColor } from "@web/views/calendar/utils";
+import { useCalendarPopover } from "@web/views/calendar/hooks/calendar_popover_hook";
+import { useFullCalendar } from "@web/views/calendar/hooks/full_calendar_hook";
 import { makeWeekColumn } from "@web/views/calendar/calendar_common/calendar_common_week_column";
-import { getLocalWeekNumber } from "@web/core/l10n/dates";
+import { CalendarYearPopover } from "@web/views/calendar/calendar_year/calendar_year_popover";
 
 import { Component, useEffect, useRef } from "@odoo/owl";
 
@@ -14,12 +15,10 @@ export class CalendarYearRenderer extends Component {
     static template = "web.CalendarYearRenderer";
     static props = {
         model: Object,
-        displayName: { type: String, optional: true },
-        isWeekendVisible: { type: Boolean, optional: true },
         createRecord: Function,
         editRecord: Function,
         deleteRecord: Function,
-        setDate: { type: Function, optional: true },
+        isWeekendVisible: { type: Boolean, optional: true },
     };
 
     setup() {
@@ -69,13 +68,14 @@ export class CalendarYearRenderer extends Component {
             timeZone: luxon.Settings.defaultZone.name,
             titleFormat: { month: "long", year: "numeric" },
             unselectAuto: false,
-            weekNumberCalculation: (date) => getLocalWeekNumber(date),
+            weekNumberCalculation: (date) => getLocalYearAndWeek(date).week,
             weekNumbers: false,
             weekNumberFormat: { week: "numeric" },
             windowResize: this.onWindowResize,
             eventContent: this.onEventContent,
             viewDidMount: this.viewDidMount,
             weekends: this.props.isWeekendVisible,
+            fixedWeekCount: false,
         };
     }
 
@@ -99,11 +99,7 @@ export class CalendarYearRenderer extends Component {
     }
     convertRecordToEvent(record) {
         return {
-            id: record.id,
-            title: record.title,
-            start: record.start.toISO(),
-            end: record.end.plus({ day: 1 }).toISO(),
-            allDay: true,
+            ...convertRecordToEvent(record, true),
             display: "background",
         };
     }

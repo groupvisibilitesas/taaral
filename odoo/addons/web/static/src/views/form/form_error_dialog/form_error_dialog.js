@@ -36,6 +36,7 @@ export class FormErrorDialog extends Component {
         } else {
             await this.action.doAction(this.redirectAction, {
                 additionalContext: this.additionalContext,
+                forceLeave: true,
             });
             this.stay();
         }

@@ -5,12 +5,12 @@
 # Bone NI <bounkirdni@gmail.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-06-06 09:49+0000\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-03 09:00+0000\n"
 "Last-Translator: Bone NI <bounkirdni@gmail.com>\n"
-"Language-Team: Lao <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Lao <https://translate.odoo.com/projects/odoo-19/"
 "microsoft_outlook/lo/>\n"
 "Language: lo\n"
 "MIME-Version: 1.0\n"
@@ -44,7 +44,7 @@ msgid ""
 msgstr ""
 "<span invisible=\"server_type != 'outlook' or not "
 "microsoft_outlook_refresh_token\" class=\"badge text-bg-success\">\n"
-"                        Outlook Token ຖືກຕ້ອງ\n"
+"                        Token ຂອງ Outlook ຖືກຕ້ອງ\n"
 "                    </span>"
 
 #. module: microsoft_outlook
@@ -56,14 +56,21 @@ msgid ""
 msgstr ""
 "<span invisible=\"smtp_authentication != 'outlook' or not "
 "microsoft_outlook_refresh_token\" class=\"badge text-bg-success\">\n"
-"                        Outlook Token ຖືກຕ້ອງ\n"
+"                        Token ຂອງ Outlook ຖືກຕ້ອງ\n"
 "                    </span>"
+
+#. module: microsoft_outlook
+#: model:ir.model.fields,field_description:microsoft_outlook.field_fetchmail_server__active
+#: model:ir.model.fields,field_description:microsoft_outlook.field_ir_mail_server__active
+#: model:ir.model.fields,field_description:microsoft_outlook.field_microsoft_outlook_mixin__active
+msgid "Active"
+msgstr "ເປີດໃຊ້ງານ"
 
 #. module: microsoft_outlook
 #. odoo-python
 #: code:addons/microsoft_outlook/models/microsoft_outlook_mixin.py:0
 msgid "An error occurred when fetching the access token. %s"
-msgstr "ເກີດຂໍ້ຜິດພາດຂຶ້ນໃນຂະນະທີ່ດຶງເອົາ access token. %s"
+msgstr "ເກີດຂໍ້ຜິດພາດໃນຂະນະທີ່ດຶງເອົາ access token. %s"
 
 #. module: microsoft_outlook
 #: model:ir.model.fields,field_description:microsoft_outlook.field_ir_mail_server__smtp_authentication
@@ -75,12 +82,12 @@ msgstr "ຢືນຢັນຕົວຕົນດ້ວຍ"
 #: model:ir.model.fields,field_description:microsoft_outlook.field_ir_mail_server__microsoft_outlook_uri
 #: model:ir.model.fields,field_description:microsoft_outlook.field_microsoft_outlook_mixin__microsoft_outlook_uri
 msgid "Authentication URI"
-msgstr "URI ການຢືນຢັນຕົວຕົນ"
+msgstr "URI ສຳລັບການຢືນຢັນຕົວຕົນ"
 
 #. module: microsoft_outlook
 #: model:ir.model,name:microsoft_outlook.model_res_config_settings
 msgid "Config Settings"
-msgstr "ການຕັ້ງຄ່າລະບົບ"
+msgstr "ການຕັ້ງຄ່າການກຳນົດຄ່າ"
 
 #. module: microsoft_outlook
 #. odoo-python
@@ -89,9 +96,9 @@ msgid ""
 "Connect your Outlook account with the OAuth Authentication process.  \n"
 "By default, only a user with a matching email address will be able to use this server. To extend its use, you should set a \"mail.default.from\" system parameter."
 msgstr ""
-"ເຊື່ອມຕໍ່ບັນຊີ Outlook ຂອງທ່ານດ້ວຍຂັ້ນຕອນການຢືນຢັນຕົວຕົນ OAuth. \n"
-"ໂດຍຄ່າເລີ່ມຕົ້ນ, ສະເພາະຜູ້ໃຊ້ທີ່ມີທີ່ຢູ່ອີເມວທີ່ກົງກັນເທົ່ານັ້ນທີ່ຈະສາມາດໃຊ້ເຊີເວີນີ້ໄດ້. ເພື່ອຂະຫຍາຍການໃຊ້ງານ, "
-"ທ່ານຄວນຕັ້ງຄ່າພາຣາມິເຕີລະບົບ \"mail.default.from\"."
+"ເຊື່ອມຕໍ່ບັນຊີ Outlook ຂອງທ່ານດ້ວຍຂະບວນການຢືນຢັນຕົວຕົນ OAuth. \n"
+"ໂດຍເລີ່ມຕົ້ນ, ສະເພາະຜູ້ໃຊ້ທີ່ມີທີ່ຢູ່ອີເມລທີ່ກົງກັນເທົ່ານັ້ນທີ່ຈະສາມາດໃຊ້ເຊີບເວີນີ້ໄດ້. ເພື່ອຂະຫຍາຍການນຳໃຊ້, ທ່າ"
+"ນຄວນກຳນົດຄ່າພາລາມິເຕີລະບົບ \"mail.default.from\"."
 
 #. module: microsoft_outlook
 #. odoo-python
@@ -101,14 +108,28 @@ msgid ""
 "You will be redirected to the Outlook login page to accept the permissions."
 msgstr ""
 "ເຊື່ອມຕໍ່ບັນຊີ Outlook ສ່ວນຕົວຂອງທ່ານໂດຍໃຊ້ OAuth. \n"
-"ທ່ານຈະຖືກນໍາໄປຫາໜ້າເຂົ້າສູ່ລະບົບ Outlook ເພື່ອຍອມຮັບການອະນຸຍາດ."
+"ທ່ານຈະຖືກສົ່ງໄປຫາໜ້າເຂົ້າສູ່ລະບົບຂອງ Outlook ເພື່ອຍອມຮັບການອະນຸຍາດ."
+
+#. module: microsoft_outlook
+#: model:ir.model.fields,field_description:microsoft_outlook.field_fetchmail_server__display_name
+#: model:ir.model.fields,field_description:microsoft_outlook.field_ir_mail_server__display_name
+#: model:ir.model.fields,field_description:microsoft_outlook.field_microsoft_outlook_mixin__display_name
+#: model:ir.model.fields,field_description:microsoft_outlook.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:microsoft_outlook.field_res_users__display_name
+msgid "Display Name"
+msgstr "ຊື່ທີ່ສະແດງ"
 
 #. module: microsoft_outlook
 #: model_terms:ir.ui.view,arch_db:microsoft_outlook.microsoft_outlook_oauth_error
-msgid "Go back to your mail server"
-msgstr "ກັບຄືນໄປຫາເຊີເວີເມວຂອງທ່ານ"
+msgid "Go back"
+msgstr "ກັບຄືນ"
 
 #. module: microsoft_outlook
+#: model:ir.model.fields,field_description:microsoft_outlook.field_fetchmail_server__id
+#: model:ir.model.fields,field_description:microsoft_outlook.field_ir_mail_server__id
+#: model:ir.model.fields,field_description:microsoft_outlook.field_microsoft_outlook_mixin__id
+#: model:ir.model.fields,field_description:microsoft_outlook.field_res_config_settings__id
+#: model:ir.model.fields,field_description:microsoft_outlook.field_res_users__id
 #: model_terms:ir.ui.view,arch_db:microsoft_outlook.res_config_settings_view_form
 msgid "ID"
 msgstr "ID"
@@ -121,7 +142,7 @@ msgstr "ID ຂອງແອັບ Outlook ຂອງທ່ານ"
 #. module: microsoft_outlook
 #: model:ir.model,name:microsoft_outlook.model_fetchmail_server
 msgid "Incoming Mail Server"
-msgstr "ເຊີເວີຮັບເມວ"
+msgstr "ເຊີບເວີເມລຂາເຂົ້າ"
 
 #. module: microsoft_outlook
 #. odoo-python
@@ -130,20 +151,13 @@ msgid ""
 "Incorrect Connection Security for Outlook mail server “%s”. Please set it to"
 " \"TLS (STARTTLS)\"."
 msgstr ""
-"ຄວາມປອດໄພຂອງການເຊື່ອມຕໍ່ບໍ່ຖືກຕ້ອງສໍາລັບເຊີເວີເມວ Outlook “%s”. ກະລຸນາຕັ້ງຄ່າເປັນ \"TLS "
+"ຄວາມປອດໄພຂອງການເຊື່ອມຕໍ່ບໍ່ຖືກຕ້ອງສຳລັບເຊີບເວີເມລ Outlook “%s”. ກະລຸນາຕັ້ງຄ່າເປັນ \"TLS "
 "(STARTTLS)\"."
-
-#. module: microsoft_outlook
-#: model:ir.model.fields,field_description:microsoft_outlook.field_fetchmail_server__is_microsoft_outlook_configured
-#: model:ir.model.fields,field_description:microsoft_outlook.field_ir_mail_server__is_microsoft_outlook_configured
-#: model:ir.model.fields,field_description:microsoft_outlook.field_microsoft_outlook_mixin__is_microsoft_outlook_configured
-msgid "Is Outlook Credential Configured"
-msgstr "ຂໍ້ມູນການເຂົ້າໃຊ້ Outlook ຖືກຕັ້ງຄ່າແລ້ວບໍ່"
 
 #. module: microsoft_outlook
 #: model:ir.model,name:microsoft_outlook.model_ir_mail_server
 msgid "Mail Server"
-msgstr "ເຊີເວີເມວ"
+msgstr "ເຊີບເວີເມລ"
 
 #. module: microsoft_outlook
 #: model:ir.model,name:microsoft_outlook.model_microsoft_outlook_mixin
@@ -154,14 +168,40 @@ msgstr "Microsoft Outlook Mixin"
 #. odoo-python
 #: code:addons/microsoft_outlook/models/microsoft_outlook_mixin.py:0
 msgid "Only the administrator can link an Outlook mail server."
-msgstr "ສະເພາະຜູ້ດູແລລະບົບເທົ່ານັ້ນທີ່ສາມາດເຊື່ອມໂຍງເຊີເວີເມວ Outlook ໄດ້."
+msgstr "ສະເພາະຜູ້ດູແລລະບົບເທົ່ານັ້ນທີ່ສາມາດເຊື່ອມໂຍງເຊີບເວີເມລ Outlook ໄດ້."
+
+#. module: microsoft_outlook
+#. odoo-python
+#: code:addons/microsoft_outlook/models/microsoft_outlook_mixin.py:0
+msgid "Oops, we could not authenticate you. Please try again later."
+msgstr "ຂໍອະໄພ, ພວກເຮົາບໍ່ສາມາດຢືນຢັນຕົວຕົນຂອງທ່ານໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ."
+
+#. module: microsoft_outlook
+#. odoo-python
+#: code:addons/microsoft_outlook/controllers/main.py:0
+msgid ""
+"Oops, you're creating an authorization to send from %(email_login)s but your"
+" address is %(email_server)s. Make sure your addresses match!"
+msgstr ""
+"ຂໍອະໄພ, ທ່ານກຳລັງສ້າງການອະນຸຍາດເພື່ອສົ່ງຈາກ %(email_login)s ແຕ່ທີ່ຢູ່ຂອງທ່ານແມ່ນ %"
+"(email_server)s. ກະລຸນາກວດສອບໃຫ້ແນ່ໃຈວ່າທີ່ຢູ່ຂອງທ່ານກົງກັນ!"
+
+#. module: microsoft_outlook
+#: model:ir.model.fields,field_description:microsoft_outlook.field_res_users__outgoing_mail_server_type
+msgid "Outgoing Mail Server Type"
+msgstr "ປະເພດເຊີບເວີເມລຂາອອກ"
+
+#. module: microsoft_outlook
+#: model:ir.model.fields.selection,name:microsoft_outlook.selection__res_users__outgoing_mail_server_type__outlook
+msgid "Outlook"
+msgstr "Outlook"
 
 #. module: microsoft_outlook
 #: model:ir.model.fields,field_description:microsoft_outlook.field_fetchmail_server__microsoft_outlook_access_token
 #: model:ir.model.fields,field_description:microsoft_outlook.field_ir_mail_server__microsoft_outlook_access_token
 #: model:ir.model.fields,field_description:microsoft_outlook.field_microsoft_outlook_mixin__microsoft_outlook_access_token
 msgid "Outlook Access Token"
-msgstr "Outlook Access Token"
+msgstr "Access Token ຂອງ Outlook"
 
 #. module: microsoft_outlook
 #: model:ir.model.fields,field_description:microsoft_outlook.field_fetchmail_server__microsoft_outlook_access_token_expiration
@@ -197,13 +237,19 @@ msgstr "Outlook Refresh Token"
 #. odoo-python
 #: code:addons/microsoft_outlook/models/microsoft_outlook_mixin.py:0
 msgid "Please configure your Outlook credentials."
-msgstr "ກະລຸນາຕັ້ງຄ່າຂໍ້ມູນການເຂົ້າໃຊ້ Outlook ຂອງທ່ານ."
+msgstr "ກະລຸນາກຳນົດຄ່າຂໍ້ມູນປະຈຳຕົວ Outlook ຂອງທ່ານ."
 
 #. module: microsoft_outlook
 #. odoo-python
 #: code:addons/microsoft_outlook/models/microsoft_outlook_mixin.py:0
 msgid "Please connect with your Outlook account before using it."
-msgstr "ກະລຸນາເຊື່ອມຕໍ່ກັບບັນຊີ Outlook ຂອງທ່ານກ່ອນທີ່ຈະເລີ່ມນໍາໃຊ້."
+msgstr "ກະລຸນາເຊື່ອມຕໍ່ກັບບັນຊີ Outlook ຂອງທ່ານກ່ອນທີ່ຈະເລີ່ມນຳໃຊ້."
+
+#. module: microsoft_outlook
+#. odoo-python
+#: code:addons/microsoft_outlook/models/microsoft_outlook_mixin.py:0
+msgid "Please enter a valid email address."
+msgstr "ກະລຸນາປ້ອນທີ່ຢູ່ອີເມລທີ່ຖືກຕ້ອງ."
 
 #. module: microsoft_outlook
 #. odoo-python
@@ -213,8 +259,8 @@ msgid ""
 "(your email address). This should be the same account as the one used for "
 "the Outlook OAuthentication Token."
 msgstr ""
-"ກະລຸນາຕື່ມຂໍ້ມູນໃສ່ຫ້ອງ \"ຊື່ຜູ້ໃຊ້\" ດ້ວຍຊື່ຜູ້ໃຊ້ Outlook/Office365 ຂອງທ່ານ (ທີ່ຢູ່ອີເມວຂອງທ່ານ). ນີ້ຄວ"
-"ນຈະເປັນບັນຊີດຽວກັນກັບບັນຊີທີ່ໃຊ້ສໍາລັບ Outlook OAuthentication Token."
+"ກະລຸນາປ້ອນຂໍ້ມູນໃນຊ່ອງ \"ຊື່ຜູ້ໃຊ້\" ດ້ວຍຊື່ຜູ້ໃຊ້ Outlook/Office365 ຂອງທ່ານ (ທີ່ຢູ່ອີເມລຂອງທ່ານ). ນີ້ຄ"
+"ວນຈະເປັນບັນຊີດຽວກັນກັບບັນຊີທີ່ໃຊ້ສຳລັບ Outlook OAuthentication Token."
 
 #. module: microsoft_outlook
 #. odoo-python
@@ -223,8 +269,8 @@ msgid ""
 "Please leave the password field empty for Outlook mail server “%s”. The "
 "OAuth process does not require it"
 msgstr ""
-"ກະລຸນາປະຫ້ອງລະຫັດຜ່ານໃຫ້ວ່າງໄວ້ສໍາລັບເຊີເວີເມວ Outlook “%s”. ຂັ້ນຕອນ OAuth ບໍ່ຈຳເປັນຕ້ອງໃຊ້ລະຫັດ"
-"ຜ່ານ"
+"ກະລຸນາປະຊ່ອງລະຫັດຜ່ານໄວ້ໃຫ້ວ່າງສຳລັບເຊີບເວີເມລ Outlook “%s”. ຂະບວນການ OAuth ບໍ່ຈຳເປັນຕ້ອງໃຊ້"
+"ລະຫັດຜ່ານ"
 
 #. module: microsoft_outlook
 #: model_terms:ir.ui.view,arch_db:microsoft_outlook.ir_mail_server_view_form
@@ -235,7 +281,7 @@ msgstr "ອ່ານເພີ່ມເຕີມ"
 #. odoo-python
 #: code:addons/microsoft_outlook/models/fetchmail_server.py:0
 msgid "SSL is required for server “%s”."
-msgstr "ຈຳເປັນຕ້ອງໃຊ້ SSL ສໍາລັບເຊີເວີ “%s”."
+msgstr "ຕ້ອງການ SSL ສຳລັບເຊີບເວີ “%s”."
 
 #. module: microsoft_outlook
 #: model_terms:ir.ui.view,arch_db:microsoft_outlook.res_config_settings_view_form
@@ -245,31 +291,27 @@ msgstr "ລະຫັດລັບ"
 #. module: microsoft_outlook
 #: model_terms:ir.ui.view,arch_db:microsoft_outlook.res_config_settings_view_form
 msgid "Secret of your Outlook app"
-msgstr "ລະຫັດລັບຂອງແອັບ Outlook ຂອງທ່ານ"
+msgstr "ລະຫັດລັບ (Secret) ຂອງແອັບ Outlook ຂອງທ່ານ"
 
 #. module: microsoft_outlook
 #: model:ir.model.fields,field_description:microsoft_outlook.field_fetchmail_server__server_type
 msgid "Server Type"
-msgstr "ປະເພດເຊີເວີ"
-
-#. module: microsoft_outlook
-#: model_terms:ir.ui.view,arch_db:microsoft_outlook.fetchmail_server_view_form
-#: model_terms:ir.ui.view,arch_db:microsoft_outlook.ir_mail_server_view_form
-msgid ""
-"Setup your Outlook API credentials in the general settings to link a Outlook"
-" account."
-msgstr ""
-"ຕັ້ງຄ່າຂໍ້ມູນ API ຂອງ Outlook ໃນການຕັ້ງຄ່າທົ່ວໄປເພື່ອເຊື່ອມໂຍງກັບບັນຊີ Outlook."
+msgstr "ປະເພດເຊີບເວີ"
 
 #. module: microsoft_outlook
 #: model:ir.model.fields,help:microsoft_outlook.field_fetchmail_server__microsoft_outlook_uri
 #: model:ir.model.fields,help:microsoft_outlook.field_ir_mail_server__microsoft_outlook_uri
 #: model:ir.model.fields,help:microsoft_outlook.field_microsoft_outlook_mixin__microsoft_outlook_uri
 msgid "The URL to generate the authorization code from Outlook"
-msgstr "URL ສໍາລັບສ້າງລະຫັດອະນຸຍາດຈາກ Outlook"
+msgstr "URL ເພື່ອສ້າງລະຫັດການອະນຸຍາດຈາກ Outlook"
 
 #. module: microsoft_outlook
 #. odoo-python
 #: code:addons/microsoft_outlook/models/microsoft_outlook_mixin.py:0
 msgid "Unknown error."
-msgstr "ຂໍ້ຜິດພາດທີ່ບໍ່ຮູ້ຈັກ."
+msgstr "ເກີດຂໍ້ຜິດພາດທີ່ບໍ່ຮູ້ຈັກ."
+
+#. module: microsoft_outlook
+#: model:ir.model,name:microsoft_outlook.model_res_users
+msgid "User"
+msgstr "ຜູ້ໃຊ້"

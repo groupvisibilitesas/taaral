@@ -5,7 +5,7 @@ import logging
 import re
 import werkzeug
 
-from odoo import api, fields, models, _
+from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError
 from odoo.tools.mail import email_split_and_format, email_normalize
 
@@ -16,7 +16,7 @@ emails_split = re.compile(r"[;,\n\r]+")
 
 class SurveyInvite(models.TransientModel):
     _name = 'survey.invite'
-    _inherit = 'mail.composer.mixin'
+    _inherit = ['mail.composer.mixin']
     _description = 'Survey Invitation Wizard'
 
     @api.model
@@ -26,7 +26,7 @@ class SurveyInvite(models.TransientModel):
     # composer content
     attachment_ids = fields.Many2many(
         'ir.attachment', 'survey_mail_compose_message_ir_attachments_rel', 'wizard_id', 'attachment_id',
-        string='Attachments', compute='_compute_attachment_ids', store=True, readonly=False)
+        string='Attachments', compute='_compute_attachment_ids', store=True, readonly=False, bypass_search_access=True)
     # origin
     author_id = fields.Many2one(
         'res.partner', 'Author', index=True,
@@ -103,7 +103,7 @@ class SurveyInvite(models.TransientModel):
     @api.depends('survey_id.access_token')
     def _compute_survey_start_url(self):
         for invite in self:
-            invite.survey_start_url = werkzeug.urls.url_join(invite.survey_id.get_base_url(), invite.survey_id.get_start_url()) if invite.survey_id else False
+            invite.survey_start_url = tools.urls.urljoin(invite.survey_id.get_base_url(), invite.survey_id.get_start_url()) if invite.survey_id else False
 
     # Overrides of mail.composer.mixin
     @api.depends('survey_id')  # fake trigger otherwise not computed in new mode
@@ -248,17 +248,10 @@ class SurveyInvite(models.TransientModel):
         # optional support of default_email_layout_xmlid in context
         email_layout_xmlid = self.env.context.get('default_email_layout_xmlid', self.env.context.get('notif_layout'))
         if email_layout_xmlid:
-            template_ctx = {
-                'message': self.env['mail.message'].sudo().new(dict(body=mail_values['body_html'], record_name=self.survey_id.title)),
-                'model_description': self.env['ir.model']._get('survey.survey').display_name,
-                'company': self.env.company,
-            }
-            body = self.env['ir.qweb']._render(email_layout_xmlid, template_ctx, minimal_qcontext=True, raise_if_not_found=False)
-            if body:
-                mail_values['body_html'] = self.env['mail.render.mixin']._replace_local_links(body)
-            else:
-                _logger.warning('QWeb template %s not found or is empty when sending survey mails. Sending without layout', email_layout_xmlid)
-
+            mail_values['body_html'] = self._render_encapsulate(
+                email_layout_xmlid, mail_values['body_html'],
+                context_record=self.survey_id,
+            )
         return self.env['mail.mail'].sudo().create(mail_values)
 
     def action_invite(self):

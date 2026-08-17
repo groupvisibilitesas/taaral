@@ -5,8 +5,8 @@ from odoo.http import request
 from odoo.tests.common import TransactionCase, tagged
 
 from odoo.addons.base.tests.common import HttpCaseWithUserPortal
+from odoo.addons.http_routing.tests.common import MockRequest
 from odoo.addons.website.controllers.form import WebsiteForm
-from odoo.addons.website.tools import MockRequest
 
 
 @tagged('post_install', '-at_install')
@@ -66,6 +66,9 @@ class TestWebsiteFormEditor(HttpCaseWithUserPortal):
     def test_website_form_nested_forms(self):
         self.start_tour('/my/account', 'website_form_nested_forms', login='admin')
 
+    def test_website_form_duplicate_field_ids(self):
+        self.start_tour('/', 'website_form_duplicate_field_ids', login='admin')
+
 
 @tagged('post_install', '-at_install')
 class TestWebsiteForm(TransactionCase):
@@ -99,10 +102,11 @@ class TestWebsiteForm(TransactionCase):
         self.env['ir.model.fields'].formbuilder_whitelist('res.partner', ['name'])
         WebsiteFormController = WebsiteForm()
         original_insert_record = WebsiteFormController.insert_record
+        test_sp = self.env.cr.savepoint()
         def dummy_insert_record(*args, **kwargs):
             res = original_insert_record(*args, **kwargs)
             # delete website_form savepoint by rollbacking to test savepoint
-            self.env.cr.execute('ROLLBACK TO SAVEPOINT test_%d' % self._savepoint_id)
+            self.env.cr.execute('ROLLBACK TO SAVEPOINT "%s"' % test_sp.name)
             return res
         WebsiteFormController.insert_record = dummy_insert_record
         with MockRequest(self.env):
@@ -116,6 +120,7 @@ class TestWebsiteForm(TransactionCase):
                 )
             self.assertEqual(response.status_code, 200)
             self.assertTrue(response.data.startswith(b'{"id":'))
+        test_sp.close(rollback=True)
 
     def test_cannot_delete_field_used_in_website_form(self):
         """
@@ -153,7 +158,7 @@ class TestWebsiteForm(TransactionCase):
             'name': 'A User',
             'login': 'a_user',
             'email': 'a@user.com',
-            'groups_id': [(6, 0, [self.env.ref('base.group_system').id])],
+            'group_ids': [(6, 0, [self.env.ref('base.group_system').id])],
         })
         self.env['ir.model.access'].search([('model_id', '=', self.partner_model.id)]).perm_read = False
         with self.with_user(user.login):

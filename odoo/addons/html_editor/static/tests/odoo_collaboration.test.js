@@ -1,13 +1,12 @@
-/** @odoo-module */
-
 import { stripHistoryIds } from "@html_editor/others/collaboration/collaboration_odoo_plugin";
 import { HISTORY_SNAPSHOT_INTERVAL } from "@html_editor/others/collaboration/collaboration_plugin";
 import { COLLABORATION_PLUGINS, MAIN_PLUGINS } from "@html_editor/plugin_sets";
 import { normalizeHTML } from "@html_editor/utils/html";
+import { htmlReplaceAll } from "@web/core/utils/html";
 import { Wysiwyg } from "@html_editor/wysiwyg";
 import { beforeEach, describe, expect, test } from "@odoo/hoot";
 import { advanceTime, animationFrame, tick, waitUntil } from "@odoo/hoot-dom";
-import { Component, xml } from "@odoo/owl";
+import { Component, xml, markup } from "@odoo/owl";
 import { mountWithCleanup, onRpc } from "@web/../tests/web_test_helpers";
 import { Mutex } from "@web/core/utils/concurrency";
 import { patch } from "@web/core/utils/patch";
@@ -118,7 +117,7 @@ class PeerTest {
     }
 }
 
-const initialValue = '<p data-last-history-steps="1">a[]</p>';
+const initialValue = markup`<p data-last-history-steps="1">a[]</p>`;
 
 class Wysiwygs extends Component {
     static template = xml`
@@ -165,7 +164,7 @@ class Wysiwygs extends Component {
         };
         return {
             Plugins: [...MAIN_PLUGINS, ...COLLABORATION_PLUGINS],
-            content: content.replaceAll("[]", ""),
+            content: htmlReplaceAll(content, "[]", ""),
             collaboration: {
                 peerId,
                 busService,
@@ -1139,12 +1138,12 @@ describe("History steps Ids", () => {
         editor.shared.split.splitBlock();
         editor.shared.history.addStep();
         expect(getContent(editor.editable)).toBe(
-            `<p>a</p><p placeholder='Type "/" for commands' class="o-we-hint">[]<br></p>`
+            `<p>a</p><p o-we-hint-text='Type "/" for commands' class="o-we-hint">[]<br></p>`
         );
         editor.shared.split.splitBlock();
         editor.shared.history.addStep();
         expect(getContent(editor.editable)).toBe(
-            `<p>a</p><p><br></p><p placeholder='Type "/" for commands' class="o-we-hint">[]<br></p>`
+            `<p>a</p><p><br></p><p o-we-hint-text='Type "/" for commands' class="o-we-hint">[]<br></p>`
         );
         editor.destroy();
     });
@@ -1152,7 +1151,7 @@ describe("History steps Ids", () => {
 
 describe("Indent List", () => {
     test("should sync `li` indent properly", async () => {
-        const pool = await createPeers(["p1", "p2"], `<ul><li>a[]</li></ul>`);
+        const pool = await createPeers(["p1", "p2"], markup`<ul><li>a[]</li></ul>`);
         const peers = pool.peers;
 
         await peers.p1.focus();

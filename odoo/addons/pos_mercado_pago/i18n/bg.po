@@ -2,18 +2,15 @@
 # This file contains the translation of the following modules:
 # * pos_mercado_pago
 #
-# Translators:
-# Maria Boyadjieva <marabo2000@gmail.com>, 2024
-# Petko Karamotchev, 2024
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~18.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-03 17:38+0000\n"
-"PO-Revision-Date: 2026-08-03 12:25+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-07-03 17:35+0000\n"
+"PO-Revision-Date: 2026-08-07 04:14+0000\n"
+"Last-Translator: Rosen Vladimirov <vladimirov.rosen@gmail.com>\n"
+"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-19/"
 "pos_mercado_pago/bg/>\n"
 "Language: bg\n"
 "MIME-Version: 1.0\n"
@@ -32,6 +29,12 @@ msgstr "APP_USR-..."
 #: code:addons/pos_mercado_pago/models/mercado_pago_pos_request.py:0
 msgid "Cannot decode Mercado Pago POS response. Error: %s"
 msgstr "Отговорът на Mercado Pago POS не може да бъде декодиран. Грешка: %s"
+
+#. module: pos_mercado_pago
+#: model:ir.model.fields,field_description:pos_mercado_pago.field_pos_payment_method__display_name
+#: model:ir.model.fields,field_description:pos_mercado_pago.field_pos_session__display_name
+msgid "Display Name"
+msgstr "Име за показване"
 
 #. module: pos_mercado_pago
 #. odoo-python
@@ -54,8 +57,14 @@ msgid "Force PDV"
 msgstr "Принудителен PDV"
 
 #. module: pos_mercado_pago
+#: model:ir.model.fields,field_description:pos_mercado_pago.field_pos_payment_method__id
+#: model:ir.model.fields,field_description:pos_mercado_pago.field_pos_session__id
+msgid "ID"
+msgstr "Номер (ID)"
+
+#. module: pos_mercado_pago
 #. odoo-javascript
-#: code:addons/pos_mercado_pago/static/src/app/payment_mercado_pago.js:0
+#: code:addons/pos_mercado_pago/static/src/app/utils/payment/payment_mercado_pago.js:0
 msgid "Mercado Pago %s"
 msgstr "Mercado Pago %s"
 
@@ -84,37 +93,37 @@ msgstr "Mp Id Point Smart Complet"
 
 #. module: pos_mercado_pago
 #. odoo-javascript
-#: code:addons/pos_mercado_pago/static/src/app/payment_mercado_pago.js:0
+#: code:addons/pos_mercado_pago/static/src/app/utils/payment/payment_mercado_pago.js:0
 msgid "Payment has been canceled"
 msgstr "Плащането беше отменено"
 
 #. module: pos_mercado_pago
 #. odoo-javascript
-#: code:addons/pos_mercado_pago/static/src/app/payment_mercado_pago.js:0
+#: code:addons/pos_mercado_pago/static/src/app/utils/payment/payment_mercado_pago.js:0
 msgid "Payment has been processed"
 msgstr "Плащането беше обработено"
 
 #. module: pos_mercado_pago
 #. odoo-javascript
-#: code:addons/pos_mercado_pago/static/src/app/payment_mercado_pago.js:0
+#: code:addons/pos_mercado_pago/static/src/app/utils/payment/payment_mercado_pago.js:0
 msgid "Payment has been rejected"
 msgstr "Плащането беше отхвърлено"
 
 #. module: pos_mercado_pago
 #. odoo-javascript
-#: code:addons/pos_mercado_pago/static/src/app/payment_mercado_pago.js:0
+#: code:addons/pos_mercado_pago/static/src/app/utils/payment/payment_mercado_pago.js:0
 msgid "Payment has to be canceled on terminal"
 msgstr "Плащането трябва да бъде отменено на терминала"
 
 #. module: pos_mercado_pago
 #. odoo-javascript
-#: code:addons/pos_mercado_pago/static/src/app/payment_mercado_pago.js:0
+#: code:addons/pos_mercado_pago/static/src/app/utils/payment/payment_mercado_pago.js:0
 msgid "Payment not found (canceled/finished on terminal)"
 msgstr "Плащането не е намерено (отменено/приключено на терминала)"
 
 #. module: pos_mercado_pago
 #. odoo-javascript
-#: code:addons/pos_mercado_pago/static/src/app/payment_mercado_pago.js:0
+#: code:addons/pos_mercado_pago/static/src/app/utils/payment/payment_mercado_pago.js:0
 msgid "Payment status could not be confirmed"
 msgstr "Статусът на плащането не може да бъде потвърден"
 
@@ -129,12 +138,12 @@ msgstr ""
 #. module: pos_mercado_pago
 #: model:ir.model,name:pos_mercado_pago.model_pos_payment_method
 msgid "Point of Sale Payment Methods"
-msgstr "Методи на плащане за точка на продажба (POS)"
+msgstr "Методи на плащане в касата"
 
 #. module: pos_mercado_pago
 #: model:ir.model,name:pos_mercado_pago.model_pos_session
 msgid "Point of Sale Session"
-msgstr "Сесия на център за продажби"
+msgstr "Касова сесия"
 
 #. module: pos_mercado_pago
 #: model:ir.model.fields,field_description:pos_mercado_pago.field_pos_payment_method__mp_webhook_secret_key
@@ -148,7 +157,7 @@ msgstr "Потребителски токен за продукция"
 
 #. module: pos_mercado_pago
 #. odoo-javascript
-#: code:addons/pos_mercado_pago/static/src/app/payment_mercado_pago.js:0
+#: code:addons/pos_mercado_pago/static/src/app/utils/payment/payment_mercado_pago.js:0
 msgid "System error"
 msgstr "Системна грешка"
 
@@ -171,7 +180,7 @@ msgstr "Неочакван отговор от Mercado Pago: %s"
 
 #. module: pos_mercado_pago
 #. odoo-javascript
-#: code:addons/pos_mercado_pago/static/src/app/payment_mercado_pago.js:0
+#: code:addons/pos_mercado_pago/static/src/app/utils/payment/payment_mercado_pago.js:0
 msgid "Unknown payment status"
 msgstr "Неизвестен статус на плащане"
 

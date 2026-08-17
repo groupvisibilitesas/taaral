@@ -49,7 +49,7 @@ class SequenceMixin(models.AbstractModel):
             device_label = self.journal_id.l10n_hr_issuing_device_label
         if not premises_label:
             _logger.error("Business premises label is not set on the journal.")
-            raise ValidationError("Business premises label is not set on the journal.")
+            raise ValidationError(self.env._("Business premises label is not set on the journal."))
         if not device_label:
             _logger.error("Issuing device label is not set on the journal.")
             raise ValidationError(self.env._("Issuing device label is not set on the journal."))
@@ -81,12 +81,12 @@ class SequenceMixin(models.AbstractModel):
             format_values['seq'] = int(format_values.get('seq', '0'))
         except ValueError:
             _logger.error("Invalid sequence number in '%s': seq='%s'", previous, format_values.get('seq'))
-            raise ValidationError("Invalid sequence number format.")
+            raise ValidationError(self.env._("Invalid sequence number format."))
         try:
             format_values['year'] = int(format_values.get('year', '0'))
         except ValueError:
             _logger.error("Invalid year in '%s': year='%s'", previous, format_values.get('year'))
-            raise ValidationError("Invalid year format.")
+            raise ValidationError(self.env._("Invalid year format."))
 
         format_values['code'] = self.journal_id.code
         format_values['premises_label'] = premises_label

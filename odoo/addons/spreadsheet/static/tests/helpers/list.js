@@ -22,6 +22,7 @@ export function insertListInSpreadsheet(model, params) {
     const { definition, columns } = generateListDefinition(
         params.model,
         params.columns,
+        params.actionXmlId,
         params.orderBy
     );
     const [col, row] = params.position || [0, 0];
@@ -48,14 +49,16 @@ export function insertListInSpreadsheet(model, params) {
  * @param {[number, number]} [params.position]
  * @param {object} [params.skipWaitForDataLoaded]
  * @param {string} [params.sheetId]
+ * @param {object} [params.modelConfig]
  * @param {{name: string, asc: boolean}[]} [params.orderBy]
  *
  * @returns { Promise<{ model: OdooSpreadsheetModel, env: Object }>}
  */
 export async function createSpreadsheetWithList(params = {}) {
-    const model = await createModelWithDataSource({
+    const { model, env } = await createModelWithDataSource({
         mockRPC: params.mockRPC,
         serverData: params.serverData,
+        modelConfig: params.modelConfig,
     });
 
     insertListInSpreadsheet(model, {
@@ -67,8 +70,6 @@ export async function createSpreadsheetWithList(params = {}) {
         orderBy: params.orderBy,
     });
 
-    const env = model.config.custom.env;
-    env.model = model;
     if (!params.skipWaitForDataLoaded) {
         await waitForDataLoaded(model);
     }

@@ -3,28 +3,28 @@
 # * base_import
 #
 # Translators:
-# Martin Trigaux, 2024
-# Wil Odoo, 2025
-# Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2025, 2026.
+# Martin Trigaux, 2022
+# Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2022
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Lohushchenko <nadiia.lohushchenko@self-erp.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-02-14 09:08+0000\n"
-"Last-Translator: Alina Lisnenko <alina.lisnenko@erp.co.ua>\n"
-"Language-Team: Ukrainian <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-02 12:26+0000\n"
+"Last-Translator: Lohushchenko <nadiia.lohushchenko@self-erp.com>\n"
+"Language-Team: Ukrainian <https://translate.odoo.com/projects/odoo-19/"
 "base_import/uk/>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != 11 "
-"? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && "
-"(n % 100 < 12 || n % 100 > 14) ? 1 : n % 1 == 0 && "
-"(n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % 100 >=11 && n % 100 <=14 ))"
-" ? 2: 3);\n"
-"X-Generator: Weblate 5.14.3\n"
+"? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > "
+"14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % "
+"100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: base_import
 #. odoo-javascript
@@ -120,7 +120,7 @@ msgstr "Зіставлення імпорту бази"
 #. odoo-javascript
 #: code:addons/base_import/static/src/import_data_progress/import_data_progress.xml:0
 msgid "Batch"
-msgstr "Група"
+msgstr "Груповий розрахунок"
 
 #. module: base_import
 #. odoo-javascript
@@ -258,6 +258,7 @@ msgstr "Затримка після кожного групового плате
 #. module: base_import
 #: model:ir.model.fields,field_description:base_import.field_base_import_import__display_name
 #: model:ir.model.fields,field_description:base_import.field_base_import_mapping__display_name
+#: model:ir.model.fields,field_description:base_import.field_res_users__display_name
 msgid "Display Name"
 msgstr "Назва для відображення"
 
@@ -344,6 +345,12 @@ msgstr ""
 #: code:addons/base_import/models/base_import.py:0
 msgid "External ID"
 msgstr "Зовнішній ID"
+
+#. module: base_import
+#. odoo-python
+#: code:addons/base_import/models/base_import.py:0
+msgid "Field '%(field)s' does not accept date/time values."
+msgstr ""
 
 #. module: base_import
 #: model:ir.model.fields,field_description:base_import.field_base_import_mapping__field_name
@@ -437,6 +444,7 @@ msgstr "Ось початок файла, який не вдалося імпо�
 #. module: base_import
 #: model:ir.model.fields,field_description:base_import.field_base_import_import__id
 #: model:ir.model.fields,field_description:base_import.field_base_import_mapping__id
+#: model:ir.model.fields,field_description:base_import.field_res_users__id
 msgid "ID"
 msgstr "ID"
 
@@ -510,6 +518,12 @@ msgstr "Помилка попереднього перегляду імпорт�
 #: code:addons/base_import/static/src/import_records/import_records.xml:0
 msgid "Import records"
 msgstr "Імпортувати записи"
+
+#. module: base_import
+#. odoo-javascript
+#: code:addons/base_import/static/src/import_action/import_action.js:0
+msgid "Imported records"
+msgstr ""
 
 #. module: base_import
 #. odoo-javascript
@@ -669,7 +683,7 @@ msgstr "Модель резервування"
 #. odoo-javascript
 #: code:addons/base_import/static/src/import_action/import_action.xml:0
 msgid "Resume"
-msgstr "Продовжити"
+msgstr "Резюме"
 
 #. module: base_import
 #. odoo-javascript
@@ -806,6 +820,7 @@ msgstr "Файл буде імпортовано групами"
 #. module: base_import
 #. odoo-python
 #: code:addons/base_import/models/base_import.py:0
+#, fuzzy
 msgid ""
 "There was an issue decoding the file using encoding “%s”.\n"
 "This encoding was automatically detected."
@@ -816,6 +831,7 @@ msgstr ""
 #. module: base_import
 #. odoo-python
 #: code:addons/base_import/models/base_import.py:0
+#, fuzzy
 msgid ""
 "There was an issue decoding the file using encoding “%s”.\n"
 "This encoding was manually selected."
@@ -859,8 +875,8 @@ msgstr "Історія переміщень під час імпорту"
 msgid ""
 "Unable to load \"{extension}\" file: requires Python module \"{modname}\""
 msgstr ""
-"Неможливо завантажити файл \"{extension}\": потрібен модуль Python "
-"\"{modname}\""
+"Неможливо завантажити файл \"{extension}\": потрібен модуль Python \""
+"{modname}\""
 
 #. module: base_import
 #. odoo-python
@@ -947,11 +963,9 @@ msgstr "Коли значення не може бути співставлен�
 #. odoo-python
 #: code:addons/base_import/models/base_import.py:0
 msgid ""
-"You can not import images via URL, check with your administrator or support "
+"You can not import file via URL, check with your administrator or support "
 "for the reason."
 msgstr ""
-"Не можна імпортувати зображення за допомогою URL-адреси, зверніться до свого "
-"адміністратора чи служби підтримки з цієї причини."
 
 #. module: base_import
 #. odoo-javascript
@@ -1015,3 +1029,40 @@ msgstr "секунди"
 #: code:addons/base_import/models/base_import.py:0
 msgid "unknown error code %s"
 msgstr "невідома помилка коду %s"
+
+#~ msgid "Column %s contains incorrect values (value: %s)"
+#~ msgstr "Колонка %s містить невірні значення (значення: %s)"
+
+#~ msgid "Column %s contains incorrect values. Error in line %d: %s"
+#~ msgstr "Колонка %s містить невірні значення. Помилка в рядку %d: %s"
+
+#~ msgid "Error Parsing Date [%s:L%d]: %s"
+#~ msgstr "Помилка аналізу дати [%s:L%d]: %s"
+
+#~ msgid ""
+#~ "Import timed out. Please retry. If you still encounter this issue, the "
+#~ "file may be too big for the system's configuration, try to split it "
+#~ "(import less records per file)."
+#~ msgstr ""
+#~ "Імпорт завершено. Повторіть спробу. Якщо ви все ще стикаєтеся з цією "
+#~ "проблемою, файл може бути занадто великим для налаштування системи, "
+#~ "спробуйте розділити його (імпортуйте менше записів на файл)."
+
+#~ msgid "Imported file"
+#~ msgstr "Імпортований файл"
+
+#~ msgid "Load File"
+#~ msgstr "Завантажити файл"
+
+#~ msgid "Upload File"
+#~ msgstr "Завантажити файл"
+
+#~ msgid "Upload an Excel or CSV file to import"
+#~ msgstr "Завантажте файл Excel або CSV для імпорту"
+
+#~ msgid ""
+#~ "You can not import images via URL, check with your administrator or "
+#~ "support for the reason."
+#~ msgstr ""
+#~ "Не можна імпортувати зображення за допомогою URL-адреси, зверніться до "
+#~ "свого адміністратора чи служби підтримки з цієї причини."

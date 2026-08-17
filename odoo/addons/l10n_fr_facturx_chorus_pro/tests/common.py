@@ -1,4 +1,4 @@
-from odoo.addons.account_edi_ubl_cii.tests.common import TestUblCiiCommon, TestUblCiiFRCommon
+from odoo.addons.account_edi_ubl_cii.tests.common import TestUblCiiCommon
 from odoo.addons.account_edi_ubl_cii.models.account_edi_xml_ubl_bis3 import CHORUS_PRO_PEPPOL_ID
 
 
@@ -17,33 +17,10 @@ class TestUblCiiCommonChorusPro(TestUblCiiCommon):
             'name': "Chorus Pro - Commune de Nantes",
             # Commune de Nantes
             'vat': "FR74214401093",
-            'siret': "21440109300015",
+            'company_registry': "21440109300015",
             # Peppol ID for the AIFE (= Chorus Pro)
             'peppol_eas': chorus_eas,
             'peppol_endpoint': chorus_endpoint,
             'country_id': cls.env.ref('base.fr').id,
             **kwargs,
         })
-
-
-class TestUblCiiFRCommonChorusPro(TestUblCiiCommonChorusPro, TestUblCiiFRCommon):
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        if cls.env['ir.module.module']._get('l10n_fr_pdp').state == 'installed':
-            # The PDP module sets a 0225 identifier (based on the siret)
-            cls.env.company.partner_id.write({
-                'peppol_eas': '0009',
-                'peppol_endpoint': '40678483500521'
-            })
-
-    @classmethod
-    def _create_company(cls, **create_values):
-        create_values.setdefault('siret', '40678483500521')
-        return super()._create_company(**create_values)
-
-    @classmethod
-    def subfolders(cls):
-        subfolder_format, subfolder_document, _subfolder_country = super().subfolders()
-        return subfolder_format, subfolder_document, 'fr'

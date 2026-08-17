@@ -3,17 +3,19 @@
 # * mail_bot
 #
 # Translators:
-# Wil Odoo, 2024
+# Martin Trigaux, 2022
 #
-# "Junko Augias (juau)" <juau@odoo.com>, 2026.
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# "Junko Augias (juau)" <juau@odoo.com>, 2025, 2026.
+# MAHAMADASIF ANSARI <maan@odoo.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-07-29 07:10+0000\n"
-"Last-Translator: \"Junko Augias (juau)\" <juau@odoo.com>\n"
-"Language-Team: Japanese <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-05 22:00+0000\n"
+"Last-Translator: MAHAMADASIF ANSARI <maan@odoo.com>\n"
+"Language-Team: Japanese <https://translate.odoo.com/projects/odoo-19/"
 "mail_bot/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -40,23 +42,24 @@ msgstr "無効"
 #. module: mail_bot
 #: model:ir.model,name:mail_bot.model_discuss_channel
 msgid "Discussion Channel"
-msgstr "ディスカッションチャネル"
+msgstr "ディスカッションチャンネル"
+
+#. module: mail_bot
+#: model:ir.model.fields,field_description:mail_bot.field_discuss_channel__display_name
+#: model:ir.model.fields,field_description:mail_bot.field_mail_bot__display_name
+#: model:ir.model.fields,field_description:mail_bot.field_res_users__display_name
+msgid "Display Name"
+msgstr "表示名"
 
 #. module: mail_bot
 #. odoo-python
 #: code:addons/mail_bot/models/mail_bot.py:0
 msgid ""
-"Good, you can customize canned responses in the Discuss application.%"
-"(new_line)s%(new_line)s%(bold_start)sIt's the end of this overview%"
-"(bold_end)s, you can now %(bold_start)sclose this conversation%(bold_end)s "
-"or start the tour again with typing %(command_start)sstart the tour%"
-"(command_end)s. Enjoy discovering Odoo!"
+"Great! You can customize %(bold_start)scanned responses%(bold_end)s in the "
+"Discuss app."
 msgstr ""
-"ディスカッション・アプリケーションでは、定型文をカスタマイズすることができま"
-"す。%(new_line)s%(new_line)s%(bold_start)sこの概要は終了です%(bold_end)s。こ"
-"こで、 %(bold_start)sこの会話を閉じる%(bold_end)sまたは %(command_start)sツ"
-"アーを開始する%(command_end)sを入力してツアーを再開できます。Odooをお楽しみ下"
-"さい!"
+"素晴らしいですね!ディスカスアプリでは、%(bold_start)s返信定型文%(bold_end)sを"
+"自由にカスタマイズすることができます。"
 
 #. module: mail_bot
 #. odoo-python
@@ -99,6 +102,13 @@ msgstr ""
 "には: %(command_start)sツアー開始%(command_end)sを希望して下さい。"
 
 #. module: mail_bot
+#: model:ir.model.fields,field_description:mail_bot.field_discuss_channel__id
+#: model:ir.model.fields,field_description:mail_bot.field_mail_bot__id
+#: model:ir.model.fields,field_description:mail_bot.field_res_users__id
+msgid "ID"
+msgstr "ID"
+
+#. module: mail_bot
 #: model:ir.model.fields.selection,name:mail_bot.selection__res_users__odoobot_state__idle
 msgid "Idle"
 msgstr "アイドル"
@@ -133,7 +143,7 @@ msgid ""
 msgstr ""
 "何をしているか不明です。 %(command_start)s/%(command_end)s を入力して提案をお"
 "待ちください。 %(command_start)sヘルプ%(command_end)sを選択して、エンターを押"
-"して下さい。 "
+"して下さい。"
 
 #. module: mail_bot
 #. odoo-python
@@ -199,8 +209,8 @@ msgid ""
 "(command_start)sstart the tour%(command_end)s."
 msgstr ""
 "ごめんなさい、眠たいです。いや、眠くはない！もしかしたら、人の言葉を知らない"
-"ことを隠そうとしているだけかもしれません...%(new_line)s%(command_start)sツ"
-"アーを開始%(command_end)sと書いて頂けたら、機能をご紹介できます。"
+"ことを隠そうとしているだけかもしれません...%(new_line)s%(command_start)s"
+"ツアーを開始%(command_end)sと書いて頂けたら、機能をご紹介できます。"
 
 #. module: mail_bot
 #. odoo-python
@@ -211,8 +221,8 @@ msgid ""
 "me."
 msgstr ""
 "ごめんなさい、聞いていません。誰かの注意を促すには、%(bold_start)sその人を"
-"Pingします%(bold_end)s。 %(command_start)s@OdooBot%(command_end)s と入力し"
-"て、私を選択して下さい。"
+"Pingします%(bold_end)s。 %(command_start)s@OdooBot%(command_end)s と入力して"
+"、私を選択して下さい。"
 
 #. module: mail_bot
 #. odoo-python
@@ -235,6 +245,18 @@ msgstr "それは優しくない！私はボットだけど感情はあります
 #. module: mail_bot
 #. odoo-python
 #: code:addons/mail_bot/models/mail_bot.py:0
+msgid ""
+"That’s the end of this overview. You can %(bold_start)sclose this "
+"conversation%(bold_end)s or type %(command_start)sstart the tour%"
+"(command_end)s to see it again. Enjoy exploring Odoo!"
+msgstr ""
+"これで概要は終わりです。%(bold_start)sの会話を閉じる%(bold_end)sまたは %"
+"(command_start)sツアーを開始%(command_end)sと入力するともう一度見ることができ"
+"ます。Odooをお楽しみください!"
+
+#. module: mail_bot
+#. odoo-python
+#: code:addons/mail_bot/models/mail_bot.py:0
 msgid "This is a temporary canned response to see how canned responses work."
 msgstr ""
 "これは、返信定型文がどのように機能するかを確認するための、一時的なテスト用"
@@ -247,8 +269,8 @@ msgid ""
 "To %(bold_start)ssend an attachment%(bold_end)s, click on the %"
 "(paperclip_icon)s icon and select a file."
 msgstr ""
-" %(bold_start)s添付を送付%(bold_end)sするには、%(paperclip_icon)sアイコンをク"
-"リックして、ファイルを選択して下さい。"
+"%(bold_start)s添付を送付%(bold_end)sするには、%(paperclip_icon)sアイコンを"
+"クリックして、ファイルを選択して下さい。"
 
 #. module: mail_bot
 #. odoo-python
@@ -285,8 +307,8 @@ msgstr "ユーザ"
 #. odoo-python
 #: code:addons/mail_bot/models/mail_bot.py:0
 msgid ""
-"Wonderful! 😇%(new_line)sTry typing %(command_start)s:%(command_end)s to use "
-"canned responses. I've created a temporary one for you."
+"Wonderful! 😇%(new_line)sTry typing %(command_start)s::%(command_end)s to "
+"use canned responses. I've created a temporary one for you."
 msgstr ""
 "素晴らしい! 😇%(new_line)s%(command_start)s:%(command_end)sと入力して、返信定"
 "型文を使ってみましょう。あなたのために、一時的なテスト用メッセージを作成して"
@@ -301,8 +323,8 @@ msgid ""
 "(command_start)s@OdooBot%(command_end)s in a sentence."
 msgstr ""
 "わあ、才能がありますね!%(new_line)s注意を促すにはその人を@usernameでPingしま"
-"しょう。文中で%(bold_start)s以下を使用して、私をPingしてみて下さい%"
-"(bold_end)s:%(command_start)s@OdooBot%(command_end)s"
+"しょう。文中で%(bold_start)s以下を使用して、私をPingしてみて下さい%(bold_end)"
+"s:%(command_start)s@OdooBot%(command_end)s"
 
 #. module: mail_bot
 #. odoo-python
@@ -343,3 +365,9 @@ msgstr "ラブ"
 #: code:addons/mail_bot/models/mail_bot.py:0
 msgid "start the tour"
 msgstr "ツアーを開始"
+
+#~ msgid "Email Thread"
+#~ msgstr "Eメールスレッド"
+
+#~ msgid "HTTP Routing"
+#~ msgstr "HTTPルーティング"

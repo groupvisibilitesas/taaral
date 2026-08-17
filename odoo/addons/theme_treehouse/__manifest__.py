@@ -19,6 +19,7 @@
         'views/snippets/s_carousel_intro.xml',
         'views/snippets/s_color_blocks_2.xml',
         'views/snippets/s_comparisons.xml',
+        'views/snippets/s_comparisons_horizontal.xml',
         'views/snippets/s_company_team_detail.xml',
         'views/snippets/s_cover.xml',
         'views/snippets/s_card_offset.xml',
@@ -28,6 +29,7 @@
         'views/snippets/s_image_title.xml',
         'views/snippets/s_key_images.xml',
         'views/snippets/s_images_mosaic.xml',
+        'views/snippets/s_company_team_grid.xml',
         'views/snippets/s_media_list.xml',
         'views/snippets/s_numbers_list.xml',
         'views/snippets/s_picture.xml',
@@ -53,33 +55,65 @@
         'views/snippets/s_wavy_grid.xml',
         'views/snippets/s_text_cover.xml',
         'views/snippets/s_empowerment.xml',
+        'views/snippets/s_split_intro.xml',
+        'views/snippets/s_numbers_framed.xml',
         'views/new_page_template.xml',
     ],
     'images': [
-        'static/description/treehouse_cover.jpg',
-        'static/description/treehouse_screenshot.jpg',
+        'static/description/treehouse_cover.webp',
+        'static/description/treehouse_screenshot.webp',
     ],
     'images_preview_theme': {
-        'website.s_sidegrid_default_image_1': '/theme_treehouse/static/src/img/content/s_sidegrid_default_image_1.jpg',
-        'website.s_sidegrid_default_image_2': '/theme_treehouse/static/src/img/content/s_sidegrid_default_image_2.jpg',
-        'website.s_sidegrid_default_image_3': '/theme_treehouse/static/src/img/content/s_sidegrid_default_image_3.jpg',
-        'website.s_sidegrid_default_image_4': '/theme_treehouse/static/src/img/content/s_sidegrid_default_image_4.jpg',
-        'website.s_text_image_default_image': '/theme_treehouse/static/src/img/content/text_image.jpg',
-        'website.library_image_03': '/theme_treehouse/static/src/img/backgrounds/05.jpg',
-        'website.library_image_13': '/theme_treehouse/static/src/img/content/s_freegrid_default_image_2.jpg',
-        'website.library_image_10': '/theme_treehouse/static/src/img/content/s_freegrid_default_image_3.jpg',
-        'website.library_image_05': '/theme_treehouse/static/src/img/content/s_freegrid_default_image_4.jpg',
-        'website.library_image_14': '/theme_treehouse/static/src/img/content/s_freegrid_default_image_5.jpg',
-        'website.library_image_16': '/theme_treehouse/static/src/img/content/s_freegrid_default_image_6.jpg',
+        'website.s_sidegrid_default_image_1': '/theme_treehouse/static/src/img/content/s_sidegrid_default_image_1.webp',
+        'website.s_sidegrid_default_image_2': '/theme_treehouse/static/src/img/content/s_sidegrid_default_image_2.webp',
+        'website.s_sidegrid_default_image_3': '/theme_treehouse/static/src/img/content/s_sidegrid_default_image_3.webp',
+        'website.s_sidegrid_default_image_4': '/theme_treehouse/static/src/img/content/s_sidegrid_default_image_4.webp',
+        'website.s_text_image_default_image': '/theme_treehouse/static/src/img/content/text_image.webp',
+        'website.library_image_03': '/theme_treehouse/static/src/img/backgrounds/05.webp',
+        'website.library_image_13': '/theme_treehouse/static/src/img/content/s_freegrid_default_image_2.webp',
+        'website.library_image_10': '/theme_treehouse/static/src/img/content/s_freegrid_default_image_3.webp',
+        'website.library_image_05': '/theme_treehouse/static/src/img/content/s_freegrid_default_image_4.webp',
+        'website.library_image_14': '/theme_treehouse/static/src/img/content/s_freegrid_default_image_5.webp',
+        'website.library_image_16': '/theme_treehouse/static/src/img/content/s_freegrid_default_image_6.webp',
     },
     'configurator_snippets': {
         'homepage': ['s_sidegrid', 's_numbers_list', 's_color_blocks_2', 's_references', 's_freegrid'],
+    },
+    'configurator_snippets_addons': {
+        'website_sale': {
+            'homepage': [
+                ('website_sale.s_dynamic_snippet_category_list', 'after', 's_color_blocks_2'),
+            ],
+        },
+    },
+    'theme_customizations': {
+        'website_sale.s_dynamic_snippet_category_list': {
+            'data_attributes': {
+                'gap': '3',
+                'size': 'small',
+                'alignment': 'left',
+            },
+            'background': {
+                'color': 'o_cc2',
+                'shape': {
+                    'data-oe-shape-data': '{"shape":"web_editor/Connections/09", "colors":{"c5":"o-color-4"}, "flip":["x"]}',
+                    'element': """<div class="o_we_shape o_web_editor_Connections_09" style="background-image: url('/web_editor/shape/web_editor/Connections/09.svg?c5=o-color-4&amp;flip=x');""",
+                },
+            },
+            'add_classes': [
+                'pt88', 'pb144',
+            ],
+            'remove_classes': [
+                'pt64', 'pb64',
+            ],
+        },
     },
     'new_page_templates': {
         'about': {
             'personal': ['s_text_cover', 's_image_text', 's_text_block_h2', 's_numbers', 's_features', 's_call_to_action'],
         },
     },
+    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
     'assets': {
         'website.assets_editor': [

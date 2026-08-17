@@ -2,26 +2,16 @@
 # This file contains the translation of the following modules:
 # * loyalty
 #
-# Translators:
-# Ejner Sønniksen <ejner@vkdata.dk>, 2024
-# Kenneth Hansen <kenneth@vkdata.dk>, 2024
-# Morten Schou <ms@msteknik.dk>, 2024
-# Sanne Kristensen <sanne@vkdata.dk>, 2024
-# lhmflexerp <lhm@flexerp.dk>, 2024
-# Mads Søndergaard, 2024
-# Martin Trigaux, 2024
-# Mads Søndergaard, 2024
-# Kira Petersen, 2025
-# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
 # "Kira Petersen François (peti)" <peti@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 18:38+0000\n"
-"PO-Revision-Date: 2026-06-23 15:00+0000\n"
+"POT-Creation-Date: 2026-04-10 18:39+0000\n"
+"PO-Revision-Date: 2026-08-02 23:48+0000\n"
 "Last-Translator: \"Kira Petersen François (peti)\" <peti@odoo.com>\n"
-"Language-Team: Danish <https://translate.odoo.com/projects/odoo-18/loyalty/"
+"Language-Team: Danish <https://translate.odoo.com/projects/odoo-19/loyalty/"
 "da/>\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
@@ -47,21 +37,19 @@ msgstr ""
 "        "
 
 #. module: loyalty
-#: model:ir.model.fields,help:loyalty.field_loyalty_program__available_on
-msgid ""
-"\n"
-"        Manage where your program should be available for use.\n"
-"        "
-msgstr ""
-
-#. module: loyalty
 #: model:ir.model.fields,help:loyalty.field_loyalty_program__portal_visible
 msgid ""
 "\n"
 "        Show in web portal, PoS customer ticket, eCommerce checkout, the "
-"number of points available and used by reward.\n"
+"number of points available\n"
+"         and used by reward.\n"
 "        "
 msgstr ""
+"\n"
+"        Vis i webportal, POS-kundesag, e-handelskasse, antallet af "
+"tilgængelige\n"
+"         og anvendte point pr. belønning.\n"
+"        "
 
 #. module: loyalty
 #. odoo-python
@@ -176,17 +164,71 @@ msgid ""
 "                    <span style=\"background-color:#999999; display:inline-"
 "block; width:auto; border-radius:5px;\">\n"
 "                        <a t-attf-href=\"{{ object.get_base_url() }}/shop\" "
-"target=\"_blank\" style=\"text-decoration:none; font-family:arial, "
-"'helvetica neue', helvetica, sans-serif; font-size:22px; color:#FFFFFF; "
-"border-style:solid; border-color:#999999; border-width:20px 30px; "
-"display:inline-block; background-color:#999999; border-radius:5px; font-"
-"weight:bold; font-style:normal; line-height:26px; width:auto; text-"
+"target=\"_blank\" t-attf-style=\"text-decoration:none; font-family:arial, "
+"'helvetica neue', helvetica, sans-serif; font-size:22px; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-style:solid; "
+"border-width:20px 30px; display:inline-block; background-color: "
+"{{object.company_id.email_secondary_color or '#875A7B'}}; border-radius:5px; "
+"font-weight:bold; font-style:normal; line-height:26px; width:auto; text-"
 "align:center\">Use it right now!</a>\n"
 "                    </span>\n"
 "                </div>\n"
 "            </div>\n"
 "        "
 msgstr ""
+"<div style=\"background: #ffffff\">\n"
+"                <div style=\"margin:0px; font-size:24px; font-family:arial, "
+"'helvetica neue', helvetica, sans-serif; line-height:36px; color:#333333; "
+"text-align: center\">\n"
+"                    Her er dit gavekort!\n"
+"               </div>\n"
+"                <div style=\"padding-top:20px; padding-bottom:20px\"> \n"
+"                   <img src=\"/loyalty/static/img/gift_card.png\" "
+"style=\"display:block; border:0; outline:none; text-decoration:none; "
+"margin:auto;\" width=\"300\"/>\n"
+"                </div> \n"
+"               <div style=\"padding:0; margin:0px; padding-top:35px; padding-"
+"bottom:35px; text-align:center;\">\n"
+"                    <h3 style=\"margin:0px; line-height:48px; font-"
+"family:arial, 'helvetica neue', helvetica, sans-serif; font-size:40px; font-"
+"style:normal; font-weight:normal; color:#333333; text-align:center\"> \n"
+"                       <strong t-out=\"format_amount(object.points, "
+"object.currency_id) or ''\"> 150,00 €</strong></h3>\n"
+"               </div>\n"
+"                <div style=\"padding:0; margin:0px; padding-top:35px; "
+"padding-bottom:35px; background-color:#efefef; text-align:center;\"> \n"
+"                   <p style=\"margin:0px; font-size:14px;font-family:arial, "
+"'helvetica neue', helvetica, sans-serif; line-height:21px; color:#333333\">\n"
+"                        <strong> Gavekortkode</strong>\n"
+"                    </p>\n"
+"                   <p style=\"margin:0px; font-size:25px;font-family:arial, "
+"'helvetica neue', helvetica, sans-serif; line-height:38px; color:#A9A9A9\" t-"
+"out=\"object.code or ''\"> 4f10-15d6-41b7-b04c-7b3e</p>\n"
+"                </div>\n"
+"               <div t-if=\"object.expiration_date\" style=\"padding:0; "
+"margin:0px; padding-top:10px; padding-bottom:10px; text-align:center;\">\n"
+"                    <h3 style=\"margin:0px; line-height:17px; font-"
+"family:arial, 'helvetica neue', helvetica, sans-serif; font-size:14px; font-"
+"style:normal; font-weight:normal; color:#A9A9A9; text-align:center\"> Kortet "
+"udløber <t t-out=\"format_date(object.expiration_date) or ''\">05/05/2021</t>"
+"</h3>\n"
+"               </div>\n"
+"                <div style=\"padding:20px; margin:0px; text-align:center;\"> "
+"\n"
+"                   <span style=\"background-color:#999999; display:inline-"
+"block; width:auto; border-radius:5px;\">\n"
+"                        <a t-attf-href=\"{{ object.get_base_url() }}/shop\" "
+"target=\"_blank\" t-attf-style=\"text-decoration:none; font-family:arial, "
+"'helvetica neue', helvetica, sans-serif; font-size:22px; color: {"
+"{object.company_id.email_primary_color or '#FFFFFF'}}; border-style:solid; "
+"border-width:20px 30px; display:inline-block; background-color: {"
+"{object.company_id.email_secondary_color or '#875A7B'}}; border-radius:5px; "
+"font-weight:bold; font-style:normal; line-height:26px; width:auto; text-"
+"align:center\"> Brug det med det samme!</a>\n"
+"                    </span>\n"
+"               </div>\n"
+"            </div> \n"
+"        "
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_reward_view_kanban
@@ -333,8 +375,8 @@ msgid ""
 "margin:0px auto; background:#ffffff; color:#333333;\"><tbody>\n"
 "<tr>\n"
 "    <td valign=\"top\" style=\"text-align: center; font-size: 14px;\">\n"
-"        <t t-if=\"object._get_mail_partner().name\">\n"
-"            Congratulations <t t-out=\"object._get_mail_partner().name or "
+"        <t t-if=\"object._mail_get_customer().name\">\n"
+"            Congratulations <t t-out=\"object._mail_get_customer().name or "
 "''\">Brandon Freeman</t>,<br/>\n"
 "        </t>\n"
 "\n"
@@ -343,8 +385,9 @@ msgid ""
 "\n"
 "        <t t-foreach=\"object.program_id.reward_ids\" t-as=\"reward\">\n"
 "            <t t-if=\"reward.required_points &lt;= object.points\">\n"
-"                <span style=\"font-size: 50px; color: #875A7B; font-weight: "
-"bold;\" t-esc=\"reward.description\">Reward Description</span>\n"
+"                <span t-attf-style=\"font-size: 50px; color: "
+"{{object.program_id.company_id.email_secondary_color or '#875A7B'}}; font-"
+"weight: bold;\" t-esc=\"reward.description\">Reward Description</span>\n"
 "                <br/>\n"
 "            </t>\n"
 "        </t>\n"
@@ -382,14 +425,77 @@ msgid ""
 "        <t t-if=\"object._get_signature()\" data-o-mail-quote-"
 "container=\"1\">\n"
 "            <br/>\n"
-"            <t t-out=\"object._get_signature() or ''\" data-o-mail-"
-"quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/><t t-"
+"out=\"object._get_signature() or ''\" data-o-mail-quote=\"1\">Mitchell "
+"Admin</t></div>\n"
 "        </t>\n"
 "    </td>\n"
 "</tr>\n"
 "</tbody></table>\n"
 "        "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%; "
+"margin:0px auto; background:#ffffff; color:#333333;\"><tbody>\n"
+"<tr>\n"
+"    <td valign=\"top\" style=\"text-align: center; font-size: 14px;\">\n"
+"       <t t-if=\"object._mail_get_customer().name\"> \n"
+"            Tillykke <t t-out=\"object._mail_get_customer().name or ''\">"
+"Brandon Freeman</t>,<br/>\n"
+"        </t>\n"
+"\n"
+"        Her er din belønning fra <t t-"
+"out=\"object.program_id.company_id.name or ''\">DinVirksomhed</t>.<br/>\n"
+"\n"
+"        <t t-foreach=\"object.program_id.reward_ids\" t-as=\"reward\">\n"
+"           <t t-if=\"reward.required_points &lt;= object.points\">\n"
+"                <span t-attf-style=\"font-size: 50px; color: {"
+"{object.program_id.company_id.email_secondary_color or '#875A7B'}}; font-"
+"weight: bold;\" t-esc=\"reward.description\"> Belønningsbeskrivelse</span>\n"
+"                <br/>\n"
+"           </t>\n"
+"        </t> \n"
+"   </td>\n"
+"</tr> \n"
+"<tr style=\"margin-top: 16px\">\n"
+"    <td valign=\"top\" style=\"text-align: center; font-size: 14px;\">\n"
+"        Brug denne kampagnekode\n"
+"       <t t-if=\"object.expiration_date\"> \n"
+"            inden den <t t-out=\"format_date(object.expiration_date) or ''\">"
+"16-06-2021</t>\n"
+"        </t>\n"
+"       <p style=\"margin-top: 16px;\">\n"
+"            <strong style=\"padding: 16px 8px 16px 8px; border-radius: 3px; "
+"background-color: #F1F1F1;\" t-out=\"object.code or ''\"> "
+"15637502648479132902</strong>\n"
+"        </p>\n"
+"       <t t-foreach=\"object.program_id.rule_ids\" t-as=\"rule\">\n"
+"            <t t-if=\"rule.minimum_qty not in [0, 1]\"> \n"
+"               <span style=\"font-size: 14px;\"> \n"
+"                    Minimumskøb på <t t-out=\"rule.minimum_qty or ''\">10</"
+"t> produkter\n"
+"               </span><br/> \n"
+"           </t>\n"
+"            <t t-if=\"rule.minimum_amount != 0.00\"> \n"
+"               <span style=\"font-size: 14px;\"> \n"
+"                    Gælder for køb over <t t-"
+"out=\"rule.company_id.currency_id.symbol or ''\"></t><t t-out=\"'%0.2f' % "
+"float(rule.minimum_amount) or ''\">10,00 €</t>\n"
+"                </span><br/>\n"
+"            </t> \n"
+"       </t>\n"
+"        <br/> \n"
+"        Tak.\n"
+"       <t t-if=\"object._get_signature()\" data-o-mail-quote-container=\"1\">"
+"\n"
+"            <br/> \n"
+"           <div data-o-mail-quote=\"1\"> --<br data-o-mail-quote=\"1\"/><t t-"
+"out=\"object._get_signature() or ''\" data-o-mail-quote=\"1\">Mitchell "
+"Admin</t></div>\n"
+"       </t>\n"
+"    </td> \n"
+"</tr>\n"
+"</tbody></table> \n"
+"        "
 
 #. module: loyalty
 #. odoo-python
@@ -685,7 +791,7 @@ msgstr "Kontakt"
 #. odoo-javascript
 #: code:addons/loyalty/static/src/xml/loyalty_templates.xml:0
 msgid "Control panel buttons"
-msgstr "Kontrolpanelknapper"
+msgstr "Knapper på dashboard"
 
 #. module: loyalty
 #. odoo-python
@@ -733,6 +839,11 @@ msgstr "Rabatkupon: Oplysninger om rabatkupon"
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_view_tree
 msgid "Coupons"
 msgstr "Rabatkuponer"
+
+#. module: loyalty
+#: model:ir.model,website_form_label:loyalty.model_res_partner
+msgid "Create a Customer"
+msgstr "Opret en kunde"
 
 #. module: loyalty
 #: model_terms:ir.actions.act_window,help:loyalty.loyalty_program_gift_ewallet_action
@@ -943,6 +1054,7 @@ msgid "Discounts"
 msgstr "Rabatter"
 
 #. module: loyalty
+#: model:ir.model.fields,field_description:loyalty.field_base_partner_merge_automatic_wizard__display_name
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__display_name
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card_update_balance__display_name
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_generate_wizard__display_name
@@ -951,6 +1063,10 @@ msgstr "Rabatter"
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__display_name
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__display_name
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_rule__display_name
+#: model:ir.model.fields,field_description:loyalty.field_product_pricelist__display_name
+#: model:ir.model.fields,field_description:loyalty.field_product_product__display_name
+#: model:ir.model.fields,field_description:loyalty.field_product_template__display_name
+#: model:ir.model.fields,field_description:loyalty.field_res_partner__display_name
 msgid "Display Name"
 msgstr "Visningsnavn"
 
@@ -1243,6 +1359,7 @@ msgid "History for Loyalty cards and Ewallets"
 msgstr "Historik for medlemskort og digitale punge"
 
 #. module: loyalty
+#: model:ir.model.fields,field_description:loyalty.field_base_partner_merge_automatic_wizard__id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card_update_balance__id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_generate_wizard__id
@@ -1251,6 +1368,10 @@ msgstr "Historik for medlemskort og digitale punge"
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_rule__id
+#: model:ir.model.fields,field_description:loyalty.field_product_pricelist__id
+#: model:ir.model.fields,field_description:loyalty.field_product_product__id
+#: model:ir.model.fields,field_description:loyalty.field_product_template__id
+#: model:ir.model.fields,field_description:loyalty.field_res_partner__id
 msgid "ID"
 msgstr "ID"
 
@@ -1421,6 +1542,11 @@ msgstr "Loyalitetstransaktion"
 #: code:addons/loyalty/models/loyalty_program.py:0
 msgid "Loyalty point(s)"
 msgstr "Loyalitetspoint"
+
+#. module: loyalty
+#: model:ir.model.fields,help:loyalty.field_loyalty_program__available_on
+msgid "Manage where your program should be available for use."
+msgstr "Vælg, hvor dit program skal være tilgængeligt."
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__discount_max_amount
@@ -1857,16 +1983,6 @@ msgid "Symbol"
 msgstr "Symbol"
 
 #. module: loyalty
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__tax_ids
-msgid "Taxes"
-msgstr "Moms"
-
-#. module: loyalty
-#: model:ir.model.fields,help:loyalty.field_loyalty_reward__tax_ids
-msgid "Taxes to add on the discount line."
-msgstr ""
-
-#. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_report
 msgid "Thank you,"
 msgstr "Tak."
@@ -1987,12 +2103,6 @@ msgstr "Udløser"
 
 #. module: loyalty
 #. odoo-python
-#: code:addons/loyalty/models/loyalty_reward.py:0
-msgid "Unsupported search operator"
-msgstr ""
-
-#. module: loyalty
-#. odoo-python
 #: code:addons/loyalty/models/loyalty_card.py:0
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_update_balance_form
 msgid "Update Balance"
@@ -2049,6 +2159,11 @@ msgid "Valid until"
 msgstr "Gyldig indtil"
 
 #. module: loyalty
+#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_program_view_form
+msgid "Visible to all"
+msgstr "Kan ses af alle"
+
+#. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__website_message_ids
 msgid "Website Messages"
 msgstr "Beskeder fra hjemmesiden"
@@ -2090,8 +2205,10 @@ msgstr ""
 #: model:ir.model.fields,help:loyalty.field_loyalty_rule__reward_point_split
 msgid ""
 "Whether to separate reward coupons per matched unit, only applies to "
-"'future' programs and trigger mode per money spent or unit paid.."
+"'future' programs and trigger mode per money spent or unit paid..."
 msgstr ""
+"Opdeling af belønningskuponer pr. afstemt enhed gælder kun for kommende "
+"programmer og udløses pr. udbetalt beløb eller betalt enhed ..."
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_generate_wizard__will_send_mail
@@ -2212,6 +2329,18 @@ msgstr "købte varer"
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_report
 msgid "loyalty Reward"
 msgstr "medlemsbelønning"
+
+#. module: loyalty
+#. odoo-python
+#: code:addons/loyalty/models/loyalty_program.py:0
+msgid "mail.template"
+msgstr "mail.template"
+
+#. module: loyalty
+#. odoo-python
+#: code:addons/loyalty/models/loyalty_rule.py:0
+msgid "money"
+msgstr "penge"
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_reward_view_kanban

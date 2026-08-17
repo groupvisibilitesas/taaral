@@ -1,16 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo import models, fields, api, _
-from odoo.osv import expression
 from odoo.exceptions import UserError, RedirectWarning, ValidationError
-from odoo.tools import float_round
-from odoo.tools.misc import formatLang
+from odoo.fields import Domain
+from odoo.tools import float_round, formatLang
 from dateutil.relativedelta import relativedelta
 import logging
 _logger = logging.getLogger(__name__)
 
 
 class AccountMove(models.Model):
-
     _inherit = 'account.move'
 
     @api.model
@@ -23,24 +21,24 @@ class AccountMove(models.Model):
         return {'invoice_number': int(invoice_number), 'point_of_sale': int(pos)}
 
     l10n_ar_afip_responsibility_type_id = fields.Many2one(
-        'l10n_ar.afip.responsibility.type', string='AFIP Responsibility Type', help='Defined by AFIP to'
+        'l10n_ar.afip.responsibility.type', string='ARCA Responsibility Type', help='Defined by ARCA to'
         ' identify the type of responsibilities that a person or a legal entity could have and that impacts in the'
         ' type of operations and requirements they need.')
 
     # Mostly used on reports
     l10n_ar_afip_concept = fields.Selection(
-        compute='_compute_l10n_ar_afip_concept', selection='_get_afip_invoice_concepts', string="AFIP Concept",
+        compute='_compute_l10n_ar_afip_concept', selection='_get_afip_invoice_concepts', string="ARCA Concept",
         help="A concept is suggested regarding the type of the products on the invoice.")
-    l10n_ar_afip_service_start = fields.Date(string='AFIP Service Start Date')
-    l10n_ar_afip_service_end = fields.Date(string='AFIP Service End Date')
+    l10n_ar_afip_service_start = fields.Date(string='ARCA Service Start Date')
+    l10n_ar_afip_service_end = fields.Date(string='ARCA Service End Date')
 
     def _is_manual_document_number(self):
         """ Document number should be manual input by user when the journal use documents and
 
-        * if sales journal and not a AFIP pos (liquido producto case)
-        * if purchase journal and not a AFIP pos (regular case of vendor bills)
+        * if sales journal and not a ARCA pos (liquido producto case)
+        * if purchase journal and not a ARCA pos (regular case of vendor bills)
 
-        All the other cases the number should be automatic set, wiht only one exception, for pre-printed/online AFIP
+        All the other cases the number should be automatic set, wiht only one exception, for pre-printed/online ARCA
         POS type, the first numeber will be always set manually by the user and then will be computed automatically
         from there """
         if self.country_code != 'AR':
@@ -88,7 +86,7 @@ class AccountMove(models.Model):
     def _get_concept(self):
         """ Method to get the concept of the invoice considering the type of the products on the invoice """
         self.ensure_one()
-        invoice_lines = self.invoice_line_ids.filtered(lambda x: x.display_type not in ('line_note', 'line_section'))
+        invoice_lines = self.invoice_line_ids.filtered(lambda x: x.display_type not in ('line_section', 'line_subsection', 'line_note'))
         product_types = set([x.product_id.type for x in invoice_lines if x.product_id])
         consumable = {'consu'}
         service = set(['service'])
@@ -96,7 +94,7 @@ class AccountMove(models.Model):
         expo_invoice = self.l10n_latam_document_type_id.code in ['19', '20', '21']
 
         # WSFEX 1668 - If Expo invoice and we have a "IVA Liberado – Ley Nº 19.640" (Zona Franca) partner
-        # then AFIP concept to use should be type "Others (4)"
+        # then ARCA concept to use should be type "Others (4)"
         is_zona_franca = self.partner_id.l10n_ar_afip_responsibility_type_id == self.env.ref("l10n_ar.res_IVA_LIB")
         # Default value "product"
         afip_concept = '1'
@@ -120,13 +118,11 @@ class AccountMove(models.Model):
         domain = super()._get_l10n_latam_documents_domain()
         if self.journal_id.company_id.account_fiscal_country_id.code == "AR":
             letters = self.journal_id._get_journal_letter(counterpart_partner=self.partner_id.commercial_partner_id)
-            domain += ['|', ('l10n_ar_letter', '=', False), ('l10n_ar_letter', 'in', letters)]
-            domain = expression.AND([
-                domain or [],
-                self.journal_id._get_journal_codes_domain(),
-            ])
+            domain = Domain(domain)
+            domain &= Domain('l10n_ar_letter', '=', False) | Domain('l10n_ar_letter', 'in', letters)
+            domain &= Domain(self.journal_id._get_journal_codes_domain())
             if self.move_type in ['out_refund', 'in_refund']:
-                domain = ['|', ('code', 'in', self._get_l10n_ar_codes_used_for_inv_and_ref())] + domain
+                domain = Domain('code', 'in', self._get_l10n_ar_codes_used_for_inv_and_ref()) | domain
         return domain
 
     def _check_argentinean_invoice_taxes(self):
@@ -137,7 +133,7 @@ class AccountMove(models.Model):
             # we require a single vat on each invoice line except from some purchase documents
             if inv.move_type in ['in_invoice', 'in_refund'] and inv.l10n_latam_document_type_id.purchase_aliquots == 'zero':
                 purchase_aliquots = 'zero'
-            for line in inv.mapped('invoice_line_ids').filtered(lambda x: x.display_type not in ('line_section', 'line_note')):
+            for line in inv.mapped('invoice_line_ids').filtered(lambda x: x.display_type not in ('line_section', 'line_subsection', 'line_note')):
                 vat_taxes = line.tax_ids.filtered(lambda x: x.tax_group_id.l10n_ar_vat_afip_code)
                 if len(vat_taxes) != 1:
                     raise UserError(_("There should be a single tax from the “VAT“ tax group per line, but this is not the case for line “%s”. Please add a tax to this line or check the tax configuration's advanced options for the corresponding field “Tax Group”.", line.name))
@@ -166,7 +162,7 @@ class AccountMove(models.Model):
            and not self.partner_id.l10n_ar_afip_responsibility_type_id:
             return {'warning': {
                 'title': _('Missing Partner Configuration'),
-                'message': _('Please configure the AFIP Responsibility for "%s" in order to continue',
+                'message': _('Please configure the ARCA Responsibility for "%s" in order to continue',
                     self.partner_id.name)}}
 
     @api.onchange('partner_id')
@@ -267,7 +263,7 @@ class AccountMove(models.Model):
     def _get_starting_sequence(self):
         """ If use documents then will create a new starting sequence using the document type code prefix and the
         journal document number with a 8 padding number """
-        if self.journal_id.l10n_latam_use_documents and self.company_id.account_fiscal_country_id.code == "AR":
+        if self.l10n_latam_use_documents and self.company_id.account_fiscal_country_id.code == "AR":
             if self.l10n_latam_document_type_id:
                 return self._get_formatted_sequence()
         return super()._get_starting_sequence()

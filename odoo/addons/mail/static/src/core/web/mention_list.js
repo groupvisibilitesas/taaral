@@ -3,6 +3,7 @@ import { Component, useEffect, useState } from "@odoo/owl";
 import { useService, useAutofocus } from "@web/core/utils/hooks";
 
 import { NavigableList } from "@mail/core/common/navigable_list";
+import { mapSuggestionsToOptions } from "@mail/core/common/suggestion_hook";
 import { useSequential } from "@mail/utils/common/hooks";
 
 export class MentionList extends Component {
@@ -26,7 +27,7 @@ export class MentionList extends Component {
             isFetching: false,
         });
         this.orm = useService("orm");
-        this.store = useState(useService("mail.store"));
+        this.store = useService("mail.store");
         this.suggestionService = useService("mail.suggestion");
         this.sequential = useSequential();
         this.ref = useAutofocus({ mobile: true });
@@ -40,20 +41,23 @@ export class MentionList extends Component {
                 this.sequential(async () => {
                     this.state.isFetching = true;
                     try {
-                        await this.suggestionService.fetchSuggestions({ delimiter, term });
+                        await this.suggestionService.fetchSuggestions(
+                            { delimiter, term },
+                            { thread }
+                        );
                     } finally {
                         this.state.isFetching = false;
                     }
                     const { suggestions } = this.suggestionService.searchSuggestions(
                         { delimiter, term },
-                        { sort: true, thread }
+                        { thread }
                     );
                     this.state.options = suggestions;
                 });
             },
             () => [
                 this.state.searchTerm,
-                this.props.type === "partner" ? "@" : "#",
+                this.props.type === "Partner" ? "@" : "#",
                 this.props.thread,
             ]
         );
@@ -61,9 +65,9 @@ export class MentionList extends Component {
 
     get placeholder() {
         switch (this.props.type) {
-            case "channel":
+            case "Thread":
                 return _t("Search for a channel...");
-            case "partner":
+            case "Partner":
                 return _t("Search for a user...");
             default:
                 return _t("Search...");
@@ -71,7 +75,7 @@ export class MentionList extends Component {
     }
 
     get navigableListProps() {
-        const props = {
+        return {
             anchorRef: this.ref.el,
             position: "bottom-fit",
             isLoading: !!this.state.searchTerm && this.state.isFetching,
@@ -79,32 +83,10 @@ export class MentionList extends Component {
                 this.props.onSelect(...args);
                 this.props.close();
             },
-            options: [],
+            ...mapSuggestionsToOptions(this.props.type, this.state.options, {
+                thread: this.props.thread,
+            }),
         };
-        switch (this.props.type) {
-            case "partner":
-                props.optionTemplate = "mail.Composer.suggestionPartner";
-                props.options = this.state.options.map((suggestion) => {
-                    return {
-                        label: suggestion.name,
-                        partner: suggestion,
-                        classList: "o-mail-Composer-suggestion",
-                    };
-                });
-                break;
-            case "channel":
-                props.optionTemplate = "mail.Composer.suggestionThread";
-                props.options = this.state.options.map((suggestion) => {
-                    return {
-                        label: suggestion.displayName,
-                        thread: suggestion,
-                        channel: suggestion,
-                        classList: "o-mail-Composer-suggestion",
-                    };
-                });
-                break;
-        }
-        return props;
     }
 
     onKeydown(ev) {

@@ -1,7 +1,7 @@
 from odoo import models
 
 
-class EventTicket(models.Model):
+class EventEventTicket(models.Model):
     _inherit = 'event.event.ticket'
 
     def _show_discount(self):
@@ -10,13 +10,13 @@ class EventTicket(models.Model):
         if not self.price:
             return False
 
-        website = self.env['website'].get_current_website()
-        pricelist = website.pricelist_id
+        product_sudo = self.product_id.sudo()
+        pricelist = product_sudo.product_tmpl_id._get_contextual_pricelist()
         if not pricelist:
             return False
 
         rule_id = pricelist._get_product_rule(
-            product=self.product_id,
+            product=product_sudo,
             quantity=1.0,
         )
         pricelist_item = self.env['product.pricelist.item'].browse(rule_id)

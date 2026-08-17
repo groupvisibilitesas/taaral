@@ -39,7 +39,6 @@ class TestItEdiDDT(TestItEdi):
                 'list_price': 180.0,
                 'type': 'service',
                 'uom_id': uom_unit.id,
-                'uom_po_id': uom_unit.id,
                 'default_code': 'SERV_DEL',
                 'invoice_policy': 'delivery',
                 'taxes_id': [(6, 0, [])],
@@ -51,7 +50,6 @@ class TestItEdiDDT(TestItEdi):
                 'list_price': 90.0,
                 'type': 'service',
                 'uom_id': uom_hour.id,
-                'uom_po_id': uom_hour.id,
                 'description': 'Example of product to invoice on order',
                 'default_code': 'PRE-PAID',
                 'invoice_policy': 'order',
@@ -65,7 +63,6 @@ class TestItEdiDDT(TestItEdi):
                 'type': 'consu',
                 'weight': 0.01,
                 'uom_id': uom_unit.id,
-                'uom_po_id': uom_unit.id,
                 'default_code': 'FURN_9999',
                 'invoice_policy': 'order',
                 'expense_policy': 'no',
@@ -79,7 +76,6 @@ class TestItEdiDDT(TestItEdi):
                 'type': 'consu',
                 'weight': 0.01,
                 'uom_id': uom_unit.id,
-                'uom_po_id': uom_unit.id,
                 'default_code': 'FURN_7777',
                 'invoice_policy': 'delivery',
                 'expense_policy': 'no',
@@ -92,7 +88,7 @@ class TestItEdiDDT(TestItEdi):
         """ Create a sale order with multiple DDTs, and create an invoice with a later date.
             The export has to have the TipoDocumento TD24 for Deferred Invoice.
         """
-        self.env.user.groups_id |= self.env.ref("sales_team.group_sale_salesman")
+        self.env.user.group_ids |= self.env.ref("sales_team.group_sale_salesman")
         # Create sale order
         with freeze_time('2020-02-02 18:00'):
             self.sale_order = self.env['sale.order'].with_company(self.company).create({
@@ -104,18 +100,18 @@ class TestItEdiDDT(TestItEdi):
                         'name': product.name,
                         'product_id': product.id,
                         'product_uom_qty': 5,
-                        'product_uom': product.uom_id.id,
                         'price_unit': product.list_price,
-                        'tax_id': self.tax_22
+                        'tax_ids': self.tax_22
                     }) for product in self.products
                 ],
                 'pricelist_id': self.default_pricelist.id,
                 'picking_policy': 'direct',
+                'name': 'SO-ITDDT0001',
             })
             self.sale_order.action_confirm()
 
             # Create two pickings, so 2 DDTs
-            for dummy in range(2):
+            for _i in range(2):
                 self._create_delivery(self.sale_order, 1)
 
         # Create one invoice

@@ -1,4 +1,3 @@
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import datetime
 
 from pytz import UTC
@@ -14,93 +13,56 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
     # CRUD, inherited methods
     # -----------------------
 
-    def _export_invoice_vals(self, invoice):
-        # EXTENDS 'account_edi_ubl_cii'
-        vals = super()._export_invoice_vals(invoice)
+    def _add_myinvois_document_monetary_total_vals(self, vals):
+        super()._add_myinvois_document_monetary_total_vals(vals)
 
+        myinvois_document = vals["myinvois_document"]
+        if myinvois_document.pos_order_ids:
+            # Add the total amount paid.
+            vals.update({
+                'total_paid_amount': sum(order.amount_paid / order.currency_rate for order in myinvois_document.pos_order_ids),
+                'total_paid_amount_currency': sum(myinvois_document.pos_order_ids.mapped('amount_paid')),
+            })
+
+    def _add_myinvois_document_monetary_total_nodes(self, document_node, vals):
+        super()._add_myinvois_document_monetary_total_nodes(document_node, vals)
+        myinvois_document = vals["myinvois_document"]
         # For individual POS e-invoices, the prepaid amount must be 0.
         # POS orders are paid immediately at the point of sale, MyInvois requires
         # the PayableAmount to reflect the full invoice amount (not reduced by prepayment).
-        if invoice.pos_order_ids:
-            vals['vals']['prepaid_payment_vals']['amount'] = 0
-            vals['vals'].get('monetary_total_vals', {})['payable_amount'] = invoice.amount_total
-
-        # Support the unlikely case where we invoice a refund of an order included in a consolidated invoice.
-        consolidated_invoice = self._is_consolidated_invoice_refund(invoice)
-        if consolidated_invoice:
-            vals['vals'].update({
-                'billing_reference_vals': {
-                    'id': consolidated_invoice.name,
-                    'uuid': consolidated_invoice.myinvois_external_uuid,
-                },
-            })
-            # We also need to match the customer, so we change it to the same as the consolidated invoice (General Public)
-            general_public = self.env["res.partner"].search(
-                domain=[
-                    *self.env['res.partner']._check_company_domain(invoice.company_id),
-                    '|',
-                    ('vat', '=', 'EI00000000010'),
-                    ('l10n_my_edi_malaysian_tin', '=', 'EI00000000010'),
-                ],
-                limit=1,
+        if not myinvois_document._is_consolidated_invoice() and myinvois_document.invoice_ids.pos_order_ids:
+            currency_suffix = vals['currency_suffix']
+            # Omit the node entirely rather than emitting it with a 0.00 amount, consistent with the base module.
+            document_node['cac:PrepaidPayment'] = None
+            monetary_total_tag = self._get_tags_for_document_type(vals)['monetary_total']
+            document_node[monetary_total_tag]['cbc:PayableAmount']['_text'] = self.format_float(
+                vals[f'tax_inclusive_amount{currency_suffix}'], vals['currency_dp']
             )
-            if general_public:
-                vals['customer'] = general_public
-                vals['vals']['accounting_customer_party_vals']['party_vals'] = self._get_partner_party_vals(general_public, role='customer')
-                vals['vals']['delivery_vals_list'] = [{
-                    'accounting_delivery_party_vals': self._l10n_my_edi_get_delivery_party_vals(general_public),
-                }]
-
-        return vals
-
-    def _get_invoice_line_item_vals(self, line, taxes_vals):
-        # EXTENDS 'account_edi_ubl_cii'
-        vals = super()._get_invoice_line_item_vals(line, taxes_vals)
-        # When the invoice is sent for the general public (refunding an order in a consolidated invoice/...) the item code
-        # must be fixed to 004 (consolidated invoice) even if the product has something else set.
-        if line.partner_id._l10n_my_edi_get_tin_for_myinvois() == 'EI00000000010' or self._is_consolidated_invoice_refund(line.move_id):
-            vals['commodity_classification_vals'][0]['item_classification_code'] = '004'
-        return vals
-
-    def _export_invoice_constraints(self, invoice, vals):
-        # EXTENDS 'l10n_my_edi'
-        constraints = super()._export_invoice_constraints(invoice, vals)
-        # Ignore classification code errors if invoicing to the general public; the code is fixed.
-        for line in invoice.invoice_line_ids.filtered(lambda invoice_line: invoice_line.display_type not in ('line_note', 'line_section')):
-            to_general_public = vals['customer']._l10n_my_edi_get_tin_for_myinvois() == 'EI00000000010'
-            if to_general_public:
-                if f"myinvois_{line.product_id.id}_class_code_required" in constraints:
-                    del constraints[f"myinvois_{line.product_id.id}_class_code_required"]
-                if f"myinvois_{line.product_id.id}_class_code_required_line" in constraints:
-                    del constraints[f"myinvois_{line.product_id.id}_class_code_required_line"]
-
-        if all(line_val['item_vals']['commodity_classification_vals'][0]['item_classification_code'] == '04' for line_val in vals['vals']['line_vals']):
-            # consolidated invoices must use a specific customer VAT number.
-            customer_vat = vals['vals']['accounting_customer_party_vals']['party_vals']['party_identification_vals'][0]['id']
-            if customer_vat != 'EI00000000010':
-                self._l10n_my_edi_make_validation_error(constraints, 'missing_general_public', vals['customer'].id, vals['customer'].name)
-
-        return constraints
 
     @api.model
-    def _is_consolidated_invoice_refund(self, invoice):
+    def _l10n_my_edi_get_refund_details(self, invoice):
         """
-        Indicate if the invoice we are exporting is a refund/credit note regarding a consolidated invoice.
-        If yes, we return the consolidated invoice.
+        Override in order to get the original document from the PoS order in case of refund of a
+        PoS consolidated invoice.
+
+        Note that by design, we consider that a refund done in a PoS is an actual refund and never a
+        credit note.
+        :param invoice: The credit note for which we want to get the refunded document.
+        :return: A tuple, where the first parameter indicates if this credit note is a refund and the second the credited/refunded document.
         """
-        is_order_refund = invoice.move_type == 'out_refund' and invoice.pos_order_ids
-        if not is_order_refund:
-            return False
+        if not invoice.pos_order_ids:
+            return super()._l10n_my_edi_get_refund_details(invoice)  # the existing logic is enough.
 
         refunded_order = invoice.pos_order_ids[0].refunded_order_id
-        consolidated_invoices = refunded_order and refunded_order._get_active_consolidated_invoice()
-        return consolidated_invoices
+        consolidated_invoices = refunded_order._get_active_consolidated_invoice()
+        return True, consolidated_invoices
 
     # Consolidated invoice export
 
     def _get_consolidated_invoice_node(self, vals):
         self._add_consolidated_invoice_config_vals(vals)
         self._add_consolidated_invoice_base_lines_vals(vals)
+        self._setup_base_lines(vals)
         self._add_document_currency_vals(vals)
         self._add_document_tax_grouping_function_vals(vals)
         self._setup_base_lines(vals)
@@ -229,8 +191,6 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
             consolidated_base_lines.append(new_base_line)
 
         vals['base_lines'] = consolidated_base_lines
-        # So any cash rounding will just be part of the line's amount.
-        vals['cash_rounding_base_lines'] = []
 
     def _add_consolidated_invoice_monetary_total_vals(self, vals):
         self._add_document_monetary_total_vals(vals)
@@ -242,6 +202,9 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
         })
 
     def _add_document_tax_grouping_function_vals(self, vals):
+        if 'consolidated_invoice' not in vals:
+            return super()._add_document_tax_grouping_function_vals(vals)
+
         def total_grouping_function(_base_line, _tax_data):
             return True
 
@@ -379,6 +342,9 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
 
     def _get_address_node(self, vals):
         """ Generic helper to generate the Address node for a res.partner or res.bank. """
+        if 'consolidated_invoice' not in vals:
+            return super()._get_address_node(vals)
+
         partner = vals['partner']
         country_key = 'country' if partner._name == 'res.bank' else 'country_id'
         state_key = 'state' if partner._name == 'res.bank' else 'state_id'
@@ -413,13 +379,10 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
         self._add_document_monetary_total_nodes(document_node, vals)
         currency_suffix = vals['currency_suffix']
 
+        # Consolidated invoices have no genuine prepayment to report; omit the node entirely rather than
+        # emitting it with a 0.00 amount.
         amount_paid = 0.0
-        document_node['cac:PrepaidPayment'] = {
-            'cbc:PaidAmount': {
-                '_text': self.format_float(amount_paid, vals['currency_dp']),
-                'currencyID': vals['currency_name'],
-            },
-        }
+        document_node['cac:PrepaidPayment'] = None
         monetary_total_tag = self._get_tags_for_document_type(vals)['monetary_total']
         payable_amount = self.format_float(vals[f'tax_inclusive_amount{currency_suffix}'] - amount_paid, vals['currency_dp'])
         document_node[monetary_total_tag]['cbc:PayableAmount']['_text'] = payable_amount
@@ -428,6 +391,10 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
         self._add_document_line_nodes(document_node, vals)
 
     def _add_document_line_item_nodes(self, line_node, vals):
+        if 'consolidated_invoice' not in vals:
+            super()._add_document_line_item_nodes(line_node, vals)
+            return
+
         line_node['cac:Item'] = {
             'cbc:Description': {'_text': vals['base_line']['line_name']},
             'cbc:Name': {'_text': vals['base_line']['line_name']},
@@ -441,6 +408,9 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
 
     def _add_document_line_amount_nodes(self, line_node, vals):
         super()._add_document_line_amount_nodes(line_node, vals)
+        if 'consolidated_invoice' not in vals:
+            return
+
         line_node.update({
             'cac:ItemPriceExtension': {
                 'cbc:Amount': {
@@ -457,6 +427,9 @@ class AccountEdiXmlUBLMyInvoisMY(models.AbstractModel):
         pre-computed amount.
         """
         super()._add_document_line_gross_subtotal_and_discount_vals(vals)
+        if 'consolidated_invoice' not in vals:
+            return
+
         base_line = vals['base_line']
 
         for currency_suffix in ['', '_currency']:

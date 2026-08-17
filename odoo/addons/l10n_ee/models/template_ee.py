@@ -11,8 +11,6 @@ class AccountChartTemplate(models.AbstractModel):
         return {
             'property_account_receivable_id': 'l10n_ee_10200',
             'property_account_payable_id': 'l10n_ee_2010',
-            'property_account_income_categ_id': 'l10n_ee_40000',
-            'property_account_expense_categ_id': 'l10n_ee_50',
             'code_digits': '6',
         }
 
@@ -34,5 +32,20 @@ class AccountChartTemplate(models.AbstractModel):
                 'default_cash_difference_expense_account_id': 'l10n_ee_671',
                 'account_sale_tax_id': 'l10n_ee_vat_out_24_g',
                 'account_purchase_tax_id': 'l10n_ee_vat_in_24_g',
+                'income_account_id': 'l10n_ee_40000',
+                'expense_account_id': 'l10n_ee_50',
+                'l10n_ee_rounding_difference_loss_account_id': 'l10n_ee_6851',
+                'l10n_ee_rounding_difference_profit_account_id': 'l10n_ee_431',
+                'account_stock_journal_id': 'inventory_valuation',
+                'account_stock_valuation_id': 'l10n_ee_1030',
+            },
+        }
+
+    @template('ee', 'account.account')
+    def _get_ee_account_account(self):
+        return {
+            'l10n_ee_1030': {
+                'account_stock_expense_id': 'l10n_ee_51',
+                'account_stock_variation_id': 'l10n_ee_6810',
             },
         }

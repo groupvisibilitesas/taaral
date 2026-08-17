@@ -31,17 +31,17 @@ class TestPosPickingBackorder(TestPointOfSaleFlow):
         })
         self.env['stock.quant']._update_available_quantity(qty_product, shelf_location, 5)
 
-        self.pos_config.open_ui()
+        self.pos_config_usd.open_ui()
 
         untax_qty, atax_qty = self.compute_tax(qty_product, 10.0, 1)
         untax_ser, atax_ser = self.compute_tax(serial_product, 20.0, 1)
         total = untax_qty + atax_qty + untax_ser + atax_ser
 
-        pos_order = self.PosOrder.create({
+        pos_order = self.env['pos.order'].create({
             'company_id': self.env.company.id,
-            'session_id': self.pos_config.current_session_id.id,
-            'pricelist_id': self.partner1.property_product_pricelist.id,
-            'partner_id': self.partner1.id,
+            'session_id': self.pos_config_usd.current_session_id.id,
+            'pricelist_id': self.partner_manv.property_product_pricelist.id,
+            'partner_id': self.partner_manv.id,
             'lines': [Command.create({
                 'name': "OL/QTY",
                 'product_id': qty_product.id,
@@ -71,7 +71,7 @@ class TestPosPickingBackorder(TestPointOfSaleFlow):
         })
 
         payment_ctx = {'active_ids': [pos_order.id], 'active_id': pos_order.id}
-        self.PosMakePayment.with_context(payment_ctx).create({
+        self.env['pos.make.payment'].with_context(payment_ctx).create({
             'amount': total,
         }).with_context({'active_id': pos_order.id}).check()
 

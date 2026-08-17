@@ -1,34 +1,5 @@
-import {
-    Component,
-    onMounted,
-    onWillDestroy,
-    onWillStart,
-    status,
-    useEffect,
-    useRef,
-    useState,
-} from "@odoo/owl";
+import { Component, onMounted, onWillStart, useEffect, useRef, useState, status } from "@odoo/owl";
 import { loadBundle } from "@web/core/assets";
-import { useDebounced } from "@web/core/utils/timing";
-
-function onResized(ref, callback) {
-    const _ref = typeof ref === "string" ? useRef(ref) : ref;
-    const resizeObserver = new ResizeObserver(callback);
-
-    useEffect(
-        (el) => {
-            if (el) {
-                resizeObserver.observe(el);
-                return () => resizeObserver.unobserve(el);
-            }
-        },
-        () => [_ref.el]
-    );
-
-    onWillDestroy(() => {
-        resizeObserver.disconnect();
-    });
-}
 
 export class CodeEditor extends Component {
     static template = "web.CodeEditor";
@@ -52,6 +23,7 @@ export class CodeEditor extends Component {
         maxLines: { type: Number, optional: true },
         sessionId: { type: [Number, String], optional: true },
         initialCursorPosition: { type: Object, optional: true },
+        showLineNumbers: { type: Boolean, optional: true },
     };
     static defaultProps = {
         readonly: false,
@@ -60,6 +32,7 @@ export class CodeEditor extends Component {
         class: "",
         theme: "",
         sessionId: 1,
+        showLineNumbers: true,
     };
 
     static MODES = ["javascript", "xml", "qweb", "scss", "python"];
@@ -133,7 +106,7 @@ export class CodeEditor extends Component {
         );
 
         useEffect(
-            (readonly) => {
+            (readonly, showLineNumbers) => {
                 this.aceEditor.setOptions({
                     readOnly: readonly,
                     highlightActiveLine: !readonly,
@@ -142,14 +115,14 @@ export class CodeEditor extends Component {
 
                 this.aceEditor.renderer.setOptions({
                     displayIndentGuides: !readonly,
-                    showGutter: !readonly,
+                    showGutter: !readonly && showLineNumbers,
                 });
 
                 this.aceEditor.renderer.$cursorLayer.element.style.display = readonly
                     ? "none"
                     : "block";
             },
-            () => [this.props.readonly]
+            () => [this.props.readonly, this.props.showLineNumbers]
         );
 
         useEffect(
@@ -184,14 +157,6 @@ export class CodeEditor extends Component {
             },
             () => [this.props.sessionId, this.props.mode, this.props.value]
         );
-
-        const debouncedResize = useDebounced(() => {
-            if (this.aceEditor) {
-                this.aceEditor.resize();
-            }
-        }, 250);
-
-        onResized(this.editorRef, debouncedResize);
 
         const initialCursorPosition = this.props.initialCursorPosition;
         if (initialCursorPosition) {

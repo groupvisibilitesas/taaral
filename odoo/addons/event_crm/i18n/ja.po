@@ -2,20 +2,18 @@
 # This file contains the translation of the following modules:
 # * event_crm
 #
-# Translators:
-# Wil Odoo, 2024
-# Junko Augias, 2025
-#
-# "Junko Augias (juau)" <juau@odoo.com>, 2026.
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# "Junko Augias (juau)" <juau@odoo.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 # Ryoko Tsuda <ryoko@quartile.co>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-06-08 13:05+0000\n"
-"Last-Translator: Ryoko Tsuda <ryoko@quartile.co>\n"
-"Language-Team: Japanese <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-04 22:32+0000\n"
+"Last-Translator: \"Junko Augias (juau)\" <juau@odoo.com>\n"
+"Language-Team: Japanese <https://translate.odoo.com/projects/odoo-19/"
 "event_crm/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -57,6 +55,21 @@ msgid "Active"
 msgstr "有効"
 
 #. module: event_crm
+#: model_terms:ir.ui.view,arch_db:event_crm.event_question_view_form
+msgid "Add a rule"
+msgstr "規則を追加"
+
+#. module: event_crm
+#: model_terms:ir.ui.view,arch_db:event_crm.event_lead_rule_view_form
+msgid "All Event templates"
+msgstr "イベント一覧テンプレート"
+
+#. module: event_crm
+#: model_terms:ir.ui.view,arch_db:event_crm.event_lead_rule_view_form
+msgid "All Events"
+msgstr "イベント一覧"
+
+#. module: event_crm
 #: model_terms:ir.ui.view,arch_db:event_crm.event_lead_rule_view_form
 #: model_terms:ir.ui.view,arch_db:event_crm.event_lead_rule_view_search
 msgid "Archived"
@@ -96,8 +109,9 @@ msgstr "自動的にこの販売担当者に作成されたリードを割り当
 #. odoo-python
 #: code:addons/event_crm/models/event_event.py:0
 msgid "Aww! No Leads created, check your Lead Generation Rules and try again."
-msgstr "リードが作成されていません。リード作成ルールを確認して、もう一度やり直して下"
-"さい。"
+msgstr ""
+"リードが作成されていません。リード作成規則を確認して、もう一度やり直して下さ"
+"い。"
 
 #. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__company_id
@@ -117,7 +131,12 @@ msgstr "作成"
 #. module: event_crm
 #: model_terms:ir.actions.act_window,help:event_crm.event_lead_rule_action
 msgid "Create a Lead Generation Rule"
-msgstr "リード生成ルールを作成する"
+msgstr "リード生成規則を作成する"
+
+#. module: event_crm
+#: model:ir.model,website_form_label:event_crm.model_crm_lead
+msgid "Create an Opportunity"
+msgstr "案件作成"
 
 #. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__lead_ids
@@ -153,11 +172,15 @@ msgstr ""
 #. module: event_crm
 #: model:ir.model.fields,help:event_crm.field_event_lead_rule__lead_type
 msgid "Default lead type when this rule is applied."
-msgstr "このルールが適用された場合のデフォルトのリードタイプ。"
+msgstr "この規則が適用された場合のデフォルトのリードタイプ。"
 
 #. module: event_crm
+#: model:ir.model.fields,field_description:event_crm.field_crm_lead__display_name
+#: model:ir.model.fields,field_description:event_crm.field_event_event__display_name
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_request__display_name
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__display_name
+#: model:ir.model.fields,field_description:event_crm.field_event_question_answer__display_name
+#: model:ir.model.fields,field_description:event_crm.field_event_registration__display_name
 msgid "Display Name"
 msgstr "表示名"
 
@@ -171,7 +194,7 @@ msgstr "イベント"
 #. module: event_crm
 #: model:ir.actions.server,name:event_crm.ir_cron_generate_leads_ir_actions_server
 msgid "Event CRM: Generate Leads based on Rules"
-msgstr "イベントCRM: ルールに基づいてリードを生成"
+msgstr "イベントCRM: 規則に基づいてリードを生成"
 
 #. module: event_crm
 #: model:ir.model,name:event_crm.model_event_lead_request
@@ -181,7 +204,12 @@ msgstr "イベントリード要求"
 #. module: event_crm
 #: model:ir.model,name:event_crm.model_event_lead_rule
 msgid "Event Lead Rules"
-msgstr "イベントリードルール"
+msgstr "イベントリード規則"
+
+#. module: event_crm
+#: model:ir.model,name:event_crm.model_event_question_answer
+msgid "Event Question Answer"
+msgstr "イベント質問回答"
 
 #. module: event_crm
 #: model:ir.model,name:event_crm.model_event_registration
@@ -194,6 +222,11 @@ msgid "Event Templates"
 msgstr "イベントテンプレート"
 
 #. module: event_crm
+#: model:ir.actions.act_window,name:event_crm.event_lead_rule_answer_action
+msgid "Event lead Rule"
+msgstr "イベントリード規則"
+
+#. module: event_crm
 #: model:ir.actions.act_window,name:event_crm.event_registration_action_from_lead
 msgid "Event registrations"
 msgstr "イベント登録"
@@ -201,12 +234,22 @@ msgstr "イベント登録"
 #. module: event_crm
 #: model:ir.model.fields,help:event_crm.field_crm_lead__event_id
 msgid "Event triggering the rule that created this lead"
-msgstr "このリードを作成したルールをトリガーするイベント"
+msgstr "このリードを作成した規則をトリガーするイベント"
 
 #. module: event_crm
 #: model_terms:ir.ui.view,arch_db:event_crm.crm_lead_merge_summary_inherit_event_crm
 msgid "Event:"
 msgstr "イベント："
+
+#. module: event_crm
+#: model_terms:ir.ui.view,arch_db:event_crm.event_lead_rule_view_form
+msgid "Execute Rule"
+msgstr "ルールを実行"
+
+#. module: event_crm
+#: model_terms:ir.ui.view,arch_db:event_crm.event_lead_rule_view_form
+msgid "Execute this rule for all ongoing and future events."
+msgstr "進行中および将来のイベント一覧に対してこのルールを実行します。"
 
 #. module: event_crm
 #: model:ir.model.fields,help:event_crm.field_event_lead_rule__event_registration_filter
@@ -228,8 +271,8 @@ msgid ""
 "Filter the attendees to include those of this specific event. If not set, no "
 "event restriction will be applied."
 msgstr ""
-"出席者をこの特定のイベントの出席者に絞り込みます。設定されていない場合、イベ"
-"ントの制限は適用されません。"
+"出席者をこの特定のイベントの出席者に絞り込みます。設定されていない場合、"
+"イベントの制限は適用されません。"
 
 #. module: event_crm
 #: model_terms:ir.ui.view,arch_db:event_crm.event_lead_rule_view_form
@@ -237,7 +280,7 @@ msgid "For any of these Events"
 msgstr "これらのイベントのうちいずれについても"
 
 #. module: event_crm
-#: model_terms:ir.ui.view,arch_db:event_crm.event_view_form
+#: model:ir.actions.server,name:event_crm.action_generate_leads
 msgid "Generate Leads"
 msgstr "リード生成"
 
@@ -248,8 +291,12 @@ msgid "Got it! We've noted your request. Your leads will be created soon!"
 msgstr "ご要望を承りました! すぐにリードが作成されます!"
 
 #. module: event_crm
+#: model:ir.model.fields,field_description:event_crm.field_crm_lead__id
+#: model:ir.model.fields,field_description:event_crm.field_event_event__id
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_request__id
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__id
+#: model:ir.model.fields,field_description:event_crm.field_event_question_answer__id
+#: model:ir.model.fields,field_description:event_crm.field_event_registration__id
 msgid "ID"
 msgstr "ID"
 
@@ -269,6 +316,7 @@ msgid "Last Updated on"
 msgstr "最終更新日"
 
 #. module: event_crm
+#: model:ir.model,name:event_crm.model_crm_lead
 #: model:ir.model.fields.selection,name:event_crm.selection__event_lead_rule__lead_type__lead
 msgid "Lead"
 msgstr "リード"
@@ -292,22 +340,22 @@ msgstr "リード生成"
 #: model:ir.actions.act_window,name:event_crm.event_lead_rule_action
 #: model_terms:ir.ui.view,arch_db:event_crm.event_lead_rule_view_form
 msgid "Lead Generation Rule"
-msgstr "リード生成ルール"
+msgstr "リード生成規則"
 
 #. module: event_crm
 #: model_terms:ir.ui.view,arch_db:event_crm.event_lead_rule_view_tree
 msgid "Lead Generation Rules"
-msgstr "リード生成ルール"
+msgstr "リード生成規則"
+
+#. module: event_crm
+#: model:ir.model.fields,field_description:event_crm.field_event_lead_request__event_lead_rule_ids
+msgid "Lead Rules"
+msgstr "リードルール"
 
 #. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__lead_type
 msgid "Lead Type"
 msgstr "リードタイプ"
-
-#. module: event_crm
-#: model:ir.model,name:event_crm.model_crm_lead
-msgid "Lead/Opportunity"
-msgstr "リード / 案件"
 
 #. module: event_crm
 #: model:ir.actions.act_window,name:event_crm.crm_lead_action_from_event
@@ -346,15 +394,10 @@ msgid "No registration found"
 msgstr "登録が見つかりません"
 
 #. module: event_crm
-#: model:ir.model.fields,field_description:event_crm.field_event_event__has_lead_request
-msgid "Ongoing Generation Request"
-msgstr "継続中の生成リクエスト"
-
-#. module: event_crm
 #. odoo-python
 #: code:addons/event_crm/models/event_event.py:0
 msgid "Only Event Managers are allowed to re-generate all leads."
-msgstr "イベントマネージャーだけが全てのリードを再生成することができます。"
+msgstr "イベントマネージャーだけがすべてのリードを再生成することができます。"
 
 #. module: event_crm
 #: model:ir.model.fields.selection,name:event_crm.selection__event_lead_rule__lead_type__opportunity
@@ -394,12 +437,12 @@ msgstr "処理済登録"
 #. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_crm_lead__event_lead_rule_id
 msgid "Registration Rule"
-msgstr "登録ルール"
+msgstr "登録規則"
 
 #. module: event_crm
 #: model_terms:ir.ui.view,arch_db:event_crm.crm_lead_merge_summary_inherit_event_crm
 msgid "Registration Rule:"
-msgstr "登録ルール："
+msgstr "登録規則："
 
 #. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__event_registration_filter
@@ -409,7 +452,7 @@ msgstr "登録ドメイン"
 #. module: event_crm
 #: model:ir.model.fields,help:event_crm.field_crm_lead__registration_ids
 msgid "Registrations triggering the rule that created this lead"
-msgstr "このリードを作成したルールをトリガーする登録"
+msgstr "このリードを作成した規則をトリガーする登録"
 
 #. module: event_crm
 #: model:ir.model.fields,help:event_crm.field_event_lead_rule__company_id
@@ -418,23 +461,23 @@ msgid ""
 "company.\n"
 "If not set, no company restriction will be applied."
 msgstr ""
-"このルールのトリガーを特定の会社に属するイベントに制限します。\n"
+"この規則のトリガーを特定の会社に属するイベントに制限します。\n"
 "設定しない場合、会社の制限は適用されません。"
 
 #. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__name
 msgid "Rule Name"
-msgstr "ルール名"
+msgstr "規則名"
 
 #. module: event_crm
 #: model:event.lead.rule,name:event_crm.event_lead_rule_0
 msgid "Rule on @example.com"
-msgstr "@example.com　上におけるルール"
+msgstr "@example.com　上における規則"
 
 #. module: event_crm
 #: model:ir.model.fields,help:event_crm.field_crm_lead__event_lead_rule_id
 msgid "Rule that created this lead"
-msgstr "このリードを作成したルール"
+msgstr "このリードを作成した規則"
 
 #. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__lead_sales_team_id
@@ -449,22 +492,17 @@ msgstr "販売担当者"
 #. module: event_crm
 #: model_terms:ir.ui.view,arch_db:event_crm.event_lead_rule_view_search
 msgid "Search Lead Generation Rules"
-msgstr "リード生成ルールを検索"
-
-#. module: event_crm
-#: model:ir.model.fields,help:event_crm.field_event_event__has_lead_request
-msgid "Set to True when a Lead Generation Request is currently running."
-msgstr "リード生成リクエストが実行中の場合、Trueに設定されます。"
+msgstr "リード生成規則を検索"
 
 #. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_crm_lead__event_id
 msgid "Source Event"
-msgstr "要求元イベント"
+msgstr "発生元イベント"
 
 #. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_crm_lead__registration_ids
 msgid "Source Registrations"
-msgstr "要求元登録"
+msgstr "発生元イベント登録"
 
 #. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__lead_tag_ids
@@ -495,6 +533,11 @@ msgstr "トリガータイプ"
 #: code:addons/event_crm/models/event_registration.py:0
 msgid "Updated registrations"
 msgstr "更新された登録"
+
+#. module: event_crm
+#: model_terms:ir.ui.view,arch_db:event_crm.event_lead_rule_view_form
+msgid "Visible to all"
+msgstr "全員に表示"
 
 #. module: event_crm
 #: model:ir.model.fields,field_description:event_crm.field_event_lead_rule__lead_creation_trigger

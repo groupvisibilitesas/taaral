@@ -1,5 +1,3 @@
-/** @odoo-module */
-
 import {
     clickOnSnippet,
     insertSnippet,
@@ -9,7 +7,7 @@ import {
 const snippets = [
     { id: "s_popup", name: "Popup", groupName: "Content" },
     { id: "s_banner", name: "Banner", groupName: "Into" },
-    { id: "s_popup", name: "Custom Popup", groupName: "Custom" },
+    { customID: "s_popup", name: "Custom Popup", groupName: "Custom" },
 ];
 
 registerWebsitePreviewTour(
@@ -23,12 +21,17 @@ registerWebsitePreviewTour(
         ...clickOnSnippet(snippets[1]),
         {
             content: "save this snippet to save later",
-            trigger: ".o_we_user_value_widget.fa-save",
+            trigger: ".options-container[data-container-title='Popup'] .oe_snippet_save",
             run: "click",
         },
         {
             content: "confirm and reload custom snippet",
             trigger: ".modal-footer > .btn.btn-primary",
+            run: "click",
+        },
+        {
+            content: "Hide the popup",
+            trigger: ".o_we_invisible_entry i",
             run: "click",
         },
         ...insertSnippet(snippets[2]),

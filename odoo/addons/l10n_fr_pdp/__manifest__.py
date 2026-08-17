@@ -8,12 +8,11 @@
 """,
     'depends': [
         'l10n_fr_account',
-        'account_edi_ubl_cii_tax_extension',
         'account_peppol_response',
-        'auth_totp_mail_enforce',
+        'auth_totp_mail',
         'iap',
     ],
-    'auto_install': ['l10n_fr_account', 'auth_totp_mail_enforce'],
+    'auto_install': ['l10n_fr_account', 'auth_totp_mail'],
     'data': [
         'data/ir_cron.xml',
         'security/ir.model.access.csv',
@@ -25,9 +24,11 @@
         'views/pdp_send_wizard_views.xml',
         'views/res_config_settings_views.xml',
         'views/res_partner_views.xml',
+        'wizard/pdp_config_wizard.xml',
         'wizard/pdp_registration_views.xml',
         'wizard/pdp_response_wizard_views.xml',
     ],
+    'author': 'Odoo S.A.',
     'assets': {
         'web.assets_backend': [
             'l10n_fr_pdp/static/src/js/**',

@@ -13,7 +13,7 @@ orig_request_json = requests.Response.json
 # was fixed in requests==2.27
 
 
-def patch_requests():
+def patch_module():
     try:
         import simplejson  # noqa: PLC0415
     except ImportError:

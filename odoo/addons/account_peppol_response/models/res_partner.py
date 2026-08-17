@@ -1,5 +1,4 @@
 from odoo import api, fields, models
-from odoo.addons.account_peppol.tools.demo_utils import handle_demo
 
 INVOICE_RESPONSE_CUSTOMISATION_ID = "busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2::ApplicationResponse##urn:fdc:peppol.eu:poacc:trns:invoice_response:3::2.1"
 
@@ -27,7 +26,6 @@ class ResPartner(models.Model):
                 continue
             partner.peppol_supported_documents = [service['document_id'] for service in participant_info.get('services', []) if service.get('document_id')]
 
-    @handle_demo
     def button_account_peppol_check_partner_endpoint(self, company=None):
         # EXTENDS account_peppol
         self.ensure_one()

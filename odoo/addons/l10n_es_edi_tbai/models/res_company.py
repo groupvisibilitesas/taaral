@@ -41,6 +41,7 @@ L10N_ES_TBAI_LICENSE_DICT = {
     },
 }
 
+
 class ResCompany(models.Model):
     _inherit = 'res.company'
 

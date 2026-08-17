@@ -1,5 +1,3 @@
-/** @odoo-module **/
-
 import { registry } from "@web/core/registry";
 import { rpc } from "@web/core/network/rpc";
 
@@ -22,7 +20,7 @@ registry.category("web_tour.tours").add('totportal_tour_setup', {
     run: "click",
 }, {
     content: "Check the wizard has opened",
-    trigger: 'li:contains("scan the barcode below")',
+    trigger: '.o_auth_totp_enable_2FA',
 }, {
     content: "Get secret from collapsed div",
     trigger: 'a:contains("Cannot scan it?")',
@@ -31,13 +29,13 @@ registry.category("web_tour.tours").add('totportal_tour_setup', {
     trigger: `span[name="secret"]:hidden`,
     async run(helpers) {
         const secret = this.anchor.textContent;
-        const token = await rpc('/totphook', {
-            secret
+        const token = await rpc("/totphook", {
+            secret,
+            offset: 0,
         });
         await helpers.edit(token, 'input[name="code"]');
     }
-},
-{
+}, {
     trigger: "button.btn-primary:contains(Activate)",
     run: "click",
     expectUnloadPage: true,
@@ -75,7 +73,7 @@ registry.category("web_tour.tours").add('totportal_login_enabled', {
     content: "input code",
     trigger: 'input[name=totp_token]',
     run: async function (helpers) {
-        const token = await rpc('/totphook');
+        const token = await rpc('/totphook', { offset: 1 });
         await helpers.edit(token);
     }
 }, {

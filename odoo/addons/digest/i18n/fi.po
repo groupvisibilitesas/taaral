@@ -3,27 +3,28 @@
 # * digest
 #
 # Translators:
-# Joakim Weckman, 2024
-# Tuomas Lyyra <tuomas.lyyra@legenda.fi>, 2024
-# Veikko Väätäjä <veikko.vaataja@gmail.com>, 2024
-# Karoliina Nisula <karoliina.nisula@tawasta.fi>, 2024
-# Kari Lindgren <kari.lindgren@emsystems.fi>, 2024
-# Topi Aura <topi@aurat.fi>, 2024
-# Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2024
-# Martin Trigaux, 2024
-# Eino Mäkitalo <eino.makitalo@netitbe.fi>, 2024
-# Mikko Salmela <salmemik@gmail.com>, 2024
-# Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2024
-# Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2025
+# Joakim Weckman, 2022
+# Eino Mäkitalo <eino.makitalo@netitbe.fi>, 2022
+# Karoliina Nisula <karoliina.nisula@tawasta.fi>, 2022
+# Veikko Väätäjä <veikko.vaataja@gmail.com>, 2022
+# Tuomas Lyyra <tuomas.lyyra@legenda.fi>, 2022
+# Martin Trigaux, 2022
+# Mikko Salmela <salmemik@gmail.com>, 2022
+# Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2022
+# Kari Lindgren <kari.lindgren@emsystems.fi>, 2022
+# Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2022
+# Topi Aura <topi@aurat.fi>, 2022
+# Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2023
+# "Tiffany Chang (tic)" <tic@odoo.com>, 2025, 2026.
 # Saara Hakanen <sahak@odoo.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-07-24 15:51+0000\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-08 00:04+0000\n"
 "Last-Translator: Saara Hakanen <sahak@odoo.com>\n"
-"Language-Team: Finnish <https://translate.odoo.com/projects/odoo-18/digest/"
+"Language-Team: Finnish <https://translate.odoo.com/projects/odoo-19/digest/"
 "fi/>\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
@@ -197,6 +198,8 @@ msgstr "Yhteenvetojen otsikko"
 #. module: digest
 #: model:ir.model.fields,field_description:digest.field_digest_digest__display_name
 #: model:ir.model.fields,field_description:digest.field_digest_tip__display_name
+#: model:ir.model.fields,field_description:digest.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:digest.field_res_users__display_name
 msgid "Display Name"
 msgstr "Näyttönimi"
 
@@ -216,11 +219,6 @@ msgid "General"
 msgstr "Yleinen"
 
 #. module: digest
-#: model_terms:ir.ui.view,arch_db:digest.digest_digest_view_search
-msgid "Group by"
-msgstr "Ryhmittele"
-
-#. module: digest
 #: model_terms:digest.tip,tip_description:digest.digest_tip_digest_1
 msgid ""
 "Have a question about a document? Click on the responsible user's picture to "
@@ -233,6 +231,8 @@ msgstr ""
 #. module: digest
 #: model:ir.model.fields,field_description:digest.field_digest_digest__id
 #: model:ir.model.fields,field_description:digest.field_digest_tip__id
+#: model:ir.model.fields,field_description:digest.field_res_config_settings__id
+#: model:ir.model.fields,field_description:digest.field_res_users__id
 msgid "ID"
 msgstr "ID"
 
@@ -366,7 +366,8 @@ msgid ""
 "screen. It is useful to process multiple documents in batch."
 msgstr ""
 "Paina ALT-näppäintä missä tahansa näytössä korostaaksesi näytön jokaisen "
-"painikkeen pikavalinnat. Se on näppärä tapa käsitellä useita dokumentteja."
+"painikkeen pikakuvakkeet. Se on näppärä tapa käsitellä useita asiakirjoja "
+"joukkona."
 
 #. module: digest
 #: model:ir.model.fields.selection,name:digest.selection__digest_digest__periodicity__quarterly
@@ -398,7 +399,7 @@ msgstr "Lähettäjä"
 #. module: digest
 #: model:ir.model.fields,field_description:digest.field_digest_tip__sequence
 msgid "Sequence"
-msgstr "Järjestys"
+msgstr "Sekvenssi"
 
 #. module: digest
 #: model:ir.model.fields,field_description:digest.field_digest_digest__state
@@ -555,9 +556,10 @@ msgid ""
 "Follow a project / sales team to keep track of this project's tasks / this "
 "team's opportunities."
 msgstr ""
-"Kun seuraat asiakirjoja, voit hienosäätää haluamasi tiedot kynäkuvakkeella.\n"
-"Seuraa projektia tai myyntitiimiä, jotta voit seurata tämän projektin "
-"tehtäviä tai tämän tiimin myyntimahdollisuuksia."
+"Kun seuraat asiakirjoja, voit hienosäätää haluamiasi tietoja "
+"kynäkuvakkeella.\n"
+"Seuraa projektia/myyntitiimiä, jotta voit seurata tämän projektin tehtäviä/ "
+"tiimin myyntimahdollisuuksia."
 
 #. module: digest
 #: model_terms:ir.ui.view,arch_db:digest.portal_digest_unsubscribed
@@ -591,3 +593,16 @@ msgstr "neljännesvuosittain"
 #: code:addons/digest/models/digest.py:0
 msgid "weekly"
 msgstr "viikoittain"
+
+#~ msgid "<span class=\"button\" id=\"button_open_report\">Open Report</span>"
+#~ msgstr ""
+#~ "<span class=\"button\" id=\"button_open_report\">Avoin raportti</span>"
+
+#~ msgid "<span style=\"color: #8f8f8f;\">Unsubscribe</span>"
+#~ msgstr "<span style=\"color: #8f8f8f;\">Lopeta tilaus</span>"
+
+#~ msgid "Group by"
+#~ msgstr "Ryhmittele"
+
+#~ msgid "Statistics"
+#~ msgstr "Tilastot"

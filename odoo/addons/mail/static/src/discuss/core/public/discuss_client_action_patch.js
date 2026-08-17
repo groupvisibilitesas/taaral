@@ -1,6 +1,5 @@
 import { DiscussClientAction } from "@mail/core/public_web/discuss_client_action";
 import { WelcomePage } from "@mail/discuss/core/public/welcome_page";
-import { useState } from "@odoo/owl";
 import { browser } from "@web/core/browser/browser";
 import { patch } from "@web/core/utils/patch";
 
@@ -8,17 +7,17 @@ DiscussClientAction.components = { ...DiscussClientAction.components, WelcomePag
 patch(DiscussClientAction.prototype, {
     setup() {
         super.setup(...arguments);
-        this.publicState = useState({
-            welcome: this.store.shouldDisplayWelcomeView,
-        });
         if (this.store.isChannelTokenSecret) {
             // Change the URL to avoid leaking the invitation link.
             browser.history.replaceState(
                 browser.history.state,
                 null,
-                `/discuss/channel/${this.store.discuss_public_thread.id}${browser.location.search}`
+                `/discuss/channel/${this.store.discuss.thread.id}${browser.location.search}`
             );
         }
+        const url = new URL(browser.location.href);
+        url.searchParams.delete("email_token");
+        browser.history.replaceState(browser.history.state, null, url.toString());
         browser.addEventListener("popstate", () => this.restoreDiscussThread(this.props));
     },
     getActiveId() {
@@ -30,13 +29,10 @@ patch(DiscussClientAction.prototype, {
     },
     async restoreDiscussThread() {
         await super.restoreDiscussThread(...arguments);
-        this.publicState.welcome ||=
-            this.store.shouldDisplayWelcomeView ??
-            this.store.discuss.thread?.defaultDisplayMode === "video_full_screen";
-        this.store.shouldDisplayWelcomeView = this.publicState.welcome;
+        this.store.is_welcome_page_displayed ||=
+            this.store.discuss.thread?.default_display_mode === "video_full_screen";
     },
     closeWelcomePage() {
-        this.publicState.welcome = false;
-        this.store.shouldDisplayWelcomeView = false;
+        this.store.is_welcome_page_displayed = false;
     },
 });

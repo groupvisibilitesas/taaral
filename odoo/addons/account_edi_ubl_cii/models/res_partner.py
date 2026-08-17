@@ -6,6 +6,22 @@ from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from odoo.addons.account_edi_ubl_cii.models.account_edi_common import EAS_MAPPING
 from odoo.addons.account.models.company import PEPPOL_DEFAULT_COUNTRIES
+from odoo.tools import single_email_re
+
+
+PEPPOL_ENDPOINT_INVALIDCHARS_RE = re.compile(r'[^a-zA-Z\d\-._~]')
+PEPPOL_ENDPOINT_INVALID_CHARS_RE_BY_EAS = {
+    '0208': re.compile(r'[^0-9]'),
+    '9925': re.compile(r'[^beBE0-9]'),
+    'EM': re.compile(r'[^a-zA-Z\d\-._@]'),
+}
+
+
+def sanitize_peppol_endpoint(peppol_endpoint, eas=None):
+    if not peppol_endpoint:
+        return peppol_endpoint
+    sanitizer = PEPPOL_ENDPOINT_INVALID_CHARS_RE_BY_EAS.get(eas, PEPPOL_ENDPOINT_INVALIDCHARS_RE)
+    return sanitizer.sub('', peppol_endpoint)
 
 
 class ResPartner(models.Model):
@@ -192,6 +208,10 @@ class ResPartner(models.Model):
                 return min(formats_by_country, key=lambda e: formats_info[e].get('sequence', 100))  # we use a sequence of 100 by default
         return False
 
+    def _get_ubl_cii_edi_format(self):
+        self.ensure_one()
+        return self.invoice_edi_format or self._get_suggested_ubl_cii_edi_format()
+
     def _get_suggested_peppol_edi_format(self):
         self.ensure_one()
         suggested_format = self.commercial_partner_id._get_suggested_ubl_cii_edi_format()
@@ -223,7 +243,7 @@ class ResPartner(models.Model):
         for partner in self:
             partner.is_peppol_edi_format = partner.invoice_edi_format in self._get_peppol_formats()
 
-    def _get_peppol_endpoint_value(self, country_code, field):
+    def _get_peppol_endpoint_value(self, country_code, field, eas):
         self.ensure_one()
         # Field `peppol_endpoint` can be used as placeholer for custom logic (by extending this function)
         if field == 'peppol_endpoint':
@@ -241,17 +261,17 @@ class ResPartner(models.Model):
             if value.isalnum():
                 value = value.removeprefix(country_code)
 
-        return value
+        return sanitize_peppol_endpoint(value, eas)
 
     @api.depends('peppol_eas')
     def _compute_peppol_endpoint(self):
         """ If the EAS changes and a valid endpoint is available, set it. Otherwise, keep the existing value."""
         for partner in self:
-            partner.peppol_endpoint = partner.peppol_endpoint
+            partner.peppol_endpoint = sanitize_peppol_endpoint(partner.peppol_endpoint, partner.peppol_eas)
             country_code = partner._deduce_country_code()
             if country_code in EAS_MAPPING:
                 field = EAS_MAPPING[country_code].get(partner.peppol_eas)
-                value = partner._get_peppol_endpoint_value(country_code, field)
+                value = partner._get_peppol_endpoint_value(country_code, field, partner.peppol_eas)
                 if field and value and not partner._build_error_peppol_endpoint(partner.peppol_eas, value):
                     partner.peppol_endpoint = value
 
@@ -271,7 +291,7 @@ class ResPartner(models.Model):
                     # Iterate on the possible EAS until a valid one is found
                     for eas, field in eas_to_field.items():
                         if field and field in partner._fields:
-                            value = partner._get_peppol_endpoint_value(country_code, field)
+                            value = partner._get_peppol_endpoint_value(country_code, field, eas)
                             if value and not partner._build_error_peppol_endpoint(eas, value):
                                 new_eas = eas
                                 break
@@ -293,6 +313,11 @@ class ResPartner(models.Model):
             return _("The Peppol endpoint is not valid. "
                      "It should contain exactly 10 digits (Company Registry number)."
                      "The expected format is: 1234567890")
+        if eas == 'EM' and not single_email_re.match(endpoint):
+            return _("The Peppol endpoint is not valid. A valid email is required")
+        invalid_chars_re = PEPPOL_ENDPOINT_INVALID_CHARS_RE_BY_EAS.get(eas, PEPPOL_ENDPOINT_INVALIDCHARS_RE)
+        if invalid_chars_re.search(endpoint) or not 1 <= len(endpoint) <= 50:
+            return _("The Peppol endpoint (%s) is not valid. It should contain only letters and digit.", endpoint)
 
     @api.model
     def _get_edi_builder(self, invoice_edi_format):

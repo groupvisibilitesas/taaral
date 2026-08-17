@@ -8,10 +8,10 @@ import { useChildRef } from "@web/core/utils/hooks";
 export class FontSelector extends Component {
     static template = "html_editor.FontSelector";
     static props = {
+        ...toolbarButtonProps,
         getItems: Function,
         getDisplay: Function,
         onSelected: Function,
-        ...toolbarButtonProps,
     };
     static components = { Dropdown, DropdownItem };
 

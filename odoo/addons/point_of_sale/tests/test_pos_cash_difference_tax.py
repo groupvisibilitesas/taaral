@@ -1,18 +1,18 @@
 from odoo import Command
 from odoo.tests import tagged
 
-from odoo.addons.point_of_sale.tests.common import TestPointOfSaleCommon
+from odoo.addons.point_of_sale.tests.common import CommonPosTest
 
 
 @tagged('post_install', '-at_install')
-class TestPosCashDifferenceTax(TestPointOfSaleCommon):
+class TestPosCashDifferenceTax(CommonPosTest):
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.pos_config.cash_control = True
-        cls.pos_config.open_ui()
-        cls.session = cls.pos_config.current_session_id
+        cls.pos_config_usd.cash_control = True
+        cls.pos_config_usd.open_ui()
+        cls.session = cls.pos_config_usd.current_session_id
         cls.cash_journal = cls.session.cash_journal_id
         cls.profit_account = cls.cash_journal.profit_account_id
         cls.tax_account = cls.env['account.account'].create({

@@ -84,12 +84,10 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
 
     @contextmanager
     def _set_context(self, other_context):
-        previous_context = self.env.context
-        self.env.context = dict(previous_context, **other_context)
-        try:
-            yield self
-        finally:
-            self.env.context = previous_context
+        cls = self.__class__
+        env = cls.env(context=dict(cls.env.context, **other_context))
+        with patch.object(cls, "env", env):
+            yield env
 
     @classmethod
     def _request_handler(cls, s: Session, r: PreparedRequest, /, **kw):
@@ -114,7 +112,7 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
             proxy_documents, responses = cls._get_mock_data(cls.env.context.get('error'), nr_invoices=len(body['params']['documents']))
         elif url == '/api/pdp/1/send_response':
             if 'send_response_params' in cls.env.context:
-                cls.env.context['send_response_params'] = body['params']
+                cls.env.context['send_response_params'].update(body['params'])
             proxy_documents, responses = cls._get_mock_data(cls.env.context.get('error'), nr_invoices=len(body['params']['reference_uuids']))
         else:
             proxy_documents, responses = cls._get_mock_data(cls.env.context.get('error'))
@@ -157,6 +155,7 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
     def test_send_pdp_not_receiver(self):
         self.env.company.account_peppol_proxy_state = False
         move = self._create_french_invoice()
+        move.partner_id.button_account_peppol_check_partner_endpoint()
         move.action_post()
         wizard = self.env['account.move.send.wizard'].create({
             'move_id': move.id,
@@ -169,6 +168,7 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
         move = self._create_french_invoice()
         move.action_post()
         move.partner_id.invoice_edi_format = 'xrechnung'
+        move.partner_id.button_account_peppol_check_partner_endpoint()
         wizard = self.env['account.move.send.wizard'].create({
             'move_id': move.id,
         })
@@ -187,11 +187,12 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
         move = self._create_french_invoice()
         move.partner_id = partner
         move.action_post()
+        move.partner_id.button_account_peppol_check_partner_endpoint()
         wizard = self.env['account.move.send.wizard'].create({
             'move_id': move.id,
         })
         self.assertEqual(partner.peppol_verification_state, 'not_valid')
-        self.assertTrue('peppol' not in wizard.sending_methods)  # peppol is not checked by default
+        self.assertTrue(not wizard.sending_methods or 'peppol' not in wizard.sending_methods)  # peppol is not checked by default
         self.assertTrue(wizard.sending_method_checkboxes['peppol']['readonly'])  # can't select peppol
         self.assertFalse(wizard.alerts)  # there is no alerts
 
@@ -200,7 +201,7 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
         move = self._create_french_invoice()
         move.action_post()
 
-        wizard = self.create_send_and_print(move)
+        wizard = self.create_send_and_print(move, default=True)
         self.assertEqual(wizard.invoice_edi_format, 'ubl_21_fr')
         self.assertTrue('peppol' in wizard.sending_methods)
         with self._set_context({'error': True}):
@@ -211,7 +212,7 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
 
         # we can't send the ubl document again unless we regenerate the pdf
         move.invoice_pdf_report_id.unlink()
-        wizard = self.create_send_and_print(move)
+        wizard = self.create_send_and_print(move, default=True)
         self.assertEqual(wizard.invoice_edi_format, 'ubl_21_fr')
         self.assertTrue('peppol' in wizard.sending_methods)
 
@@ -227,7 +228,7 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
         move = self._create_french_invoice()
         move.action_post()
 
-        wizard = self.create_send_and_print(move)
+        wizard = self.create_send_and_print(move, default=True)
         self.assertEqual(wizard.invoice_edi_format, 'ubl_21_fr')
         self.assertTrue('peppol' in wizard.sending_methods)
 
@@ -475,7 +476,7 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
         move = self._create_french_invoice()
         move.action_post()
 
-        wizard = self.create_send_and_print(move)
+        wizard = self.create_send_and_print(move, default=True)
         self.assertTrue('peppol' not in wizard.sending_method_checkboxes)
 
     def test_receive_error_pdp(self):
@@ -505,11 +506,11 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
         move_2 = self._create_french_invoice()
         (move_1 + move_2).action_post()
 
-        wizard = self.create_send_and_print(move_1 + move_2)
+        wizard = self.create_send_and_print(move_1 + move_2, default=True)
         with patch(
-            'odoo.addons.l10n_fr_pdp.models.account_edi_xml_ubl_21_fr.AccountEdiXmlUbl21Fr._export_invoice_constraints_new',
+            'odoo.addons.l10n_fr_pdp.models.account_edi_xml_ubl_21_fr.AccountEdiXmlUbl21Fr._export_invoice_constraints',
             mocked_export_invoice_constraints
-        ):
+        ), self.enter_registry_test_mode():
             wizard.action_send_and_print()
             self.env.ref('account.ir_cron_account_move_send').method_direct_trigger()
         self.assertEqual(move_1.peppol_move_state, 'error')
@@ -539,7 +540,7 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
         move = self._create_french_invoice()
         move.action_post()
 
-        send_wizard = self.create_send_and_print(move)
+        send_wizard = self.create_send_and_print(move, default=True)
         send_wizard.action_send_and_print()
         self.env['account_edi_proxy_client.user']._cron_peppol_get_message_status()
         self.assertEqual(move.peppol_move_state, 'done')
@@ -554,7 +555,7 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
         credit_note = move.reversal_move_ids
         credit_note.action_post()
 
-        send_wizard2 = self.create_send_and_print(credit_note)
+        send_wizard2 = self.create_send_and_print(credit_note, default=True)
         send_wizard2.action_send_and_print()
         self.env['account_edi_proxy_client.user']._cron_peppol_get_message_status()
         self.assertEqual(credit_note.peppol_move_state, 'done')
@@ -590,7 +591,7 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
         move = self._create_french_invoice()
         move.action_post()
 
-        send_wizard = self.create_send_and_print(move)
+        send_wizard = self.create_send_and_print(move, default=True)
         send_wizard.action_send_and_print()
         self.env['account_edi_proxy_client.user']._cron_peppol_get_message_status()
         self.assertEqual(move.peppol_move_state, 'done')
@@ -617,7 +618,7 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
         move = self._create_french_invoice()
         move.action_post()
 
-        send_wizard = self.create_send_and_print(move)
+        send_wizard = self.create_send_and_print(move, default=True)
         send_wizard.action_send_and_print()
         self.env['account_edi_proxy_client.user']._cron_peppol_get_message_status()
         self.assertEqual(move.peppol_move_state, 'done')
@@ -632,9 +633,9 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
             'status': 'PD',
             'move_ids': move.ids,
         })
-        with self._set_context({'send_response_params': None}) as self_with_context:
+        with self._set_context({'send_response_params': {}}) as context_env:
             wizard.button_send()
-            self.assertEqual(self_with_context.env.context['send_response_params'], {
+            self.assertEqual(context_env.context['send_response_params'], {
                 'lifecycle': True,
                 'reference_uuids': ['yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy'],
                 'status': 'paid',
@@ -653,7 +654,7 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
         move = self._create_french_invoice()
         move.action_post()
 
-        send_wizard = self.create_send_and_print(move)
+        send_wizard = self.create_send_and_print(move, default=True)
         send_wizard.action_send_and_print()
         self.env['account_edi_proxy_client.user']._cron_peppol_get_message_status()
         self.assertEqual(move.peppol_move_state, 'done')
@@ -668,9 +669,9 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
             'status': 'PD',
             'move_ids': move.ids,
         })
-        with self._set_context({'send_response_params': None}) as self_with_context:
+        with self._set_context({'send_response_params': {}}) as context_env:
             wizard.button_send()
-            self.assertEqual(self_with_context.env.context['send_response_params'], {
+            self.assertEqual(context_env.context['send_response_params'], {
                 'lifecycle': True,
                 'reference_uuids': ['yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy'],
                 'status': 'paid',
@@ -705,9 +706,9 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
             'status': 'PD',
             'move_ids': move.ids,
         })
-        with self._set_context({'send_response_params': None}) as self_with_context:
+        with self._set_context({'send_response_params': {}}) as context_env:
             wizard.button_send()
-            self.assertEqual(self_with_context.env.context['send_response_params'], {
+            self.assertEqual(context_env.context['send_response_params'], {
                 'lifecycle': True,
                 'reference_uuids': ['yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy'],
                 'status': 'paid',
@@ -727,7 +728,7 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
         move = self._create_french_invoice()
         move.action_post()
 
-        send_wizard = self.create_send_and_print(move)
+        send_wizard = self.create_send_and_print(move, default=True)
         send_wizard.action_send_and_print()
         self.env['account_edi_proxy_client.user']._cron_peppol_get_message_status()
         self.assertEqual(move.peppol_move_state, 'done')
@@ -754,9 +755,9 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
             'status': 'PD',
             'move_ids': move.ids,
         })
-        with self._set_context({'send_response_params': None}) as self_with_context:
+        with self._set_context({'send_response_params': {}}) as context_env:
             wizard.button_send()
-            self.assertEqual(self_with_context.env.context['send_response_params'], {
+            self.assertEqual(context_env.context['send_response_params'], {
                 'lifecycle': True,
                 'reference_uuids': ['yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy'],
                 'status': 'paid',
@@ -788,7 +789,7 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
         move = self._create_french_invoice()
         move.action_post()
 
-        send_wizard = self.create_send_and_print(move)
+        send_wizard = self.create_send_and_print(move, default=True)
         send_wizard.action_send_and_print()
         self.env['account_edi_proxy_client.user']._cron_peppol_get_message_status()
         self.assertEqual(move.peppol_move_state, 'done')
@@ -800,11 +801,11 @@ class TestPdpMessage(TestL10nFrPdpCommon, TestAccountMoveSendCommon):
 
         # We only sent the payment lifecycle automatically in case the Flow 1 succeeded
         self.assertEqual(move.pdp_ppf_move_state, 'in_progress')
-        self.env.ref('l10n_fr_pdp.ir_cron_pdp_send_lifecycles').method_direct_trigger()
+        self.env['account_edi_proxy_client.user']._cron_pdp_send_lifecycles()
         self.assertFalse(move.peppol_response_ids)
 
         move.pdp_ppf_move_state = 'sent'
-        self.env.ref('l10n_fr_pdp.ir_cron_pdp_send_lifecycles').method_direct_trigger()
+        self.env['account_edi_proxy_client.user']._cron_pdp_send_lifecycles()
         paid_response = move.peppol_response_ids
         self.assertRecordValues(paid_response, [{
             'peppol_state': 'processing',

@@ -1,26 +1,40 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* mail_group
+# * mail_group
 #
-# Translators:
-# Wil Odoo, 2024
-# Maitê Dietze, 2025
-#
+# "Tiffany Chang (tic)" <tic@odoo.com>, 2025, 2026.
+# "Maitê Dietze (madi)" <madi@odoo.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 18:38+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Maitê Dietze, 2025\n"
-"Language-Team: Portuguese (Brazil) (https://app.transifex.com/odoo/teams/"
-"41243/pt_BR/)\n"
+"POT-Creation-Date: 2026-04-10 18:39+0000\n"
+"PO-Revision-Date: 2026-08-02 14:40+0000\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"Language-Team: Portuguese (Brazil) <https://translate.odoo.com/projects/odoo-"
+"19/mail_group/pt_BR/>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % "
-"1000000 == 0 ? 1 : 2;\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 2026.6.1\n"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_list
+msgid "#Members"
+msgstr "#Membros"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_list
+msgid "#Messages"
+msgstr "Nº de mensagens"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_list
+msgid "#To Review"
+msgstr "Nº a revisar"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_message_reject_form
@@ -28,10 +42,18 @@ msgid ") <span invisible=\"not send_email\">and send them an email</span>."
 msgstr ") <span invisible=\"not send_email\">e enviar um e-mail</span>."
 
 #. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.messages_short
+msgid ""
+"<br/>\n"
+"                    Get the conversation started by sending an email to"
+msgstr ""
+"<br/>\n"
+"                    Inicie a conversa enviando um e-mail para"
+
+#. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.confirmation_subscription
 msgid "<br/> You'll be notified as soon as some new content is posted."
-msgstr ""
-"<br/> Você será notificado assim que algum conteúdo novo for publicado."
+msgstr "<br/> Você será notificado assim que algum conteúdo novo for publicado."
 
 #. module: mail_group
 #: model:mail.template,body_html:mail_group.mail_template_list_subscribe
@@ -52,15 +74,15 @@ msgid ""
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
 "                Olá,<br/><br/>\n"
-"                Você solicitou o cancelamento da inscrição à lista de "
-"distribuição <strong t-out=\"object.name or ''\"/>.\n"
+"                Você solicitou a inscrição na lista de e-mails <strong t-"
+"out=\"object.name or ''\"/>.\n"
 "                <br/><br/>\n"
-"               Para confirmar, visite o link a seguir: <strong t-"
+"                Para confirmar, acesse o seguinte link: <strong t-"
 "if=\"ctx.get('token_url')\"><a t-att-href=\"ctx['token_url']\"><t t-"
 "out=\"ctx['token_url'] or ''\"/></a></strong>\n"
 "                <br/><br/>\n"
-"                Se isto foi um erro ou caso você não tenha solicitado esta "
-"ação, basta ignorar a mensagem.\n"
+"                Se foi por engano, ou se você não solicitou essa ação, "
+"ignore esta mensagem.\n"
 "            </div>\n"
 "        "
 
@@ -140,6 +162,15 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-envelope-o\" role=\"img\" aria-label=\"Alias\" "
 "title=\"Alias\"/>"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_groups
+msgid ""
+"<i class=\"fa fa-fw fa-envelope-o\" role=\"img\" aria-label=\"Traffic\" "
+"title=\"Traffic\"/>"
+msgstr ""
+"<i class=\"fa fa-fw fa-envelope-o\" role=\"img\" aria-label=\"Traffic\" "
+"title=\"Traffic\"/>"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_groups
@@ -284,7 +315,6 @@ msgstr ""
 
 #. module: mail_group
 #: model:ir.model.fields,field_description:mail_group.field_mail_group__alias_id
-#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_list
 msgid "Alias"
 msgstr "Alias"
 
@@ -350,7 +380,7 @@ msgstr "Sempre permitir"
 
 #. module: mail_group
 #. odoo-javascript
-#: code:addons/mail_group/static/src/js/mail_group.js:0
+#: code:addons/mail_group/static/src/interactions/mail_group.js:0
 msgid "An email with instructions has been sent."
 msgstr "Um e-mail com instruções foi enviado."
 
@@ -457,6 +487,22 @@ msgid "Choose or configure a custom domain"
 msgstr "Selecione ou configure um domínio personalizado"
 
 #. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.group_name
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_kanban
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_groups
+msgid "Closed"
+msgstr "Fechado"
+
+#. module: mail_group
+#: model:ir.model.fields,help:mail_group.field_mail_group__is_closed
+msgid ""
+"Closed groups might still be accessed, but emails sent to it will bounce"
+msgstr ""
+"Grupos fechados ainda podem ser acessados, mas os e-mails enviados para eles "
+"serão rejeitados."
+
+#. module: mail_group
 #: model:mail.template,subject:mail_group.mail_template_list_subscribe
 msgid "Confirm subscription to {{ object.name }}"
 msgstr "Confirmar inscrição a {{ object.name }}"
@@ -536,6 +582,7 @@ msgstr "Nome exibido"
 #. module: mail_group
 #: model:ir.model.fields,field_description:mail_group.field_mail_group_member__email
 #: model:ir.model.fields,field_description:mail_group.field_mail_group_moderation__email
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_member_view_tree
 msgid "Email"
 msgstr "E-mail"
 
@@ -606,12 +653,6 @@ msgid "Group"
 msgstr "Grupo"
 
 #. module: mail_group
-#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_message_view_search
-#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_search
-msgid "Group By"
-msgstr "Agrupar por"
-
-#. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_message_view_form
 msgid "Group Message"
 msgstr "Mensagem de grupo"
@@ -630,6 +671,12 @@ msgstr ""
 "é %s."
 
 #. module: mail_group
+#. odoo-python
+#: code:addons/mail_group/controllers/portal.py:0
+msgid "Groups"
+msgstr "Grupos"
+
+#. module: mail_group
 #: model:ir.model.fields,field_description:mail_group.field_mail_group__moderation_guidelines_msg
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
 msgid "Guidelines"
@@ -644,6 +691,19 @@ msgstr "Orientações do grupo {{ object.mail_group_id.name }}"
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_notify_moderation
 msgid "Hello"
 msgstr "Olá"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.email_template_mail_group_closed
+msgid ""
+"Hello there,\n"
+"    <br/><br/>\n"
+"    The mailing list you are trying to reach has been closed, and will not "
+"accept new messages.\n"
+"    <br/><br/>\n"
+"    Kind Regards,"
+msgstr ""
+"Olá, <br/><br/>A lista de discussão que você está tentando acessar foi "
+"encerrada e não aceitará novas mensagens. <br/><br/>Atenciosamente,"
 
 #. module: mail_group
 #: model:ir.model.fields,field_description:mail_group.field_mail_group__id
@@ -703,6 +763,11 @@ msgstr "Está permitido"
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_moderation_view_search
 msgid "Is Banned"
 msgstr "Está banido"
+
+#. module: mail_group
+#: model:ir.model.fields,field_description:mail_group.field_mail_group__is_closed
+msgid "Is Closed"
+msgstr "Está fechado"
 
 #. module: mail_group
 #: model:ir.model.fields,field_description:mail_group.field_mail_group_message__is_group_moderated
@@ -834,16 +899,9 @@ msgid "Mailing-List:"
 msgstr "Lista de distribuição:"
 
 #. module: mail_group
-#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_kanban
-msgid "Member"
-msgstr "Membro"
-
-#. module: mail_group
 #: model:ir.actions.act_window,name:mail_group.mail_group_member_action
 #: model:ir.model.fields,field_description:mail_group.field_mail_group__member_ids
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
-#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_kanban
-#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_list
 msgid "Members"
 msgstr "Membros"
 
@@ -880,7 +938,7 @@ msgstr "Mensagens"
 #. module: mail_group
 #: model:ir.model.fields,field_description:mail_group.field_mail_group__mail_group_message_count
 msgid "Messages Count"
-msgstr "Contagem de mensagens"
+msgstr "Total de mensagens"
 
 #. module: mail_group
 #: model:ir.model.fields,field_description:mail_group.field_mail_group__mail_group_message_last_month_count
@@ -899,17 +957,16 @@ msgid "Messages that need an action"
 msgstr "Mensagens que requerem uma ação"
 
 #. module: mail_group
+#: model:ir.model.fields,field_description:mail_group.field_mail_group__moderation
+msgid "Moderate"
+msgstr "Moderado"
+
+#. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_notify_moderation
 msgid "Moderate Messages"
 msgstr "Moderar mensagens"
 
 #. module: mail_group
-#: model:ir.model.fields,field_description:mail_group.field_mail_group__moderation
-msgid "Moderate this group"
-msgstr "Moderar este grupo"
-
-#. module: mail_group
-#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_list
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_search
 msgid "Moderated"
 msgstr "Moderado"
@@ -1061,6 +1118,11 @@ msgid "Only selected groups of users can send email to the mailing list."
 msgstr ""
 "Somente grupos selecionados de usuários podem enviar e-mails para a lista de "
 "distribuição."
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.messages_short
+msgid "Oops, there are no messages here."
+msgstr "Ops! Não há mensagens aqui."
 
 #. module: mail_group
 #: model:ir.model.fields,help:mail_group.field_mail_group__alias_force_thread_id
@@ -1227,8 +1289,8 @@ msgstr "Remover mensagem com explicação"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
-msgid "Responsible Users"
-msgstr "Usuários responsáveis"
+msgid "Responsibles"
+msgstr "Responsáveis"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_message_view_search
@@ -1249,6 +1311,11 @@ msgstr "Buscar grupo de e-mail"
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_moderation_view_search
 msgid "Search Moderation List"
 msgstr "Buscar na lista de moderação"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
+msgid "Select users"
+msgstr "Selecionar usuários"
 
 #. module: mail_group
 #: model:ir.model.fields.selection,name:mail_group.selection__mail_group__access_mode__groups
@@ -1277,19 +1344,19 @@ msgid "Send Email"
 msgstr "Enviar e-mail"
 
 #. module: mail_group
-#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
-msgid "Send Guidelines"
-msgstr "Enviar orientações"
-
-#. module: mail_group
 #: model:ir.model.fields,help:mail_group.field_mail_group_message_reject__send_email
 msgid "Send an email to the author of the message"
 msgstr "Enviar um e-mail ao autor da mensagem"
 
 #. module: mail_group
+#: model:ir.actions.act_window,name:mail_group.mail_compose_message_action_mail_group
+msgid "Send email"
+msgstr "Enviar e-mail"
+
+#. module: mail_group
 #: model:ir.model.fields,field_description:mail_group.field_mail_group__moderation_guidelines
-msgid "Send guidelines to new subscribers"
-msgstr "Enviar orientações para novos participantes"
+msgid "Send guidelines to new members"
+msgstr "Enviar diretrizes para novos membros"
 
 #. module: mail_group
 #: model:mail.template,description:mail_group.mail_template_guidelines
@@ -1322,8 +1389,6 @@ msgid "Subject"
 msgstr "Assunto"
 
 #. module: mail_group
-#. odoo-javascript
-#: code:addons/mail_group/static/src/js/mail_group.js:0
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_groups
 msgid "Subscribe"
 msgstr "Inscrever"
@@ -1423,13 +1488,13 @@ msgstr "O registro da mensagem deve ser o grupo."
 
 #. module: mail_group
 #. odoo-javascript
-#: code:addons/mail_group/static/src/js/mail_group.js:0
+#: code:addons/mail_group/static/src/interactions/mail_group.js:0
 msgid "This email is already subscribed."
 msgstr "Este e-mail já está inscrito."
 
 #. module: mail_group
 #. odoo-javascript
-#: code:addons/mail_group/static/src/js/mail_group.js:0
+#: code:addons/mail_group/static/src/interactions/mail_group.js:0
 msgid "This email is not subscribed."
 msgstr "Este e-mail não está inscrito."
 
@@ -1456,8 +1521,6 @@ msgid "To Review"
 msgstr "A revisar"
 
 #. module: mail_group
-#. odoo-javascript
-#: code:addons/mail_group/static/src/js/mail_group.js:0
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_groups
 msgid "Unsubscribe"
 msgstr "Cancelar a inscrição"
@@ -1498,6 +1561,18 @@ msgid "You can create only one rule for a given email address in a group."
 msgstr "Só é possível criar uma regra para um endereço de e-mail em um grupo."
 
 #. module: mail_group
+#. odoo-python
+#: code:addons/mail_group/models/mail_group.py:0
+msgid "You can not join a closed group."
+msgstr "Você não pode participar de um grupo fechado."
+
+#. module: mail_group
+#. odoo-python
+#: code:addons/mail_group/models/mail_group.py:0
+msgid "You can not send guidelines for a closed group."
+msgstr "Não é possível enviar diretrizes para um grupo fechado."
+
+#. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_notify_moderation
 msgid "You have messages to moderate, please go for the proceedings."
 msgstr "Você tem mensagens para moderar. Acesse as suas atividades."
@@ -1529,8 +1604,18 @@ msgstr "ex., “Newsletter”"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
+msgid "e.g. \"This group is about ...\""
+msgstr "ex.: \"O grupo serve para...\""
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
 msgid "e.g. mycompany.com"
 msgstr "ex.: minhaempresa.com"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
+msgid "e.g.\"Please be polite and ...\""
+msgstr "ex.: \"Por favor, seja educado e...\""
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_message_view_search
@@ -1544,19 +1629,20 @@ msgstr "foi"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_groups
-msgid ""
-"members<br/>\n"
-"                        <i class=\"fa fa-fw fa-envelope-o\" role=\"img\" "
-"aria-label=\"Traffic\" title=\"Traffic\"/>"
-msgstr ""
-"membros<br/>\n"
-"                        <i class=\"fa fa-fw fa-envelope-o\" role=\"img\" "
-"aria-label=\"Traffic\" title=\"Traffic\"/>"
+#, fuzzy
+msgid "members<br/>"
+msgstr "membros<br/>"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_groups
 msgid "messages / month"
 msgstr "mensagens por mês"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_kanban
+#, fuzzy
+msgid "messages to review"
+msgstr "mensagens a serem revisadas"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.messages_short
@@ -1590,3 +1676,85 @@ msgstr "seu e-mail..."
 
 #~ msgid "_______________________________________________"
 #~ msgstr "_______________________________________________"
+
+#~ msgid ""
+#~ "<div style=\"margin: 0px; padding: 0px;\">\n"
+#~ "                Hello,<br><br>\n"
+#~ "                You have requested to be subscribed to the mailing list "
+#~ "<strong t-out=\"object.name or ''\"></strong>.\n"
+#~ "                <br><br>\n"
+#~ "                To confirm, please visit the following link: <strong t-"
+#~ "if=\"ctx.get('token_url')\"><a t-att-href=\"ctx['token_url']\"><t t-"
+#~ "out=\"ctx['token_url'] or ''\"></t></a></strong>\n"
+#~ "                <br><br>\n"
+#~ "                If this was a mistake or you did not requested this "
+#~ "action, please ignore this message.\n"
+#~ "            </div>\n"
+#~ "        "
+#~ msgstr ""
+#~ "<div style=\"margin: 0px; padding: 0px;\">\n"
+#~ "                Olá,<br><br>\n"
+#~ "                Você solicitou a inscrição na lista de e-mails. <strong t-"
+#~ "out=\"object.name or ''\"></strong>.\n"
+#~ "                <br><br>\n"
+#~ "                Para confirmar, acesse o seguinte link: <strong t-"
+#~ "if=\"ctx.get('token_url')\"><a t-att-href=\"ctx['token_url']\"><t t-"
+#~ "out=\"ctx['token_url'] or ''\"></t></a></strong>\n"
+#~ "                <br><br>\n"
+#~ "               Se foi um engano ou você não solicitou essa ação, ignore "
+#~ "esta mensagem.\n"
+#~ "            </div>\n"
+#~ "        "
+
+#~ msgid ""
+#~ "<div style=\"margin: 0px; padding: 0px;\">\n"
+#~ "                Hello,<br><br>\n"
+#~ "                You have requested to be unsubscribed to the mailing list "
+#~ "<strong t-out=\"object.name or ''\"></strong>.\n"
+#~ "                <br><br>\n"
+#~ "                To confirm, please visit the following link: <strong t-"
+#~ "if=\"ctx.get('token_url')\"><a t-att-href=\"ctx['token_url']\"><t t-"
+#~ "out=\"ctx['token_url'] or ''\"></t></a></strong>.\n"
+#~ "                <br><br>\n"
+#~ "                If this was a mistake or you did not requested this "
+#~ "action, please ignore this message.\n"
+#~ "            </div>\n"
+#~ "        "
+#~ msgstr ""
+#~ "<div style=\"margin: 0px; padding: 0px;\">\n"
+#~ "                Olá,<br><br>\n"
+#~ "                Você solicitou o cancelamento da inscrição à lista de "
+#~ "distribuição <strong t-out=\"object.name or ''\"></strong>.\n"
+#~ "                <br><br>\n"
+#~ "                Para confirmar, visite o link a seguir: <strong t-"
+#~ "if=\"ctx.get('token_url')\"><a t-att-href=\"ctx['token_url']\"><t t-"
+#~ "out=\"ctx['token_url'] or ''\"></t></a></strong>\n"
+#~ "                <br><br>\n"
+#~ "                Se isto foi um erro ou caso você não tenha solicitado "
+#~ "esta ação, basta ignorar a mensagem.\n"
+#~ "            </div>\n"
+#~ "        "
+
+#~ msgid ""
+#~ "<div>\n"
+#~ "                <p>Hello <t t-out=\"object.partner_id.name or ''\"></t>,</"
+#~ "p>\n"
+#~ "                <p>Please find below the guidelines of the <t t-"
+#~ "out=\"object.mail_group_id.name\"></t> mailing list.</p>\n"
+#~ "                <p><t t-"
+#~ "out=\"object.mail_group_id.moderation_guidelines_msg or ''\"></t></p>\n"
+#~ "            </div>\n"
+#~ "        "
+#~ msgstr ""
+#~ "<div>\n"
+#~ "                <p>Olá <t t-out=\"object.partner_id.name or ''\"></t>,</"
+#~ "p>\n"
+#~ "                <p>Veja abaixo as diretrizes da lista de distribuição<t t-"
+#~ "out=\"object.mail_group_id.name\"></t> .</p>\n"
+#~ "                <p><t t-"
+#~ "out=\"object.mail_group_id.moderation_guidelines_msg or ''\"></t></p>\n"
+#~ "            </div>\n"
+#~ "        "
+
+#~ msgid "Group By"
+#~ msgstr "Agrupar por"

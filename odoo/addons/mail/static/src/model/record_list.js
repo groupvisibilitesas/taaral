@@ -211,6 +211,13 @@ export class RecordListInternal {
         const inverse = getInverse(recordList);
         const targetModel = getTargetModel(recordList);
         if (typeof val !== "object") {
+            if (Array.isArray(recordList._store[targetModel].id)) {
+                throw new Error(
+                    `Cannot insert "${val}" on relational field "${recordList._.owner.Model.getName()}/${
+                        recordList._.name
+                    }": target model "${targetModel}" doesn't support single-id data!`
+                );
+            }
             // single-id data
             val = { [recordList._store[targetModel].id]: val };
         }
@@ -319,6 +326,7 @@ export class RecordList extends Array {
                                         recordList.data[index]
                                     )
                                 )._raw;
+                                recordListProxy.data[index] = newRecord?.localId;
                                 if (oldRecord && oldRecord.notEq(newRecord)) {
                                     oldRecord._.uses.delete(recordList);
                                 }
@@ -332,7 +340,6 @@ export class RecordList extends Array {
                                 if (inverse) {
                                     oldRecord[inverse].delete(recordList._.owner);
                                 }
-                                recordListProxy.data[index] = newRecord?.localId;
                                 if (newRecord) {
                                     newRecord._.uses.add(recordList);
                                     store._.ADD_QUEUE(
@@ -342,7 +349,7 @@ export class RecordList extends Array {
                                         newRecord
                                     );
                                     if (inverse) {
-                                        newRecord[inverse].add(recordList._.owner);
+                                        newRecord[inverse].add?.(recordList._.owner);
                                     }
                                 }
                             }

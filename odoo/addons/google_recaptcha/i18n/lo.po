@@ -2,16 +2,15 @@
 # This file contains the translation of the following modules:
 # * google_recaptcha
 #
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
 # Bone NI <bounkirdni@gmail.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-06-06 10:46+0000\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-08 00:56+0000\n"
 "Last-Translator: Bone NI <bounkirdni@gmail.com>\n"
-"Language-Team: Lao <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Lao <https://translate.odoo.com/projects/odoo-19/"
 "google_recaptcha/lo/>\n"
 "Language: lo\n"
 "MIME-Version: 1.0\n"
@@ -23,7 +22,7 @@ msgstr ""
 #. module: google_recaptcha
 #: model_terms:ir.ui.view,arch_db:google_recaptcha.res_config_settings_view_form
 msgid "<i class=\"oi oi-arrow-right\"/> Generate reCAPTCHA v3 keys"
-msgstr "<i class=\"oi oi-arrow-right\"/> ສ້າງຄີ reCAPTCHA v3"
+msgstr "<i class=\"oi oi-arrow-right\"/> ສ້າງຄີ (Key) reCAPTCHA v3"
 
 #. module: google_recaptcha
 #: model:ir.model.fields,help:google_recaptcha.field_res_config_settings__recaptcha_min_score
@@ -31,13 +30,24 @@ msgid ""
 "By default, should be one of 0.1, 0.3, 0.7, 0.9.\n"
 "1.0 is very likely a good interaction, 0.0 is very likely a bot"
 msgstr ""
-"ໂດຍເລີ່ມຕົ້ນ, ຄວນຈະແມ່ນໜຶ່ງໃນ 0.1, 0.3, 0.7, 0.9.\n"
-"1.0 ແມ່ນມີທ່າອ່ຽງສູງວ່າເປັນການໂຕ້ຕອບທີ່ດີ, 0.0 ແມ່ນມີທ່າອ່ຽງສູງວ່າແມ່ນບັອດ"
+"ໂດຍເລີ່ມຕົ້ນ, ຄວນເປັນໜຶ່ງໃນ 0.1, 0.3, 0.7, 0.9.\n"
+"1.0 ແມ່ນມີທ່າອ່ຽງວ່າເປັນການໂຕ້ຕອບທີ່ດີ, 0.0 ແມ່ນມີທ່າອ່ຽງວ່າເປັນບັອດ (Bot)"
 
 #. module: google_recaptcha
 #: model:ir.model,name:google_recaptcha.model_res_config_settings
 msgid "Config Settings"
-msgstr "ການຕັ້ງຄ່າ"
+msgstr "ການຕັ້ງຄ່າລະບົບ"
+
+#. module: google_recaptcha
+#: model:ir.model.fields,field_description:google_recaptcha.field_ir_http__display_name
+#: model:ir.model.fields,field_description:google_recaptcha.field_res_config_settings__display_name
+msgid "Display Name"
+msgstr "ຊື່ທີ່ສະແດງ"
+
+#. module: google_recaptcha
+#: model:ir.model.fields,field_description:google_recaptcha.field_res_config_settings__enable_recaptcha
+msgid "Enable reCAPTCHA"
+msgstr "ເປີດໃຊ້ງານ reCAPTCHA"
 
 #. module: google_recaptcha
 #: model:ir.model,name:google_recaptcha.model_ir_http
@@ -45,15 +55,15 @@ msgid "HTTP Routing"
 msgstr "ການກຳນົດເສັ້ນທາງ HTTP"
 
 #. module: google_recaptcha
+#: model:ir.model.fields,field_description:google_recaptcha.field_ir_http__id
+#: model:ir.model.fields,field_description:google_recaptcha.field_res_config_settings__id
+msgid "ID"
+msgstr "ໄອດີ (ID)"
+
+#. module: google_recaptcha
 #: model:ir.model.fields,field_description:google_recaptcha.field_res_config_settings__recaptcha_min_score
 msgid "Minimum score"
 msgstr "ຄະແນນຕ່ຳສຸດ"
-
-#. module: google_recaptcha
-#. odoo-javascript
-#: code:addons/google_recaptcha/static/src/js/recaptcha.js:0
-msgid "No recaptcha site key set."
-msgstr "ຍັງບໍ່ທັນໄດ້ກຳນົດຄີເວັບໄຊ reCAPTCHA."
 
 #. module: google_recaptcha
 #. odoo-javascript
@@ -67,7 +77,8 @@ msgid ""
 "Protect your forms from spam and abuse. If no keys are provided, no checks "
 "will be done."
 msgstr ""
-"ປົກປ້ອງແບບຟອມຂອງທ່ານຈາກສະແປມ ແລະ ການລະເມີດ. ຖ້າບໍ່ມີການລະບຸຄີ, ຈະບໍ່ມີການກວດສອບໃດໆ."
+"ປົກປ້ອງແບບຟອມຂອງທ່ານຈາກສະແປມ (Spam) ແລະ ການລະເມີດ. ຫາກບໍ່ມີການລະບຸຄີ (Key), ຈະບໍ່ມີການກວດ"
+"ສອບໃດໆ."
 
 #. module: google_recaptcha
 #. odoo-javascript
@@ -78,51 +89,66 @@ msgstr "ປົກປ້ອງໂດຍ reCAPTCHA,"
 #. module: google_recaptcha
 #: model:ir.model.fields,field_description:google_recaptcha.field_res_config_settings__recaptcha_private_key
 msgid "Secret Key"
-msgstr "ລະຫັດລັບ"
+msgstr "ຄີລັບ (Secret Key)"
 
 #. module: google_recaptcha
 #: model:ir.model.fields,field_description:google_recaptcha.field_res_config_settings__recaptcha_public_key
 msgid "Site Key"
-msgstr "ຄີເວັບໄຊ"
+msgstr "ຄີເວັບໄຊ (Site Key)"
+
+#. module: google_recaptcha
+#. odoo-python
+#: code:addons/google_recaptcha/models/ir_http.py:0
+msgid "Suspicious activity detected by google reCAPTCHA."
+msgstr "ກວດພົບການເຄື່ອນໄຫວທີ່ໜ້າສົງໄສໂດຍ google reCAPTCHA."
 
 #. module: google_recaptcha
 #. odoo-javascript
 #: code:addons/google_recaptcha/static/src/xml/recaptcha.xml:0
 msgid "Terms of Service"
-msgstr "ເງື່ອນໄຂການໃຫ້ບໍລິການ"
+msgstr "ເງື່ອນໄຂການບໍລິການ"
 
 #. module: google_recaptcha
 #. odoo-python
 #: code:addons/google_recaptcha/models/ir_http.py:0
 msgid "The reCaptcha private key is invalid."
-msgstr "ຄີສ່ວນຕົວ reCaptcha ບໍ່ຖືກຕ້ອງ."
+msgstr "ຄີສ່ວນຕົວ (Private key) ຂອງ reCaptcha ບໍ່ຖືກຕ້ອງ."
 
 #. module: google_recaptcha
 #. odoo-python
 #: code:addons/google_recaptcha/models/ir_http.py:0
 msgid "The reCaptcha token is invalid."
-msgstr "ໂທເຄັນ reCaptcha ບໍ່ຖືກຕ້ອງ."
+msgstr "ໂທເຄັນ (Token) ຂອງ reCaptcha ບໍ່ຖືກຕ້ອງ."
 
 #. module: google_recaptcha
 #. odoo-javascript
 #: code:addons/google_recaptcha/static/src/js/recaptcha.js:0
 msgid "The recaptcha site key is invalid."
-msgstr "ຄີເວັບໄຊ reCAPTCHA ບໍ່ຖືກຕ້ອງ."
+msgstr "ຄີເວັບໄຊ (Site key) ຂອງ recaptcha ບໍ່ຖືກຕ້ອງ."
 
 #. module: google_recaptcha
 #. odoo-python
 #: code:addons/google_recaptcha/models/ir_http.py:0
 msgid "The request is invalid or malformed."
-msgstr "ການຮ້ອງຂໍບໍ່ຖືກຕ້ອງ ຫຼື ຜິດຮູບແບບ."
+msgstr "ການຮ້ອງຂໍບໍ່ຖືກຕ້ອງ ຫຼື ມີຮູບແບບທີ່ຜິດພາດ."
 
 #. module: google_recaptcha
 #. odoo-python
 #: code:addons/google_recaptcha/models/ir_http.py:0
 msgid "Your request has timed out, please retry."
-msgstr "ການຮ້ອງຂໍຂອງທ່ານໝົດເວລາ, ກະລຸນາລອງໃໝ່ອີກຄັ້ງ."
+msgstr "ການຮ້ອງຂໍຂອງທ່ານໝົດເວລາ, ກະລຸນາລອງໃໝ່."
 
 #. module: google_recaptcha
 #. odoo-javascript
 #: code:addons/google_recaptcha/static/src/xml/recaptcha.xml:0
 msgid "apply."
 msgstr "ນຳໃຊ້."
+
+#. module: google_recaptcha
+#. odoo-javascript
+#: code:addons/google_recaptcha/static/src/js/recaptcha.js:0
+msgid ""
+"reCAPTCHA disabled or no site key has been configured. Please check your "
+"settings."
+msgstr ""
+"reCAPTCHA ຖືກປິດໃຊ້ງານ ຫຼື ຍັງບໍ່ທັນໄດ້ຕັ້ງຄ່າຄີເວັບໄຊ. ກະລຸນາກວດສອບການຕັ້ງຄ່າຂອງທ່ານ."

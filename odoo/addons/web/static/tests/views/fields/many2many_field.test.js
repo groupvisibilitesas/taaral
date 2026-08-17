@@ -1,5 +1,5 @@
 import { describe, expect, test } from "@odoo/hoot";
-import { queryAllTexts } from "@odoo/hoot-dom";
+import { press, queryAllTexts, queryFirst } from "@odoo/hoot-dom";
 import { Deferred, animationFrame, runAllTimers } from "@odoo/hoot-mock";
 
 import {
@@ -8,9 +8,9 @@ import {
     clickKanbanRecord,
     clickModalButton,
     clickSave,
-    clickViewButton,
     contains,
     defineModels,
+    editSelectMenu,
     fieldInput,
     fields,
     models,
@@ -19,12 +19,14 @@ import {
     patchWithCleanup,
     serverState,
     stepAllNetworkCalls,
+    mockService,
 } from "@web/../tests/web_test_helpers";
 import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { X2ManyField, x2ManyField } from "@web/views/fields/x2many/x2many_field";
 import { Many2XAutocomplete } from "@web/views/fields/relational_utils";
+import { cookie } from "@web/core/browser/cookie";
 import { ListRenderer } from "@web/views/list/list_renderer";
 
 describe.current.tags("desktop");
@@ -251,7 +253,6 @@ test("many2many kanban: edition", async () => {
                             <t t-name="card">
                                 <div>
                                     <a
-                                        t-if="!read_only_mode"
                                         type="delete"
                                         class="fa fa-times float-end delete_icon"
                                     />
@@ -267,10 +268,10 @@ test("many2many kanban: edition", async () => {
             </form>`,
     });
 
-    expect(`.o_kanban_record:visible`).toHaveCount(2);
+    expect(`.o_kanban_record:visible:not(.o-kanban-button-new)`).toHaveCount(2);
     expect(`.o_kanban_record:first`).toHaveText("gold");
     expect(`.o_kanban_renderer .delete_icon`).toBeVisible();
-    expect(`.o_field_many2many .o-kanban-button-new:visible`).toHaveText("Add");
+    expect(`.o_field_many2many .o-kanban-button-new:visible`).toHaveText("Add pokemon");
 
     // edit existing subrecord
 
@@ -284,17 +285,17 @@ test("many2many kanban: edition", async () => {
 
     // add subrecords
     // -> single select
-    await clickViewButton({ text: "Add" });
+    await contains(".o_view_controller .btn:contains(Add pokemon)").click();
 
     expect(".modal .o_list_view tbody .o_list_record_selector").toHaveCount(3);
 
     await contains(".modal .o_list_view tbody tr:contains(red) .o_data_cell").click();
 
-    expect(".o_kanban_record:visible").toHaveCount(3);
+    expect(".o_kanban_record:visible:not(.o-kanban-button-new)").toHaveCount(3);
     expect(".o_kanban_record:contains(red)").toBeVisible();
 
     // -> multiple select
-    await clickViewButton({ text: "Add" });
+    await contains(".o_view_controller .btn:contains(Add pokemon)").click();
     expect(".modal .o_select_button").not.toBeEnabled();
     await animationFrame();
 
@@ -304,10 +305,10 @@ test("many2many kanban: edition", async () => {
     await clickModalButton({ text: "Select" });
 
     expect(".modal .o_list_view").toHaveCount(0);
-    expect(".o_kanban_record:visible").toHaveCount(5);
+    expect(".o_kanban_record:visible:not(.o-kanban-button-new)").toHaveCount(5);
 
     // -> created record
-    await clickViewButton({ text: "Add" });
+    await contains(".o_view_controller .btn:contains(Add pokemon)").click();
     await clickModalButton({ text: "New" });
 
     expect(".modal .o_form_view .o_form_editable").toBeVisible();
@@ -315,7 +316,7 @@ test("many2many kanban: edition", async () => {
     await fieldInput("name").edit("A new type");
     await clickModalButton({ text: "Save & Close" });
 
-    expect(".o_kanban_record:visible").toHaveCount(6);
+    expect(".o_kanban_record:visible:not(.o-kanban-button-new)").toHaveCount(6);
     expect(".o_kanban_record:contains(A new type)").toBeVisible();
 
     // delete subrecords
@@ -325,12 +326,12 @@ test("many2many kanban: edition", async () => {
     await clickModalButton({ text: "Remove" });
 
     expect(".modal").toHaveCount(0);
-    expect(".o_kanban_record:visible").toHaveCount(5);
+    expect(".o_kanban_record:visible:not(.o-kanban-button-new)").toHaveCount(5);
     expect(".o_kanban_record:contains(silver)").toHaveCount(0);
 
     await clickKanbanRecord({ text: "blue", target: ".delete_icon" });
 
-    expect(".o_kanban_record:visible").toHaveCount(4);
+    expect(".o_kanban_record:visible:not(.o-kanban-button-new)").toHaveCount(4);
     expect(".o_kanban_record:contains(blue)").toHaveCount(0);
 
     // save the record
@@ -419,7 +420,7 @@ test("many2many kanban: create action disabled", async () => {
                         <templates>
                             <t t-name="card">
                                 <div>
-                                    <a t-if="!read_only_mode" type="delete" class="fa fa-times float-end delete_icon"/>
+                                    <a type="delete" class="fa fa-times float-end delete_icon"/>
                                     <field name="name"/>
                                 </div>
                             </t>
@@ -477,7 +478,7 @@ test("many2many kanban: conditional create/delete actions", async () => {
     await contains(".modal .modal-footer .o_form_button_cancel:eq(0)").click();
 
     // set color to black
-    await contains('div[name="color"] select').select('"black"');
+    await editSelectMenu(".o_field_widget[name='color'] input", { value: "Black" });
     expect(".o-kanban-button-new").toHaveCount(1, {
         message: '"Add" button should still be available even after color field changed',
     });
@@ -668,7 +669,6 @@ test("add record in a many2many non editable list with context", async () => {
             abc: 2,
             allowed_company_ids: [1],
             bin_size: true,
-            current_company_id: 1,
             lang: "en",
             tz: "taht",
             uid: 7,
@@ -856,12 +856,11 @@ test("fieldmany2many list comodel not writable", async () => {
             </list>`,
         search: '<search><field name="name"/></search>',
     };
-    onRpc((args) => {
-        if (args.route === "/web/dataset/call_kw/partner/web_save" && args.args[0].length === 0) {
-            expect(args.args[1]).toEqual({ timmy: [[4, 1]] });
-        }
-        if (args.route === "/web/dataset/call_kw/partner/web_save" && args.args[0].length !== 0) {
-            expect(args.args[1]).toEqual({ timmy: [[3, 1]] });
+    onRpc("partner", "web_save", ({ args }) => {
+        if (args[0].length === 0) {
+            expect(args[1]).toEqual({ timmy: [[4, 1]] });
+        } else {
+            expect(args[1]).toEqual({ timmy: [[3, 1]] });
         }
     });
     await mountView({
@@ -930,7 +929,7 @@ test("many2many list: conditional create/delete actions", async () => {
     await contains(".modal .modal-footer .o_form_button_cancel:eq(0)").click();
 
     // set color to black -> create and delete actions are no longer available
-    await contains('div[name="color"] select').select('"black"');
+    await editSelectMenu(".o_field_widget[name='color'] input", { value: "Black" });
 
     // add a line and remove icon should still be there as they don't create/delete records,
     // but rather add/remove links
@@ -973,7 +972,7 @@ test("many2many field with link/unlink options (list)", async () => {
     await contains(".modal .modal-footer .o_form_button_cancel:eq(0)").click();
 
     // set color to black -> link and unlink actions are no longer available
-    await contains('div[name="color"] select').select('"black"');
+    await editSelectMenu(".o_field_widget[name='color'] input", { value: "Black" });
 
     expect(".o_field_x2many_list_row_add").toHaveCount(0);
     expect(".o_list_record_remove").toHaveCount(0);
@@ -1011,7 +1010,7 @@ test('many2many field with link/unlink options (list, create="0")', async () => 
     await contains(".modal .modal-footer .o_form_button_cancel:eq(0)").click();
 
     // set color to black -> link and unlink actions are no longer available
-    await contains('div[name="color"] select').select('"black"');
+    await editSelectMenu(".o_field_widget[name='color'] input", { value: "Black" });
 
     expect(".o_field_x2many_list_row_add").toHaveCount(0);
     expect(".o_list_record_remove").toHaveCount(0);
@@ -1053,7 +1052,7 @@ test("many2many field with link option (kanban)", async () => {
     await contains(".modal .modal-footer .o_form_button_cancel:eq(0)").click();
 
     // set color to black -> link and unlink actions are no longer available
-    await contains('div[name="color"] select').select('"black"');
+    await editSelectMenu(".o_field_widget[name='color'] input", { value: "Black" });
 
     expect(".o-kanban-button-new").toHaveCount(0);
 });
@@ -1093,9 +1092,47 @@ test('many2many field with link option (kanban, create="0")', async () => {
     await contains(".modal .modal-footer .o_form_button_cancel:eq(0)").click();
 
     // set color to black -> link and unlink actions are no longer available
-    await contains('div[name="color"] select').select('"black"');
+    await editSelectMenu(".o_field_widget[name='color'] input", { value: "Black" });
 
     expect(".o-kanban-button-new").toHaveCount(0);
+});
+
+test("readonly many2many field: edit record", async () => {
+    Partner._records[0].timmy = [1, 2];
+
+    onRpc("web_save", ({ args }) => {
+        expect.step(`save ${args[1].name}`);
+    });
+    await mountView({
+        type: "form",
+        resModel: "partner",
+        arch: `
+            <form>
+                <field name="color"/>
+                <field name="timmy" readonly="1">
+                    <list>
+                        <field name="name"/>
+                    </list>
+                    <form>
+                        <field name="name"/>
+                    </form>
+                </field>
+            </form>`,
+        resId: 1,
+    });
+
+    expect(".o_field_widget[name=timmy]").toHaveClass("o_readonly_modifier");
+    expect(".o_field_x2many_list_row_add").toHaveCount(0);
+    expect(".o_list_record_remove").toHaveCount(0);
+    expect(queryAllTexts(".o_data_cell")).toEqual(["gold", "silver"]);
+
+    await contains(".o_data_row:first .o_data_cell").click();
+    expect(".o_dialog .o_form_renderer").toHaveClass("o_form_editable");
+
+    await contains(".o_dialog .o_field_widget[name=name] input").edit("new name");
+    await contains(".o_dialog .o_form_button_save").click();
+    expect(queryAllTexts(".o_data_cell")).toEqual(["new name", "silver"]);
+    expect.verifySteps(["save new name"]);
 });
 
 test("many2many list: list of id as default value", async () => {
@@ -1232,6 +1269,8 @@ test("many2many with a domain", async () => {
     await contains(".o_field_x2many_list_row_add a").click();
     expect(".modal .o_data_row").toHaveCount(1);
     await contains(`.modal .o_searchview input`).edit("s");
+    await press("enter");
+    await animationFrame();
 
     expect(".modal .o_data_row").toHaveCount(0);
 });
@@ -1258,20 +1297,19 @@ test("many2many list (editable): edition concurrence", async () => {
         type: "form",
         resModel: "partner",
         arch: `
-                <form>
-                    <field name="timmy">
-                        <list editable="top">
-                            <field name="display_name"/>
-                            <field name="float_field"/>
-                        </list>
-                    </field>
-                </form>`,
+            <form>
+                <field name="timmy">
+                    <list editable="top">
+                        <field name="display_name"/>
+                        <field name="float_field"/>
+                    </list>
+                </field>
+            </form>`,
         resId: 1,
     });
 
-    const removeButton = contains(".o_list_record_remove");
-    removeButton.click();
-    removeButton.click();
+    queryFirst(".o_list_record_remove").click();
+    queryFirst(".o_list_record_remove").click();
     await clickSave();
     expect.verifySteps(["get_views", "web_read", "web_save"]);
 });
@@ -1283,10 +1321,12 @@ test("many2many editable list: delete with confirmation (cancel, then delete aga
             super.setup();
         }
         onDeleteRecord(record) {
-            this.dialog.add(ConfirmationDialog, {
-                body: "Are you sure you want to delete this record?",
-                confirm: () => super.onDeleteRecord(record),
-                cancel: () => {},
+            return new Promise((resolve) => {
+                this.dialog.add(ConfirmationDialog, {
+                    body: "Are you sure you want to delete this record?",
+                    confirm: () => super.onDeleteRecord(record).then(resolve),
+                    cancel: resolve,
+                });
             });
         }
     }
@@ -1522,20 +1562,20 @@ test("onchange with 40+ commands for a many2many", async () => {
 
     await contains(".o_field_widget[name=foo] input").edit("trigger onchange");
     expect.verifySteps(["onchange"]);
-    expect(".o_kanban_record:not(.o_kanban_ghost)").toHaveCount(40);
+    expect(".o_kanban_record:not(.o_kanban_ghost):not(.o-kanban-button-new)").toHaveCount(40);
     await contains(".o_field_widget[name=timmy] .o_pager_next:eq(0)").click();
     expect.verifySteps([]);
-    expect(".o_kanban_record:not(.o_kanban_ghost)").toHaveCount(5);
+    expect(".o_kanban_record:not(.o_kanban_ghost):not(.o-kanban-button-new)").toHaveCount(5);
 
     await clickSave();
 
-    expect(".o_kanban_record:not(.o_kanban_ghost)").toHaveCount(40);
+    expect(".o_kanban_record:not(.o_kanban_ghost):not(.o-kanban-button-new)").toHaveCount(40);
 
     await contains(".o_field_widget[name=timmy] .o_pager_next:eq(0)").click();
-    expect(".o_kanban_record:not(.o_kanban_ghost)").toHaveCount(5);
+    expect(".o_kanban_record:not(.o_kanban_ghost):not(.o-kanban-button-new)").toHaveCount(5);
 
     await contains(".o_field_widget[name=timmy] .o_pager_next:eq(0)").click();
-    expect(".o_kanban_record:not(.o_kanban_ghost)").toHaveCount(40);
+    expect(".o_kanban_record:not(.o_kanban_ghost):not(.o-kanban-button-new)").toHaveCount(40);
 
     expect.verifySteps(["web_save", "web_read"]);
 });
@@ -1796,6 +1836,7 @@ test("many2many basic keys in field evalcontext -- in list", async () => {
         form: `<form><field name="partner_id" /></form>`,
     };
 
+    cookie.set("cids", "3");
     serverState.companies = [
         { id: 3, name: "Hermit", sequence: 1 },
         { id: 2, name: "Herman's", sequence: 2 },
@@ -1834,6 +1875,7 @@ test("many2many basic keys in field evalcontext -- in form", async () => {
     PartnerType._views = {
         form: `<form><field name="partner_id" /></form>`,
     };
+    cookie.set("cids", "3");
     serverState.companies = [
         { id: 3, name: "Hermit", sequence: 1 },
         { id: 2, name: "Herman's", sequence: 2 },
@@ -1876,6 +1918,7 @@ test("many2many basic keys in field evalcontext -- in a x2many in form", async (
 
     const rec = Partner._records.find(({ id }) => id === 2);
     rec.p = [1];
+    cookie.set("cids", "3");
     serverState.companies = [
         { id: 3, name: "Hermit", sequence: 1 },
         { id: 2, name: "Herman's", sequence: 2 },
@@ -1951,4 +1994,111 @@ test("`this` inside rendererProps should reference the component", async () => {
     });
     await contains(".o_field_x2many_list_row_add a").click();
     expect.verifySteps(["onAdd", "selectCreate"]);
+});
+
+test("empty many2many tags field with no result", async () => {
+    patchWithCleanup(Many2XAutocomplete.prototype, {
+        getCreationContext(value) {
+            expect(value).toBe("");
+            const context = super.getCreationContext(value);
+            expect(context[`default_${this.props.nameCreateField}`]).toBe(undefined);
+            return context;
+        },
+    });
+    class M2M extends models.Model {
+        m2m = fields.Many2many({ relation: "m2m" });
+    }
+    defineModels([M2M]);
+    await mountView({
+        type: "form",
+        resModel: "m2m",
+        arch: `
+            <form>
+                <sheet>
+                    <group>
+                        <field name="m2m" widget="many2many_tags"/>
+                    </group>
+                </sheet>
+            </form>`,
+    });
+
+    await contains(".o_field_many2many_selection input").click();
+    expect(".dropdown-menu li.o_m2o_dropdown_option").toHaveCount(1);
+    expect(".dropdown-menu li.o_m2o_dropdown_option").toHaveText("Create...");
+    expect(".dropdown-menu li.o_m2o_start_typing").toHaveCount(0);
+
+    await contains(".dropdown-menu li.o_m2o_dropdown_option").click();
+    expect(".o_dialog").toHaveCount(1);
+    expect(".o_dialog .o_field_many2many_selection input").toHaveValue("");
+    press("Esc");
+    await animationFrame();
+    expect(".o_dialog").toHaveCount(0);
+
+    await contains(".o_field_many2many_selection input").edit("abc", { confirm: false });
+    await runAllTimers();
+
+    expect(".dropdown-menu li.o_m2o_dropdown_option").toHaveCount(2);
+    expect(".dropdown-menu li.o_m2o_start_typing").toHaveCount(0);
+    expect(".dropdown-menu li.o_m2o_no_result").toHaveCount(0);
+});
+
+test("highlight search in many2many", async () => {
+    await mountView({
+        type: "form",
+        resModel: "partner",
+        arch: `<form><field name="p" widget="many2many_tags"/></form>`,
+    });
+    await contains(".o_field_widget[name=p] input").edit("rec", { confirm: false });
+    await runAllTimers();
+    expect(`.o-autocomplete.dropdown li a > span`).toHaveCount(2);
+    expect(`.o-autocomplete.dropdown li:eq(0) a > span`).toHaveInnerHTML(`
+    <span>
+        first
+        <span class="text-primary fw-bold">
+            rec
+        </span>
+        ord
+    </span>`);
+    expect(`.o-autocomplete.dropdown li:eq(1) a > span`).toHaveInnerHTML(`
+    <span>
+        second
+        <span class="text-primary fw-bold">
+            rec
+        </span>
+        ord
+    </span>
+    `);
+});
+
+test("test view button warning on opening unsaved record", async () => {
+    // Making the field required so that we get a sticky notification
+    Turtle._fields.name.required = true;
+
+    mockService("notification", {
+        add(message, options) {
+            expect.step("notification");
+            expect(message).toBe("Please save your changes first");
+            expect(options).toEqual({ type: "danger" });
+        },
+    });
+
+    await mountView({
+        type: "form",
+        resModel: "partner",
+        arch: `
+            <form>
+                <field name="turtles" context="{'default_turtle_trululu': id}" >
+                    <list editable="bottom" open_form_view="True">
+                        <field name="name"/>
+                        <field name="turtle_foo"/>
+                    </list>
+                </field>
+            </form>
+        `,
+    });
+
+    await contains(".o_field_x2many_list_row_add a").click();
+    await contains(".o_list_record_open_form_view button").click();
+
+    expect.verifySteps(["notification"]);
 });

@@ -35,7 +35,7 @@ class TestLinkTracker(TransactionCase):
             name='Test User',
             company_id=cls.company_1.id,
             company_ids=[(6, 0, [cls.company_1.id, cls.company_2.id])],
-            groups="website.group_website_designer"
+            groups="website.group_website_designer,base.group_user"
         )
 
     @users('test_user')

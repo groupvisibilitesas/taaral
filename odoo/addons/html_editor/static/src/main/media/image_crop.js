@@ -1,10 +1,10 @@
 import {
-    applyModifications,
-    cropperDataFields,
     activateCropper,
     loadImage,
     loadImageInfo,
+    cropperDataFieldsWithAspectRatio,
 } from "@html_editor/utils/image_processing";
+import { IMAGE_SHAPES } from "./image_plugin";
 import { _t } from "@web/core/l10n/translation";
 import {
     Component,
@@ -18,24 +18,25 @@ import {
 import { useService } from "@web/core/utils/hooks";
 import { scrollTo, closestScrollableY } from "@web/core/utils/scrolling";
 
+export const cropperAspectRatios = {
+    "0/0": { label: _t("Flexible"), value: 0 },
+    "16/9": { label: "16:9", value: 16 / 9 },
+    "4/3": { label: "4:3", value: 4 / 3 },
+    "1/1": { label: "1:1", value: 1 },
+    "2/3": { label: "2:3", value: 2 / 3 },
+};
+
 export class ImageCrop extends Component {
     static template = "html_editor.ImageCrop";
     static props = {
         document: { validate: (p) => p.nodeType === Node.DOCUMENT_NODE },
         media: { optional: true },
-        mimetype: { type: String, optional: true },
         onClose: { type: Function, optional: true },
         onSave: { type: Function, optional: true },
     };
 
     setup() {
-        this.aspectRatios = {
-            "0/0": { label: _t("Flexible"), value: 0 },
-            "16/9": { label: "16:9", value: 16 / 9 },
-            "4/3": { label: "4:3", value: 4 / 3 },
-            "1/1": { label: "1:1", value: 1 },
-            "2/3": { label: "2:3", value: 2 / 3 },
-        };
+        this.aspectRatios = cropperAspectRatios;
         this.notification = useService("notification");
         this.media = this.props.media;
         this.document = this.props.document;
@@ -43,6 +44,8 @@ export class ImageCrop extends Component {
         this.elRef = useRef("el");
         this.cropperWrapper = useRef("cropperWrapper");
         this.imageRef = useRef("imageRef");
+        this.applyButtonRef = useRef("applyButton");
+        this.discardButtonRef = useRef("discardButton");
         this.isCropperActive = false;
 
         // We use capture so that the handler is called before other editor handlers
@@ -52,6 +55,9 @@ export class ImageCrop extends Component {
             capture: true,
         });
         useExternalListener(this.document, "keydown", this.onDocumentKeydown, {
+            capture: true,
+        });
+        useExternalListener(document, "keydown", this.onDocumentKeydown, {
             capture: true,
         });
         useExternalListener(
@@ -76,15 +82,16 @@ export class ImageCrop extends Component {
     }
 
     closeCropper() {
-        if (this.isCropperActive) {
-            this.cropper?.destroy?.();
-            this.media.setAttribute("src", this.initialSrc);
-            if (
-                this.hasModifiedImageClass &&
-                !this.media.classList.contains("o_modified_image_to_save")
-            ) {
-                this.media.classList.add("o_modified_image_to_save");
-            }
+        if (!this.isCropperActive && !this.forceClose) {
+            return;
+        }
+        this.cropper?.destroy?.();
+        this.media.setAttribute("src", this.initialSrc);
+        if (
+            this.hasModifiedImageClass &&
+            !this.media.classList.contains("o_modified_image_to_save")
+        ) {
+            this.media.classList.add("o_modified_image_to_save");
         }
         this.props?.onClose?.();
         this.isCropperActive = false;
@@ -98,9 +105,9 @@ export class ImageCrop extends Component {
             this.cropper.reset();
             if (this.aspectRatio !== "0/0") {
                 this.aspectRatio = "0/0";
-                this.cropper.setAspectRatio(this.aspectRatios[this.aspectRatio].value);
+                this.cropper.setAspectRatio(cropperAspectRatios[this.aspectRatio].value);
             }
-            await this.save(false);
+            await this.save();
         }
     }
 
@@ -113,15 +120,9 @@ export class ImageCrop extends Component {
         const data = { ...this.media.dataset };
         this.initialSrc = src;
         this.aspectRatio = data.aspectRatio || "0/0";
-        const mimetype =
-            data.mimetype || src.endsWith(".png")
-                ? "image/png"
-                : src.endsWith(".webp")
-                ? "image/webp"
-                : "image/jpeg";
-        this.mimetype = this.props.mimetype || mimetype;
 
-        await loadImageInfo(this.media);
+        // todo: check that the mutations of loadImage are not problematic (they most probably are).
+        Object.assign(this.media.dataset, await loadImageInfo(this.media));
         const isIllustration = /^\/(?:html|web)_editor\/shape\/illustration\//.test(
             this.media.dataset.originalSrc
         );
@@ -146,6 +147,7 @@ export class ImageCrop extends Component {
                     type: "warning",
                 }
             );
+            this.forceClose = true;
             return this.closeCropper();
         }
 
@@ -172,10 +174,9 @@ export class ImageCrop extends Component {
             offset = { top: 0, left: 0 };
         } else {
             const rect = this.media.getBoundingClientRect();
-            const win = this.media.ownerDocument.defaultView;
             offset = {
-                top: rect.top + win.pageYOffset,
-                left: rect.left + win.pageXOffset,
+                top: rect.top,
+                left: rect.left,
             };
         }
 
@@ -198,10 +199,19 @@ export class ImageCrop extends Component {
 
         this.cropper = await activateCropper(
             cropperImage,
-            this.aspectRatios[this.aspectRatio].value,
-            this.media.dataset
+            cropperAspectRatios[this.aspectRatio]?.value || 0,
+            this.media.dataset,
+            {
+                onReady: (cropper) => {
+                    const cropperMove = cropper.face;
+                    for (const shape of IMAGE_SHAPES) {
+                        cropperMove.classList.toggle(shape, this.media.classList.contains(shape));
+                    }
+                },
+            }
         );
         this.isCropperActive = true;
+        this.applyButtonRef.el?.focus({ preventScroll: true });
     }
     /**
      * Updates the DOM image with cropped data and associates required
@@ -211,36 +221,13 @@ export class ImageCrop extends Component {
      * @private
      * @param {boolean} [cropped=true]
      */
-    async save(cropped = true) {
-        // Mark the media for later creation of cropped attachment
-        this.media.classList.add("o_modified_image_to_save");
-
-        [...cropperDataFields, "aspectRatio"].forEach((attr) => {
-            delete this.media.dataset[attr];
-            const value = this.getAttributeValue(attr);
-            if (value) {
-                this.media.dataset[attr] = value;
-            }
+    async save() {
+        const cropperData = this.getCropperData(this.cropper);
+        this.props.onSave?.({
+            aspectRatio: this.aspectRatio,
+            ...cropperData,
         });
-        delete this.media.dataset.resizeWidth;
-        this.initialSrc = await applyModifications(this.media, this.cropper, {
-            forceModification: true,
-            mimetype: this.mimetype,
-        });
-        this.media.classList.toggle("o_we_image_cropped", cropped);
         this.closeCropper();
-        this.props.onSave?.();
-    }
-    /**
-     * Returns an attribute's value for saving.
-     *
-     * @private
-     */
-    getAttributeValue(attr) {
-        if (cropperDataFields.includes(attr)) {
-            return this.cropper.getData()[attr];
-        }
-        return this[attr];
     }
     /**
      * Resets the crop box to prevent it going outside the image.
@@ -300,7 +287,7 @@ export class ImageCrop extends Component {
     setAspectRatio(ratio) {
         this.cropper.reset();
         this.aspectRatio = ratio;
-        this.cropper.setAspectRatio(this.aspectRatios[this.aspectRatio].value);
+        this.cropper.setAspectRatio(cropperAspectRatios[this.aspectRatio].value);
     }
 
     /**
@@ -325,12 +312,31 @@ export class ImageCrop extends Component {
      * @param {KeyboardEvent} ev
      */
     onDocumentKeydown(ev) {
+        if (!this.isCropperActive) {
+            return;
+        }
         if (ev.key === "Enter") {
+            ev.preventDefault();
+            ev.stopImmediatePropagation();
+            if (ev.target === this.discardButtonRef.el) {
+                return this.closeCropper();
+            }
             return this.save();
-        } else if (ev.key === "Escape") {
+        } else if (["Backspace", "Escape"].includes(ev.key)) {
+            ev.preventDefault();
             ev.stopImmediatePropagation();
             return this.closeCropper();
         }
+    }
+    /**
+     * @param {Cropper} cropper
+     */
+    getCropperData(cropper) {
+        return Object.fromEntries(
+            cropperDataFieldsWithAspectRatio
+                .map((field) => [field, cropper.getData()[field]])
+                .filter(([, value]) => value)
+        );
     }
     /**
      * Resets the cropbox on zoom to prevent crop box overflowing.

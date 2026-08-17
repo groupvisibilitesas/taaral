@@ -33,18 +33,18 @@ registry.category("web_tour.tours").add("mail/static/tests/tours/mail_composer_t
         },
         {
             content: "Add one file in composer",
-            trigger: ".o-mail-Composer button[aria-label='Attach files']",
+            trigger: ".o-mail-Composer button[title='Attach Files']",
             async run() {
                 const files = [new File(["hello, world"], "file1.txt", { type: "text/plain" })];
-                await inputFiles(".o-mail-Composer-coreMain .o_input_file", files);
+                await inputFiles(".o-mail-Composer .o_input_file", files);
             },
         },
         {
-            trigger: '.o-mail-AttachmentCard:not(.o-isUploading):contains("file1.txt")',
+            trigger: '.o-mail-AttachmentContainer:not(.o-isUploading):contains("file1.txt")',
         },
         {
             content: "Open full composer",
-            trigger: "button[aria-label='Full composer']",
+            trigger: "button[title='Open Full Composer']",
             run: "click",
         },
         {
@@ -180,15 +180,16 @@ registry.category("web_tour.tours").add("mail/static/tests/tours/mail_composer_t
         },
         {
             content: "Check message has correct recipients",
-            trigger: ".o-mail-MessageNotificationPopover:contains('Not A Demo User Jane')",
+            trigger:
+                ".o-mail-MessageNotificationPopover:contains('Not A Demo User (NotADemoUser@mail.com) Jane (jane@example.com) Mitchell Admin (test.admin@test.example.com)')",
         },
         {
             content: "Check message contains the first attachment",
-            trigger: '.o-mail-Message .o-mail-AttachmentCard:contains("file1.txt")',
+            trigger: '.o-mail-Message .o-mail-AttachmentContainer:contains("file1.txt")',
         },
         {
             content: "Check message contains the second attachment",
-            trigger: '.o-mail-Message .o-mail-AttachmentCard:contains("file2.txt")',
+            trigger: '.o-mail-Message .o-mail-AttachmentContainer:contains("file2.txt")',
         },
         // Test the full composer input text is kept on closing
         {
@@ -198,7 +199,7 @@ registry.category("web_tour.tours").add("mail/static/tests/tours/mail_composer_t
         },
         {
             content: "Open full composer",
-            trigger: "button[aria-label='Full composer']",
+            trigger: "button[title='Open Full Composer']",
             run: "click",
         },
         {
@@ -233,9 +234,9 @@ registry.category("web_tour.tours").add("mail/static/tests/tours/mail_composer_t
         },
         {
             content: "Check full composer text is kept",
-            trigger: ".o-mail-Composer-input",
-            run() {
-                if (this.anchor.value !== "keep the content") {
+            trigger: ".o-mail-Composer button[title='Open Full Composer'].active",
+            run({ queryFirst }) {
+                if (queryFirst(".o-mail-Composer-input").value !== "keep the content") {
                     console.error(
                         "Composer in chatter should contain full composer text after discarding."
                     );
@@ -244,7 +245,7 @@ registry.category("web_tour.tours").add("mail/static/tests/tours/mail_composer_t
         },
         {
             content: "Open full composer",
-            trigger: "button[aria-label='Full composer']",
+            trigger: "button[title='Open Full Composer']",
             run: "click",
         },
         {
@@ -271,6 +272,12 @@ registry.category("web_tour.tours").add("mail/static/tests/tours/mail_composer_t
         {
             content: "Click on Send Message",
             trigger: "button:contains(Send message)",
+            run: "click",
+        },
+        {
+            content: "Continue Message Composition with Small Composer",
+            trigger:
+                ".o_popover:contains('Continue with Full Composer?') button:contains('No (Remove formatting)')",
             run: "click",
         },
         {

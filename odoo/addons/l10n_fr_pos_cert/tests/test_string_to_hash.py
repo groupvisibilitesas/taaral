@@ -1,11 +1,11 @@
-from odoo.addons.point_of_sale.tests.common import TestPointOfSaleCommon
+from odoo.addons.point_of_sale.tests.common import TestPoSCommon
 from odoo.tests import tagged
 from ..models.pos import ORDER_FIELDS_BEFORE_17_4, ORDER_FIELDS_FROM_17_4, LINE_FIELDS
 from json import dumps
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
-class TestStringToHash(TestPointOfSaleCommon):
+class TestStringToHash(TestPoSCommon):
 
     @classmethod
     def setUpClass(cls):
@@ -78,7 +78,7 @@ class TestStringToHash(TestPointOfSaleCommon):
         order = self.env['pos.order'].create({
             'company_id': self.company_data['company'].id,
             'partner_id': self.partner_a.id,
-            'session_id': self.pos_config.current_session_id.id,
+            'session_id': self.basic_config.current_session_id.id,
             'lines': lines,
             'amount_total': currency.round(total_amount + total_tax),
             'amount_tax': currency.round(total_tax),
@@ -100,15 +100,15 @@ class TestStringToHash(TestPointOfSaleCommon):
         return order
 
     def test_string_to_hash(self):
-        self.pos_config.open_ui()
+        self.basic_config.open_ui()
         order = self._create_and_pay_pos_order([
             {'qty': 1, 'price_unit': 10000, 'product': self.product_a, 'tax_ids': self.tax_sale_a},
             {'qty': 2, 'price_unit': 5000, 'product': self.product_a, 'tax_ids': self.tax_sale_b},
             {'qty': 3, 'price_unit': 2000, 'tax_ids': self.tax_sale_b | self.tax_sale_b}
         ], [
-            {'amount': 10000, 'payment_method': self.bank_payment_method},
-            {'amount': 8900, 'payment_method': self.cash_payment_method},
-            {'amount': 11000, 'payment_method': self.credit_payment_method}
+            {'amount': 10000, 'payment_method': self.bank_pm1},
+            {'amount': 8900, 'payment_method': self.cash_pm1},
+            {'amount': 11000, 'payment_method': self.pay_later_pm}
         ])
-        self.pos_config.current_session_id.action_pos_session_closing_control()
+        self.basic_config.current_session_id.action_pos_session_closing_control()
         self.assertEqual(order.l10n_fr_string_to_hash, self._compute_string_to_hash_original(order))

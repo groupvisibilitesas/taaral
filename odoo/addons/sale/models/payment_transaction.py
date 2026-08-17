@@ -1,9 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime
+
 from dateutil import relativedelta
 
-from odoo import _, api, Command, fields, models, SUPERUSER_ID
+from odoo import SUPERUSER_ID, Command, _, api, fields, models
 from odoo.tools import str2bool
 
 
@@ -25,7 +26,7 @@ class PaymentTransaction(models.Model):
             # self.provider_id.so_reference_type is empty
             order_reference = False
 
-        invoice_journal = self.env['account.journal'].search([('type', '=', 'sale'), ('company_id', '=', self.env.company.id)], limit=1)
+        invoice_journal = self.env['account.journal'].search([('type', '=', 'sale'), ('company_id', '=', self.company_id.id)], limit=1)
         if invoice_journal:
             order_reference = invoice_journal._process_reference_for_sale_order(order_reference)
 
@@ -121,7 +122,9 @@ class PaymentTransaction(models.Model):
             if len(tx.sale_order_ids) == 1:
                 quotation = tx.sale_order_ids.filtered(lambda so: so.state in ('draft', 'sent'))
                 if quotation and quotation._is_confirmation_amount_reached():
-                    quotation.with_context(send_email=True).action_confirm()
+                    quotation.with_context(
+                        send_email=True, sale_include_signature=True
+                    ).action_confirm()
                     confirmed_orders |= quotation
         return confirmed_orders
 
@@ -220,14 +223,13 @@ class PaymentTransaction(models.Model):
                     tx.invoice_ids = [Command.set(invoices.ids)]
 
     @api.model
-    def _compute_reference_prefix(self, provider_code, separator, **values):
+    def _compute_reference_prefix(self, separator, **values):
         """ Override of payment to compute the reference prefix based on Sales-specific values.
 
         If the `values` parameter has an entry with 'sale_order_ids' as key and a list of (4, id, O)
         or (6, 0, ids) X2M command as value, the prefix is computed based on the sales order name(s)
         Otherwise, the computation is delegated to the super method.
 
-        :param str provider_code: The code of the provider handling the transaction
         :param str separator: The custom separator used to separate data references
         :param dict values: The transaction values used to compute the reference prefix. It should
                             have the structure {'sale_order_ids': [(X2M command), ...], ...}.
@@ -241,8 +243,9 @@ class PaymentTransaction(models.Model):
             orders = self.env['sale.order'].browse(order_ids).exists()
             if len(orders) == len(order_ids):  # All ids are valid
                 return separator.join(orders.mapped('name'))
-        return super()._compute_reference_prefix(provider_code, separator, **values)
+        return super()._compute_reference_prefix(separator, **values)
 
+    @api.readonly
     def action_view_sales_orders(self):
         action = {
             'name': _('Sales Order(s)'),

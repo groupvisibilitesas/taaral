@@ -20,14 +20,22 @@ class QuotationDocumentController(Controller):
         methods=['POST'],
         auth='user',
     )
-    def upload_document(self, ufile, sale_order_template_id=False):
-        # TODO: add `allowed_company_ids` as method param in master
-        if allowed_company_ids := request.params.get('allowed_company_ids'):
+    def upload_document(self, ufile, sale_order_template_id=False, allowed_company_ids=False):
+        if allowed_company_ids:
             request.update_context(allowed_company_ids=json.loads(allowed_company_ids))
         sale_order_template = request.env['sale.order.template'].browse(
             int(sale_order_template_id)
         )
-        company = sale_order_template.company_id if sale_order_template else request.env.company
+        if sale_order_template:
+            sale_order_template.check_access('write')
+            additional_vals = {
+                'company_id': sale_order_template.company_id.id,
+                'quotation_template_ids': sale_order_template.ids,
+            }
+        else:
+            additional_vals = {
+                'company_id': request.env.company.id,
+            }
         files = request.httprequest.files.getlist('ufile')
         result = {'success': _("All files uploaded")}
         for ufile in files:
@@ -37,14 +45,13 @@ class QuotationDocumentController(Controller):
                     'name': ufile.filename,
                     'mimetype': mimetype,
                     'raw': ufile.read(),
-                    'quotation_template_ids': sale_order_template.ids,
-                    'company_id': company.id,
+                    **additional_vals,
                 }).flush_recordset()
             except UserError as e:
                 request.env.cr.rollback()
                 return request.make_json_response(
                     {'error': e},
-                    status=HTTPStatus.BAD_REQUEST,  # TODO saas-18.3 and up: e.http_status
+                    status=e.http_status,
                 )
             except Exception as e:
                 request.env.cr.rollback()

@@ -3,18 +3,17 @@
 # * account_check_printing
 #
 # Translators:
-# Wil Odoo, 2025
-# Anastasiia Koroleva, 2025
-#
-# "Anastasiia Koroleva (koan)" <koan@odoo.com>, 2025.
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# "Anastasiia Koroleva (koan)" <koan@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 17.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2025-10-22 09:09+0000\n"
-"Last-Translator: \"Anastasiia Koroleva (koan)\" <koan@odoo.com>\n"
-"Language-Team: Russian <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-06 12:37+0000\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"Language-Team: Russian <https://translate.odoo.com/projects/odoo-19/"
 "account_check_printing/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -23,13 +22,19 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
 "(n%100>=11 && n%100<=14)? 2 : 3);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_journal.py:0
 msgid "%(journal)s: Check Number Sequence"
 msgstr "%(journal)s: Нумерация чеков"
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "%(number)s in journal %(journal)s"
+msgstr "%(number)s в журнале %(journal)s"
 
 #. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.account_journal_dashboard_kanban_view_inherited
@@ -174,7 +179,12 @@ msgid "Default"
 msgstr "По умолчанию"
 
 #. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_account_journal__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment_method__display_name
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_res_company__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr "Отображаемое имя"
 
@@ -185,7 +195,17 @@ msgid "Go to the configuration panel"
 msgstr "Перейдите на панель конфигурации"
 
 #. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment__check_layout_available
+msgid "Has Check Layout"
+msgstr "Есть макет чека"
+
+#. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_account_journal__id
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment__id
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment_method__id
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__id
+#: model:ir.model.fields,field_description:account_check_printing.field_res_company__id
+#: model:ir.model.fields,field_description:account_check_printing.field_res_config_settings__id
 msgid "ID"
 msgstr "ID"
 
@@ -232,22 +252,26 @@ msgid ""
 "submitting a batch deposit to your bank. Module account_batch_payment is "
 "necessary.\n"
 "SEPA Credit Transfer: Pay in the SEPA zone by submitting a SEPA Credit "
-"Transfer file to your bank. Module account_sepa is necessary.\n"
+"Transfer file to your bank. Module account_iso20022 is necessary.\n"
 "SEPA Direct Debit: Get paid in the SEPA zone thanks to a mandate your "
-"partner will have granted to you. Module account_sepa is necessary.\n"
+"partner will have granted to you. Module account_iso20022 is necessary.\n"
+"U.S. ISO20022: Pay in the US by submitting an ISO20022 file to your bank. "
+"Module account_iso20022 is necessary.\n"
 msgstr ""
-"Руководство: Платите или получайте оплату любым способом за пределами Odoo.\n"
-"Провайдеры платежей: Каждый поставщик платежей имеет свой собственный метод "
-"оплаты. Запросите транзакцию по карте/на карту благодаря платежному токену, "
-"сохраненному партнером при покупке или подписке онлайн.\n"
-"Чек: Оплачивайте счета чеком и распечатывайте его из Odoo.\n"
-"Пакетное пополнение счета: Собирайте несколько чеков клиентов одновременно, "
-"генерируя и отправляя пакетный депозит в ваш банк. Необходим модуль "
+"Вручную: Оплата или получение средств любым методом за пределами Odoo.\n"
+"Платежные провайдеры: Каждый провайдер использует свой платежный метод. "
+"Запрос транзакции с карты/на карту возможен благодаря сохраненному партнером "
+"платежному токену (при онлайн-покупке или подписке).\n"
+"Чек: Оплачивайте счета чеками с возможностью их печати из Odoo.\n"
+"Пакетный депозит: Инкассирование нескольких клиентских чеков одновременно с "
+"формированием и отправкой в банк сводного депозита. Требуется модуль "
 "account_batch_payment.\n"
-"Кредитный перевод SEPA: Платите в зоне SEPA, отправляя файл SEPA Credit "
-"Transfer в ваш банк. Необходим модуль account_sepa.\n"
-"Прямое дебетование SEPA: Получайте оплату в зоне SEPA благодаря мандату, "
-"предоставленному вам вашим партнером. Необходим модуль account_sepa.\n"
+"Кредитный перевод SEPA: Оплата в зоне SEPA путем отправки в банк файла "
+"кредитного перевода SEPA. Требуется модуль account_iso20022.\n"
+"Прямой дебет SEPA: Получение платежей в зоне SEPA на основании мандата, "
+"предоставленного Вам партнером. Требуется модуль account_iso20022.\n"
+"U.S. ISO20022: Оплата в США путем отправки в банк файла в формате ISO20022. "
+"Требуется модуль account_iso20022.\n"
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_res_company__account_check_printing_multi_stub
@@ -470,3 +494,74 @@ msgid ""
 msgstr ""
 "Вам необходимо выбрать макет чека. Для этого зайдите в Настройки выставления "
 "счетов/расчетов, найдите \"Макет чека\" и установите его."
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "check_number"
+msgstr "check_number"
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "out_refund"
+msgstr "out_refund"
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "sep"
+msgstr "sep"
+
+#~ msgid ": Check Number Sequence"
+#~ msgstr ": Последовательность номеров чеков"
+
+#~ msgid "Contact"
+#~ msgstr "Контакты"
+
+#~ msgid "Journal Entry"
+#~ msgstr "Запись в журнале"
+
+#~ msgid ""
+#~ "Manual: Pay or Get paid by any method outside of Odoo.\n"
+#~ "Payment Providers: Each payment provider has its own Payment Method. "
+#~ "Request a transaction on/to a card thanks to a payment token saved by the "
+#~ "partner when buying or subscribing online.\n"
+#~ "Check: Pay bills by check and print it from Odoo.\n"
+#~ "Batch Deposit: Collect several customer checks at once generating and "
+#~ "submitting a batch deposit to your bank. Module account_batch_payment is "
+#~ "necessary.\n"
+#~ "SEPA Credit Transfer: Pay in the SEPA zone by submitting a SEPA Credit "
+#~ "Transfer file to your bank. Module account_sepa is necessary.\n"
+#~ "SEPA Direct Debit: Get paid in the SEPA zone thanks to a mandate your "
+#~ "partner will have granted to you. Module account_sepa is necessary.\n"
+#~ msgstr ""
+#~ "Руководство: Платите или получайте оплату любым способом за пределами "
+#~ "Odoo.\n"
+#~ "Провайдеры платежей: Каждый поставщик платежей имеет свой собственный "
+#~ "метод оплаты. Запросите транзакцию по карте/на карту благодаря платежному "
+#~ "токену, сохраненному партнером при покупке или подписке онлайн.\n"
+#~ "Чек: Оплачивайте счета чеком и распечатывайте его из Odoo.\n"
+#~ "Пакетное пополнение счета: Собирайте несколько чеков клиентов "
+#~ "одновременно, генерируя и отправляя пакетный депозит в ваш банк. "
+#~ "Необходим модуль account_batch_payment.\n"
+#~ "Кредитный перевод SEPA: Платите в зоне SEPA, отправляя файл SEPA Credit "
+#~ "Transfer в ваш банк. Необходим модуль account_sepa.\n"
+#~ "Прямое дебетование SEPA: Получайте оплату в зоне SEPA благодаря мандату, "
+#~ "предоставленному вам вашим партнером. Необходим модуль account_sepa.\n"
+
+#~ msgid "Preferred Payment Method"
+#~ msgstr "Предпочтительный способ оплаты"
+
+#~ msgid ""
+#~ "Preferred payment method when paying this vendor. This is used to filter "
+#~ "vendor bills by preferred payment method to register payments in mass. "
+#~ "Use cases: create bank files for batch wires, check runs."
+#~ msgstr ""
+#~ "Предпочитаемый способ оплаты при оплате данного поставщика. Используется "
+#~ "для фильтрации счетов поставщиков по предпочтительному способу оплаты для "
+#~ "массовой регистрации платежей. Примеры использования: создание банковских "
+#~ "файлов для пакетных проводок, пробитие чеков."
+
+#~ msgid "Register Payment"
+#~ msgstr "Регистрация оплаты"

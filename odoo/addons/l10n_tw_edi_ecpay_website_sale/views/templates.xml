@@ -4,7 +4,6 @@
     <template id="l10n_tw_edi_invoicing_info">
         <t t-call="website_sale.checkout_layout">
             <t t-set="additional_title">ECpay information</t>
-            <t t-set="show_navigation_button" t-value="False"/>
             <t t-set="oe_structure">
                 <!-- This is the drag-and-drop area for website building blocs at the end of each
                      checkout page. This is append at the of the page in `checkout_layout`. The
@@ -19,10 +18,11 @@
                     <form
                         t-attf-action="{{post_url}}"
                         method="post"
-                        id="ecpay_invoice_form"
+                        id="form_l10n_tw_invoicing_info"
                         t-att-date-order-id="website_sale_order.id"
                         t-att-data-access-token="website_sale_order.access_token"
                     >
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         <t t-if="errors" t-foreach="errors.values()" t-as="err">
                             <h5 class="text-danger" t-esc="err" />
                         </t>
@@ -107,18 +107,13 @@
                                 </div>
                             </div>
                         </div>
-                        <t t-call="website_sale.navigation_buttons">
-                            <t t-set="_form_send_navigation" t-value="True"/>
-                            <t t-set="_cta_classes" t-value="'a-submit a-submit-disable a-submit-loading'"/>
-                        </t>
-                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                     </form>
                 </div>
             </section>
         </t>
     </template>
 
-    <template id="address" inherit_id="website_sale.address">
+    <template id="address" inherit_id="website_sale.address_form_fields">
         <div id="div_state" position="after">
             <div class="row m-0 mb-3 p-0" id="l10n_tw_edi_require_paper_format"
                 t-if="(address_type == 'billing' or use_delivery_as_billing)

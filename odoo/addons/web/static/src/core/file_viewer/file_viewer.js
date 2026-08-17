@@ -1,10 +1,11 @@
-import { Component, useRef, useState } from "@odoo/owl";
-import { downloadFile } from "@web/core/network/download";
+import { Component, useEffect, useRef, useState } from "@odoo/owl";
+import { download } from "@web/core/network/download";
 import { useAutofocus, useService } from "@web/core/utils/hooks";
+import { hidePDFJSButtons } from "@web/core/utils/pdfjs";
 
 /**
  * @typedef {Object} File
- * @property {string} displayName
+ * @property {string} name
  * @property {string} downloadUrl
  * @property {boolean} [isImage]
  * @property {boolean} [isPdf]
@@ -33,6 +34,7 @@ export class FileViewer extends Component {
         useAutofocus();
         this.imageRef = useRef("image");
         this.zoomerRef = useRef("zoomer");
+        this.iframeViewerPdfRef = useRef("iframeViewerPdf");
 
         this.isDragging = false;
         this.dragStartX = 0;
@@ -56,7 +58,17 @@ export class FileViewer extends Component {
             angle: 0,
             isIframeLoaded: false,
         });
-        this.ui = useState(useService("ui"));
+        this.ui = useService("ui");
+        useEffect(
+            (el) => {
+                if (el) {
+                    hidePDFJSButtons(this.iframeViewerPdfRef.el, {
+                        hideDownload: true,
+                    });
+                }
+            },
+            () => [this.iframeViewerPdfRef.el]
+        );
     }
 
     onImageLoaded() {
@@ -230,6 +242,7 @@ export class FileViewer extends Component {
         } else {
             style += "max-height: 100%; max-width: 100%;";
         }
+        style += `background: repeating-conic-gradient(#ccc 0deg 90deg, #fff 90deg 180deg) 50% / 20px 20px;`;
         return style;
     }
 
@@ -243,6 +256,9 @@ export class FileViewer extends Component {
     }
 
     onClickDownload() {
-        downloadFile(this.state.file.downloadUrl);
+        download({
+            data: {},
+            url: this.state.file.downloadUrl,
+        });
     }
 }

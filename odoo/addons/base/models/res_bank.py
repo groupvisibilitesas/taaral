@@ -4,7 +4,7 @@ from collections.abc import Iterable
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError
-from odoo.tools import _, SQL, clean_context
+from odoo.tools import _, clean_context
 
 
 def sanitize_account_number(acc_number):
@@ -13,10 +13,10 @@ def sanitize_account_number(acc_number):
     return False
 
 
-class Bank(models.Model):
-    _description = 'Bank'
+class ResBank(models.Model):
     _name = 'res.bank'
-    _order = 'name'
+    _description = 'Bank'
+    _order = 'name, id'
     _rec_names_search = ['name', 'bic']
 
     name = fields.Char(required=True)
@@ -47,6 +47,18 @@ class Bank(models.Model):
             return domain
         return super()._search_display_name(operator, value)
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('bic', False):
+                vals['bic'] = vals['bic'].upper()
+        return super().create(vals_list)
+
+    def write(self, vals):
+        if vals.get('bic', False):
+            vals['bic'] = vals['bic'].upper()
+        return super().write(vals)
+
     @api.onchange('country')
     def _onchange_country_id(self):
         if self.country and self.country != self.state.country_id:
@@ -75,7 +87,8 @@ class ResPartnerBank(models.Model):
 
     active = fields.Boolean(default=True)
     acc_type = fields.Selection(selection=lambda x: x.env['res.partner.bank'].get_supported_account_types(), compute='_compute_acc_type', string='Type', help='Bank account type: Normal or IBAN. Inferred from the bank account number.')
-    acc_number = fields.Char('Account Number', required=True)
+    acc_number = fields.Char('Account Number', required=True, search='_search_acc_number')
+    clearing_number = fields.Char('Clearing Number')
     sanitized_acc_number = fields.Char(compute='_compute_sanitized_acc_number', string='Sanitized Account Number', readonly=True, store=True)
     acc_holder_name = fields.Char(string='Account Holder Name', help="Account holder name, in case it is different than the name of the Account Holder", compute='_compute_account_holder_name', readonly=False, store=True)
     partner_id = fields.Many2one('res.partner', 'Account Holder', ondelete='cascade', index=True, domain=['|', ('is_company', '=', True), ('parent_id', '=', False)], required=True)
@@ -87,17 +100,25 @@ class ResPartnerBank(models.Model):
     currency_id = fields.Many2one('res.currency', string='Currency')
     company_id = fields.Many2one('res.company', 'Company', related='partner_id.company_id', store=True, readonly=True)
     country_code = fields.Char(related='partner_id.country_code', string="Country Code")
+    note = fields.Text('Notes')
+    color = fields.Integer(compute='_compute_color')
 
-    _sql_constraints = [(
-        'unique_number',
+    _unique_number = models.Constraint(
         'unique(sanitized_acc_number, partner_id)',
-        'The combination Account Number/Partner must be unique.'
-    )]
+        "The combination Account Number/Partner must be unique.",
+    )
 
     @api.depends('acc_number')
     def _compute_sanitized_acc_number(self):
         for bank in self:
             bank.sanitized_acc_number = sanitize_account_number(bank.acc_number)
+
+    def _search_acc_number(self, operator, value):
+        if operator in ('in', 'not in'):
+            value = [sanitize_account_number(i) for i in value]
+        else:
+            value = sanitize_account_number(value)
+        return [('sanitized_acc_number', operator, value)]
 
     @api.depends('acc_number')
     def _compute_acc_type(self):
@@ -120,14 +141,10 @@ class ResPartnerBank(models.Model):
         for acc in self:
             acc.display_name = f'{acc.acc_number} - {acc.bank_id.name}' if acc.bank_id else acc.acc_number
 
-    def _condition_to_sql(self, alias: str, fname: str, operator: str, value, query) -> SQL:
-        if fname == 'acc_number':
-            fname = 'sanitized_acc_number'
-            if not isinstance(value, str) and isinstance(value, Iterable):
-                value = [sanitize_account_number(i) for i in value]
-            else:
-                value = sanitize_account_number(value)
-        return super()._condition_to_sql(alias, fname, operator, value, query)
+    @api.depends('allow_out_payment')
+    def _compute_color(self):
+        for bank in self:
+            bank.color = 10 if bank.allow_out_payment else 1
 
     def _sanitize_vals(self, vals):
         if 'sanitized_acc_number' in vals:  # do not allow to write on sanitized directly

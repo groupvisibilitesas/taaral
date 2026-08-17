@@ -55,18 +55,22 @@
         'views/snippets/s_images_constellation.xml',
         'views/snippets/s_text_cover.xml',
         'views/snippets/s_empowerment.xml',
+        'views/snippets/s_company_team_grid.xml',
+        'views/snippets/s_numbers_boxed.xml',
+        'views/snippets/s_split_intro.xml',
+        'views/snippets/s_numbers_framed.xml',
         'views/new_page_template.xml',
     ],
     'images': [
-        'static/description/kiddo_description.jpg',
-        'static/description/kiddo_screenshot.jpg',
+        'static/description/kiddo_description.webp',
+        'static/description/kiddo_screenshot.webp',
     ],
     'images_preview_theme': {
-        'website.s_banner_default_image': '/theme_kiddo/static/src/img/snippets/s_banner.jpg',
-        'website.s_image_text_default_image': '/theme_kiddo/static/src/img/snippets/s_image_text.jpg',
-        'website.s_three_columns_default_image_1': '/theme_kiddo/static/src/img/snippets/s_three_columns_default_image_1.jpg',
-        'website.s_three_columns_default_image_2': '/theme_kiddo/static/src/img/snippets/s_three_columns_default_image_2.jpg',
-        'website.s_three_columns_default_image_3': '/theme_kiddo/static/src/img/snippets/s_three_columns_default_image_3.jpg',
+        'website.s_banner_default_image': '/theme_kiddo/static/src/img/snippets/s_banner.webp',
+        'website.s_image_text_default_image': '/theme_kiddo/static/src/img/snippets/s_image_text.webp',
+        'website.s_three_columns_default_image_1': '/theme_kiddo/static/src/img/snippets/s_three_columns_default_image_1.webp',
+        'website.s_three_columns_default_image_2': '/theme_kiddo/static/src/img/snippets/s_three_columns_default_image_2.webp',
+        'website.s_three_columns_default_image_3': '/theme_kiddo/static/src/img/snippets/s_three_columns_default_image_3.webp',
     },
     'configurator_snippets': {
         'homepage': ['s_banner', 's_image_text', 's_three_columns', 's_product_list', 's_call_to_action'],
@@ -76,6 +80,29 @@
             'personal': ['s_text_cover', 's_image_text', 's_text_block_h2', 's_numbers', 's_features', 's_call_to_action'],
         },
     },
+    'configurator_snippets_addons': {
+        'website_sale': {
+            'homepage': [
+                ('website_sale.s_dynamic_snippet_category_list', 'after', 's_banner'),
+            ],
+        },
+    },
+    'theme_customizations': {
+        'website_sale.s_dynamic_snippet_category_list': {
+            'data_attributes': {
+                'rounded': '4',
+                'gap': '3',
+                'alignment': 'left',
+            },
+            'background': {
+                'color': 'o_cc2',
+            },
+            'remove_classes': [
+                's_dynamic_category_no_arrows',
+            ],
+        },
+    },
+    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
     'assets': {
         'website.assets_editor': [

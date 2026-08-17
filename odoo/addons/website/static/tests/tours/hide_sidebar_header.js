@@ -1,4 +1,5 @@
-import { clickOnSave, registerWebsitePreviewTour } from "@website/js/tours/tour_utils";
+import { stepUtils } from "@web_tour/tour_utils";
+import { clickOnSave, goToTheme, registerWebsitePreviewTour } from "@website/js/tours/tour_utils";
 
 registerWebsitePreviewTour(
     "hide_sidebar_header",
@@ -14,33 +15,36 @@ registerWebsitePreviewTour(
         },
         {
             content: "Click on header template",
-            trigger: ".o_we_user_value_widget:has(we-title:contains(Template)) we-toggler",
+            trigger: ".hb-row[data-label='Template'] button.o-hb-select-toggle",
             run: "click",
         },
         {
             content: "Change header template to 'Sidebar'",
-            trigger: ".o_we_user_value_widget[title='Sidebar']",
+            trigger: ".dropdown-menu .o-hb-select-dropdown-item[title='Sidebar']",
             run: "click",
         },
         {
-            content: "Ensure the header is 'Sidebar'",
+            content: "Wait for the builder to mount after iframe reload",
+            trigger: ":iframe body.editor_enable",
+        },
+        {
+            content: "Check that the header changed to 'Sidebar'",
             trigger: ":iframe #wrapwrap>header.o_header_sidebar",
-            timeout: 10000,
         },
         {
-            content: "Go to the theme tab",
-            trigger: ".o_we_customize_theme_btn",
-            run: "click",
+            content: "Check that the builder is not disabled",
+            trigger: ".o-website-builder_sidebar:not(:has(.o_builder_disabled))",
         },
+        ...goToTheme(),
         {
             content: "Toggle 'Show Header' off",
-            trigger: ".o_we_user_value_widget:has(we-title:contains(Show Header)) we-checkbox",
+            trigger: ".hb-row[data-label='Show Header'] input[type='checkbox']",
             run: "click",
         },
+        stepUtils.waitIframeIsReady(),
         {
-            content: "Ensure the header has been hidden",
+            content: "Check that the header has been hidden",
             trigger: ":iframe #wrapwrap:not(:has(:scope > header))",
-            timeout: 10000,
         },
         {
             content: "Check that there's no header padding on the #wrapwrap",

@@ -2,16 +2,17 @@
 # This file contains the translation of the following modules:
 # * lunch
 #
+# "Tiffany Chang (tic)" <tic@odoo.com>, 2025, 2026.
 # Oakarmin Iron <oakarminiron@gmail.com>, 2025, 2026.
-# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~18.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-20 18:37+0000\n"
-"PO-Revision-Date: 2026-07-22 08:23+0000\n"
-"Last-Translator: Oakarmin Iron <oakarminiron@gmail.com>\n"
-"Language-Team: Burmese <https://translate.odoo.com/projects/odoo-18/lunch/"
+"POT-Creation-Date: 2026-04-10 18:38+0000\n"
+"PO-Revision-Date: 2026-08-03 15:37+0000\n"
+"Last-Translator: \"Tiffany Chang (tic)\" <tic@odoo.com>\n"
+"Language-Team: Burmese <https://translate.odoo.com/projects/odoo-19/lunch/"
 "my/>\n"
 "Language: my\n"
 "MIME-Version: 1.0\n"
@@ -146,7 +147,7 @@ msgid ""
 "                    <td valign=\"top\" style=\"font-size: 13px;\">\n"
 "    <div>\n"
 "        <t t-set=\"lines\" t-value=\"ctx.get('lines', [])\"/>\n"
-"        <t t-set=\"order\" t-value=\"ctx.get('order')\"/>\n"
+"        <t t-set=\"order\" t-value=\"ctx.get('order', {})\"/>\n"
 "        <t t-set=\"currency\" t-"
 "value=\"user.env['res.currency'].browse(order.get('currency_id'))\"/>\n"
 "        <p>\n"
@@ -215,9 +216,9 @@ msgid ""
 "                    <td style=\"width: 100%; font-size: 13px; border-top: "
 "1px solid black;\"><strong>Total</strong></td>\n"
 "                    <td style=\"width: 100%; font-size: 13px; border-top: "
-"1px solid black;\" align=\"right\"><strong t-"
-"out=\"format_amount(order['amount_total'], currency) or ''\">$ 10.00</"
-"strong></td>\n"
+"1px solid black;\" align=\"right\"><strong t-out=\"order.get('amount_total') "
+"and format_amount(order['amount_total'], currency) or ''\">$ 10.00</strong></"
+"td>\n"
 "                </tr>\n"
 "            </tbody>\n"
 "        </table>\n"
@@ -276,8 +277,9 @@ msgid ""
 "style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; "
 "padding: 8px; border-collapse:separate;\">\n"
 "      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
-"        Powered by <a target=\"_blank\" href=\"https://www.odoo.com\" "
-"style=\"color: #875A7B;\">Odoo</a>\n"
+"        Powered by <a target=\"_blank\" href=\"https://www.odoo.com\" t-attf-"
+"style=\"color: {{user.company_id.email_secondary_color or '#875A7B'}};"
+"\">Odoo</a>\n"
 "      </td></tr>\n"
 "    </table>\n"
 "</td></tr>\n"
@@ -302,13 +304,14 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_alert__notification_moment__am
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__moment__am
+#, fuzzy
 msgid "AM"
 msgstr "မနက်"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__message_needaction
 msgid "Action Needed"
-msgstr "လုပ်ဆောင်ချက် လိုအပ်သည်"
+msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__active
@@ -317,6 +320,7 @@ msgstr "လုပ်ဆောင်ချက် လိုအပ်သည်"
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__active
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__active
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_alert_view_search
+#, fuzzy
 msgid "Active"
 msgstr "အက်တစ်"
 
@@ -343,7 +347,7 @@ msgstr ""
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_form
 msgid "Add To Cart"
-msgstr "ခြင်းထဲထည့်"
+msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_location__address
@@ -373,6 +377,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.ui.menu,name:lunch.lunch_alert_menu
+#, fuzzy
 msgid "Alerts"
 msgstr "သတိပေးချက်များ"
 
@@ -385,6 +390,7 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_cashmove__amount
 #: model:ir.model.fields,field_description:lunch.field_lunch_cashmove_report__amount
+#, fuzzy
 msgid "Amount"
 msgstr "ပမာဏ"
 
@@ -396,6 +402,7 @@ msgstr "ပမာဏ"
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_search
+#, fuzzy
 msgid "Archived"
 msgstr "သိမ်းဆည်းထားသည်"
 
@@ -418,8 +425,15 @@ msgstr ""
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+#, fuzzy
 msgid "Availability"
 msgstr "ရနိုင်ခြေ"
+
+#. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Available Balance"
+msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__available_on_date
@@ -453,6 +467,12 @@ msgid "Bacon"
 msgstr ""
 
 #. module: lunch
+#: model:res.groups,comment:lunch.group_lunch_manager
+msgid ""
+"Be able to create new products, cashmoves and to confirm or cancel orders."
+msgstr ""
+
+#. module: lunch
 #: model_terms:lunch.product,description:lunch.product_bacon
 #: model_terms:lunch.product,description:lunch.product_bacon_0
 msgid "Beef, Bacon, Salad, Cheddar, Fried Onion, BBQ Sauce"
@@ -481,26 +501,30 @@ msgstr ""
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_cashmove_report_view_search_2
+#, fuzzy
 msgid "By Employee"
 msgstr "ဝန်ထမ်းအလိုက်"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_cashmove_report_view_search
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_cashmove_view_search
+#, fuzzy
 msgid "By User"
 msgstr "အသုံးပြုသူအလိုက်"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_kanban
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_tree
+#, fuzzy
 msgid "Cancel"
 msgstr "ပယ်ဖျက်"
 
 #. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_order__state__cancelled
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
+#, fuzzy
 msgid "Cancelled"
-msgstr "ပယ်ဖျက်ပြီး"
+msgstr "ဖကြျသိမျးခဲ့သညျ"
 
 #. module: lunch
 #. odoo-python
@@ -526,6 +550,7 @@ msgstr "အမျိုးအစားများ"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
+#, fuzzy
 msgid "Category"
 msgstr "အမျိုးအမည်"
 
@@ -563,8 +588,15 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__city
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+#, fuzzy
 msgid "City"
 msgstr "မြို့"
+
+#. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Clear Order"
+msgstr ""
 
 #. module: lunch
 #: model_terms:ir.actions.act_window,help:lunch.lunch_order_action_control_suppliers
@@ -580,6 +612,13 @@ msgid ""
 msgstr ""
 
 #. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+#, fuzzy
+msgid "Close"
+msgstr "ပိတ်"
+
+#. module: lunch
 #: model:lunch.product,name:lunch.product_club
 #: model:lunch.product,name:lunch.product_club_0
 msgid "Club"
@@ -592,6 +631,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model,name:lunch.model_res_company
+#, fuzzy
 msgid "Companies"
 msgstr "ကုမ္ပဏီများ"
 
@@ -602,6 +642,7 @@ msgstr "ကုမ္ပဏီများ"
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__company_id
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__company_id
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__company_id
+#, fuzzy
 msgid "Company"
 msgstr "ကုမ္ပဏီ"
 
@@ -612,6 +653,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.ui.menu,name:lunch.menu_lunch_config
+#, fuzzy
 msgid "Configuration"
 msgstr "ပြင်ဆင်ရန်"
 
@@ -623,6 +665,7 @@ msgstr ""
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_tree
+#, fuzzy
 msgid "Confirm"
 msgstr "အတည်ပြု"
 
@@ -646,6 +689,7 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__country_id
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+#, fuzzy
 msgid "Country"
 msgstr "နိုင်ငံ"
 
@@ -692,7 +736,7 @@ msgstr "ဖန်တီးသူ"
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__create_date
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__create_date
 msgid "Created on"
-msgstr "ဖန်တီးချိန်"
+msgstr "ဖန်တီးသည့်အချိန်"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__cron_id
@@ -708,6 +752,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__currency_id
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__currency_id
 #: model:ir.model.fields,field_description:lunch.field_res_config_settings__currency_id
+#, fuzzy
 msgid "Currency"
 msgstr "ငွေကြေး"
 
@@ -719,12 +764,20 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_cashmove__date
 #: model:ir.model.fields,field_description:lunch.field_lunch_cashmove_report__date
+#, fuzzy
 msgid "Date"
 msgstr "နေ့ရက်"
 
 #. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Decrease quantity"
+msgstr ""
+
+#. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__delivery
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__delivery__delivery
+#, fuzzy
 msgid "Delivery"
 msgstr "ဒလီဗာရီ"
 
@@ -738,6 +791,7 @@ msgstr "ဖော်ပြချက်"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_form
+#, fuzzy
 msgid "Discard"
 msgstr "မလုပ်တော့"
 
@@ -761,6 +815,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__display_name
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__display_name
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__display_name
+#: model:ir.model.fields,field_description:lunch.field_res_company__display_name
+#: model:ir.model.fields,field_description:lunch.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:lunch.field_res_users__display_name
+#, fuzzy
 msgid "Display Name"
 msgstr "ပြသသော အမည်"
 
@@ -771,18 +829,14 @@ msgstr ""
 
 #. module: lunch
 #: model:lunch.product.category,name:lunch.categ_drinks
+#, fuzzy
 msgid "Drinks"
 msgstr "သောက်စရာများ"
 
 #. module: lunch
-#. odoo-javascript
-#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
-msgid "Edit order"
-msgstr ""
-
-#. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__email
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__send_by__mail
+#, fuzzy
 msgid "Email"
 msgstr "အီးမေးလ်"
 
@@ -874,6 +928,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__message_follower_ids
+#, fuzzy
 msgid "Followers"
 msgstr "ဖော်လိုဝါများ"
 
@@ -905,11 +960,13 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__fri
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__fri
+#, fuzzy
 msgid "Fri"
 msgstr "သောကြာ"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
+#, fuzzy
 msgid "Friday"
 msgstr "သောကြာ"
 
@@ -917,13 +974,6 @@ msgstr "သောကြာ"
 #: model:lunch.product,name:lunch.product_gouda
 msgid "Gouda Cheese"
 msgstr ""
-
-#. module: lunch
-#: model_terms:ir.ui.view,arch_db:lunch.lunch_cashmove_report_view_search_2
-#: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
-#: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
-msgid "Group By"
-msgstr "အုပ်စုအလိုက်"
 
 #. module: lunch
 #: model_terms:lunch.product,description:lunch.product_club
@@ -934,13 +984,6 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__has_message
 msgid "Has Message"
-msgstr ""
-
-#. module: lunch
-#: model:ir.module.category,description:lunch.module_lunch_category
-msgid ""
-"Helps you handle your lunch needs, if you are a manager you will be able to "
-"create new products, cashmoves and to confirm or cancel orders."
 msgstr ""
 
 #. module: lunch
@@ -972,11 +1015,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__id
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__id
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__id
+#: model:ir.model.fields,field_description:lunch.field_res_company__id
+#: model:ir.model.fields,field_description:lunch.field_res_config_settings__id
+#: model:ir.model.fields,field_description:lunch.field_res_users__id
+#, fuzzy
 msgid "ID"
 msgstr "အိုင်ဒီ"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__activity_exception_icon
+#, fuzzy
 msgid "Icon"
 msgstr "အိုင်ကွန်"
 
@@ -998,6 +1046,7 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_product__image_1920
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__image_1920
+#, fuzzy
 msgid "Image"
 msgstr "ရုပ်ပုံ"
 
@@ -1032,6 +1081,12 @@ msgid "Image 512"
 msgstr ""
 
 #. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Increase quantity"
+msgstr ""
+
+#. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_form
 msgid "Information, allergens, ..."
 msgstr ""
@@ -1044,7 +1099,7 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_product__is_favorite
 msgid "Is Favorite"
-msgstr "ဖေးဗရိတ်ဖြစ်သည်"
+msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__message_is_follower
@@ -1087,6 +1142,7 @@ msgstr "နောက်ဆုံးပြင်ဆင်သူ"
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__write_date
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__write_date
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__write_date
+#, fuzzy
 msgid "Last Updated on"
 msgstr "နောက်ဆုံးပြင်ဆင်ချိန်"
 
@@ -1098,17 +1154,19 @@ msgstr "နေရာ"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_location__name
+#, fuzzy
 msgid "Location Name"
 msgstr "နေရာ အမည်"
 
 #. module: lunch
 #: model:ir.ui.menu,name:lunch.lunch_location_menu
+#, fuzzy
 msgid "Locations"
 msgstr "နေရာများ"
 
 #. module: lunch
-#: model:ir.module.category,name:lunch.module_lunch_category
 #: model:ir.ui.menu,name:lunch.menu_lunch
+#: model:res.groups.privilege,name:lunch.res_groups_privilege_lunch
 #: model_terms:ir.ui.view,arch_db:lunch.res_config_settings_view_form
 msgid "Lunch"
 msgstr "နေ့လည်စာ"
@@ -1229,32 +1287,32 @@ msgid "Lunch: Supplier Order"
 msgstr ""
 
 #. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_alert_cron_sa_229
+#: model:ir.actions.server,name:lunch.lunch_alert_cron_sa_231
 msgid "Lunch: alert chat notification (Alert for Office 3)"
 msgstr ""
 
 #. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_230
+#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_232
 msgid "Lunch: send automatic email to Coin gourmand"
 msgstr ""
 
 #. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_225
+#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_227
 msgid "Lunch: send automatic email to Lunch Supplier"
 msgstr ""
 
 #. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_231
+#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_233
 msgid "Lunch: send automatic email to Pizza Inn"
 msgstr ""
 
 #. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_233
+#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_235
 msgid "Lunch: send automatic email to Sushi Shop"
 msgstr ""
 
 #. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_232
+#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_234
 msgid "Lunch: send automatic email to The Corner"
 msgstr ""
 
@@ -1265,6 +1323,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.ui.menu,name:lunch.menu_lunch_admin
+#, fuzzy
 msgid "Manager"
 msgstr "မန်နေဂျာ"
 
@@ -1290,22 +1349,26 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__message_ids
+#, fuzzy
 msgid "Messages"
 msgstr "မက်ဆေ့ဂျ်များ"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__moment
+#, fuzzy
 msgid "Moment"
 msgstr "အခိုက်အတန့်"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__mon
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__mon
+#, fuzzy
 msgid "Mon"
 msgstr "တနင်္လာ"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
+#, fuzzy
 msgid "Monday"
 msgstr "တနင်္လာ"
 
@@ -1321,11 +1384,13 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.actions.act_window,name:lunch.lunch_cashmove_report_action_account
+#, fuzzy
 msgid "My Account"
 msgstr "ကျွန်ပ်၏ အကောင့်"
 
 #. module: lunch
 #: model:ir.ui.menu,name:lunch.lunch_cashmove_report_menu_form
+#, fuzzy
 msgid "My Account History"
 msgstr "ကျွန်ပ်၏ အကောင့် မှတ်တမ်း"
 
@@ -1342,23 +1407,27 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.ui.menu,name:lunch.menu_lunch_title
+#, fuzzy
 msgid "My Lunch"
 msgstr "ကျွန်ပ်၏ နေ့လည်စာ"
 
 #. module: lunch
 #: model:ir.ui.menu,name:lunch.lunch_order_menu_tree
+#, fuzzy
 msgid "My Order History"
 msgstr "ကျွန်ပ်၏ အော်ဒါ မှတ်တမ်း"
 
 #. module: lunch
 #: model:ir.actions.act_window,name:lunch.lunch_order_action
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
+#, fuzzy
 msgid "My Orders"
 msgstr "ကျွန်ပ်၏ အော်ဒါများ"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__name
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__name
+#, fuzzy
 msgid "Name"
 msgstr "အမည်"
 
@@ -1369,11 +1438,13 @@ msgstr ""
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.view_lunch_product_kanban_order
+#, fuzzy
 msgid "New"
 msgstr "အသစ်"
 
 #. module: lunch
 #: model:ir.ui.menu,name:lunch.lunch_order_menu_form
+#, fuzzy
 msgid "New Order"
 msgstr "အော်ဒါ အသစ်"
 
@@ -1404,6 +1475,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__delivery__no_delivery
+#, fuzzy
 msgid "No Delivery"
 msgstr "ဒလီဗာရီ မရှိ"
 
@@ -1443,17 +1515,25 @@ msgstr ""
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
+#, fuzzy
 msgid "Not Received"
 msgstr "မရရှိ"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__note
+#, fuzzy
 msgid "Notes"
 msgstr "မှတ်စုများ"
 
 #. module: lunch
 #: model_terms:ir.actions.act_window,help:lunch.lunch_order_action_by_supplier
 msgid "Nothing to order today"
+msgstr ""
+
+#. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Nothing to order, add some meals to begin."
 msgstr ""
 
 #. module: lunch
@@ -1483,6 +1563,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__message_has_error_counter
+#, fuzzy
 msgid "Number of errors"
 msgstr "အယ်ရာ အရေအတွက်"
 
@@ -1497,9 +1578,18 @@ msgid "Number of messages with delivery error"
 msgstr ""
 
 #. module: lunch
+#. odoo-python
+#: code:addons/lunch/models/lunch_order.py:0
+msgid ""
+"Oh no! You don’t have enough money in your wallet to order your selected "
+"lunch! Contact your lunch manager to add some money to your wallet."
+msgstr ""
+
+#. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__topping_quantity_1__1_more
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__topping_quantity_2__1_more
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__topping_quantity_3__1_more
+#, fuzzy
 msgid "One or More"
 msgstr "တစ်ခု သို့မဟုတ် ပိုပြီး"
 
@@ -1507,39 +1597,46 @@ msgstr "တစ်ခု သို့မဟုတ် ပိုပြီး"
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__topping_quantity_1__1
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__topping_quantity_2__1
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__topping_quantity_3__1
+#, fuzzy
 msgid "Only One"
 msgstr "တစ်ခုထဲ"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_kanban
+#, fuzzy
 msgid "Order"
 msgstr "အော်ဒါ"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__date
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
+#, fuzzy
 msgid "Order Date"
 msgstr "အော်ဒါသောနေ့"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__order_deadline_passed
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__order_deadline_passed
+#, fuzzy
 msgid "Order Deadline Passed"
 msgstr "အော်ဒါသက်တမ်း ကျော်ခဲ့ပြီ"
 
 #. module: lunch
 #. odoo-javascript
 #: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+#, fuzzy
 msgid "Order Now"
 msgstr "ယခု အော်ဒါတင်ရန်"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__automatic_email_time
+#, fuzzy
 msgid "Order Time"
 msgstr "အော်ဒါမှာချိန်"
 
 #. module: lunch
 #: model:ir.actions.act_window,name:lunch.lunch_product_action_order
+#, fuzzy
 msgid "Order Your Lunch"
 msgstr "သင့်နေ့လည်စာကို မှာပါ"
 
@@ -1550,6 +1647,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_order__state__ordered
+#, fuzzy
 msgid "Ordered"
 msgstr "အော်ဒါပြီး"
 
@@ -1560,7 +1658,7 @@ msgstr "အော်ဒါများ"
 
 #. module: lunch
 #: model:mail.template,subject:lunch.lunch_order_mail_supplier
-msgid "Orders for {{ ctx['order']['company_name'] }}"
+msgid "Orders for {{ ctx.get('order', {}).get('company_name') }}"
 msgstr ""
 
 #. module: lunch
@@ -1571,16 +1669,25 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_alert__notification_moment__pm
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__moment__pm
+#, fuzzy
 msgid "PM"
 msgstr "ညနေ"
 
 #. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Passed orders"
+msgstr ""
+
+#. module: lunch
 #: model:lunch.product.category,name:lunch.categ_pasta
+#, fuzzy
 msgid "Pasta"
 msgstr "ပါစတာ"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_cashmove_report_view_search
+#, fuzzy
 msgid "Payment"
 msgstr "ငွေပေးချေမှု"
 
@@ -1594,11 +1701,13 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__phone
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__send_by__phone
+#, fuzzy
 msgid "Phone"
 msgstr "ဖုန်း"
 
 #. module: lunch
 #: model:lunch.product.category,name:lunch.categ_pizza
+#, fuzzy
 msgid "Pizza"
 msgstr "ပီဇာ"
 
@@ -1638,6 +1747,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:lunch.field_lunch_product__price
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__price
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_tree
+#, fuzzy
 msgid "Price"
 msgstr "စျေးနှုန်း"
 
@@ -1645,17 +1755,20 @@ msgstr "စျေးနှုန်း"
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__product_id
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
+#, fuzzy
 msgid "Product"
 msgstr "ပစ္စည်း"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_product__is_available_at
+#, fuzzy
 msgid "Product Availability"
 msgstr "ပစ္စည်း ရနိုင်မှူ"
 
 #. module: lunch
 #: model:ir.actions.act_window,name:lunch.lunch_product_category_action
 #: model:ir.ui.menu,name:lunch.lunch_product_category_menu
+#, fuzzy
 msgid "Product Categories"
 msgstr "ကုန်ပစ္စည်း Category များ"
 
@@ -1669,23 +1782,27 @@ msgstr ""
 #: model:ir.model.fields,field_description:lunch.field_lunch_product__category_id
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__name
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_category_view_tree
+#, fuzzy
 msgid "Product Category"
-msgstr "ကုန်ပစ္စည်း Category"
+msgstr "ကုန်ပစ္စည်းအမျိုးအစား"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__product_count
+#, fuzzy
 msgid "Product Count"
 msgstr "ပစ္စည်း အရည်အတွက်"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_product__product_image
 #: model_terms:ir.ui.view,arch_db:lunch.view_lunch_product_kanban
+#, fuzzy
 msgid "Product Image"
 msgstr "ပစ္စည်း ရုပ်ပုံ"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__name
 #: model:ir.model.fields,field_description:lunch.field_lunch_product__name
+#, fuzzy
 msgid "Product Name"
 msgstr "ပစ္စည်းအမည်"
 
@@ -1706,6 +1823,7 @@ msgstr ""
 #: model:ir.ui.menu,name:lunch.lunch_product_menu
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_category_view_form
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_category_view_kanban
+#, fuzzy
 msgid "Products"
 msgstr "ပစ္စည်းများ"
 
@@ -1722,6 +1840,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__quantity
+#, fuzzy
 msgid "Quantity"
 msgstr "အရေအတွက်"
 
@@ -1739,6 +1858,7 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_order__state__confirmed
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
+#, fuzzy
 msgid "Received"
 msgstr "ရရှိပြီး"
 
@@ -1764,11 +1884,13 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__responsible_id
+#, fuzzy
 msgid "Responsible"
 msgstr "တာဝန်ခံ"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__activity_user_id
+#, fuzzy
 msgid "Responsible User"
 msgstr "တာဝန်ရှိသူ"
 
@@ -1785,17 +1907,20 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__sat
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__sat
+#, fuzzy
 msgid "Sat"
 msgstr "စနေ"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
+#, fuzzy
 msgid "Saturday"
 msgstr "စနေ"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_alert_view_search
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
+#, fuzzy
 msgid "Search"
 msgstr "ရှာဖွေ"
 
@@ -1827,6 +1952,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_order__state__sent
+#, fuzzy
 msgid "Sent"
 msgstr "ပို့ပြီး"
 
@@ -1838,8 +1964,9 @@ msgstr ""
 #. module: lunch
 #: model:ir.actions.act_window,name:lunch.lunch_config_settings_action
 #: model:ir.ui.menu,name:lunch.lunch_settings_menu
+#, fuzzy
 msgid "Settings"
-msgstr "ဆက်တင်များ"
+msgstr "အပြင်အဆင်များ"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__show_confirm_button
@@ -1864,11 +1991,13 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__state_id
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+#, fuzzy
 msgid "State"
-msgstr "အခြေအနေ"
+msgstr "ပြည်နယ်"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__state
+#, fuzzy
 msgid "Status"
 msgstr "အခြေအနေ"
 
@@ -1883,16 +2012,19 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__street
+#, fuzzy
 msgid "Street"
 msgstr "လမ်း"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+#, fuzzy
 msgid "Street 2..."
 msgstr "လမ်း ၂..."
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+#, fuzzy
 msgid "Street..."
 msgstr "လမ်း..."
 
@@ -1909,11 +2041,13 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__sun
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__sun
+#, fuzzy
 msgid "Sun"
 msgstr "တနင်္ဂနွေ"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
+#, fuzzy
 msgid "Sunday"
 msgstr "တနင်္ဂနွေ"
 
@@ -1924,6 +2058,7 @@ msgstr ""
 
 #. module: lunch
 #: model:lunch.product.category,name:lunch.categ_sushi
+#, fuzzy
 msgid "Sushi"
 msgstr "ဆူရှီ"
 
@@ -2022,22 +2157,26 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__thu
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__thu
+#, fuzzy
 msgid "Thu"
 msgstr "ကြာသပတေး"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
+#, fuzzy
 msgid "Thursday"
 msgstr "ကြာသပတေး"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__tz
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__tz
+#, fuzzy
 msgid "Timezone"
 msgstr "အချိန်ဇုန်"
 
 #. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_order__state__new
+#, fuzzy
 msgid "To Order"
 msgstr "အော်ဒါရန်"
 
@@ -2065,8 +2204,6 @@ msgid ""
 msgstr ""
 
 #. module: lunch
-#. odoo-javascript
-#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
 msgid "Today"
 msgstr "ယနေ့"
@@ -2130,6 +2267,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_cashmove_report_view_tree_2
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_cashmove_view_tree
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_tree
+#, fuzzy
 msgid "Total"
 msgstr "စုစုပေါင်း"
 
@@ -2141,11 +2279,13 @@ msgstr ""
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__tue
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__tue
+#, fuzzy
 msgid "Tue"
 msgstr "အင်္ဂါ"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
+#, fuzzy
 msgid "Tuesday"
 msgstr "အင်္ဂါ"
 
@@ -2166,6 +2306,7 @@ msgstr ""
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__recurrency_end_date
+#, fuzzy
 msgid "Until"
 msgstr "မတိုင်ခင်ထိ"
 
@@ -2175,6 +2316,7 @@ msgstr "မတိုင်ခင်ထိ"
 #: model:ir.model.fields,field_description:lunch.field_lunch_cashmove_report__user_id
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__user_id
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
+#, fuzzy
 msgid "User"
 msgstr "အသုံးပြုသူ"
 
@@ -2202,17 +2344,28 @@ msgstr ""
 #: model:ir.actions.act_window,name:lunch.lunch_vendors_action
 #: model:ir.ui.menu,name:lunch.lunch_vendors_menu
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
+#, fuzzy
 msgid "Vendors"
 msgstr "ရောင်းချသူများ"
 
 #. module: lunch
+#: model_terms:ir.ui.view,arch_db:lunch.lunch_location_form_view
+#: model_terms:ir.ui.view,arch_db:lunch.lunch_product_category_view_form
+#: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_form
+#: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+msgid "Visible to all"
+msgstr "အားလုံးမြင်နိုင်သည်"
+
+#. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__wed
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__wed
+#, fuzzy
 msgid "Wed"
 msgstr "ဗုဒ္ဓဟူး"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
+#, fuzzy
 msgid "Wednesday"
 msgstr "ဗုဒ္ဓဟူး"
 
@@ -2239,12 +2392,6 @@ msgstr ""
 #. module: lunch
 #. odoo-javascript
 #: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
-msgid "Your Account"
-msgstr ""
-
-#. module: lunch
-#. odoo-javascript
-#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
 msgid "Your Cart ("
 msgstr ""
 
@@ -2261,8 +2408,6 @@ msgid "Your Order"
 msgstr ""
 
 #. module: lunch
-#. odoo-python
-#: code:addons/lunch/models/lunch_order.py:0
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_form
 msgid ""
 "Your wallet does not contain enough money to order that. To add some money "
@@ -2271,11 +2416,13 @@ msgstr ""
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+#, fuzzy
 msgid "ZIP"
 msgstr "စာတိုက် သင်္ကေတ"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__zip_code
+#, fuzzy
 msgid "Zip"
 msgstr "စာတိုက် သင်္ကေတ"
 
@@ -2326,4 +2473,10 @@ msgstr ""
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_alert_view_kanban
 msgid "to"
+msgstr ""
+
+#. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "x"
 msgstr ""

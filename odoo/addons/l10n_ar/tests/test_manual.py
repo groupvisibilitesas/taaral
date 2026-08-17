@@ -2,9 +2,9 @@
 
 from . import common
 from odoo import Command
-from odoo.exceptions import ValidationError
 from odoo.tests import Form, tagged
 from odoo.tools.float_utils import float_split_str
+from odoo.exceptions import ValidationError
 
 
 @tagged('post_install_l10n', '-at_install', 'post_install')
@@ -107,14 +107,14 @@ class TestArManual(common.TestArCommon):
     def test_15_liquido_producto_sales(self):
         """ Manual Numbering: Sales and not POS (Liquido Producto) """
 
-        # Verify that the default sales journals ara created as is AFIP POS
+        # Verify that the default sales journals ara created as is ARCA POS
         self.assertTrue(self.journal.l10n_ar_is_pos)
 
         # If we create an invoice it will not use manual numbering
         invoice = self._create_invoice_ar()
         self.assertFalse(invoice.l10n_latam_manual_document_number)
 
-        # Create a new sale journal that is not AFIP POS
+        # Create a new sale journal that is not ARCA POS
         self.journal = self._create_journal('preprinted', data={'l10n_ar_is_pos': False})
         self.assertFalse(self.journal.l10n_ar_is_pos)
 
@@ -145,7 +145,7 @@ class TestArManual(common.TestArCommon):
     def test_16_liquido_producto_purchase(self):
         """ Manual Numbering: Purchase POS/ NOT POS (Liquido Producto) """
 
-        # By default purchase journals ar not AFIP POS journal
+        # By default purchase journals ar not ARCA POS journal
         purchase_not_pos_journal = self.env["account.journal"].search([
             ('type', '=', 'purchase'), ('company_id', '=', self.env.company.id), ('l10n_latam_use_documents', '=', True)])
         self.assertFalse(purchase_not_pos_journal.l10n_ar_is_pos)
@@ -159,11 +159,12 @@ class TestArManual(common.TestArCommon):
                 bill_form.partner_id = self.res_partner_adhoc
                 bill_form.invoice_payment_term_id = payment_term_id
                 bill_form.invoice_date = '2023-02-09'
-                bill_form.journal_id = purchase_not_pos_journal
                 bill_form.l10n_latam_document_type_id = doc_60_lp_a
             bill = bill_form.save()
 
-        # Create a new journal that is an AFIP POS
+            self.assertEqual(bill.journal_id, purchase_not_pos_journal)
+
+        # Create a new journal that is an ARCA POS
         purchase_pos_journal = self._create_journal('preprinted', data={'type': 'purchase', 'l10n_ar_is_pos': True})
 
         with Form(self.env['account.move'].with_context(default_move_type='in_invoice')) as bill_form:
@@ -217,7 +218,7 @@ class TestArManual(common.TestArCommon):
             {
                 'tax_amount_currency': 0.0,
                 'formatted_tax_amount_currency': '0.00',
-                'name': 'Perc IIBB Buenos Aires',
+                'name': 'Perc IIBB P. Buenos Aires',
             },
             {
                 'tax_amount_currency': 142.20,
@@ -415,11 +416,19 @@ class TestArManual(common.TestArCommon):
         self.assertAlmostEqual(l10n_ar_values['price_net'], 5196.5)
 
     def test_l10n_ar_vat_with_non_numeric_value(self):
-        with self.assertRaises(ValidationError) as e:
-            with Form(self.partner) as partner_form:
-                partner_form.l10n_latam_identification_type_id = self.env.ref("l10n_ar.it_dni")
-                partner_form.vat = "test"
-        self.assertIn('Only numbers allowed for "DNI"', str(e.exception))
+        partner = self.env["res.partner"].create({"name": "AR Company", "country_id": self.env.ref("base.ar").id})
+
+        with self.assertRaisesRegex(ValidationError, 'Only numbers allowed for "DNI"'):
+            partner.l10n_latam_identification_type_id = self.env.ref("l10n_ar.it_dni")
+            partner.vat = "test"
+
+        with self.assertRaisesRegex(ValidationError, 'Invalid length for "CUIL"'):
+            partner.l10n_latam_identification_type_id = self.env.ref("l10n_ar.it_CUIL")
+            partner.vat = "1234567890a"
+
+        partner.l10n_latam_identification_type_id = self.env.ref("l10n_latam_base.it_pass")
+        partner.vat = "A12345678"
+        self.assertEqual(partner.vat, "A12345678")
 
     def test_create_debit_note_for_credit_note(self):
         """

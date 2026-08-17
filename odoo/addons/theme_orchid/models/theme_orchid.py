@@ -1,7 +1,7 @@
 from odoo import models
 
 
-class ThemeOrchid(models.AbstractModel):
+class ThemeUtils(models.AbstractModel):
     _inherit = 'theme.utils'
 
     def _theme_orchid_post_copy(self, mod):

@@ -3,6 +3,7 @@
 
 from datetime import date, datetime, timedelta
 from odoo.addons.hr_holidays.tests.common import TestHrHolidaysCommon
+from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.exceptions import ValidationError
 from freezegun import freeze_time
 
@@ -152,7 +153,7 @@ class TestGlobalLeaves(TestHrHolidaysCommon):
         leave_type = self.env['hr.leave.type'].create({
             'name': 'Paid Time Off',
             'time_type': 'leave',
-            'requires_allocation': 'no',
+            'requires_allocation': False,
         })
         leave = self.env['hr.leave'].create({
             'name': 'Time Off',
@@ -178,7 +179,7 @@ class TestGlobalLeaves(TestHrHolidaysCommon):
         leave_type = self.env['hr.leave.type'].create({
             'name': 'Paid Time Off',
             'time_type': 'leave',
-            'requires_allocation': 'no',
+            'requires_allocation': False,
         })
         self.employee_emp.resource_calendar_id = self.calendar_1.id
 
@@ -230,7 +231,7 @@ class TestGlobalLeaves(TestHrHolidaysCommon):
             'state': 'confirm',
             'date_from': date(2024, 12, 1),
             'date_to': date(2024, 12, 30),
-        }).action_validate()
+        }).action_approve()
 
         partially_covered_leave = self.env['hr.leave'].create({
             'name': 'Holiday 1 week',
@@ -239,12 +240,12 @@ class TestGlobalLeaves(TestHrHolidaysCommon):
             'request_date_from': datetime(2024, 12, 3, 7, 0),
             'request_date_to': datetime(2024, 12, 5, 18, 0),
         })
-        partially_covered_leave.action_validate()
+        partially_covered_leave.action_approve()
 
         global_leave = self.env['resource.calendar.leaves'].with_user(self.env.user).create({
             'name': 'Public holiday',
-            'date_from': "2024-12-4 06:00:00",
-            'date_to': "2024-12-4 23:00:00",
+            'date_from': "2024-12-04 06:00:00",
+            'date_to': "2024-12-04 23:00:00",
             'calendar_id': self.calendar_1.id,
         })
 
@@ -253,6 +254,122 @@ class TestGlobalLeaves(TestHrHolidaysCommon):
             ('holiday_id', '=', partially_covered_leave.id)
         ])
         self.assertTrue(resource_leaves, 'Resource leaves linked to the employee leave should exist.')
+
+    @freeze_time('2025-05-11')
+    def test_employee_leave_with_global_leave(self):
+        """
+            When an employee's leave is created, if there are any public holidays within the leave period,
+            the number of leave days is reduced accordingly.
+            eg,.
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            | Leave Requested  |  Leave State  | Public Holiday days  |  # days leave remains |
+            |---------------------------------------------------------------------------------|
+            |       5 Days     |    confirm    |        1 Days        |         4 Days        |
+            |---------------------------------------------------------------------------------|
+            |       4 Days     |   validate1   |        1 Days        |         3 Days        |
+            |---------------------------------------------------------------------------------|
+            |       3 Days     |    validate   |        1 Days        |         2 Days        |
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        """
+        user_david = mail_new_test_user(self.env, login='david', groups='base.group_user')
+        user_timeoff_officer_david = mail_new_test_user(self.env, login='timeoff_officer', groups='base.group_user')
+
+        employee_david = self.env['hr.employee'].create({
+            'name': 'David Employee',
+            'user_id': user_david.id,
+            'leave_manager_id': user_timeoff_officer_david.id,
+            'parent_id': self.employee_hruser.id,
+            'department_id': self.rd_dept.id,
+            'resource_calendar_id': self.calendar_1.id,
+        })
+        leave_type = self.env['hr.leave.type'].create({
+            'name': 'Sick Time Off',
+            'time_type': 'leave',
+            'requires_allocation': False,
+            'leave_validation_type': 'both',
+        })
+
+        employee_leave = self.env['hr.leave'].create({
+            'name': 'Holiday 5 days',
+            'employee_id': employee_david.id,
+            'holiday_status_id': leave_type.id,
+            'request_date_from': datetime(2025, 5, 12),
+            'request_date_to': datetime(2025, 5, 16),
+        })
+
+        self.env['resource.calendar.leaves'].with_user(self.user_hrmanager).create({
+            'name': 'Public holiday day 1',
+            'date_from': datetime(2025, 5, 13),
+            'date_to': datetime(2025, 5, 13, 23, 59),
+            'calendar_id': employee_david.resource_calendar_id.id,
+        })
+
+        self.assertEqual(employee_leave.number_of_days, 4, 'Leave duration should be reduced because of public holiday day 1')
+
+        employee_leave.with_user(user_timeoff_officer_david).action_approve()
+        self.env['resource.calendar.leaves'].with_user(self.user_hrmanager).create({
+            'name': 'Public holiday day 2',
+            'date_from': datetime(2025, 5, 14),
+            'date_to': datetime(2025, 5, 14, 23, 59),
+            'calendar_id': employee_david.resource_calendar_id.id,
+        })
+        self.assertEqual(employee_leave.number_of_days, 3, 'Leave duration should be reduced because of public holiday day 2')
+
+        employee_leave.with_user(self.user_hruser).action_approve()
+        self.env['resource.calendar.leaves'].with_user(self.user_hrmanager).create({
+            'name': 'Public holiday day 3',
+            'date_from': datetime(2025, 5, 15),
+            'date_to': datetime(2025, 5, 15, 23, 59),
+            'calendar_id': employee_david.resource_calendar_id.id,
+        })
+        self.assertEqual(employee_leave.number_of_days, 2, 'Leave duration should be reduced because of public holiday day 3')
+
+    def test_get_unusual_days_for_leaves(self):
+        """
+        Test that get_unusual_days return True
+        for out of contract days so they get greyed out in calendar view
+        """
+        test_emp = self.env['hr.employee'].create({
+            'name': 'Test Emp',
+            'date_version': date(2026, 1, 8),
+            'contract_date_start': date(2026, 1, 8),
+            'contract_date_end': date(2026, 1, 13),
+            'resource_calendar_id': self.calendar_1.id,
+        })
+        test_emp.create_version({
+            'date_version': date(2026, 1, 16),
+            'contract_date_start': date(2026, 1, 16),
+            'contract_date_end': date(2026, 1, 21),
+            'resource_calendar_id': self.calendar_1.id,
+        })
+        start = '2026-01-05 00:00:00'
+        end = '2026-01-24 00:00:00'
+
+        unusual_days = self.env['hr.leave'].with_context(employee_id=test_emp.id).get_unusual_days(start, end)
+        expected = {  # starting Monday
+            '2026-01-05': True,  # No contract
+            '2026-01-06': True,  # No contract
+            '2026-01-07': True,  # No contract
+            '2026-01-08': False,
+            '2026-01-09': False,
+            '2026-01-10': True,  # Weekend
+            '2026-01-11': True,  # Weekend
+            '2026-01-12': False,
+            '2026-01-13': False,
+            '2026-01-14': True,  # No contract
+            '2026-01-15': True,  # No contract
+            '2026-01-16': False,
+            '2026-01-17': True,  # Weekend
+            '2026-01-18': True,  # Weekend
+            '2026-01-19': False,
+            '2026-01-20': False,
+            '2026-01-21': False,
+            '2026-01-22': True,  # No contract
+            '2026-01-23': True,  # No contract
+            '2026-01-24': True,  # No contract
+        }
+        self.assertDictEqual(unusual_days, expected)
 
     def test_multi_day_public_holidays_for_flexible_schedule(self):
         """
@@ -314,7 +431,7 @@ class TestGlobalLeaves(TestHrHolidaysCommon):
                 'date_from': date(2026, 1, 1),
                 'date_to': date(2026, 12, 31),
             }
-        ]).action_validate()
+        ]).action_approve()
 
         leave = self.env['hr.leave'].create({
             'name': 'Holiday 1 week',
@@ -323,7 +440,7 @@ class TestGlobalLeaves(TestHrHolidaysCommon):
             'request_date_from': datetime(2025, 12, 8, 7, 0),
             'request_date_to': datetime(2026, 1, 3, 18, 0),
         })
-        leave.action_validate()
+        leave.action_approve()
 
         self.assertEqual(leave.number_of_days, 20, "Number of days should be 20")
 

@@ -22,6 +22,7 @@
         'views/snippets/s_company_team.xml',
         'views/snippets/s_company_team_detail.xml',
         'views/snippets/s_company_team_basic.xml',
+        'views/snippets/s_comparisons_horizontal.xml',
         'views/snippets/s_cover.xml',
         'views/snippets/s_card_offset.xml',
         'views/snippets/s_image_text.xml',
@@ -35,6 +36,7 @@
         'views/snippets/s_media_list.xml',
         'views/snippets/s_picture.xml',
         'views/snippets/s_popup.xml',
+        'views/snippets/s_company_team_grid.xml',
         'views/snippets/s_freegrid.xml',
         'views/snippets/s_features_wall.xml',
         'views/snippets/s_quotes_carousel.xml',
@@ -48,6 +50,7 @@
         'views/snippets/s_pricelist_boxed.xml',
         'views/snippets/s_image_hexagonal.xml',
         'views/snippets/s_striped_center_top.xml',
+        'views/snippets/s_company_team_card.xml',
         'views/snippets/s_key_images.xml',
         'views/snippets/s_kickoff.xml',
         'views/snippets/s_intro_pill.xml',
@@ -58,26 +61,29 @@
         'views/snippets/s_empowerment.xml',
         'views/snippets/s_image_text_overlap.xml',
         'views/snippets/s_features.xml',
+        'views/snippets/s_numbers_boxed.xml',
+        'views/snippets/s_split_intro.xml',
+        'views/snippets/s_numbers_framed.xml',
         'views/new_page_template.xml',
     ],
     'images': [
         'static/description/yes_description.png',
-        'static/description/yes_screenshot.jpg',
+        'static/description/yes_screenshot.webp',
     ],
     'images_preview_theme': {
-        'website.s_cover_default_image': '/theme_yes/static/src/img/snippets/s_cover.jpg',
-        'website.s_media_list_default_image_1': '/theme_yes/static/src/img/snippets/s_media_list_1.jpg',
-        'website.s_media_list_default_image_2': '/theme_yes/static/src/img/snippets/s_media_list_2.jpg',
-        'website.s_media_list_default_image_3': '/theme_yes/static/src/img/snippets/s_media_list_3.jpg',
-        'website.s_quotes_carousel_demo_image_0': '/theme_yes/static/src/img/snippets/s_quotes_carousel_1.jpg',
-        'website.s_cover_default_image': '/theme_yes/static/src/img/snippets/s_cover.jpg',
-        'website.s_picture_default_image': '/theme_yes/static/src/img/snippets/s_cover.jpg',
+        'website.s_cover_default_image': '/theme_yes/static/src/img/snippets/s_cover.webp',
+        'website.s_media_list_default_image_1': '/theme_yes/static/src/img/snippets/s_media_list_1.webp',
+        'website.s_media_list_default_image_2': '/theme_yes/static/src/img/snippets/s_media_list_2.webp',
+        'website.s_media_list_default_image_3': '/theme_yes/static/src/img/snippets/s_media_list_3.webp',
+        'website.s_quotes_carousel_demo_image_0': '/theme_yes/static/src/img/snippets/s_quotes_carousel_1.webp',
+        'website.s_cover_default_image': '/theme_yes/static/src/img/snippets/s_cover.webp',
+        'website.s_picture_default_image': '/theme_yes/static/src/img/snippets/s_cover.webp',
         'website.library_image_10': '/theme_yes/static/src/img/snippets/library_image_10.webp',
         'website.library_image_05': '/theme_yes/static/src/img/snippets/library_image_05.webp',
-        'website.library_image_08': '/theme_yes/static/src/img/snippets/library_image_08.jpg',
+        'website.library_image_08': '/theme_yes/static/src/img/snippets/library_image_08.webp',
         'website.library_image_13': '/theme_yes/static/src/img/snippets/library_image_13.webp',
-        'website.library_image_03': '/theme_yes/static/src/img/snippets/library_image_03.jpg',
-        'website.library_image_02': '/theme_yes/static/src/img/snippets/library_image_02.jpg',
+        'website.library_image_03': '/theme_yes/static/src/img/snippets/library_image_03.webp',
+        'website.library_image_02': '/theme_yes/static/src/img/snippets/library_image_02.webp',
         'website.library_image_14': '/theme_yes/static/src/img/snippets/library_image_14.webp',
         'website.library_image_16': '/theme_yes/static/src/img/snippets/library_image_16.webp',
         'website.s_parallax_default_image': '/theme_yes/static/src/img/snippets/s_parallax.webp',
@@ -85,11 +91,38 @@
     'configurator_snippets': {
         'homepage': ['s_kickoff', 's_title', 's_company_team', 's_image_text_overlap', 's_features', 's_freegrid', 's_quotes_carousel', 's_call_to_action'],
     },
+    'configurator_snippets_addons': {
+        'website_sale': {
+            'homepage': [
+                ('website_sale.s_dynamic_snippet_category_list', 'after', 's_features'),
+            ],
+        },
+    },
+    'theme_customizations': {
+        'website_sale.s_dynamic_snippet_category_list': {
+            'data_attributes': {
+                'columns': '2',
+                'gap': '3',
+                'size': 'small',
+                'alignment': 'left',
+            },
+            'background': {
+                'color': 'o_cc2',
+            },
+            'add_classes': [
+                'pt32',
+            ],
+            'remove_classes': [
+                'pb64', 'pt64',
+            ],
+        },
+    },
     'new_page_templates': {
         'about': {
             'personal': ['s_text_cover', 's_image_text', 's_text_block_h2', 's_numbers', 's_features', 's_call_to_action'],
         },
     },
+    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
     'assets': {
         'website.assets_editor': [

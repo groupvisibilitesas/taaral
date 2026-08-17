@@ -11,7 +11,7 @@ class TestPOSLoyaltyHistory(TestPointOfSaleHttpCommon):
 
     def test_pos_loyalty_history(self):
         partner_aaa = self.env['res.partner'].create({'name': 'AAA Test Partner'})
-        self.whiteboard_pen.write({'lst_price': 10})
+        self.whiteboard_pen.product_variant_ids.write({'lst_price': 10})
         self.main_pos_config.write({
             'tax_regime_selection': False,
             'use_pricelist': False,
@@ -120,13 +120,26 @@ class TestPOSLoyaltyHistory(TestPointOfSaleHttpCommon):
         new_pos_order.confirm_coupon_programs(coupon_data)
         check_coupon(40, 2)
 
+    def test_programs_loaded(self):
+        eur_currency = self.setup_other_currency('EUR')
+        usd_loyalty = self.env['loyalty.program'].create({'name': "USD program"})
+        eur_loyalty = self.env['loyalty.program'].create({'name': "EUR program", 'currency_id': eur_currency.id})
+        loaded_programs = self.main_pos_config._get_program_ids()
+        self.assertIn(usd_loyalty, loaded_programs)
+        self.assertNotIn(eur_loyalty, loaded_programs)
+
     def test_loyalty_history_earn_and_spend(self):
         """When points are earned and spent in the same order, the loyalty history
         must record the gross issued and used amounts separately, not only the net
         difference. Regression test for: earn 10 pts + spend 5 pts → issued=10,
         used=5 (instead of the incorrect issued=5, used=0)."""
         partner_aaa = self.env['res.partner'].create({'name': 'AAA Test Partner'})
-        self.whiteboard_pen.write({'lst_price': 10})
+        self.env['product.product'].create({
+            'name': 'Test Product',
+            'available_in_pos': True,
+            'list_price': 10,
+            'taxes_id': [],
+        })
         self.main_pos_config.write({
             'tax_regime_selection': False,
             'use_pricelist': False,

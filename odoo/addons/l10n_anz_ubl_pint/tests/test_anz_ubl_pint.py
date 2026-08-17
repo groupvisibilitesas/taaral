@@ -15,12 +15,13 @@ class TestAnzUBLPint(AccountTestInvoicingCommon):
     @AccountTestInvoicingCommon.setup_country('au')
     def setUpClass(cls):
         super().setUpClass()
-        cls.env['ir.config_parameter'].set_param('account_edi_ubl_cii.use_new_dict_to_xml_helpers', 'False')
+
         cls.other_currency = cls.setup_other_currency('NZD')
 
         # TIN number is required
         cls.company_data['company'].write({
             'vat': '11225459588',
+            'l10n_au_is_gst_registered': True,
             'street': 'Henry Lawson Drive',
             'zip': '2850',
             'city': 'Home Rule',
@@ -56,6 +57,29 @@ class TestAnzUBLPint(AccountTestInvoicingCommon):
             self.get_xml_tree_from_string(expected_xml),
         )
 
-    def test_invoice_new(self):
-        self.env['ir.config_parameter'].set_param('account_edi_ubl_cii.use_new_dict_to_xml_helpers', 'True')
-        self.test_invoice()
+    def test_invoice_import(self):
+        with file_open('l10n_anz_ubl_pint/tests/expected_xmls/invoice.xml', 'rb') as f:
+            xml_attachment = self.env['ir.attachment'].create({
+                'mimetype': 'application/xml',
+                'name': 'test_invoice.xml',
+                'raw': f.read(),
+            })
+
+        imported_invoice = self.env['account.move'] \
+            .with_context(default_move_type='out_invoice') \
+            ._create_records_from_attachments(xml_attachment)
+
+        self.assertEqual(imported_invoice.move_type, 'out_invoice')
+        self.assertEqual(imported_invoice.currency_id, self.other_currency)
+        self.assertEqual(
+            imported_invoice.invoice_date.strftime("%Y-%m-%d"),
+            "2019-01-01",
+        )
+        self.assertRecordValues(
+            imported_invoice,
+            [{
+                'amount_untaxed': 2000.0,
+                'amount_tax': 200.0,
+                'amount_total': 2200.0,
+            }],
+        )

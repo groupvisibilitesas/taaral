@@ -12,11 +12,7 @@ class AccountChartTemplate(models.AbstractModel):
             'code_digits': '5',
             'property_account_receivable_id': 'l10n_kh_account_10500',
             'property_account_payable_id': 'l10n_kh_account_20300',
-            'property_account_expense_categ_id': 'l10n_kh_account_50100',
-            'property_account_income_categ_id': 'l10n_kh_account_40100',
             'property_stock_valuation_account_id': 'l10n_kh_account_10200',
-            'property_stock_account_input_categ_id': 'l10n_kh_account_10210',
-            'property_stock_account_output_categ_id': 'l10n_kh_account_10220',
         }
 
     @template('kh', 'res.company')
@@ -40,12 +36,18 @@ class AccountChartTemplate(models.AbstractModel):
                 'account_purchase_tax_id': 'l10n_kh_tax_purchase_10_m',
                 'deferred_expense_account_id': 'l10n_kh_account_10700',
                 'deferred_revenue_account_id': 'l10n_kh_account_20500',
+                'expense_account_id': 'l10n_kh_account_50100',
+                'income_account_id': 'l10n_kh_account_40100',
             },
         }
 
     @template('kh', 'account.journal')
     def _get_kh_account_journal(self):
         return {
-            'bank': {'default_account_id': 'l10n_kh_account_10900'},
-            'cash': {'default_account_id': 'l10n_kh_account_10800'},
+            "bank": {"default_account_id": "l10n_kh_account_10900"},
+            "cash": {
+                "name": self.env._("Cash"),
+                "type": "cash",
+                "default_account_id": "l10n_kh_account_10800",
+            },
         }

@@ -187,6 +187,8 @@ test("concurrency with custom debounce delay", async () => {
     expect(".o_command").toHaveCount(0);
     expect(".o_command_palette .o_namespace").toHaveCount(0);
 
+    // On mobile we need to focus the input
+    await click(".o_command_palette_search input");
     await fill("@");
     await animationFrame();
     expect(".o_command_palette .o_namespace").toHaveText("@");
@@ -530,6 +532,7 @@ test("open the command palette with a searchValue already in the searchbar", asy
     expect(queryAllTexts(".o_command")).toEqual(["Command1"]);
 });
 
+test.tags("desktop");
 test("command palette keeps the same top position when its content changes", async () => {
     await mountWithCleanup(MainComponentsContainer);
     const action = () => {};
@@ -1084,11 +1087,9 @@ test("multi level command", async () => {
     const commands = [
         {
             name: "Command1",
-            action: () => {
-                return {
-                    providers: [{ provide: () => [{ name: "Command lvl2", action: () => {} }] }],
-                };
-            },
+            action: () => ({
+                providers: [{ provide: () => [{ name: "Command lvl2", action: () => {} }] }],
+            }),
         },
     ];
     const providers = [
@@ -1275,16 +1276,16 @@ test("bold the searchValue on the commands", async () => {
     await animationFrame();
     expect(".o_command_palette").toHaveCount(1);
     expect(".o_command").toHaveCount(5);
-    expect(queryAllTexts(".o_command b")).toEqual([]);
+    expect(queryAllTexts(".o_command .fw-bolder")).toEqual([]);
 
     await click(".o_command_palette_search input");
     await edit("@test");
     await runAllTimers();
     expect(".o_command").toHaveCount(5);
     expect(
-        queryAll(".o_command").map((command) => {
-            return queryAllTexts(".o_command_name b", { root: command });
-        })
+        queryAll(".o_command").map((command) =>
+            queryAllTexts(".o_command_name .fw-bolder", { root: command })
+        )
     ).toEqual([["Test"], ["test"], ["test"], ["Test"], ["TeSt", "Test", "TEST"]]);
 });
 
@@ -1293,16 +1294,68 @@ test("bold the searchValue on the commands with special char", async () => {
     const action = () => {};
     const providers = [
         {
+            namespace: "/",
             provide: () => [
                 {
                     name: "Test&",
+                    action,
+                },
+                {
+                    name: "Research & Development",
                     action,
                 },
             ],
         },
     ];
     const config = {
-        searchValue: "&",
+        searchValue: "/",
+        providers,
+    };
+    getService("dialog").add(CommandPalette, {
+        config,
+    });
+    await animationFrame();
+    expect(".o_command_palette").toHaveCount(1);
+    expect(".o_command").toHaveCount(2);
+    expect(queryAllTexts(".o_command")).toEqual(["Test&", "Research & Development"]);
+    expect(queryAllTexts(".o_command .fw-bolder")).toEqual([]);
+
+    await click(".o_command_palette_search input");
+    await edit("/a");
+    await runAllTimers();
+    expect(".o_command").toHaveCount(2);
+    expect(
+        queryAll(".o_command").map((command) =>
+            queryAllTexts(".o_command_name .fw-bolder", { root: command })
+        )
+    ).toEqual([[], ["a"]]);
+
+    await click(".o_command_palette_search input");
+    await edit("/&");
+    await runAllTimers();
+    expect(".o_command").toHaveCount(2);
+    expect(
+        queryAll(".o_command").map((command) =>
+            queryAllTexts(".o_command_name .fw-bolder", { root: command })
+        )
+    ).toEqual([["&"], ["&"]]);
+});
+
+test("bold the searchValue on the commands with accents", async () => {
+    await mountWithCleanup(MainComponentsContainer);
+    const action = () => {};
+    const providers = [
+        {
+            provide: () => [
+                {
+                    name: "Cédric",
+                    action,
+                },
+            ],
+        },
+    ];
+    const config = {
+        searchValue: "èd",
         providers,
     };
     getService("dialog").add(CommandPalette, {
@@ -1311,8 +1364,8 @@ test("bold the searchValue on the commands with special char", async () => {
     await animationFrame();
     expect(".o_command_palette").toHaveCount(1);
     expect(".o_command").toHaveCount(1);
-    expect(queryAllTexts(".o_command")).toEqual(["Test&"]);
-    expect(queryAllTexts(".o_command b")).toEqual(["&"]);
+    expect(queryAllTexts(".o_command")).toEqual(["Cédric"]);
+    expect(queryAllTexts(".o_command .fw-bolder")).toEqual(["éd"]);
 });
 
 test("remove namespace with backspace", async () => {
@@ -1513,14 +1566,14 @@ test("display spinner while loading results from providers", async () => {
 
     await animationFrame();
     expect(".o_command_palette_search i.oi.oi-search").toHaveCount(1);
-    expect(".o_command_palette_search i.fa.fa-spinner").toHaveCount(0);
+    expect(".o_command_palette_search i.fa.fa-circle-o-notch").toHaveCount(0);
     await click(".o_command_palette_search input");
     await edit("? blabla");
     await runAllTimers();
     expect(".o_command_palette_search i.oi.oi-search").toHaveCount(0);
-    expect(".o_command_palette_search i.fa.fa-spinner").toHaveCount(1);
+    expect(".o_command_palette_search i.fa.fa-circle-o-notch").toHaveCount(1);
     provideDef.resolve();
     await animationFrame();
     expect(".o_command_palette_search i.oi.oi-search").toHaveCount(1);
-    expect(".o_command_palette_search i.fa.fa-spinner").toHaveCount(0);
+    expect(".o_command_palette_search i.fa.fa-circle-o-notch").toHaveCount(0);
 });

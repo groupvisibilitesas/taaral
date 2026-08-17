@@ -10,7 +10,7 @@ CALL_API_METHOD = 'odoo.addons.l10n_tw_edi_ecpay.utils.EcPayAPI.call_ecpay_api'
 @tagged('post_install_l10n', 'post_install', '-at_install')
 class L10nTWITestEdiSaleOrder(L10nTWITestEdi):
     def test_01_so_data_forward_to_invoice(self):
-        so = self.env['sale.order'].create({
+        so = self.env['sale.order'].sudo().create({
             'partner_id': self.partner_a.id,
             'l10n_tw_edi_is_print': True,
             'l10n_tw_edi_love_code': "ABC123",
@@ -19,7 +19,7 @@ class L10nTWITestEdiSaleOrder(L10nTWITestEdi):
             'l10n_tw_edi_carrier_number_2': "87654321",
         })
 
-        self.env['sale.order.line'].create({
+        self.env['sale.order.line'].sudo().create({
             'name': self.product_a.name,
             'product_id': self.product_a.id,
             'product_uom_qty': 1,

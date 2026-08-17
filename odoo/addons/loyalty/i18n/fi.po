@@ -2,40 +2,16 @@
 # This file contains the translation of the following modules:
 # * loyalty
 #
-# Translators:
-# Tiffany Chang, 2024
-# Joakim Weckman, 2024
-# Pekko Tuomisto <pekko.tuomisto@web-veistamo.fi>, 2024
-# Veikko Väätäjä <veikko.vaataja@gmail.com>, 2024
-# Erno Iipponen <erno.iipponen@web-veistamo.fi>, 2024
-# Petri Laakso, 2024
-# Miika Nissi <miika.nissi@tawasta.fi>, 2024
-# Kim Asplund <kim.asplund@gmail.com>, 2024
-# Jussi Lehto <jussi@gulfeo.com>, 2024
-# Sari Mäyrä <sari.mayra@sv-oy.fi>, 2024
-# Svante Suominen <svante.suominen@web-veistamo.fi>, 2024
-# Johanna Valkonen <miujohanna@gmail.com>, 2024
-# Jenni Heikkilä <jenni.heikkila@sv-oy.fi>, 2024
-# Mikko Salmela <salmemik@gmail.com>, 2024
-# Topi Aura <topi@aurat.fi>, 2024
-# Eino Mäkitalo <eino.makitalo@netitbe.fi>, 2024
-# Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2024
-# Kari Lindgren <kari.lindgren@emsystems.fi>, 2024
-# Martin Trigaux, 2024
-# Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2025
-# Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2025
-# Jessica Jakara, 2025
-# "Jessica Tuulia Sade Jäkärä (jtsj)" <jtsj@odoo.com>, 2025.
-# Saara Hakanen <sahak@odoo.com>, 2026.
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# "Tiffany Chang (tic)" <tic@odoo.com>, 2025, 2026.
+# Saara Hakanen <sahak@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 18:38+0000\n"
-"PO-Revision-Date: 2026-07-31 10:15+0000\n"
+"POT-Creation-Date: 2026-04-10 18:39+0000\n"
+"PO-Revision-Date: 2026-08-03 15:25+0000\n"
 "Last-Translator: Saara Hakanen <sahak@odoo.com>\n"
-"Language-Team: Finnish <https://translate.odoo.com/projects/odoo-18/loyalty/"
+"Language-Team: Finnish <https://translate.odoo.com/projects/odoo-19/loyalty/"
 "fi/>\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
@@ -62,27 +38,19 @@ msgstr ""
 "        "
 
 #. module: loyalty
-#: model:ir.model.fields,help:loyalty.field_loyalty_program__available_on
-msgid ""
-"\n"
-"        Manage where your program should be available for use.\n"
-"        "
-msgstr ""
-"\n"
-"        Hallitse, missä ohjelmasi on oltava käytettävissä.\n"
-"        "
-
-#. module: loyalty
 #: model:ir.model.fields,help:loyalty.field_loyalty_program__portal_visible
 msgid ""
 "\n"
 "        Show in web portal, PoS customer ticket, eCommerce checkout, the "
-"number of points available and used by reward.\n"
+"number of points available\n"
+"         and used by reward.\n"
 "        "
 msgstr ""
 "\n"
-"        Näytä verkkoportaalissa, kassan kuitilla ja verkkokaupan kassassa "
-"käytettävissä olevien ja palkinnon mukaan käytettyjen pisteiden määrä.\n"
+"        Näytä käytettävissä olevien sekä palkintoon käytettyjen pisteiden "
+"määrä\n"
+"         verkkoportaalissa, kassajärjestelmän asiakaskuiteissa ja "
+"verkkokaupan maksutapahtumissa.\n"
 "        "
 
 #. module: loyalty
@@ -139,7 +107,7 @@ msgstr "-> Näytä historia"
 #. module: loyalty
 #: model:loyalty.program,name:loyalty.10_percent_coupon
 msgid "10% Discount Coupons"
-msgstr "10% alennuskupongeilla"
+msgstr "10% alennuskupongit"
 
 #. module: loyalty
 #: model:loyalty.reward,description:loyalty.10_percent_coupon_reward
@@ -151,7 +119,7 @@ msgstr "10% tilauksestasi"
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
 msgid "2+1 Free"
-msgstr "2+1 maksuton"
+msgstr "2+1 ilmainen"
 
 #. module: loyalty
 #: model:mail.template,body_html:loyalty.mail_template_gift_card
@@ -198,11 +166,12 @@ msgid ""
 "                    <span style=\"background-color:#999999; display:inline-"
 "block; width:auto; border-radius:5px;\">\n"
 "                        <a t-attf-href=\"{{ object.get_base_url() }}/shop\" "
-"target=\"_blank\" style=\"text-decoration:none; font-family:arial, "
-"'helvetica neue', helvetica, sans-serif; font-size:22px; color:#FFFFFF; "
-"border-style:solid; border-color:#999999; border-width:20px 30px; "
-"display:inline-block; background-color:#999999; border-radius:5px; font-"
-"weight:bold; font-style:normal; line-height:26px; width:auto; text-"
+"target=\"_blank\" t-attf-style=\"text-decoration:none; font-family:arial, "
+"'helvetica neue', helvetica, sans-serif; font-size:22px; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-style:solid; "
+"border-width:20px 30px; display:inline-block; background-color: "
+"{{object.company_id.email_secondary_color or '#875A7B'}}; border-radius:5px; "
+"font-weight:bold; font-style:normal; line-height:26px; width:auto; text-"
 "align:center\">Use it right now!</a>\n"
 "                    </span>\n"
 "                </div>\n"
@@ -213,7 +182,7 @@ msgstr ""
 "                <div style=\"margin:0px; font-size:24px; font-family:arial, "
 "'helvetica neue', helvetica, sans-serif; line-height:36px; color:#333333; "
 "text-align: center\">\n"
-"                    Tässä on lahjakorttisi!\n"
+"                    Tässä lahjakorttisi!\n"
 "                </div>\n"
 "                <div style=\"padding-top:20px; padding-bottom:20px\">\n"
 "                    <img src=\"/loyalty/static/img/gift_card.png\" "
@@ -226,7 +195,7 @@ msgstr ""
 "family:arial, 'helvetica neue', helvetica, sans-serif; font-size:40px; font-"
 "style:normal; font-weight:normal; color:#333333; text-align:center\">\n"
 "                        <strong t-out=\"format_amount(object.points, "
-"object.currency_id) or ''\">$ 150.00</strong></h3>\n"
+"object.currency_id) or ''\">150,00 €</strong></h3>\n"
 "                </div>\n"
 "                <div style=\"padding:0; margin:0px; padding-top:35px; "
 "padding-bottom:35px; background-color:#efefef; text-align:center;\">\n"
@@ -242,21 +211,22 @@ msgstr ""
 "margin:0px; padding-top:10px; padding-bottom:10px; text-align:center;\">\n"
 "                    <h3 style=\"margin:0px; line-height:17px; font-"
 "family:arial, 'helvetica neue', helvetica, sans-serif; font-size:14px; font-"
-"style:normal; font-weight:normal; color:#A9A9A9; text-align:center\">Kortin "
-"voimassaoloaika päättyy <t t-out=\"format_date(object.expiration_date) or "
-"''\">05/05/2021</t></h3>\n"
+"style:normal; font-weight:normal; color:#A9A9A9; text-align:center\">Kortti "
+"vanhenee <t t-out=\"format_date(object.expiration_date) or ''\">05.05.2021</"
+"t></h3>\n"
 "                </div>\n"
-"                <div style=\"padding:20px; margin:0px; text-align:center;"
-"\">\n"
+"                <div style=\"padding:20px; margin:0px; text-align:center;\">"
+"\n"
 "                    <span style=\"background-color:#999999; display:inline-"
 "block; width:auto; border-radius:5px;\">\n"
 "                        <a t-attf-href=\"{{ object.get_base_url() }}/shop\" "
-"target=\"_blank\" style=\"text-decoration:none; font-family:arial, "
-"'helvetica neue', helvetica, sans-serif; font-size:22px; color:#FFFFFF; "
-"border-style:solid; border-color:#999999; border-width:20px 30px; "
-"display:inline-block; background-color:#999999; border-radius:5px; font-"
-"weight:bold; font-style:normal; line-height:26px; width:auto; text-"
-"align:center\">Käytä se nyt!</a>\n"
+"target=\"_blank\" t-attf-style=\"text-decoration:none; font-family:arial, "
+"'helvetica neue', helvetica, sans-serif; font-size:22px; color: {"
+"{object.company_id.email_primary_color or '#FFFFFF'}}; border-style:solid; "
+"border-width:20px 30px; display:inline-block; background-color: {"
+"{object.company_id.email_secondary_color or '#875A7B'}}; border-radius:5px; "
+"font-weight:bold; font-style:normal; line-height:26px; width:auto; text-"
+"align:center\">Käytä se heti!</a>\n"
 "                    </span>\n"
 "                </div>\n"
 "            </div>\n"
@@ -407,8 +377,8 @@ msgid ""
 "margin:0px auto; background:#ffffff; color:#333333;\"><tbody>\n"
 "<tr>\n"
 "    <td valign=\"top\" style=\"text-align: center; font-size: 14px;\">\n"
-"        <t t-if=\"object._get_mail_partner().name\">\n"
-"            Congratulations <t t-out=\"object._get_mail_partner().name or "
+"        <t t-if=\"object._mail_get_customer().name\">\n"
+"            Congratulations <t t-out=\"object._mail_get_customer().name or "
 "''\">Brandon Freeman</t>,<br/>\n"
 "        </t>\n"
 "\n"
@@ -417,8 +387,9 @@ msgid ""
 "\n"
 "        <t t-foreach=\"object.program_id.reward_ids\" t-as=\"reward\">\n"
 "            <t t-if=\"reward.required_points &lt;= object.points\">\n"
-"                <span style=\"font-size: 50px; color: #875A7B; font-weight: "
-"bold;\" t-esc=\"reward.description\">Reward Description</span>\n"
+"                <span t-attf-style=\"font-size: 50px; color: "
+"{{object.program_id.company_id.email_secondary_color or '#875A7B'}}; font-"
+"weight: bold;\" t-esc=\"reward.description\">Reward Description</span>\n"
 "                <br/>\n"
 "            </t>\n"
 "        </t>\n"
@@ -456,8 +427,9 @@ msgid ""
 "        <t t-if=\"object._get_signature()\" data-o-mail-quote-"
 "container=\"1\">\n"
 "            <br/>\n"
-"            <t t-out=\"object._get_signature() or ''\" data-o-mail-"
-"quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/><t t-"
+"out=\"object._get_signature() or ''\" data-o-mail-quote=\"1\">Mitchell "
+"Admin</t></div>\n"
 "        </t>\n"
 "    </td>\n"
 "</tr>\n"
@@ -468,18 +440,19 @@ msgstr ""
 "margin:0px auto; background:#ffffff; color:#333333;\"><tbody>\n"
 "<tr>\n"
 "    <td valign=\"top\" style=\"text-align: center; font-size: 14px;\">\n"
-"        <t t-if=\"object._get_mail_partner().name\">\n"
-"            Onneksi olkoon <t t-out=\"object._get_mail_partner().name or "
+"        <t t-if=\"object._mail_get_customer().name\">\n"
+"            Onneksi olkoon <t t-out=\"object._mail_get_customer().name or "
 "''\">Brandon Freeman</t>,<br/>\n"
 "        </t>\n"
 "\n"
-"        Tässä on <t t-out=\"object.program_id.company_id.name or "
-"''\">YrityksesiNimi</t> lähettämä palkinto.<br/>\n"
+"        Tässä <t t-out=\"object.program_id.company_id.name or ''\">"
+"YrityksesiNimi</t> lähettämä palkinto.<br/>\n"
 "\n"
 "        <t t-foreach=\"object.program_id.reward_ids\" t-as=\"reward\">\n"
 "            <t t-if=\"reward.required_points &lt;= object.points\">\n"
-"                <span style=\"font-size: 50px; color: #875A7B; font-weight: "
-"bold;\" t-esc=\"reward.description\">Palkinnon kuvaus</span>\n"
+"                <span t-attf-style=\"font-size: 50px; color: {"
+"{object.program_id.company_id.email_secondary_color or '#875A7B'}}; font-"
+"weight: bold;\" t-esc=\"reward.description\">Palkinnon kuvaus</span>\n"
 "                <br/>\n"
 "            </t>\n"
 "        </t>\n"
@@ -487,15 +460,15 @@ msgstr ""
 "</tr>\n"
 "<tr style=\"margin-top: 16px\">\n"
 "    <td valign=\"top\" style=\"text-align: center; font-size: 14px;\">\n"
-"        Käytä tätä alennuskoodia\n"
+"        Käytä alennuskoodi\n"
 "        <t t-if=\"object.expiration_date\">\n"
-"            ennen <t t-out=\"format_date(object.expiration_date) or "
-"''\">16.06.2021</t>\n"
+"            ennen <t t-out=\"format_date(object.expiration_date) or ''\">"
+"16.06.2021</t>\n"
 "        </t>\n"
 "        <p style=\"margin-top: 16px;\">\n"
 "            <strong style=\"padding: 16px 8px 16px 8px; border-radius: 3px; "
-"background-color: #F1F1F1;\" t-out=\"object.code or "
-"''\">15637502648479132902</strong>\n"
+"background-color: #F1F1F1;\" t-out=\"object.code or ''\">"
+"15637502648479132902</strong>\n"
 "        </p>\n"
 "        <t t-foreach=\"object.program_id.rule_ids\" t-as=\"rule\">\n"
 "            <t t-if=\"rule.minimum_qty not in [0, 1]\">\n"
@@ -508,7 +481,7 @@ msgstr ""
 "                <span style=\"font-size: 14px;\">\n"
 "                    Voimassa yli <t t-"
 "out=\"rule.company_id.currency_id.symbol or ''\"></t><t t-out=\"'%0.2f' % "
-"float(rule.minimum_amount) or ''\">10,00€</t> ostoksille\n"
+"float(rule.minimum_amount) or ''\">10,00</t>€ ostoksille\n"
 "                </span><br/>\n"
 "            </t>\n"
 "        </t>\n"
@@ -517,8 +490,9 @@ msgstr ""
 "        <t t-if=\"object._get_signature()\" data-o-mail-quote-"
 "container=\"1\">\n"
 "            <br/>\n"
-"            <t t-out=\"object._get_signature() or ''\" data-o-mail-"
-"quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/><t t-"
+"out=\"object._get_signature() or ''\" data-o-mail-quote=\"1\">Mitchell "
+"Admin</t></div>\n"
 "        </t>\n"
 "    </td>\n"
 "</tr>\n"
@@ -551,7 +525,7 @@ msgstr "Palkinto odottaa sinua"
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_reward.py:0
 msgid "A reward product can't be of type \"combo\"."
-msgstr "Palkintotuote ei voi olla tyyppiä \"combo\"."
+msgstr "Palkintotuote ei voi olla tyyppiä \"yhdistelmä\"."
 
 #. module: loyalty
 #. odoo-python
@@ -761,7 +735,7 @@ msgstr "Koodi"
 #. module: loyalty
 #: model:loyalty.program,name:loyalty.10_percent_with_code
 msgid "Code for 10% on orders"
-msgstr "Koodi 10% tilauksia varten"
+msgstr "Koodi: 10% tilauksesta"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__communication_plan_ids
@@ -816,7 +790,7 @@ msgstr "Onnittelut"
 #. module: loyalty
 #: model:ir.model,name:loyalty.model_res_partner
 msgid "Contact"
-msgstr "Kontakti"
+msgstr "Yhteystiedot"
 
 #. module: loyalty
 #. odoo-javascript
@@ -870,6 +844,11 @@ msgstr "Kupongin tiedot"
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_view_tree
 msgid "Coupons"
 msgstr "Kupongit"
+
+#. module: loyalty
+#: model:ir.model,website_form_label:loyalty.model_res_partner
+msgid "Create a Customer"
+msgstr "Luo asiakas"
 
 #. module: loyalty
 #: model_terms:ir.actions.act_window,help:loyalty.loyalty_program_gift_ewallet_action
@@ -1080,6 +1059,7 @@ msgid "Discounts"
 msgstr "Alennukset"
 
 #. module: loyalty
+#: model:ir.model.fields,field_description:loyalty.field_base_partner_merge_automatic_wizard__display_name
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__display_name
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card_update_balance__display_name
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_generate_wizard__display_name
@@ -1088,6 +1068,10 @@ msgstr "Alennukset"
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__display_name
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__display_name
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_rule__display_name
+#: model:ir.model.fields,field_description:loyalty.field_product_pricelist__display_name
+#: model:ir.model.fields,field_description:loyalty.field_product_product__display_name
+#: model:ir.model.fields,field_description:loyalty.field_product_template__display_name
+#: model:ir.model.fields,field_description:loyalty.field_res_partner__display_name
 msgid "Display Name"
 msgstr "Näyttönimi"
 
@@ -1383,6 +1367,7 @@ msgid "History for Loyalty cards and Ewallets"
 msgstr "Kanta-asiakaskorttien ja sähköisten lompakoiden historiaa"
 
 #. module: loyalty
+#: model:ir.model.fields,field_description:loyalty.field_base_partner_merge_automatic_wizard__id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card_update_balance__id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_generate_wizard__id
@@ -1391,19 +1376,23 @@ msgstr "Kanta-asiakaskorttien ja sähköisten lompakoiden historiaa"
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_rule__id
+#: model:ir.model.fields,field_description:loyalty.field_product_pricelist__id
+#: model:ir.model.fields,field_description:loyalty.field_product_product__id
+#: model:ir.model.fields,field_description:loyalty.field_product_template__id
+#: model:ir.model.fields,field_description:loyalty.field_res_partner__id
 msgid "ID"
 msgstr "ID"
 
 #. module: loyalty
 #: model:ir.model.fields,help:loyalty.field_loyalty_card__message_needaction
 msgid "If checked, new messages require your attention."
-msgstr "Jos ruksittu, uudet viestit vaativat huomiotasi."
+msgstr "Jos valittu, uudet viestit vaativat huomiotasi."
 
 #. module: loyalty
 #: model:ir.model.fields,help:loyalty.field_loyalty_card__message_has_error
 #: model:ir.model.fields,help:loyalty.field_loyalty_card__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr "Jos ruksittu, joissain viesteissä on toimitusvirhe."
+msgstr "Jos valittu, joitakin viestejä ei ole toimitettu."
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_rule_view_kanban
@@ -1419,7 +1408,7 @@ msgstr "Vastineeksi"
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_view_search
 msgid "Inactive"
-msgstr "Epäaktiivinen"
+msgstr "Passiivinen"
 
 #. module: loyalty
 #. odoo-python
@@ -1562,6 +1551,11 @@ msgid "Loyalty point(s)"
 msgstr "Kanta-asiakaspiste(et)"
 
 #. module: loyalty
+#: model:ir.model.fields,help:loyalty.field_loyalty_program__available_on
+msgid "Manage where your program should be available for use."
+msgstr "Hallitse, missä ohjelmasi on käytettävissä."
+
+#. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__discount_max_amount
 msgid "Max Discount"
 msgstr "Suurin alennus"
@@ -1579,12 +1573,12 @@ msgstr "Maksimikäytön on oltava positiivinen, jos käytetään rajaa."
 #. module: loyalty
 #: model:ir.model,name:loyalty.model_base_partner_merge_automatic_wizard
 msgid "Merge Partner Wizard"
-msgstr "Ohjattu kumppaneiden yhdistämistoiminto"
+msgstr "Ohjattu kumppanin yhdistämistoiminto"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__message_has_error
 msgid "Message Delivery error"
-msgstr "Ongelma viestin toimituksessa"
+msgstr "Viestin toimitusvirhe"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__message_ids
@@ -1858,7 +1852,7 @@ msgstr "Tuotettava määrä"
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__rating_ids
 msgid "Ratings"
-msgstr "Arviointi"
+msgstr "Arvostelut"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_rule__reward_point_amount
@@ -1953,7 +1947,7 @@ msgstr "Lähetetään asiakkaalle kuponkitietojen kanssa"
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__sequence
 msgid "Sequence"
-msgstr "Järjestys"
+msgstr "Sekvenssi"
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_program_view_form
@@ -1996,16 +1990,6 @@ msgstr "Aloituspäivä"
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__currency_symbol
 msgid "Symbol"
 msgstr "Valuuttamerkki"
-
-#. module: loyalty
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__tax_ids
-msgid "Taxes"
-msgstr "Verot"
-
-#. module: loyalty
-#: model:ir.model.fields,help:loyalty.field_loyalty_reward__tax_ids
-msgid "Taxes to add on the discount line."
-msgstr "Alennusriville lisättävät verot."
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_report
@@ -2075,7 +2059,7 @@ msgstr "Kuponkeja ei ole vielä luotu."
 #. module: loyalty
 #: model:ir.model.fields,help:loyalty.field_loyalty_reward__reward_product_ids
 msgid "These are the products that can be claimed with this rule."
-msgstr "Tässä tuotteet, joita voi lunastaa tällä säännöllä."
+msgstr "Tässä tuotteet, joita voi lunastaa tämän säännön perusteella."
 
 #. module: loyalty
 #: model:ir.model.fields,help:loyalty.field_loyalty_reward__discount_max_amount
@@ -2092,8 +2076,8 @@ msgid ""
 "This pricelist may not be archived. It is being used for active promotion "
 "programs: %s"
 msgstr ""
-"Tätä hinnastoa ei ehkä ole arkistoitu. Sitä käytetään aktiivisessa "
-"mainosohjelmassa: %s"
+"Tätä hinnastoa ei voi arkistoida. Sitä käytetään aktiivisissa "
+"markkinointikampanjoissa: %s"
 
 #. module: loyalty
 #. odoo-python
@@ -2124,12 +2108,6 @@ msgstr "Tilausten kokonaismäärä"
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__trigger
 msgid "Trigger"
 msgstr "Laukaisin"
-
-#. module: loyalty
-#. odoo-python
-#: code:addons/loyalty/models/loyalty_reward.py:0
-msgid "Unsupported search operator"
-msgstr "Hakuoperaattoria ei tueta"
 
 #. module: loyalty
 #. odoo-python
@@ -2189,6 +2167,11 @@ msgid "Valid until"
 msgstr "Voimassa"
 
 #. module: loyalty
+#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_program_view_form
+msgid "Visible to all"
+msgstr "Näkyvissä kaikille"
+
+#. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__website_message_ids
 msgid "Website Messages"
 msgstr "Verkkosivun ilmoitukset"
@@ -2230,11 +2213,10 @@ msgstr ""
 #: model:ir.model.fields,help:loyalty.field_loyalty_rule__reward_point_split
 msgid ""
 "Whether to separate reward coupons per matched unit, only applies to "
-"'future' programs and trigger mode per money spent or unit paid.."
+"'future' programs and trigger mode per money spent or unit paid..."
 msgstr ""
-"Erotetaanko palkintokupongit sovitettua yksikköä kohden, koskee vain "
-"\"tulevia\" ohjelmia ja käynnistystilaa käytetyn rahan tai maksetun yksikön "
-"mukaan..."
+"Erotellaanko palkintokupongit yksikkökohtaisesti, koskee vain tulevia "
+"ohjelmia sekä käynnistystilaa per käytetty summa tai maksettu yksikkö..."
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_generate_wizard__will_send_mail
@@ -2359,6 +2341,18 @@ msgid "loyalty Reward"
 msgstr "kanta-asiakaspalkinto"
 
 #. module: loyalty
+#. odoo-python
+#: code:addons/loyalty/models/loyalty_program.py:0
+msgid "mail.template"
+msgstr "mail.template"
+
+#. module: loyalty
+#. odoo-python
+#: code:addons/loyalty/models/loyalty_rule.py:0
+msgid "money"
+msgstr "rahaa"
+
+#. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_reward_view_kanban
 msgid "on the cheapest product"
 msgstr "halvimmasta tuotteesta"
@@ -2467,9 +2461,9 @@ msgstr "tilauksesi"
 #~ "color:#333333;\"><tbody>\n"
 #~ "<tr>\n"
 #~ "    <td valign=\"top\" style=\"text-align: center; font-size: 14px;\">\n"
-#~ "        <t t-if=\"object._get_mail_partner().name\">\n"
-#~ "            Congratulations <t t-out=\"object._get_mail_partner().name or "
-#~ "''\">Brandon Freeman</t>,<br/>\n"
+#~ "        <t t-if=\"object._mail_get_customer().name\">\n"
+#~ "            Congratulations <t t-out=\"object._mail_get_customer().name "
+#~ "or ''\">Brandon Freeman</t>,<br/>\n"
 #~ "        </t>\n"
 #~ "\n"
 #~ "        Here is your reward from <t t-"
@@ -2477,7 +2471,8 @@ msgstr "tilauksesi"
 #~ "\n"
 #~ "        <t t-foreach=\"object.program_id.reward_ids\" t-as=\"reward\">\n"
 #~ "            <t t-if=\"reward.required_points &lt;= object.points\">\n"
-#~ "                <span style=\"font-size: 50px; color: #875A7B; font-"
+#~ "                <span t-attf-style=\"font-size: 50px; color: "
+#~ "{{object.program_id.company_id.email_secondary_color or '#875A7B'}}; font-"
 #~ "weight: bold;\" t-esc=\"reward.description\">Reward Description</span>\n"
 #~ "                <br/>\n"
 #~ "            </t>\n"
@@ -2516,8 +2511,9 @@ msgstr "tilauksesi"
 #~ "        <t t-if=\"object._get_signature()\" data-o-mail-quote-"
 #~ "container=\"1\">\n"
 #~ "            <br/>\n"
-#~ "            <t t-out=\"object._get_signature() or ''\" data-o-mail-"
-#~ "quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+#~ "            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/"
+#~ "><t t-out=\"object._get_signature() or ''\" data-o-mail-"
+#~ "quote=\"1\">Mitchell Admin</t></div>\n"
 #~ "        </t>\n"
 #~ "    </td>\n"
 #~ "</tr>\n"
@@ -2529,17 +2525,18 @@ msgstr "tilauksesi"
 #~ "color:#333333;\"><tbody>\n"
 #~ "<tr>\n"
 #~ "    <td valign=\"top\" style=\"text-align: center; font-size: 14px;\">\n"
-#~ "       <t t-if=\"object._get_mail_partner().name\">\n"
-#~ "            Onneksi olkoon <t t-out=\"object._get_mail_partner().name or "
+#~ "        <t t-if=\"object._mail_get_customer().name\">\n"
+#~ "            Onnittelut <t t-out=\"object._mail_get_customer().name or "
 #~ "''\">Brandon Freeman</t>,<br/>\n"
-#~ "       </t>\n"
+#~ "        </t>\n"
 #~ "\n"
-#~ "        Tässä palkintosi yritykseltä <t t-"
-#~ "out=\"object.program_id.company_id.name or ''\">YourCompany</t>.<br/>\n"
+#~ "        Tässä palkintosi, jonka lähetti <t t-"
+#~ "out=\"object.program_id.company_id.name or ''\">YrityksesiNimi</t>.<br/>\n"
 #~ "\n"
 #~ "        <t t-foreach=\"object.program_id.reward_ids\" t-as=\"reward\">\n"
 #~ "            <t t-if=\"reward.required_points &lt;= object.points\">\n"
-#~ "                <span style=\"font-size: 50px; color: #875A7B; font-"
+#~ "                <span t-attf-style=\"font-size: 50px; color: "
+#~ "{{object.program_id.company_id.email_secondary_color or '#875A7B'}}; font-"
 #~ "weight: bold;\" t-esc=\"reward.description\">Palkinnon kuvaus</span>\n"
 #~ "                <br/>\n"
 #~ "            </t>\n"
@@ -2548,11 +2545,11 @@ msgstr "tilauksesi"
 #~ "</tr>\n"
 #~ "<tr style=\"margin-top: 16px\">\n"
 #~ "    <td valign=\"top\" style=\"text-align: center; font-size: 14px;\">\n"
-#~ "        Käytä tämä tarjouskoodi\n"
-#~ "       <t t-if=\"object.expiration_date\">\n"
+#~ "        Käytä tätä kampanjakoodia\n"
+#~ "        <t t-if=\"object.expiration_date\">\n"
 #~ "            ennen <t t-out=\"object.expiration_date or ''\">2021-06-16</"
 #~ "t>\n"
-#~ "       </t>\n"
+#~ "        </t>\n"
 #~ "        <p style=\"margin-top: 16px;\">\n"
 #~ "            <strong style=\"padding: 16px 8px 16px 8px; border-radius: "
 #~ "3px; background-color: #F1F1F1;\" t-out=\"object.code or "
@@ -2561,24 +2558,26 @@ msgstr "tilauksesi"
 #~ "        <t t-foreach=\"object.program_id.rule_ids\" t-as=\"rule\">\n"
 #~ "            <t t-if=\"rule.minimum_qty not in [0, 1]\">\n"
 #~ "                <span style=\"font-size: 14px;\">\n"
-#~ "                     Tuotteiden vähimmäisostomäärä on <t t-"
-#~ "out=\"rule.minimum_qty or ''\">10</t>\n"
+#~ "                    Minimiosto <t t-out=\"rule.minimum_qty or ''\">10</t> "
+#~ "tuotetta\n"
 #~ "                </span><br/>\n"
 #~ "            </t>\n"
 #~ "            <t t-if=\"rule.minimum_amount != 0.00\">\n"
 #~ "                <span style=\"font-size: 14px;\">\n"
-#~ "                    Voimassa yli<t t-out=\"'%0.2f' % "
-#~ "float(rule.minimum_amount) or ''\">$10.00</t>arvoisille ostoksille\n"
+#~ "                    Voimassa yllä olevalle ostokselle  <t t-out=\"'%0.2f' "
+#~ "% float(rule.minimum_amount) or ''\">10,00</t> <t t-"
+#~ "out=\"rule.company_id.currency_id.symbol or ''\">€</t>\n"
 #~ "                </span><br/>\n"
 #~ "            </t>\n"
 #~ "        </t>\n"
-#~ "       <br/>\n"
-#~ "        Kiittäen,\n"
+#~ "        <br/>\n"
+#~ "        Kiitos,\n"
 #~ "        <t t-if=\"object._get_signature()\" data-o-mail-quote-"
 #~ "container=\"1\">\n"
 #~ "            <br/>\n"
-#~ "            <t t-out=\"object._get_signature() or ''\" data-o-mail-"
-#~ "quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell admin</t>\n"
+#~ "            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/"
+#~ "><t t-out=\"object._get_signature() or ''\" data-o-mail-"
+#~ "quote=\"1\">Mitchell Admin</t></div>\n"
 #~ "        </t>\n"
 #~ "    </td>\n"
 #~ "</tr>\n"

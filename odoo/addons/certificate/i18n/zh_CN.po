@@ -2,22 +2,18 @@
 # This file contains the translation of the following modules:
 # * certificate
 #
-# Translators:
-# Wil Odoo, 2024
-# Raymond Yu <cl_yu@hotmail.com>, 2024
-# 何彬 <vnsoft.he@gmail.com>, 2024
-# Chloe Wang, 2025
-# "Chloe Wang (chwa)" <chwa@odoo.com>, 2026.
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# "Tiffany Chang (tic)" <tic@odoo.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# "Chloe Wang (chwa)" <chwa@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-03 17:39+0000\n"
-"PO-Revision-Date: 2026-06-08 16:46+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-07-10 17:36+0000\n"
+"PO-Revision-Date: 2026-08-05 02:26+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://translate.odoo.com/"
-"projects/odoo-18/certificate/zh_Hans/>\n"
+"projects/odoo-19/certificate/zh_Hans/>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -229,6 +225,12 @@ msgid "Make sure to use a private key to sign documents."
 msgstr "确保使用私钥对文档进行签名。"
 
 #. module: certificate
+#. odoo-python
+#: code:addons/certificate/models/key.py:0
+msgid "Make sure to use a public key to verify the signature of documents."
+msgstr ""
+
+#. module: certificate
 #: model_terms:ir.ui.view,arch_db:certificate.res_config_settings_view_form
 msgid "Manage your certificates"
 msgstr "管理您的证书"
@@ -350,13 +352,13 @@ msgstr "证书和公钥不兼容。"
 
 #. module: certificate
 #: model:ir.model.fields,help:certificate.field_certificate_certificate__date_end
-msgid "The date on which the certificate expires (UTC)"
-msgstr "证书到期日 ( UTC )"
+msgid "The date on which the certificate expires"
+msgstr "证书到期日"
 
 #. module: certificate
 #: model:ir.model.fields,help:certificate.field_certificate_certificate__date_start
-msgid "The date on which the certificate starts to be valid (UTC)"
-msgstr "证书生效日期 ( UTC )"
+msgid "The date on which the certificate starts to be valid"
+msgstr "证书生效日期"
 
 #. module: certificate
 #. odoo-python
@@ -407,7 +409,7 @@ msgstr "无法加载此证书。内容或密码错误。"
 msgid ""
 "This certificate could not be loaded. Please provide the certificate "
 "password."
-msgstr "无法加载此证书。请提供证书密码。"
+msgstr ""
 
 #. module: certificate
 #. odoo-python
@@ -443,6 +445,14 @@ msgstr "不支持的非对称加密算法 ''%s\"。目前支持签名方式：EC
 #. odoo-python
 #: code:addons/certificate/models/key.py:0
 msgid ""
+"Unsupported asymmetric cryptography algorithm '%s'. Currently supported for "
+"signature: ED25519, EC and RSA."
+msgstr "不支持非对称加密算法'%s'。目前支持的签名：ED25519、EC 和 RSA。"
+
+#. module: certificate
+#. odoo-python
+#: code:addons/certificate/models/key.py:0
+msgid ""
 "Unsupported asymmetric cryptography algorithm '%s'. Currently supported: EC, "
 "RSA."
 msgstr "不支持的非对称加密算法 ''%s\"。目前支持：EC，RSA。"
@@ -457,7 +467,8 @@ msgid ""
 "             "
 msgstr ""
 "用于设置公钥，以防证书中自包含的公钥错误。\n"
-"        以这种方式设置公钥时，将使用该公钥而不是证书中的公钥。"
+"        以这种方式设置公钥时，将使用该公钥而不是证书中的公钥。\n"
+"             "
 
 #. module: certificate
 #: model:ir.model.fields,field_description:certificate.field_certificate_certificate__is_valid

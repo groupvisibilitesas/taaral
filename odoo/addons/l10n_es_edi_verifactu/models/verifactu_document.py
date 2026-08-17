@@ -44,14 +44,13 @@ def _get_zeep_operation(company, operation):
     def response_hook(resp, *args, **kwargs):
         info['raw_response'] = resp.text
 
-    session.hooks['response'] = response_hook
-
     settings = zeep.Settings(forbid_entities=False, strict=False)
     wsdl = company._l10n_es_edi_verifactu_get_endpoints()['wsdl']
-    client = zeep.Client(
+    client = company._get_zeep_client__(
         wsdl['url'], session=session, settings=settings,
         operation_timeout=20, timeout=20,
     )
+    session.hooks['response'] = response_hook  # To avoid storing XSD/WSDL in info
 
     if operation == 'registration':
         # Note: using the "certificate" before creating `client` causes an error during the `client` creation
@@ -1151,7 +1150,7 @@ class L10nEsEdiVerifactuDocument(models.Model):
 
             # To avoid losing data we commit after every document
             if self.env['account.move']._can_commit():
-                self._cr.commit()
+                self.env.cr.commit()
 
         waiting_time_seconds = info.get('waiting_time_seconds')
         if waiting_time_seconds:
@@ -1162,7 +1161,7 @@ class L10nEsEdiVerifactuDocument(models.Model):
         self._cancel_after_sending(info)
 
         if self.env['account.move']._can_commit():
-            self._cr.commit()
+            self.env.cr.commit()
 
         return batch_dict, info
 

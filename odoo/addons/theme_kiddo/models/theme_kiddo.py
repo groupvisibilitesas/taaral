@@ -1,7 +1,7 @@
 from odoo import models
 
 
-class ThemeKiddo(models.AbstractModel):
+class ThemeUtils(models.AbstractModel):
     _inherit = 'theme.utils'
 
     def _theme_kiddo_post_copy(self, mod):

@@ -4,28 +4,19 @@ import logging
 
 from odoo import _, fields, models
 from odoo.exceptions import UserError
-from odoo.tools import index_exists
 
 _logger = logging.getLogger(__name__)
 
 
-class AccountEdiProxyClientUser(models.Model):
+class Account_Edi_Proxy_ClientUser(models.Model):
     _inherit = 'account_edi_proxy_client.user'
 
     proxy_type = fields.Selection(selection_add=[('l10n_it_edi', 'Italian EDI')], ondelete={'l10n_it_edi': 'cascade'})
 
-    _sql_constraints = [
-        ('unique_identification_l10n_it_edi', '', 'This edi identification is already assigned to an active user'),
-    ]
-
-    def _auto_init(self):
-        super()._auto_init()
-        if not index_exists(self.env.cr, 'account_edi_proxy_client_user_unique_identification_l10n_it_edi'):
-            self.env.cr.execute("""
-                CREATE UNIQUE INDEX account_edi_proxy_client_user_unique_identification_l10n_it_edi
-                                 ON account_edi_proxy_client_user(edi_identification, proxy_type, edi_mode)
-                              WHERE (active = True AND proxy_type = 'l10n_it_edi')
-            """)
+    _unique_identification_l10n_it_edi = models.UniqueIndex(
+        "(edi_identification, proxy_type, edi_mode) WHERE (active AND proxy_type = 'l10n_it_edi')",
+        "This edi identification is already assigned to an active user",
+    )
 
     def _get_proxy_urls(self):
         urls = super()._get_proxy_urls()
@@ -42,6 +33,21 @@ class AccountEdiProxyClientUser(models.Model):
                 raise UserError(_('Please fill your codice fiscale to be able to receive invoices from FatturaPA'))
             return company.partner_id._l10n_it_edi_normalized_codice_fiscale()
         return super()._get_proxy_identification(company, proxy_type)
+
+    def _toggle_proxy_user_active(self):
+        """
+        Toggle the value of the ``active`` boolean field of the proxy_user,
+        and handle sending the reactivate/deactivate requests to the IAP side.
+        """
+        self.ensure_one()
+        server_url = self._get_proxy_urls()['l10n_it_edi'][self.edi_mode]
+
+        if self.active:
+            self._make_request(f"{server_url}/api/l10n_it_edi/1/deactivate_user")
+        else:
+            self._make_request(f"{server_url}/api/l10n_it_edi/1/reactivate_user")
+
+        self.active = not self.active
 
     def _get_iap_params(self, company, proxy_type, private_key_sudo):
         iap_params = super()._get_iap_params(company, proxy_type, private_key_sudo)

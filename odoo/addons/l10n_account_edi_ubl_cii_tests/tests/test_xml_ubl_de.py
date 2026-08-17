@@ -13,7 +13,6 @@ class TestUBLDE(TestUBLCommon):
     @TestUBLCommon.setup_country("de")
     def setUpClass(cls):
         super().setUpClass()
-        cls.env['ir.config_parameter'].sudo().set_param('account_edi_ubl_cii.use_new_dict_to_xml_helpers', 'False')
 
         cls.partner_1 = cls.env['res.partner'].create({
             'name': "partner_1",
@@ -80,7 +79,10 @@ class TestUBLDE(TestUBLCommon):
     ####################################################
 
     def test_export_import_invoice(self):
-        self.env['ir.config_parameter'].sudo().set_param('account_edi_ubl_cii.use_new_dict_to_xml_helpers', True)
+        company = self.company_data['company']
+        if "predict_bill_product" in company._fields:
+            company.predict_bill_product = True
+
         invoice = self._generate_move(
             self.partner_1,
             self.partner_2,
@@ -186,6 +188,10 @@ class TestUBLDE(TestUBLCommon):
         self._assert_imported_invoice_from_etree(invoice, attachment)
 
     def test_export_import_invoice_without_vat_and_peppol_endpoint(self):
+        company = self.company_data['company']
+        if "predict_bill_product" in company._fields:
+            company.predict_bill_product = True
+
         self.partner_2.write({
             'vat': False,
             'peppol_endpoint': False,
@@ -211,11 +217,11 @@ class TestUBLDE(TestUBLCommon):
         )
         self._assert_imported_invoice_from_etree(invoice, attachment)
 
-    def test_export_import_invoice_without_vat_and_peppol_endpoint_new(self):
-        self.env['ir.config_parameter'].sudo().set_param('account_edi_ubl_cii.use_new_dict_to_xml_helpers', True)
-        self.test_export_import_invoice_without_vat_and_peppol_endpoint()
-
     def test_export_import_refund(self):
+        company = self.company_data['company']
+        if "predict_bill_product" in company._fields:
+            company.predict_bill_product = True
+
         refund = self._generate_move(
             self.partner_1,
             self.partner_2,
@@ -321,10 +327,6 @@ class TestUBLDE(TestUBLCommon):
         self.assertEqual(attachment.name[-13:], "xrechnung.xml")
         self._assert_imported_invoice_from_etree(refund, attachment)
 
-    def test_export_import_refund_new(self):
-        self.env['ir.config_parameter'].sudo().set_param('account_edi_ubl_cii.use_new_dict_to_xml_helpers', True)
-        self.test_export_import_refund()
-
     ####################################################
     # Test import
     ####################################################
@@ -391,8 +393,6 @@ class TestUBLDE(TestUBLCommon):
         self.assertTrue(created_bill)
 
     def test_leitweg_id(self):
-        self.env['ir.config_parameter'].sudo().set_param('account_edi_ubl_cii.use_new_dict_to_xml_helpers', True)
-
         partner = self.partner_2
         partner.write({
             'peppol_eas': '0204',
@@ -424,8 +424,6 @@ class TestUBLDE(TestUBLCommon):
         self.assertEqual(xml_etree.find('{*}BuyerReference').text, '123456789')
 
     def test_leitweg_id_for_child_contact(self):
-        self.env['ir.config_parameter'].sudo().set_param('account_edi_ubl_cii.use_new_dict_to_xml_helpers', True)
-
         self.partner_2.write({
             'peppol_eas': '0204',
             'peppol_endpoint': '13075957-K000-52',

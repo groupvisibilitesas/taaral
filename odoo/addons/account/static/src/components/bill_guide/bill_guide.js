@@ -48,6 +48,15 @@ export class BillGuide extends Component {
             type: 'object',
         });
     }
+
+    openVendorBill() {
+        return this.action.doAction({
+            type: "ir.actions.act_window",
+            res_model: "account.move",
+            views: [[false, "form"]],
+            context: this.context || this.env.searchModel.context,
+        });
+    }
 }
 
 

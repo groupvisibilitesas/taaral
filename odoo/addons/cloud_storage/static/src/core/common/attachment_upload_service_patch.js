@@ -8,7 +8,7 @@ patch(AttachmentUploadService.prototype, {
     setup(env, services) {
         super.setup(env, services);
         this.uploadingCloudFiles = new Map();
-        window.addEventListener('beforeunload', () => 
+        window.addEventListener('beforeunload', () =>
             this.abortByAttachmentId.forEach(abort => abort())
         );
     },
@@ -19,8 +19,10 @@ patch(AttachmentUploadService.prototype, {
             return;
         }
         const removeAttachment = () => {
-            const { Attachment } = this.store.insert(data);
-            const [attachment] = Attachment;
+            const { store_data, attachment_id } = data;
+            this.store.insert(store_data);
+            /** @type {import("models").Attachment} */
+            const attachment = this.store["ir.attachment"].get(attachment_id);
             attachment.remove();
         }
         const xhr = new window.XMLHttpRequest();

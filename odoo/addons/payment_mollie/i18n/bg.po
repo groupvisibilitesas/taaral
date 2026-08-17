@@ -2,19 +2,16 @@
 # This file contains the translation of the following modules:
 # * payment_mollie
 #
-# Translators:
-# aleksandar ivanov, 2024
-# Maria Boyadjieva <marabo2000@gmail.com>, 2024
-# Turhan Aydin <taydin@unionproject.eu>, 2024
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.1alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:38+0000\n"
-"PO-Revision-Date: 2026-07-27 17:05+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-02 19:21+0000\n"
+"Last-Translator: Rosen Vladimirov <vladimirov.rosen@gmail.com>\n"
+"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-19/"
 "payment_mollie/bg/>\n"
 "Language: bg\n"
 "MIME-Version: 1.0\n"
@@ -40,10 +37,16 @@ msgid "Code"
 msgstr "Код"
 
 #. module: payment_mollie
-#. odoo-python
-#: code:addons/payment_mollie/models/payment_provider.py:0
-msgid "Could not establish the connection to the API."
-msgstr "Неуспешно установяване на връзката с API."
+#: model:ir.model.fields,field_description:payment_mollie.field_payment_provider__display_name
+#: model:ir.model.fields,field_description:payment_mollie.field_payment_transaction__display_name
+msgid "Display Name"
+msgstr "Име за показване"
+
+#. module: payment_mollie
+#: model:ir.model.fields,field_description:payment_mollie.field_payment_provider__id
+#: model:ir.model.fields,field_description:payment_mollie.field_payment_transaction__id
+msgid "ID"
+msgstr "ID"
 
 #. module: payment_mollie
 #: model:ir.model.fields.selection,name:payment_mollie.selection__payment_provider__code__mollie
@@ -54,12 +57,6 @@ msgstr "Mollie"
 #: model:ir.model.fields,field_description:payment_mollie.field_payment_provider__mollie_api_key
 msgid "Mollie API Key"
 msgstr "API ключ за Mollie"
-
-#. module: payment_mollie
-#. odoo-python
-#: code:addons/payment_mollie/models/payment_transaction.py:0
-msgid "No transaction found matching reference %s."
-msgstr "Не е открита транзакция, съответстваща с референция %s."
 
 #. module: payment_mollie
 #: model:ir.model,name:payment_mollie.model_payment_provider
@@ -74,8 +71,8 @@ msgstr "Платежна транзакция"
 #. module: payment_mollie
 #. odoo-python
 #: code:addons/payment_mollie/models/payment_transaction.py:0
-msgid "Received data with invalid payment status: %s"
-msgstr "Получени са данни с невалиден статус на плащане: %s"
+msgid "Received data with invalid payment status: %s."
+msgstr "Получени данни с невалиден статус на плащане: %s."
 
 #. module: payment_mollie
 #: model:ir.model.fields,help:payment_mollie.field_payment_provider__mollie_api_key
@@ -84,14 +81,6 @@ msgstr ""
 "Тестовият или реалният API ключ в зависимост от конфигурацията на доставчика"
 
 #. module: payment_mollie
-#. odoo-python
-#: code:addons/payment_mollie/models/payment_provider.py:0
-msgid ""
-"The communication with the API failed. Mollie gave us the following "
-"information: %s"
-msgstr ""
-
-#. module: payment_mollie
 #: model:ir.model.fields,help:payment_mollie.field_payment_provider__code
 msgid "The technical code of this payment provider."
-msgstr "Техническият код на този доставчик на разплащания."
+msgstr "Техническият код на този доставчик на плащане."

@@ -1,20 +1,19 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from collections import defaultdict
 from pytz import utc
 
 from odoo import api, fields, models
-from .utils import timezone_datetime
+from odoo.tools.date_utils import localized
 
 
 class ResourceMixin(models.AbstractModel):
-    _name = "resource.mixin"
+    _name = 'resource.mixin'
     _description = 'Resource Mixin'
 
     resource_id = fields.Many2one(
         'resource.resource', 'Resource',
-        auto_join=True, index=True, ondelete='restrict', required=True)
+        bypass_search_access=True, index=True, ondelete='restrict', required=True)
     company_id = fields.Many2one(
         'res.company', 'Company',
         default=lambda self: self.env.company,
@@ -79,7 +78,7 @@ class ResourceMixin(models.AbstractModel):
         return vals_list
 
     def _get_calendars(self, date_from=None):
-        return { resource.id: resource.resource_calendar_id or False for resource in self }
+        return {resource.id: resource.resource_calendar_id for resource in self}
 
     def _get_work_days_data_batch(self, from_datetime, to_datetime, compute_leaves=True, calendar=None, domain=None):
         """
@@ -97,8 +96,8 @@ class ResourceMixin(models.AbstractModel):
         result = {}
 
         # naive datetimes are made explicit in UTC
-        from_datetime = timezone_datetime(from_datetime)
-        to_datetime = timezone_datetime(to_datetime)
+        from_datetime = localized(from_datetime)
+        to_datetime = localized(to_datetime)
 
         if calendar:
             mapped_resources = {calendar: self.resource_id}
@@ -142,8 +141,8 @@ class ResourceMixin(models.AbstractModel):
         result = {}
 
         # naive datetimes are made explicit in UTC
-        from_datetime = timezone_datetime(from_datetime)
-        to_datetime = timezone_datetime(to_datetime)
+        from_datetime = localized(from_datetime)
+        to_datetime = localized(to_datetime)
 
         mapped_resources = defaultdict(lambda: self.env['resource.resource'])
         for record in self:
@@ -208,11 +207,8 @@ class ResourceMixin(models.AbstractModel):
             for record in records:
                 intervals = all_intervals[record.resource_id.id]
                 record_result = defaultdict(float)
-                for start, stop, meta in intervals:
-                    if calendar.flexible_hours:
-                        record_result[start.date()] = meta.duration_hours
-                    else:
-                        record_result[start.date()] += (stop - start).total_seconds() / 3600
+                for start, stop, _meta in intervals:
+                    record_result[start.date()] += (stop - start).total_seconds() / 3600
                 result[record.id] = sorted(record_result.items())
         return result
 

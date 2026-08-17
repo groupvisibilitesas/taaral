@@ -16,6 +16,7 @@ import {
 import { mockBrowserFactory } from "./mock_browser.hoot";
 import { mockCurrencyFactory } from "./mock_currency.hoot";
 import { mockFunctionsFactory } from "./mock_functions.hoot";
+import { mockIndexedDB } from "./mock_indexed_db.hoot";
 import { mockSessionFactory } from "./mock_session.hoot";
 import { makeTemplateFactory } from "./mock_templates.hoot";
 import { mockUserFactory } from "./mock_user.hoot";
@@ -141,7 +142,9 @@ async function fetchDependencies(addons) {
             dependencyBatchPromise = Deferred.resolve().then(() => {
                 const module_names = [...new Set(dependencyBatch)];
                 dependencyBatch = [];
-                return orm("ir.module.module.dependency", "all_dependencies", [], { module_names });
+                return unmockedOrm("ir.module.module.dependency", "all_dependencies", [], {
+                    module_names,
+                });
             });
         }
         dependencyBatch.push(...addonsToFetch);
@@ -282,35 +285,6 @@ function makeFixedFactory(name) {
         }
         return loader.modules.get(name);
     };
-}
-
-/**
- * Toned-down version of the RPC + ORM features since this file cannot depend on
- * them.
- *
- * @param {string} model
- * @param {string} method
- * @param {any[]} args
- * @param {Record<string, any>} kwargs
- */
-async function orm(model, method, args, kwargs) {
-    const response = await realFetch(`/web/dataset/call_kw/${model}/${method}`, {
-        body: JSON.stringify({
-            id: nextRpcId++,
-            jsonrpc: "2.0",
-            method: "call",
-            params: { args, kwargs, method, model },
-        }),
-        headers: {
-            "Content-Type": "application/json",
-        },
-        method: "POST",
-    });
-    const { error, result } = await response.json();
-    if (error) {
-        throw error;
-    }
-    return result;
 }
 
 /**
@@ -507,8 +481,10 @@ const ALLOWED_GLOBAL_KEYS = [
     "ace", // Ace editor
     // Bootstrap.js is voluntarily ignored as it is deprecated
     "Chart", // Chart.js
+    "Cropper", // Cropper.js
     "DiffMatchPatch", // Diff Match Patch
     "DOMPurify", // DOMPurify
+    "Diff2Html",
     "FullCalendar", // Full Calendar
     "L", // Leaflet
     "lamejs", // LameJS
@@ -540,6 +516,7 @@ const MODULE_MOCKS_BY_NAME = new Map([
     ["@web/core/template_inheritance", makeFixedFactory],
     // Other mocks
     ["@web/core/browser/browser", mockBrowserFactory],
+    ["@web/core/utils/indexed_db", mockIndexedDB],
     ["@web/core/currency", mockCurrencyFactory],
     ["@web/core/templates", makeTemplateFactory],
     ["@web/core/user", mockUserFactory],
@@ -688,7 +665,13 @@ export async function runTests(options) {
     // Run all test files
     const filteredSuitePaths = new Set(suites.map((s) => s.fullName));
     let currentAddonsKey = "";
+    let lastSuiteName = null;
+    let lastNumberTests = 0;
     for (const moduleName of testModuleNames) {
+        if (lastSuiteName) {
+            await __gcAndLogMemory(lastSuiteName, lastNumberTests);
+            lastSuiteName = null;
+        }
         const suitePath = getSuitePath(moduleName);
         if (!filteredSuitePaths.has(suitePath)) {
             continue;
@@ -717,11 +700,16 @@ export async function runTests(options) {
         const running = await start(suite);
 
         await moduleSetLoader.cleanup();
-        await __gcAndLogMemory(suite.fullName, suite.reporting.tests);
+
+        lastSuiteName = suite.fullName;
+        lastNumberTests = suite.reporting.tests;
 
         if (!running) {
             break;
         }
+    }
+    if (lastSuiteName) {
+        await __gcAndLogMemory(lastSuiteName, lastNumberTests);
     }
 
     await stop();
@@ -739,4 +727,33 @@ export async function runTests(options) {
     }
 
     await __gcAndLogMemory("tests done");
+}
+
+/**
+ * Toned-down version of the RPC + ORM features since this file cannot depend on
+ * them.
+ *
+ * @param {string} model
+ * @param {string} method
+ * @param {any[]} args
+ * @param {Record<string, any>} kwargs
+ */
+export async function unmockedOrm(model, method, args, kwargs) {
+    const response = await realFetch(`/web/dataset/call_kw/${model}/${method}`, {
+        body: JSON.stringify({
+            id: nextRpcId++,
+            jsonrpc: "2.0",
+            method: "call",
+            params: { args, kwargs, method, model },
+        }),
+        headers: {
+            "Content-Type": "application/json",
+        },
+        method: "POST",
+    });
+    const { error, result } = await response.json();
+    if (error) {
+        throw error;
+    }
+    return result;
 }

@@ -1,13 +1,13 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from freezegun import freeze_time
 from datetime import timedelta
+
+from freezegun import freeze_time
 
 from odoo import fields
 from odoo.fields import Command
 from odoo.tests import Form, tagged
-from odoo.tools import float_compare, mute_logger, float_round
+from odoo.tools import float_compare, float_round, mute_logger
 
 from odoo.addons.sale.tests.common import SaleCommon
 
@@ -64,17 +64,17 @@ class TestSalePrices(SaleCommon):
             Command.create({
                 'product_id': self.product.id,
                 'product_uom_qty': 1.0,
-                'product_uom': self.uom_dozen.id,
+                'product_uom_id': self.uom_dozen.id,
             }),
             Command.create({
                 'product_id': self.product.id,
                 'product_uom_qty': 0.4,
-                'product_uom': self.uom_dozen.id,
+                'product_uom_id': self.uom_dozen.id,
             }),
             Command.create({
                 'product_id': self.product.id,
                 'product_uom_qty': 0.3,
-                'product_uom': self.uom_dozen.id,
+                'product_uom_id': self.uom_dozen.id,
             })
         ]
 
@@ -201,7 +201,7 @@ class TestSalePrices(SaleCommon):
         self.empty_order.order_line = [
             Command.create({
                 'product_id': self.product.id,
-                'product_uom': self.uom_dozen.id,
+                'product_uom_id': self.uom_dozen.id,
                 'product_uom_qty': 2.0,
             }),
         ]
@@ -225,7 +225,7 @@ class TestSalePrices(SaleCommon):
                 'order_line': [
                     Command.create({
                         'product_id': self.product.id,
-                        'product_uom': self.uom_dozen.id,
+                        'product_uom_id': self.uom_dozen.id,
                         'product_uom_qty': 2.0,
                     }),
                 ]
@@ -311,10 +311,8 @@ class TestSalePrices(SaleCommon):
             ).unlink()
         new_uom = self.env['uom.uom'].create({
             'name': '10 units',
-            'factor_inv': 10,
-            'uom_type': 'bigger',
-            'rounding': 1.0,
-            'category_id': self.uom_unit.category_id.id,
+            'relative_factor': 10,
+            'relative_uom_id': self.uom_unit.id,
         })
 
         # This pricelist doesn't show the discount
@@ -342,7 +340,7 @@ class TestSalePrices(SaleCommon):
 
         # force compute uom and prices
         self.assertEqual(order_line.discount, 10, "First pricelist rule not applied")
-        order_line.product_uom = new_uom
+        order_line.product_uom_id = new_uom
         self.assertEqual(order_line.price_total, 1800, "First pricelist rule not applied")
 
     def test_pricelist_price_recompute_on_quantity_change(self):
@@ -428,7 +426,12 @@ class TestSalePrices(SaleCommon):
             'company_ids': [Command.set([other_company.id])],
             'name': 'E.T',
             'login': 'hohoho',
+            'group_ids': (
+                self.env.ref('sales_team.group_sale_salesman') |
+                self.env.ref('product.group_product_manager')
+            ),
         })
+        user_in_other_company.group_ids += self.env.ref("product.group_product_manager")
         with mute_logger('odoo.models.unlink'):
             self.env['res.currency.rate'].search([]).unlink()
         self.env['res.currency.rate'].create({
@@ -621,6 +624,14 @@ class TestSalePrices(SaleCommon):
     # If you need the accounting common (journals, ...), use/make another test class
 
     def test_sale_tax_mapping(self):
+        country_belgium = self.env['res.country'].search([
+            ('name', '=', 'Belgium'),
+        ], limit=1)
+        fiscal_pos = self.env['account.fiscal.position'].create({
+            'name': 'Test Fiscal Position',
+            'auto_apply': True,
+            'country_id': country_belgium.id,
+        })
         tax_a, tax_b = self.env['account.tax'].create([{
             'name': 'Test tax A',
             'type_tax_use': 'sale',
@@ -630,20 +641,9 @@ class TestSalePrices(SaleCommon):
             'name': 'Test tax B',
             'type_tax_use': 'sale',
             'amount': 6.0,
+            'fiscal_position_ids': fiscal_pos,
         }])
-
-        country_belgium = self.env['res.country'].search([
-            ('name', '=', 'Belgium'),
-        ], limit=1)
-        fiscal_pos = self.env['account.fiscal.position'].create({
-            'name': 'Test Fiscal Position',
-            'auto_apply': True,
-            'country_id': country_belgium.id,
-            'tax_ids': [Command.create({
-                'tax_src_id': tax_a.id,
-                'tax_dest_id': tax_b.id
-            })]
-        })
+        tax_b.original_tax_ids = tax_a
 
         # setting up partner:
         self.partner.country_id = country_belgium
@@ -687,7 +687,7 @@ class TestSalePrices(SaleCommon):
             "Wrong subtotal price computed for specified product & pricelist"
         )
         self.assertEqual(
-            self.empty_order.order_line.tax_id.id, tax_b.id,
+            self.empty_order.order_line.tax_ids.id, tax_b.id,
             "Wrong tax applied for specified product & pricelist"
         )
 
@@ -700,6 +700,25 @@ class TestSalePrices(SaleCommon):
         self._enable_pricelists()
         pricelist = self.pricelist
         partner = self.partner
+
+        (
+            fpos_incl_incl,
+            fpos_excl_incl,
+            fpos_incl_excl,
+            fpos_excl_excl,
+        ) = self.env['account.fiscal.position'].create([{
+            'name': "incl -> incl",
+            'sequence': 1,
+        }, {
+            'name': "excl -> incl",
+            'sequence': 2,
+        }, {
+            'name': "incl -> excl",
+            'sequence': 3,
+        }, {
+            'name': "excl -> excl",
+            'sequence': 4,
+        }])
 
         (
             tax_fixed_incl,
@@ -740,6 +759,15 @@ class TestSalePrices(SaleCommon):
             'price_include_override': 'tax_excluded',
         }])
 
+        tax_include_dst.write({
+            'fiscal_position_ids': fpos_incl_incl | fpos_excl_incl,
+            'original_tax_ids': tax_include_src | tax_exclude_src,
+        })
+        tax_exclude_dst.write({
+            'fiscal_position_ids': fpos_incl_excl | fpos_excl_excl,
+            'original_tax_ids': tax_include_src | tax_exclude_src,
+        })
+
         (
             product_tmpl_a,
             product_tmpl_b,
@@ -761,41 +789,6 @@ class TestSalePrices(SaleCommon):
             'name': "Voiture",
             'list_price': 100,
             'taxes_id': [Command.set([tax_fixed_excl.id, tax_include_src.id])]
-        }])
-
-        (
-            fpos_incl_incl,
-            fpos_excl_incl,
-            fpos_incl_excl,
-            fpos_excl_excl,
-        ) = self.env['account.fiscal.position'].create([{
-            'name': "incl -> incl",
-            'sequence': 1,
-            'tax_ids': [Command.create({
-                'tax_src_id': tax_include_src.id,
-                'tax_dest_id': tax_include_dst.id,
-            })]
-        }, {
-            'name': "excl -> incl",
-            'sequence': 2,
-            'tax_ids': [Command.create({
-                'tax_src_id': tax_exclude_src.id,
-                'tax_dest_id': tax_include_dst.id,
-            })]
-        }, {
-            'name': "incl -> excl",
-            'sequence': 3,
-            'tax_ids': [Command.create({
-                'tax_src_id': tax_include_src.id,
-                'tax_dest_id': tax_exclude_dst.id,
-            })]
-        }, {
-            'name': "excl -> excp",
-            'sequence': 4,
-            'tax_ids': [Command.create({
-                'tax_src_id': tax_exclude_src.id,
-                'tax_dest_id': tax_exclude_dst.id,
-            })]
         }])
 
         # Create the SO with one SO line and apply a pricelist and fiscal position on it
@@ -878,6 +871,11 @@ class TestSalePrices(SaleCommon):
     def test_so_tax_mapping(self):
         order = self.empty_order
 
+        fpos = self.env['account.fiscal.position'].create({
+            'name': 'Test Fiscal Position',
+            'sequence': 1,
+        })
+
         tax_include, tax_exclude = self.env['account.tax'].create([{
             'name': 'Include Tax',
             'amount': '21.00',
@@ -887,20 +885,13 @@ class TestSalePrices(SaleCommon):
             'name': 'Exclude Tax',
             'amount': '0.00',
             'type_tax_use': 'sale',
+            'fiscal_position_ids': fpos,
         }])
+        tax_exclude.original_tax_ids = tax_include
 
         self.product.write({
             'list_price': 121,
             'taxes_id': [Command.set(tax_include.ids)]
-        })
-
-        fpos = self.env['account.fiscal.position'].create({
-            'name': 'Test Fiscal Position',
-            'sequence': 1,
-            'tax_ids': [Command.create({
-                'tax_src_id': tax_include.id,
-                'tax_dest_id': tax_exclude.id,
-            })],
         })
 
         order.write({
@@ -916,26 +907,21 @@ class TestSalePrices(SaleCommon):
             "The included tax must be subtracted to the price")
 
     def test_so_tax_mapping_multicompany(self):
+        fpos = self.env['account.fiscal.position'].create({'name': "B2B"})
         tax_group = self.env['account.tax.group'].create({'name': "10%"})
-        tax_include, tax_exclude = self.env['account.tax'].create([{
+        tax_include = self.env['account.tax'].create({
             'name': "10% Tax Inc.",
             'type_tax_use': 'sale',
             'amount': 10.0,
             'price_include_override': 'tax_included',
             'tax_group_id': tax_group.id,
-        }, {
+            'fiscal_position_ids': fpos.ids,
+        })
+        tax_exclude = tax_include.copy({
             'name': "10% Tax Exc.",
-            'type_tax_use': 'sale',
             'amount': 0.0,
             'price_include_override': 'tax_excluded',
-            'tax_group_id': tax_group.id,
-        }])
-        fpos = self.env['account.fiscal.position'].create({
-            'name': "B2B",
-            'tax_ids': [Command.create({
-                'tax_src_id': tax_include.id,
-                'tax_dest_id': tax_exclude.id,
-            })],
+            'original_tax_ids': tax_include.ids,
         })
         self.product.write({
             'list_price': 110.0,
@@ -954,7 +940,7 @@ class TestSalePrices(SaleCommon):
             'team_id': False,
             'order_line': [Command.create({'product_id': self.product.id})],
         })
-        self.assertEqual(order.order_line.tax_id, tax_exclude, "Line tax should be mapped")
+        self.assertEqual(order.order_line.tax_ids, tax_exclude, "Line tax should be mapped")
         self.assertAlmostEqual(
             order.order_line.price_unit, 100.0,
             msg="Tax should not be included in unit price",
@@ -982,7 +968,7 @@ class TestSalePrices(SaleCommon):
             'product_id': self.product.id,
             'product_uom_qty': 1,
             'price_unit': 0.0,
-            'tax_id': [
+            'tax_ids': [
                 Command.set(taxes.ids),
             ],
         })]
@@ -1010,11 +996,11 @@ class TestSalePrices(SaleCommon):
         }])
 
         # Apply taxes on the sale order lines
-        self.sale_order.order_line[0].write({'tax_id': [Command.link(tax_include.id)]})
-        self.sale_order.order_line[1].write({'tax_id': [Command.link(tax_exclude.id)]})
+        self.sale_order.order_line[0].write({'tax_ids': [Command.link(tax_include.id)]})
+        self.sale_order.order_line[1].write({'tax_ids': [Command.link(tax_exclude.id)]})
 
         for line in self.sale_order.order_line:
-            if line.tax_id.price_include:
+            if line.tax_ids.price_include:
                 price = line.price_unit * line.product_uom_qty - line.price_tax
             else:
                 price = line.price_unit * line.product_uom_qty
@@ -1050,7 +1036,7 @@ class TestSalePrices(SaleCommon):
         # Same with an included-in-price tax
         order = order.copy()
         line = order.order_line
-        line.tax_id = [Command.create({
+        line.tax_ids = [Command.create({
             'name': 'Super Tax',
             'amount_type': 'percent',
             'amount': 15.0,
@@ -1064,9 +1050,9 @@ class TestSalePrices(SaleCommon):
         self.assertEqual(line.price_subtotal, 17527.41)
         self.assertEqual(line.untaxed_amount_to_invoice, line.price_subtotal)
 
-    def test_discount_and_amount_undiscounted(self):
-        """When adding a discount on a SO line, this test ensures that amount undiscounted is
-        consistent with the used tax"""
+    def test_amount_undiscounted_with_incl_excl_taxes(self):
+        """When adding a discount on a SO line, this test ensures that amount_undiscounted is
+        consistent with the used tax."""
         order = self.empty_order
 
         order.order_line = [Command.create({
@@ -1101,7 +1087,7 @@ class TestSalePrices(SaleCommon):
         # Same with an included-in-price tax
         order = order.copy()
         line = order.order_line
-        line.tax_id = [Command.create({
+        line.tax_ids = [Command.create({
             'name': 'Super Tax',
             'amount_type': 'percent',
             'amount': 10.0,
@@ -1110,10 +1096,43 @@ class TestSalePrices(SaleCommon):
         line.discount = 50.0
         order.action_confirm()
 
-        # 300 with 10% incl tax -> 272.72 total tax excluded without discount
+        # 300 with 10% incl tax -> 272.727272... total tax excluded without discount
         # 136.36 price tax excluded with discount applied
-        self.assertEqual(order.amount_undiscounted, 272.72)
+        self.assertAlmostEqual(order.amount_undiscounted, 272.73, places=2)
         self.assertEqual(line.price_subtotal, 136.36)
+
+    def test_amount_undiscounted_with_global_discounts(self):
+        """This test ensures amount_undiscounted remains intact with global discounts."""
+        order = self.empty_order
+        order.order_line = [
+            Command.create({
+                "product_id": self.product.id,
+                "product_uom_qty": 1,
+                "price_unit": 100,
+            })
+        ]
+        wizard = self.env["sale.order.discount"].create({
+            "sale_order_id": order.id,
+            "discount_type": "so_discount",  # global discount
+            "discount_percentage": 0.10,  # 10%
+        })
+        wizard.action_apply_discount()
+        self.assertEqual(order.amount_untaxed, 90)  # global discount applied
+        self.assertEqual(order.amount_undiscounted, 100)
+
+    def test_amount_undiscounted_with_decimal_numbers(self):
+        """This test ensures amount_undiscounted remains intact with decimal numbers."""
+        order = self.empty_order
+        order.order_line = [
+            Command.create({
+                "product_id": self.product.id,
+                "product_uom_qty": 1,
+                "price_unit": 100.11,
+                "discount": 50.00,
+            })
+        ]
+        self.assertEqual(order.order_line.price_subtotal, 50.06)  # sol discount applied
+        self.assertEqual(order.amount_undiscounted, 100.11)
 
     def test_product_quantity_rounding(self):
         """When adding a sale order line, product quantity should be rounded
@@ -1128,7 +1147,7 @@ class TestSalePrices(SaleCommon):
         })]
         order.action_confirm()
         line = order.order_line
-        quantity_precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+        quantity_precision = self.env['decimal.precision'].precision_get('Product Unit')
         self.assertEqual(
             line.product_uom_qty, float_round(product_uom_qty, precision_digits=quantity_precision))
         expected_price_subtotal = line.currency_id.round(
@@ -1260,45 +1279,6 @@ class TestSalePrices(SaleCommon):
             msg="Pricelist discount should be applied to quotation",
         )
 
-    def test_combo_product_zero_base_price_distributes_evenly(self):
-        """When every combo's base price is 0, the combo product's price must be split evenly
-        across combos instead of dumped onto the last one.
-        """
-        order = self.empty_order
-
-        product_a = self._create_product(name="A", list_price=0.0)
-        product_b = self._create_product(name="B", list_price=0.0)
-        combos = self.env['product.combo'].create([{
-            'name': "G1",
-            'combo_item_ids': [Command.create({'product_id': product_a.id})],
-        }, {
-            'name': "G2",
-            'combo_item_ids': [Command.create({'product_id': product_b.id})],
-        }])
-        product_combo = self._create_product(
-            name="Meal Menu",
-            list_price=100.0,
-            type='combo',
-            combo_ids=[Command.set(combos.ids)],
-        )
-
-        combo_line = self.env['sale.order.line'].create({
-            'order_id': order.id,
-            'product_id': product_combo.id,
-        })
-        item_lines = self.env['sale.order.line'].create([{
-            'order_id': order.id,
-            'product_id': product.id,
-            'combo_item_id': combo.combo_item_ids.id,
-            'linked_line_id': combo_line.id,
-        } for product, combo in zip(product_a + product_b, combos)])
-
-        self.assertEqual(
-            item_lines.mapped('price_unit'), [50.0, 50.0],
-            "Combo price must be split evenly when all combos have zero base price",
-        )
-        self.assertEqual(order.amount_untaxed, 100.0)
-
     def test_combo_product_extra_price_currency(self):
         """Ensure that the extra price for combo products and their no_variant attribute is
         correctly converted according to the sale order pricelist's currency."""
@@ -1362,3 +1342,42 @@ class TestSalePrices(SaleCommon):
         order.pricelist_id = eur_pricelist
         order.action_update_prices()
         self.assertAlmostEqual(order.amount_total, (100 + 50 + 10) * eur_curr.rate, 2)
+
+    def test_combo_product_zero_base_price_distributes_evenly(self):
+        """When every combo's base price is 0, the combo product's price must be split evenly
+        across combos instead of dumped onto the last one.
+        """
+        order = self.empty_order
+
+        product_a = self._create_product(name="A", list_price=0.0)
+        product_b = self._create_product(name="B", list_price=0.0)
+        combos = self.env['product.combo'].create([{
+            'name': "G1",
+            'combo_item_ids': [Command.create({'product_id': product_a.id})],
+        }, {
+            'name': "G2",
+            'combo_item_ids': [Command.create({'product_id': product_b.id})],
+        }])
+        product_combo = self._create_product(
+            name="Meal Menu",
+            list_price=100.0,
+            type='combo',
+            combo_ids=[Command.set(combos.ids)],
+        )
+
+        combo_line = self.env['sale.order.line'].create({
+            'order_id': order.id,
+            'product_id': product_combo.id,
+        })
+        item_lines = self.env['sale.order.line'].create([{
+            'order_id': order.id,
+            'product_id': product.id,
+            'combo_item_id': combo.combo_item_ids.id,
+            'linked_line_id': combo_line.id,
+        } for product, combo in zip(product_a + product_b, combos)])
+
+        self.assertEqual(
+            item_lines.mapped('price_unit'), [50.0, 50.0],
+            "Combo price must be split evenly when all combos have zero base price",
+        )
+        self.assertEqual(order.amount_untaxed, 100.0)

@@ -50,24 +50,10 @@ class TestSaleOrderTemplate(SaleManagementCommon):
                 }),
             ]
 
-        with self.assertRaises(UserError):
-            self.empty_order_template.sale_order_template_option_ids = [
-                Command.create({
-                    'product_id': self.parent_company_product.id,
-                }),
-            ]
-
     def test_template_cannot_use_unrelated_company_products(self):
         # Access to products of other companies
         with self.assertRaises(UserError):
             self.empty_order_template.sale_order_template_line_ids = [
-                Command.create({
-                    'product_id': self.other_company_product.id,
-                }),
-            ]
-
-        with self.assertRaises(UserError):
-            self.empty_order_template.sale_order_template_option_ids = [
                 Command.create({
                     'product_id': self.other_company_product.id,
                 }),
@@ -81,31 +67,12 @@ class TestSaleOrderTemplate(SaleManagementCommon):
                 }),
             ]
 
-        with self.assertRaises(UserError):
-            self.empty_order_template.sale_order_template_option_ids = [
-                Command.create({
-                    'product_id': self.branch_company_product.id,
-                }),
-            ]
-
     def test_branch_template_can_use_parent_company_products(self):
         self.assertFalse(self.product.company_id)
         self.empty_order_template.company_id = self.branch_company.id
 
         self.empty_order_template.write({
             'sale_order_template_line_ids': [
-                Command.create({
-                    'product_id': self.branch_company_product.id,
-                }),
-                Command.create({
-                    'product_id': self.parent_company_product.id,
-                }),
-                Command.create({  # Shared product
-                    'product_id': self.product.id,
-                }),
-
-            ],
-            'sale_order_template_option_ids': [
                 Command.create({
                     'product_id': self.branch_company_product.id,
                 }),
@@ -131,11 +98,6 @@ class TestSaleOrderTemplate(SaleManagementCommon):
                 Command.create({
                     'product_id': self.parent_company_product.id,
                 })
-            ],
-            'sale_order_template_option_ids': [
-                Command.create({
-                    'product_id': self.parent_company_product.id,
-                }),
             ],
         })
 

@@ -54,11 +54,10 @@ class AccountMove(models.Model):
         depends=['l10n_pl_edi_upo_file'],
     )
 
-    _sql_constraints = [(
-        'unique_l10n_pl_edi_number_company_id_move_type',
+    _l10n_pl_edi_number_company_id_move_type_uniq = models.Constraint(
         'UNIQUE(l10n_pl_edi_number, company_id, move_type)',
         'The KSeF number must be unique per company per move_type'
-    )]
+    )
 
     def _l10n_pl_edi_check_mandatory_fields(self):
         errors = {}
@@ -151,7 +150,7 @@ class AccountMove(models.Model):
             return vat_number
 
         def get_address(partner):
-            return re.sub(r'\n+', r' ', partner._display_address(True))
+            return re.sub(r'\n+', r' ', partner.with_context(without_country_name=True)._display_address(True))
 
         def get_tags(code):
             return self.env['account.account.tag']._get_tax_tags(code, self.env.ref('base.pl').id)
@@ -449,13 +448,6 @@ class AccountMove(models.Model):
             'type': 'ir.actions.act_url',
             'url': f'/web/content/{self.l10n_pl_edi_upo_id.id}?download=true',
             'target': '_blank',
-        }
-
-    def action_l10n_pl_edi_import_from_ksef(self):
-        self._l10n_pl_edi_download_bills_from_ksef()
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'reload',
         }
 
     def _cron_l10n_pl_edi_check_invoice_status(self):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from contextlib import contextmanager
@@ -6,11 +5,11 @@ from unittest.mock import patch
 
 from odoo import Command, models
 from odoo.addons.base.models.ir_mail_server import extract_rfc2822_addresses
-from odoo.addons.base.models.res_partner import Partner
+from odoo.addons.base.models.res_partner import ResPartner
 from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
 from odoo.exceptions import AccessError, RedirectWarning, UserError, ValidationError
 from odoo.tests import Form
-from odoo.tests.common import new_test_user, tagged, TransactionCase, users
+from odoo.tests.common import new_test_user, tagged, TransactionCase, users, warmup
 
 # samples use effective TLDs from the Mozilla public suffix
 # list at http://publicsuffix.org
@@ -29,7 +28,7 @@ class TestPartner(TransactionCaseWithUserDemo):
 
     @contextmanager
     def mockPartnerCalls(self):
-        _original_create = Partner.create
+        _original_create = ResPartner.create
         self._new_partners = self.env['res.partner']
 
         def _res_partner_create(model, *args, **kwargs):
@@ -37,7 +36,7 @@ class TestPartner(TransactionCaseWithUserDemo):
             self._new_partners += records.sudo()
             return records
 
-        with patch.object(Partner, 'create',
+        with patch.object(ResPartner, 'create',
                           autospec=True, side_effect=_res_partner_create):
             yield
 
@@ -66,19 +65,19 @@ class TestPartner(TransactionCaseWithUserDemo):
                                 })
         # Cannot archive the partner
         with self.assertRaises(RedirectWarning):
-            test_partner.with_user(self.env.ref('base.user_admin')).toggle_active()
+            test_partner.with_user(self.env.ref('base.user_admin')).action_archive()
         with self.assertRaises(ValidationError):
-            test_partner.with_user(self.user_demo).toggle_active()
+            test_partner.with_user(self.user_demo).action_archive()
 
         # Can archive the user but the partner stays active
-        test_user.toggle_active()
+        test_user.action_archive()
         self.assertTrue(test_partner.active, 'Parter related to user should remain active')
 
         # Now we can archive the partner
-        test_partner.toggle_active()
+        test_partner.action_archive()
 
         # Activate the user should reactivate the partner
-        test_user.toggle_active()
+        test_user.action_unarchive()
         self.assertTrue(test_partner.active, 'Activating user must active related partner')
 
     def test_email_formatted(self):
@@ -265,6 +264,27 @@ class TestPartner(TransactionCaseWithUserDemo):
         self.assertEqual(partner.name, 'Raoulette Vachette')
         self.assertEqual(partner.email, 'John.Wick@example.com')
 
+        # ensure default_lang and lang in context are properly handled
+        partner = self.env['res.partner'].browse(
+            self.env['res.partner'].with_context(
+                default_email='John.Wick@example.com',
+                default_lang='en_US',
+                lang=False
+            ).name_create('Raoulette Vachette')[0]
+        )
+        self.assertEqual(partner.name, 'Raoulette Vachette')
+        self.assertEqual(partner.lang, 'en_US')
+
+        partner = self.env['res.partner'].browse(
+            self.env['res.partner'].with_context(
+                default_email='John.Wick@example.com',
+                default_lang=False,
+                lang='en_US'
+            ).name_create('Raoulette Vachette')[0]
+        )
+        self.assertEqual(partner.name, 'Raoulette Vachette')
+        self.assertEqual(partner.lang, 'en_US')
+
     def test_name_search(self):
         res_partner = self.env['res.partner']
         sources = [
@@ -282,7 +302,7 @@ class TestPartner(TransactionCaseWithUserDemo):
         self.assertEqual(partners[0][1], 'B Raoul chirurgiens-dentistes.fr', 'Incorrect partner returned, should be the first active')
 
     def test_name_search_with_user(self):
-        """ Check name_search on partner, especially with domain based on auto_join
+        """ Check name_search on partner, especially with domain based on bypass_search_access
         user_ids field. Check specific SQL of name_search correctly handle joined tables. """
         test_partner = self.env['res.partner'].create({'name': 'Vlad the Impaler'})
         test_user = self.env['res.users'].create({'name': 'Vlad the Impaler', 'login': 'vlad', 'email': 'vlad.the.impaler@example.com'})
@@ -290,14 +310,14 @@ class TestPartner(TransactionCaseWithUserDemo):
         ns_res = self.env['res.partner'].name_search('Vlad', operator='ilike')
         self.assertEqual(set(i[0] for i in ns_res), set((test_partner | test_user.partner_id).ids))
 
-        ns_res = self.env['res.partner'].name_search('Vlad', args=[('user_ids.email', 'ilike', 'vlad')])
+        ns_res = self.env['res.partner'].name_search('Vlad', domain=[('user_ids.email', 'ilike', 'vlad')])
         self.assertEqual(set(i[0] for i in ns_res), set(test_user.partner_id.ids))
 
         # Check a partner may be searched when current user has no access but sudo is used
         public_user = self.env.ref('base.public_user')
         with self.assertRaises(AccessError):
             test_partner.with_user(public_user).check_access('read')
-        ns_res = self.env['res.partner'].with_user(public_user).sudo().name_search('Vlad', args=[('user_ids.email', 'ilike', 'vlad')])
+        ns_res = self.env['res.partner'].with_user(public_user).sudo().name_search('Vlad', domain=[('user_ids.email', 'ilike', 'vlad')])
         self.assertEqual(set(i[0] for i in ns_res), set(test_user.partner_id.ids))
 
     def test_partner_merge_wizard_dst_partner_id(self):
@@ -328,12 +348,51 @@ class TestPartner(TransactionCaseWithUserDemo):
             'parent_id': parent_contact.id,
         })
 
-        self.assertEqual(child_contact.with_context(lang='en_US').display_name, 'Parent, Other Address')
+        self.assertEqual(child_contact.with_context(lang='en_US').display_name, 'Parent, Other')
 
-        self.assertEqual(child_contact.with_context(lang='fr_FR').display_name, 'Parent, Autre adresse')
+        self.assertEqual(child_contact.with_context(lang='fr_FR').display_name, 'Parent, Autre')
+
+    def test_main_user_id(self):
+        """Test main_user_id compute, including OdooBot special case and priority among several users."""
+        self.assertEqual(self.env.ref("base.partner_root").main_user_id, self.env.ref("base.user_root"))
+        partner = self.env["res.partner"].create({"name": "Test Partner"})
+        # archived users are ignored
+        self.env["res.users"].create(
+            {"active": False, "login": "archived_user", "partner_id": partner.id},
+        )
+        self.assertFalse(partner.main_user_id)
+        # portal users are taken as last resort
+        portal_user = self.env["res.users"].create(
+            {
+                "group_ids": [Command.set([self.ref("base.group_portal")])],
+                "login": "portal_user",
+                "partner_id": partner.id,
+            },
+        )
+        self.assertEqual(partner.main_user_id, portal_user)
+        # internal users are preferred over portal users
+        internal_user = self.env["res.users"].create(
+            {
+                "group_ids": [Command.set([self.ref("base.group_user")])],
+                "login": "internal_user",
+                "partner_id": partner.id,
+            },
+        )
+        self.assertEqual(partner.main_user_id, internal_user)
+        # smaller id is preferred when other conditions are the same to ensure determinism
+        self.env["res.users"].create(
+            {
+                "group_ids": [Command.set([self.ref("base.group_user")])],
+                "login": "internal_user_1d_2",
+                "partner_id": partner.id,
+            },
+        )
+        self.assertEqual(partner.main_user_id, internal_user)
+        # current user is always preferred
+        self.assertEqual(partner.with_user(portal_user).main_user_id, portal_user)
 
 
-@tagged('res_partner')
+@tagged('res_partner', 'res_partner_address')
 class TestPartnerAddressCompany(TransactionCase):
 
     @classmethod
@@ -454,6 +513,13 @@ class TestPartnerAddressCompany(TransactionCase):
         self.assertFalse(ct1_1.vat)
         self.assertEqual(inv_1.street, 'Invoice Child Street', 'Should take parent address')
         self.assertFalse(inv_1.vat)
+        # test it also works with default_parent_id value in context
+        # also ensure it works directly on a non-empty recordset
+        inv_2 = (ct1_1 | inv_1).with_context(default_parent_id=inv.id).create({
+            'name': 'Address, Child of Invoice',
+        })
+        self.assertEqual(inv_2.street, 'Invoice Child Street', 'Should take parent address')
+        self.assertFalse(inv_2.vat)
 
         # sync P1 with parent, check address is update + other fields in write kept
         ct1_phone = '+320455999999'
@@ -524,16 +590,14 @@ class TestPartnerAddressCompany(TransactionCase):
         for child in inv, deli, other:
             self.assertEqual(child.street, f'{child.name} Street', 'Should not be updated')
 
-        # UPSTREAM: child -> parent update: not done currently, consider contact is readonly
+        # UPSTREAM: child -> parent update: contact update company
         # ------------------------------------------------------------
         ct1.write(self.test_address_values_3)
-        for fname, fvalue in self.test_address_values_2_cmp.items():
-            self.assertEqual(self.test_parent[fname], fvalue)
-            self.assertEqual(ct2[fname], fvalue)
-            self.assertEqual(self.existing[fname], fvalue)
         for fname, fvalue in self.test_address_values_3_cmp.items():
+            self.assertEqual(self.test_parent[fname], fvalue)
             self.assertEqual(ct1[fname], fvalue)
             self.assertEqual(ct1_1[fname], fvalue)
+            self.assertEqual(ct2[fname], fvalue)
 
     @users('employee')
     def test_address_first_contact_sync(self):
@@ -682,6 +746,74 @@ class TestPartnerAddressCompany(TransactionCase):
         self.assertEqual(leaf111.address_get([]),
                         {'contact': branch11.id}, 'Invalid address resolution, branch11 should now be contact')
 
+    @warmup
+    def test_address_get_fetch_optimization(self):
+        """Check that address_get prefetches required fields to reduce memory.
+
+        The fetch() call ensures type/child_ids/is_company/parent_id are loaded
+        in batch. If a new field is accessed without adding it to fetch(), this
+        test will fail due to extra queries.
+
+        Fix: update fetch() in res_partner.py address_get() around L1139.
+        """
+        res_partner = self.env['res.partner']
+        company = res_partner.create({'name': 'Company', 'is_company': True})
+        res_partner.create([
+            {'name': 'Invoice', 'parent_id': company.id, 'type': 'invoice'},
+            {'name': 'Delivery', 'parent_id': company.id, 'type': 'delivery'},
+            {'name': 'Contact 1', 'parent_id': company.id, 'type': 'contact'},
+            {'name': 'Contact 2', 'parent_id': company.id, 'type': 'contact'},
+        ])
+        self.env.invalidate_all()
+        with self.assertQueryCount(4):
+            company.address_get(['delivery', 'invoice', 'contact'])
+
+    @users('employee')
+    def test_address_parent_company_creation(self):
+        """ When creating parent company, it should be populated with information
+        coming from children when possible, and not erase child with void values
+        from parent. """
+        sync_commercial_fields = self.env['res.partner']._synced_commercial_fields()
+
+        # create your contact
+        individual = self.env['res.partner'].create({
+            'industry_id': self.test_industries[0].id,
+            'is_company': False,
+            'name': 'Individual',
+            'ref': 'REFINDIVIDUAL',
+            'vat': 'BEINDIVIDUAL',
+            **self.test_address_values,
+        })
+        self.assertFalse(individual.is_company)
+        self.assertEqual(individual.type, 'contact')
+        self.assertEqual(individual.ref, 'REFINDIVIDUAL')
+        self.assertEqual(individual.vat, 'BEINDIVIDUAL')
+        for fname, fvalue in self.test_address_values_cmp.items():
+            self.assertEqual(individual[fname], fvalue)
+
+        # create a company through "quick create", which would have partial default
+        # values for some company values
+        company = self.env['res.partner'].create({
+            'is_company': True,
+            'name': 'Company',
+            'ref': 'COMPANYREF',
+        })
+        # set it as parent of individual
+        with patch.object(
+            self.env['res.partner'].__class__, '_synced_commercial_fields',
+            lambda self: sync_commercial_fields + ['ref'],
+        ):
+            individual.write({'parent_id': company})
+        self.assertFalse(company.industry_id, 'Industry is not considered for upstream')
+        self.assertEqual(company.ref, 'COMPANYREF', 'not updated from contact child')
+        self.assertEqual(company.vat, 'BEINDIVIDUAL')
+        for fname, fvalue in self.test_address_values_cmp.items():
+            self.assertEqual(company[fname], fvalue, 'Void parent should have been updated when adding a contact with address')
+            self.assertEqual(individual[fname], fvalue, 'Setting parent with void address should not reset child')
+        self.assertEqual(individual.industry_id, self.test_industries[0], 'No upstream sync, but no reset either')
+        self.assertEqual(individual.ref, 'COMPANYREF', 'downstream update')
+        self.assertEqual(individual.vat, 'BEINDIVIDUAL')
+
     def test_commercial_partner_nullcompany(self):
         """ The commercial partner is the first/nearest ancestor-or-self which
         is a company or doesn't have a parent
@@ -774,43 +906,143 @@ class TestPartnerAddressCompany(TransactionCase):
             for fname, fvalue in (('company_registry', 'new'), ('industry_id', self.test_industries[1]), ('vat', 'BEnew')):
                 self.assertEqual(partner[fname], fvalue, "Commercial field should be updated from the company 2")
 
-        # UPSTREAM: not supported (but desyncs it)
+        # UPSTREAM: now supported
         contactvat = 'BE445566'
         contact.write({'vat': contactvat})
-        for partner in company_2 + contact_dlr + contact_ct + contact2:
-            self.assertEqual(partner.vat, 'BEnew', 'Sync to children should only work downstream and on commercial entities')
-        for partner in contact:
-            self.assertEqual(partner.vat, contactvat, 'Sync to children should only work downstream and on commercial entities')
+        for partner in company_2 + contact + contact_dlr + contact_ct + contact2:
+            self.assertEqual(partner.vat, contactvat, 'Commercial sync works upstream, therefore also for siblings')
 
         # MISC PARENT MANIPULATION
         # promote p1 to commercial entity
+        newcontactvat = 'BE998877'
         contact.write({
             'parent_id': company_1.id,
             'is_company': True,
             'name': 'Sunhelm Subsidiary',
+            'vat': newcontactvat,
         })
-        self.assertEqual(contact.vat, contactvat, 'Setting is_company should stop auto-sync of commercial fields')
+        self.assertEqual(contact.vat, newcontactvat, 'Setting is_company should stop auto-sync of commercial fields')
         self.assertEqual(contact.commercial_partner_id, contact, 'Incorrect commercial entity resolution after setting is_company')
+        self.assertEqual(contact2.vat, contactvat, 'Old sibling untouched')
         self.assertEqual(company_1.vat, 'BE013456789', 'Should not impact parent')
-        self.assertEqual(contact_dlr.vat, 'BEnew', 'Promotion not propagated')
-        self.assertEqual(contact_ct.vat, 'BEnew', 'Promotion not propagated')
+        self.assertEqual(contact_dlr.vat, newcontactvat, 'Promotion propagated')
+        self.assertEqual(contact_ct.vat, newcontactvat, 'Promotion propagated')
 
         # change parent of commercial entity
-        (contact_dlr + contact_ct).write({'vat': contactvat})
         contact.write({'parent_id': company_2.id})
-        self.assertEqual(contact.vat, contactvat, 'Setting is_company should stop auto-sync of commercial fields')
+        self.assertEqual(contact.vat, newcontactvat, 'Setting is_company should stop auto-sync of commercial fields')
         self.assertEqual(contact.commercial_partner_id, contact, 'Incorrect commercial entity resolution after setting is_company')
-        self.assertEqual(company_2.vat, 'BEnew', 'Should not impact parent')
-        self.assertEqual(contact_dlr.vat, contactvat, 'Parent company stop auto sync')
-        self.assertEqual(contact_ct.vat, contactvat, 'Parent company stop auto sync')
+        self.assertEqual(company_2.vat, contactvat, 'Should not impact parent')
+        self.assertEqual(contact_dlr.vat, newcontactvat, 'Parent company stop auto sync')
+        self.assertEqual(contact_ct.vat, newcontactvat, 'Parent company stop auto sync')
 
         # writing on parent should not touch child commercial entities
         sunhelmvat2 = 'BE0112233453'
         company_2.write({'vat': sunhelmvat2})
         for partner in contact + contact_ct + contact_dlr:
-            self.assertEqual(contact.vat, contactvat, 'Setting is_company should stop auto-sync of commercial fields')
+            self.assertEqual(contact.vat, newcontactvat, 'Setting is_company should stop auto-sync of commercial fields')
         for partner in contact2:
             self.assertEqual(partner.vat, sunhelmvat2, 'Commercial fields must be automatically synced')
+
+    def test_commercial_field_sync_reset(self):
+        """ Test voiding fields propagation. We would like to allow forcing void
+        values from parent, but limiting upstream reset from children. """
+        sync_commercial_fields = self.env['res.partner']._synced_commercial_fields()
+
+        # create your contact
+        individual = self.env['res.partner'].create({
+            'is_company': False,
+            'name': 'Individual',
+            'ref': 'REFINDIV',
+            'vat': 'BEINDIVIDUAL',
+            **self.test_address_values,
+        })
+        self.assertFalse(individual.is_company)
+        self.assertEqual(individual.type, 'contact')
+        self.assertEqual(individual.ref, 'REFINDIV')
+        self.assertEqual(individual.vat, 'BEINDIVIDUAL')
+        for fname, fvalue in self.test_address_values_cmp.items():
+            self.assertEqual(individual[fname], fvalue)
+
+        # create a company with values
+        company = self.env['res.partner'].create({
+            'industry_id': self.test_industries[1].id,
+            'is_company': True,
+            'name': 'Company',
+            'ref': 'REFCOMPANY',
+            'vat': 'BECOMPANY',
+            **self.test_address_values_2,
+        })
+        # set it as parent of individual
+        with patch.object(
+            self.env['res.partner'].__class__, '_synced_commercial_fields',
+            lambda self: sync_commercial_fields + ['ref'],
+        ):
+            individual.write({'parent_id': company})
+        for fname, fvalue in self.test_address_values_2_cmp.items():
+            self.assertEqual(company[fname], fvalue, 'Parent address should have been kept')
+        self.assertEqual(company.industry_id, self.test_industries[1], 'Parent commercial field industry should have been kept')
+        self.assertEqual(company.ref, 'REFCOMPANY', 'Parent commercial field VAT should have been kept')
+        self.assertEqual(company.vat, 'BECOMPANY', 'Parent commercial field VAT should have been kept')
+        for fname, fvalue in self.test_address_values_2_cmp.items():
+            self.assertEqual(individual[fname], fvalue, 'Setting parent with an address should force contact address, even if set previously')
+        self.assertEqual(individual.industry_id, self.test_industries[1], 'Commercial fields should be synced from parent')
+        self.assertEqual(individual.ref, 'REFCOMPANY', 'Commercial fields should be synced from parent')
+        self.assertEqual(individual.vat, 'BECOMPANY', 'Commercial fields should be synced from parent')
+
+        # void from parent: DOWNSTREAM reset
+        with patch.object(
+            self.env['res.partner'].__class__, '_synced_commercial_fields',
+            lambda self: sync_commercial_fields + ['ref'],
+        ):
+            company.write({
+                'industry_id': False,
+                'ref': False,
+                'vat': False,
+            })
+        self.assertFalse(individual.industry_id)
+        self.assertFalse(individual.ref)
+        self.assertFalse(individual.vat)
+
+        # reset values, and void from child: UPSTREAM RESET
+        company.write({
+            'industry_id': self.test_industries[1].id,
+            'vat': 'BECOMPANY'
+        })
+        self.assertEqual(individual.industry_id, self.test_industries[1])
+        self.assertEqual(individual.vat, 'BECOMPANY')
+        individual.write({
+            'industry_id': False,
+            'vat': False,
+        })
+        self.assertEqual(company.industry_id, self.test_industries[1], 'No upstream support of reset')
+        self.assertEqual(company.vat, 'BECOMPANY', 'No upstream support of reset')
+        self.assertFalse(individual.industry_id)
+        self.assertFalse(individual.vat)
+
+    @warmup
+    def test_fields_sync_fetch_optimization(self):
+        """Check that _fields_sync prefetches required fields to reduce memory.
+
+        The fetch() call ensures parent_id/type/commercial_partner_id are loaded
+        in batch. If a new field is accessed without adding it to fetch(), this
+        test will fail due to extra queries.
+
+        Fix: update fetch() in res_partner.py _fields_sync() around L773.
+        """
+        company = self.env['res.partner'].create({
+            'is_company': True,
+            'name': 'Test Company',
+            'vat': 'BE0123456789',
+            **self.test_address_values,
+        })
+        contacts = self.env['res.partner'].create([
+            {'name': f'Contact {i}', 'parent_id': company.id}
+            for i in range(5)
+        ])
+        self.env.invalidate_all()
+        with self.assertQueryCount(7):
+            contacts.write({'street': 'New Street'})
 
     def test_company_dependent_commercial_sync(self):
         ResPartner = self.env['res.partner']
@@ -842,6 +1074,22 @@ class TestPartnerAddressCompany(TransactionCase):
             self.assertEqual(child_address.with_company(company_1).barcode, 'Company 1')
             self.assertEqual(child_address.with_company(company_2).barcode, 'Company 2')
 
+    def test_company_dependent_commercial_sync_falsy_fields(self):
+        """Check that company-dependent fields still sync when unset on current company."""
+        ResPartner = self.env['res.partner']
+
+        alt_company = self.env.company.create({'name': "Alt Company"})
+        parent = ResPartner.create({'name': "Parent", 'is_company': True, 'barcode': False})
+        parent.with_company(alt_company).barcode = "BARCODE"
+
+        with (
+            patch.object(ResPartner.__class__, '_commercial_fields', lambda self: ['barcode']),
+            patch.object(ResPartner.__class__, '_validate_fields'),  # skip _check_barcode_unicity
+        ):
+            child = ResPartner.create({'name': "Child", 'parent_id': parent.id})
+            self.assertFalse(child.barcode)
+            self.assertEqual(child.with_company(alt_company).barcode, "BARCODE")
+
     def test_company_change_propagation(self):
         """ Check propagation of company_id across children """
         User = self.env['res.users']
@@ -861,7 +1109,7 @@ class TestPartnerAddressCompany(TransactionCase):
         test_partner_company.write({'company_id': False})
         self.assertFalse(test_user.partner_id.company_id.id, "If the company_id is deleted from the partner company, it should be propagated to its children")
 
-        with self.assertRaises(UserError, msg="You should not be able to update the company_id of the partner company if the linked user of a child partner is not an allowed to be assigned to that company"), self.cr.savepoint():
+        with self.assertRaises(UserError, msg="You should not be able to update the company_id of the partner company if the linked user of a child partner is not an allowed to be assigned to that company"):
             test_partner_company.write({'company_id': company_2.id})
 
     def test_display_address_missing_key(self):
@@ -894,10 +1142,13 @@ class TestPartnerAddressCompany(TransactionCase):
         res_bhide = test_partner_bhide.with_context(show_address=1).display_name
         self.assertEqual(res_bhide, "Atmaram Bhide", "name should contain only name if address is not available, without extra commas")
 
-        res_jetha = test_partner_jetha.with_context(show_address=1, address_inline=1).display_name
-        self.assertEqual(res_jetha, "Jethala, Powder gali, Gokuldham Society", "name should contain comma separated name and address")
-        res_bhide = test_partner_bhide.with_context(show_address=1, address_inline=1).display_name
-        self.assertEqual(res_bhide, "Atmaram Bhide", "name should contain only name if address is not available, without extra commas")
+        # Check that a child contact having no name shows the formatted display name as {parent_name} \t --{contact_type}--
+        test_partner_invoice = self.env['res.partner'].create({'parent_id': self.test_parent.id, 'type': 'invoice'})
+        self.assertEqual(
+            test_partner_invoice.with_context(formatted_display_name=True).display_name,
+            "GhostStep \t --Invoice--",
+            "Formatted display name should show parent name and type when child contact has no name",
+        )
 
     def test_accessibility_of_company_partner_from_branch(self):
         """ Check accessibility of company partner from branch. """
@@ -928,8 +1179,7 @@ class TestPartnerForm(TransactionCase):
     def test_lang_computation_form_view(self):
         """ Check computation of lang: coming from installed languages, forced
         default value and propagation from parent."""
-        default_lang_info = self.env['res.lang'].get_installed()[0]
-        default_lang_code = default_lang_info[0]
+        default_lang_code = self.env['ir.default']._get('res.partner', 'lang') or False
         self.assertNotEqual(default_lang_code, 'de_DE')  # should not be the case, just to ease test
         self.assertNotEqual(default_lang_code, 'fr_FR')  # should not be the case, just to ease test
 

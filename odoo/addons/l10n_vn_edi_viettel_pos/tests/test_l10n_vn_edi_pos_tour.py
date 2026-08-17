@@ -59,7 +59,7 @@ class TestVNEDIPOSTour(TestVNEDI, TestPointOfSaleHttpCommon):
             "odoo.addons.l10n_vn_edi_viettel.models.account_move._l10n_vn_edi_send_request",
             side_effect=self._mock_sinvoice_send_request,
         ):
-            self.start_pos_tour("L10nVnEdiPosConfigErrorTour")
+            self.start_pos_tour("L10nVnEdiPosConfigErrorTour", login="pos_admin")
 
     def test_l10n_vn_edi_pos_refund_reason_tour(self):
         self.company.l10n_vn_pos_default_symbol = self.symbol
@@ -72,4 +72,4 @@ class TestVNEDIPOSTour(TestVNEDI, TestPointOfSaleHttpCommon):
             "odoo.addons.l10n_vn_edi_viettel.models.account_move._l10n_vn_edi_send_request",
             side_effect=self._mock_sinvoice_send_request,
         ):
-            self.start_pos_tour("L10nVnEdiPosRefundReasonTour")
+            self.start_pos_tour("L10nVnEdiPosRefundReasonTour", login="pos_admin")

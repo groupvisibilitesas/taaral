@@ -20,7 +20,13 @@ class Partner extends models.Model {
     txt = fields.Html({ string: "txt", trim: true });
     _records = [{ id: 1, txt: RED_TEXT }];
 }
-defineModels([Partner]);
+class User extends models.Model {
+    _name = "res.users";
+    has_group() {
+        return true;
+    }
+}
+defineModels([Partner, User]);
 
 test("html fields are correctly rendered in form view (readonly)", async () => {
     await mountView({
@@ -50,8 +56,7 @@ test("html field with required attribute", async () => {
     expect(".o_field_html textarea").toHaveValue("");
 
     await clickSave();
-    expect(".o_notification_title").toHaveText("Invalid fields:");
-    expect(queryFirst(".o_notification_content")).toHaveInnerHTML("<ul><li>txt</li></ul>");
+    expect(queryFirst(".o_notification_content")).toHaveText("Missing required fields");
 });
 
 test("html fields are correctly rendered (edit)", async () => {
@@ -163,12 +168,10 @@ test("field html translatable", async () => {
             { translation_type: "char", translation_show_source: true },
         ];
     });
-    onRpc("get_installed", () => {
-        return [
-            ["en_US", "English"],
-            ["fr_BE", "French (Belgium)"],
-        ];
-    });
+    onRpc("get_installed", () => [
+        ["en_US", "English"],
+        ["fr_BE", "French (Belgium)"],
+    ]);
     onRpc("update_field_translations", ({ args }) => {
         expect(args).toEqual(
             [

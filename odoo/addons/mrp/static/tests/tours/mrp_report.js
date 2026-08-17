@@ -4,11 +4,6 @@ import { registry } from "@web/core/registry";
 registry.category("web_tour.tours").add("mrp_bom_report_tour", {
     steps: () => [
         {
-            content: "Wait for BoM report to load",
-            trigger: ".o_mrp_bom_report_page",
-            run: () => {},
-        },
-        {
             content: "Check the current displayed variant",
             trigger: ".o_mrp_bom_report_page h2 a:contains('[alpaca] Product Test Sync (L)')",
             run: () => {},

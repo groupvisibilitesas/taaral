@@ -1,10 +1,8 @@
-/** @odoo-module */
-
-import { _t } from "@web/core/l10n/translation";
 import { download } from "@web/core/network/download";
 import { registry } from "@web/core/registry";
 import { createSpreadsheetModel, waitForDataLoaded } from "@spreadsheet/helpers/model";
 import { user } from "@web/core/user";
+import { _t } from "@web/core/l10n/translation";
 
 /**
  * @param {import("@web/env").OdooEnv} env

@@ -19,17 +19,18 @@ import functools
 import logging
 import sys
 import types
+import typing
 from opcode import opmap, opname
 from types import CodeType
 
+import psycopg2
 import werkzeug
-from psycopg2 import OperationalError
 
-import odoo
+import odoo.exceptions
 
 unsafe_eval = eval
 
-__all__ = ['test_expr', 'safe_eval', 'const_eval']
+__all__ = ['const_eval', 'safe_eval']
 
 # The time module is usually already provided in the safe_eval environment
 # but some code, e.g. datetime.datetime.now() (Windows/Python 2.5.2, bug
@@ -248,28 +249,25 @@ def assert_valid_codeobj(allowed_codes, code_obj, expr):
         if isinstance(const, CodeType):
             assert_valid_codeobj(allowed_codes, const, 'lambda')
 
-def test_expr(expr, allowed_codes, mode="eval", filename=None):
-    """test_expr(expression, allowed_codes[, mode[, filename]]) -> code_object
 
-    Test that the expression contains only the allowed opcodes.
-    If the expression is valid and contains only allowed codes,
-    return the compiled code object.
-    Otherwise raise a ValueError, a Syntax Error or TypeError accordingly.
-
-    :param filename: optional pseudo-filename for the compiled expression,
-                 displayed for example in traceback frames
-    :type filename: string
+def compile_codeobj(expr: str, /, filename: str = '<unknown>', mode: typing.Literal['eval', 'exec'] = 'eval'):
     """
+        :param str filename: optional pseudo-filename for the compiled expression,
+                             displayed for example in traceback frames
+        :param str mode: 'eval' if single expression
+                         'exec' if sequence of statements
+        :return: compiled code object
+        :rtype: types.CodeType
+    """
+    assert mode in ('eval', 'exec')
     try:
         if mode == 'eval':
-            # eval() does not like leading/trailing whitespace
-            expr = expr.strip()
-        code_obj = compile(expr, filename or "", mode)
+            expr = expr.strip()  # eval() does not like leading/trailing whitespace
+        code_obj = compile(expr, filename or '', mode)
     except (SyntaxError, TypeError, ValueError):
         raise
     except Exception as e:
         raise ValueError('%r while compiling\n%r' % (e, expr))
-    assert_valid_codeobj(allowed_codes, code_obj, expr)
     return code_obj
 
 
@@ -291,7 +289,8 @@ def const_eval(expr):
     ...
     ValueError: opcode BINARY_ADD not allowed
     """
-    c = test_expr(expr, _CONST_OPCODES)
+    c = compile_codeobj(expr)
+    assert_valid_codeobj(_CONST_OPCODES, c, expr)
     return unsafe_eval(c)
 
 def expr_eval(expr):
@@ -312,7 +311,8 @@ def expr_eval(expr):
     ...
     ValueError: opcode LOAD_NAME not allowed
     """
-    c = test_expr(expr, _EXPR_OPCODES)
+    c = compile_codeobj(expr)
+    assert_valid_codeobj(_EXPR_OPCODES, c, expr)
     return unsafe_eval(c)
 
 _BUILTINS = {
@@ -353,18 +353,37 @@ _BUILTINS = {
     'zip': zip,
     'Exception': Exception,
 }
-def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=False, locals_builtins=False, filename=None):
-    """safe_eval(expression[, globals[, locals[, mode[, nocopy]]]]) -> result
 
-    System-restricted Python expression evaluation
+
+_BUBBLEUP_EXCEPTIONS = (
+    odoo.exceptions.ConcurrencyError,  # let retrying handle this error
+    odoo.exceptions.UserError,
+    odoo.exceptions.RedirectWarning,
+    psycopg2.OperationalError,  # let auto-replay of serialized transactions work its magic
+    psycopg2.IntegrityError,  # let retrying handle this error
+    werkzeug.exceptions.HTTPException,
+    ZeroDivisionError,
+)
+
+
+def safe_eval(expr, /, context=None, *, mode="eval", filename=None):
+    """System-restricted Python expression evaluation
 
     Evaluates a string that contains an expression that mostly
     uses Python constants, arithmetic expressions and the
     objects directly provided in context.
 
     This can be used to e.g. evaluate
-    an OpenERP domain expression from an untrusted source.
+    a domain expression from an untrusted source.
 
+    :param expr: The Python expression (or block, if ``mode='exec'``) to evaluate.
+    :type expr: string | bytes
+    :param context: Namespace available to the expression.
+                    This dict will be mutated with any variables created during
+                    evaluation
+    :type context: dict
+    :param mode: ``exec`` or ``eval``
+    :type mode: str
     :param filename: optional pseudo-filename for the compiled expression,
                      displayed for example in traceback frames
     :type filename: string
@@ -376,51 +395,34 @@ def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=Fal
     if type(expr) is CodeType:
         raise TypeError("safe_eval does not allow direct evaluation of code objects.")
 
-    # prevent altering the globals/locals from within the sandbox
-    # by taking a copy.
-    if not nocopy:
-        # isinstance() does not work below, we want *exactly* the dict class
-        if (globals_dict is not None and type(globals_dict) is not dict) \
-                or (locals_dict is not None and type(locals_dict) is not dict):
-            _logger.warning(
-                "Looks like you are trying to pass a dynamic environment, "
-                "you should probably pass nocopy=True to safe_eval().")
-        if globals_dict is not None:
-            globals_dict = dict(globals_dict)
-        if locals_dict is not None:
-            locals_dict = dict(locals_dict)
+    assert context is None or type(context) is dict, "Context must be a dict"
 
-    check_values(globals_dict)
-    check_values(locals_dict)
+    check_values(context)
 
-    if globals_dict is None:
-        globals_dict = {}
+    globals_dict = dict(context or {}, __builtins__=dict(_BUILTINS))
 
-    globals_dict['__builtins__'] = dict(_BUILTINS)
-    if locals_builtins:
-        if locals_dict is None:
-            locals_dict = {}
-        locals_dict.update(_BUILTINS)
-    c = test_expr(expr, _SAFE_OPCODES, mode=mode, filename=filename)
+    c = compile_codeobj(expr, filename=filename, mode=mode)
+    assert_valid_codeobj(_SAFE_OPCODES, c, expr)
     try:
-        return unsafe_eval(c, globals_dict, locals_dict)
-    except odoo.exceptions.UserError:
+        # empty locals dict makes the eval behave like top-level code
+        return unsafe_eval(c, globals_dict, None)
+
+    except _BUBBLEUP_EXCEPTIONS:
         raise
-    except odoo.exceptions.RedirectWarning:
-        raise
-    except werkzeug.exceptions.HTTPException:
-        raise
-    except OperationalError:
-        # Do not hide PostgreSQL low-level exceptions, to let the auto-replay
-        # of serialized transactions work its magic
-        raise
-    except ZeroDivisionError:
-        raise
+
     except Exception as e:
         raise ValueError('%r while evaluating\n%r' % (e, expr))
+
+    finally:
+        if context is not None:
+            del globals_dict['__builtins__']
+            context.update(globals_dict)
+
+
 def test_python_expr(expr, mode="eval"):
     try:
-        test_expr(expr, _SAFE_OPCODES, mode=mode)
+        c = compile_codeobj(expr, mode=mode)
+        assert_valid_codeobj(_SAFE_OPCODES, c, expr)
     except (SyntaxError, TypeError, ValueError) as err:
         if len(err.args) >= 2 and len(err.args[1]) >= 4:
             error = {
@@ -482,7 +484,7 @@ mods = ['parser', 'relativedelta', 'rrule', 'tz']
 for mod in mods:
     __import__('dateutil.%s' % mod)
 # make sure to patch pytz before exposing
-from odoo._monkeypatches.pytz import patch_pytz  # noqa: E402, F401
+from odoo._monkeypatches.pytz import patch_module as patch_pytz  # noqa: E402, F401
 patch_pytz()
 
 datetime = wrap_module(__import__('datetime'), ['date', 'datetime', 'time', 'timedelta', 'timezone', 'tzinfo', 'MAXYEAR', 'MINYEAR'])

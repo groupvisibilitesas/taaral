@@ -19,5 +19,6 @@ Mauritania basic package that contains the chart of accounts, the taxes, tax rep
     'demo': [
         'demo/demo_company.xml',
     ],
+    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 }

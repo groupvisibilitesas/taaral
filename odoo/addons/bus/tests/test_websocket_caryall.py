@@ -312,7 +312,7 @@ class TestWebsocketCaryall(WebsocketCase):
             websocket.recv_data_frame(control_frame=True)  # pong
 
     def test_websocket_terminates_after_closing_timeout(self):
-        orig_disconnect = Websocket.disconnect
+        orig_disconnect = Websocket._disconnect
         orig_terminate = Websocket._terminate
         disconnect_done_event = Event()
         terminate_done_event = Event()
@@ -327,7 +327,7 @@ class TestWebsocketCaryall(WebsocketCase):
 
         with (
             patch('odoo.addons.bus.websocket.TimeoutManager.KEEP_ALIVE_TIMEOUT', 0),
-            patch.object(Websocket, 'disconnect', disconnect_wrapper),
+            patch.object(Websocket, '_disconnect', disconnect_wrapper),
             patch.object(Websocket, '_terminate', terminate_wrapper),
             freeze_time('2022-08-19') as frozen_time,
         ):

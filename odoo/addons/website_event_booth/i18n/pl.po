@@ -2,27 +2,24 @@
 # This file contains the translation of the following modules:
 # * website_event_booth
 #
-# Translators:
-# Wil Odoo, 2024
-#
+# "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # "Marta (wacm)" <wacm@odoo.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-27 18:38+0000\n"
-"PO-Revision-Date: 2026-04-01 15:08+0000\n"
+"PO-Revision-Date: 2026-08-02 12:28+0000\n"
 "Last-Translator: \"Marta (wacm)\" <wacm@odoo.com>\n"
-"Language-Team: Polish <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Polish <https://translate.odoo.com/projects/odoo-19/"
 "website_event_booth/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && "
-"(n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && "
-"n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
-"X-Generator: Weblate 5.16.2\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: website_event_booth
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_registration_details
@@ -105,6 +102,12 @@ msgstr ""
 "<span>*</span>"
 
 #. module: website_event_booth
+#. odoo-python
+#: code:addons/website_event_booth/models/event_event.py:0
+msgid "Become exhibitor"
+msgstr "Zostań wystawcą"
+
+#. module: website_event_booth
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_type_view_form
 msgid "Booth Menu Item"
 msgstr "Pozycja menu stoiska"
@@ -122,7 +125,7 @@ msgstr "Rejestracja stoiska zakończona!"
 
 #. module: website_event_booth
 #. odoo-javascript
-#: code:addons/website_event_booth/static/src/js/booth_register.js:0
+#: code:addons/website_event_booth/static/src/interactions/booth_registration.js:0
 msgid "Booth registration failed."
 msgstr "Rejestracja stoiska nie powiodła się."
 
@@ -133,13 +136,19 @@ msgstr "Stoiska na stronie internetowej"
 
 #. module: website_event_booth
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_layout
-msgid "Check our"
-msgstr "Sprawdź nasze"
+msgid ""
+"Check our <a class=\"o_translate_inline\" href=\"/event\" title=\"List of "
+"Future Events\" aria-label=\"Link to list of future events\">list of future "
+"events</a>."
+msgstr ""
+"Sprawdź naszą <a class=\"o_translate_inline\" href=\"/event\" title=\"Lista "
+"przyszłych wydarzeń\" aria-label=\"Link do listy przyszłych wydarzeń\">listę "
+"przyszłych wydarzeń</a>."
 
 #. module: website_event_booth
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_registration
 msgid "Choose your type of booth"
-msgstr "Wybierz swój typ stoiska"
+msgstr "Wybierz swój typ budki"
 
 #. module: website_event_booth
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_registration_details
@@ -159,6 +168,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_registration
 msgid "Contact Us"
 msgstr "Skontaktuj się z nami"
+
+#. module: website_event_booth
+#: model:ir.model.fields,field_description:website_event_booth.field_event_event__display_name
+#: model:ir.model.fields,field_description:website_event_booth.field_event_type__display_name
+#: model:ir.model.fields,field_description:website_event_booth.field_website_event_menu__display_name
+msgid "Display Name"
+msgstr "Nazwa wyświetlana"
 
 #. module: website_event_booth
 #: model:ir.model,name:website_event_booth.model_event_event
@@ -191,8 +207,6 @@ msgid "Exhibition Map"
 msgstr "Mapa wystawy"
 
 #. module: website_event_booth
-#. odoo-python
-#: code:addons/website_event_booth/models/event_event.py:0
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_registration
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_registration_details
 msgid "Get A Booth"
@@ -204,8 +218,15 @@ msgid "Go back"
 msgstr "Wróć"
 
 #. module: website_event_booth
+#: model:ir.model.fields,field_description:website_event_booth.field_event_event__id
+#: model:ir.model.fields,field_description:website_event_booth.field_event_type__id
+#: model:ir.model.fields,field_description:website_event_booth.field_website_event_menu__id
+msgid "ID"
+msgstr "ID"
+
+#. module: website_event_booth
 #. odoo-javascript
-#: code:addons/website_event_booth/static/src/js/booth_register.js:0
+#: code:addons/website_event_booth/static/src/interactions/booth_registration.js:0
 msgid "It looks like your email is already in our system."
 msgstr "Wygląda na to, że Twój e-mail jest już w naszym systemie."
 
@@ -213,16 +234,6 @@ msgstr "Wygląda na to, że Twój e-mail jest już w naszym systemie."
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_layout
 msgid "It's no longer possible to book a booth."
 msgstr "Nie można już zarezerwować stoiska."
-
-#. module: website_event_booth
-#: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_layout
-msgid "Link to list of future events"
-msgstr "Link do listy przyszłych wydarzeń"
-
-#. module: website_event_booth
-#: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_layout
-msgid "List of Future Events"
-msgstr "Lista przyszłych wydarzeń"
 
 #. module: website_event_booth
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_registration
@@ -246,9 +257,9 @@ msgstr "Zaloguj się lub utwórz konto."
 
 #. module: website_event_booth
 #. odoo-javascript
-#: code:addons/website_event_booth/static/src/js/booth_register.js:0
+#: code:addons/website_event_booth/static/src/interactions/booth_registration.js:0
 msgid "Please fill out the form correctly."
-msgstr "Wypełnij poprawnie formularz."
+msgstr "Proszę wypełnij poprawnie formularz."
 
 #. module: website_event_booth
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_layout
@@ -258,11 +269,11 @@ msgstr "Rejestracja nie jest otwarta."
 #. module: website_event_booth
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_registration
 msgid "Sorry, all the booths are sold out."
-msgstr "Przepraszamy, wszystkie stoiska zostały już wyprzedane."
+msgstr "Przepraszamy, wszystkie stoiska zostały wyprzedane."
 
 #. module: website_event_booth
 #. odoo-javascript
-#: code:addons/website_event_booth/static/src/js/booth_register.js:0
+#: code:addons/website_event_booth/static/src/interactions/booth_registration.js:0
 msgid "The booth category doesn't exist."
 msgstr "Kategoria stoiska nie istnieje."
 
@@ -280,8 +291,3 @@ msgstr "Menu wydarzeń strony"
 #: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_registration
 msgid "if you have any question."
 msgstr "jeśli masz jakiekolwiek pytania."
-
-#. module: website_event_booth
-#: model_terms:ir.ui.view,arch_db:website_event_booth.event_booth_layout
-msgid "list of future events"
-msgstr "list of future events"

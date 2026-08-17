@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import _, api, fields, models
-from odoo.osv.expression import AND
+from odoo import api, fields, models
+from odoo.fields import Domain
 
 
 class ProductReplenish(models.TransientModel):
@@ -44,6 +43,7 @@ class ProductReplenish(models.TransientModel):
         res = super()._prepare_run_values()
         if self.supplier_id:
             res['supplierinfo_id'] = self.supplier_id
+            # res['partner_id'] = self.supplier_id.partner_id
         return res
 
     def action_stock_replenishment_info(self):
@@ -86,13 +86,16 @@ class ProductReplenish(models.TransientModel):
 
         delay = supplier.delay + self.env.company.days_to_purchase
 
-        if bool(self.env['ir.config_parameter'].sudo().get_param('purchase.use_po_lead')):
-            delay += self.env.company.po_lead
         return fields.Datetime.add(date, days=delay)
 
     def _get_route_domain(self, product_tmpl_id):
         domain = super()._get_route_domain(product_tmpl_id)
-        buy_route = self.env.ref('purchase_stock.route_warehouse0_buy', raise_if_not_found=False)
-        if buy_route and not product_tmpl_id.seller_ids:
-            domain = AND([domain, [('id', '!=', buy_route.id)]])
+        company = product_tmpl_id.company_id or self.env.company
+        buy_route = self.env['stock.rule'].search([
+            ('action', '=', 'buy'),
+            ('company_id', '=', company.id),
+            ('picking_type_id.code', '=', 'incoming'),
+        ]).route_id
+        if buy_route and product_tmpl_id.seller_ids:
+            domain = Domain.OR([domain, Domain('id', 'in', buy_route.ids)])
         return domain

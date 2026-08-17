@@ -1,26 +1,24 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* sale_pdf_quote_builder
+# * sale_pdf_quote_builder
 #
-# Translators:
-# Lyall Kindmurr, 2024
-# Wil Odoo, 2024
-# Larisa_nexterp, 2025
-#
+# Dorin Hongu <dhongu@gmail.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Larisa_nexterp, 2025\n"
-"Language-Team: Romanian (https://app.transifex.com/odoo/teams/41243/ro/)\n"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-07 16:36+0000\n"
+"Last-Translator: Dorin Hongu <dhongu@gmail.com>\n"
+"Language-Team: Romanian <https://translate.odoo.com/projects/odoo-19/"
+"sale_pdf_quote_builder/ro/>\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
-"2:1));\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2;\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.actions.report,print_report_name:sale_pdf_quote_builder.action_report_saleorder_raw
@@ -28,8 +26,13 @@ msgid ""
 "(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or "
 "'Order - %s' % (object.name)"
 msgstr ""
-"(object.state in ('draft', 'sent') and 'Ofertă - %s' % (object.name)) or "
+"(object.state in ('draft', 'sent') and 'Cotație - %s' % (object.name)) or "
 "'Comandă - %s' % (object.name)"
+
+#. module: sale_pdf_quote_builder
+#: model_terms:ir.ui.view,arch_db:sale_pdf_quote_builder.sale_order_template_form
+msgid "<i class=\"fa fa-arrow-right\"/> Link to the demo video"
+msgstr "<i class=\"fa fa-arrow-right\"/> Link către videoclipul demo"
 
 #. module: sale_pdf_quote_builder
 #: model_terms:ir.ui.view,arch_db:sale_pdf_quote_builder.quotation_document_kanban
@@ -48,8 +51,8 @@ msgid ""
 "A form field set as used in product documents can't be linked to a quotation "
 "document."
 msgstr ""
-"Un câmp de formular setat ca folosit în documentele de produs nu poate fi "
-"legat de un document de ofertă."
+"Un câmp de formular setat ca utilizat în documentele de produs nu poate fi "
+"legat de un document de cotație."
 
 #. module: sale_pdf_quote_builder
 #. odoo-python
@@ -58,7 +61,7 @@ msgid ""
 "A form field set as used in quotation documents can't be linked to a product "
 "document."
 msgstr ""
-"Un câmp de formular setat ca folosit în documentele de ofertă nu poate fi "
+"Un câmp de formular setat ca utilizat în documentele de cotație nu poate fi "
 "legat de un document de produs."
 
 #. module: sale_pdf_quote_builder
@@ -72,6 +75,12 @@ msgid "Active"
 msgstr "Activ"
 
 #. module: sale_pdf_quote_builder
+#: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__add_by_default
+#: model_terms:ir.ui.view,arch_db:sale_pdf_quote_builder.quotation_document_search_view
+msgid "Add By Default"
+msgstr "Adăugat implicit"
+
+#. module: sale_pdf_quote_builder
 #: model_terms:ir.ui.view,arch_db:sale_pdf_quote_builder.quotation_document_search_view
 msgid "All"
 msgstr "Toate"
@@ -80,7 +89,7 @@ msgstr "Toate"
 #. odoo-python
 #: code:addons/sale_pdf_quote_builder/controllers/quotation_document.py:0
 msgid "All files uploaded"
-msgstr "Toate fișierele au fost încărcate"
+msgstr "Toate fișierele încărcate"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,help:sale_pdf_quote_builder.field_product_document__attached_on_sale
@@ -98,17 +107,18 @@ msgid ""
 "Inside quote: The document will be included in the pdf of the quotation and "
 "sale order between the header pages and the quote table. "
 msgstr ""
-"Permite partajarea documentului cu clienții în cadrul unei vânzări.\n"
-"Lăsați gol dacă nu doriți să partajați acest document cu clientul de "
+"Vă permite să partajați documentul cu clienții dvs. în cadrul unei vânzări.\n"
+"Lăsați-l gol dacă nu doriți să partajați acest document cu clienții de "
 "vânzări.\n"
-"La ofertă: documentul va fi trimis și accesibil clienților oricând.\n"
-"Ex: această opțiune poate fi utilă pentru a partaja fișiere de descriere a "
-"produsului.\n"
+"La cotație: documentul va fi trimis și accesibil clienților în orice "
+"moment.\n"
+"de ex. această opțiune poate fi utilă pentru a partaja fișierele de "
+"descriere a produsului.\n"
 "La confirmarea comenzii: documentul va fi trimis și accesibil clienților.\n"
-"Ex: această opțiune poate fi utilă pentru a partaja manualul de utilizare "
-"sau conținut digital cumpărat pe ecommerce.\n"
-"În interiorul ofertei: documentul va fi inclus în pdf-ul ofertei și comenzii "
-"de vânzare între paginile de antet și tabelul ofertei."
+"de ex. această opțiune poate fi utilă pentru a partaja Manualul de utilizare "
+"sau conținutul digital cumpărat pe comerțul electronic. \n"
+"În interiorul cotației: Documentul va fi inclus în pdf-ul cotației și al "
+"comenzii de vânzare între paginile antet și tabelul cotației. "
 
 #. module: sale_pdf_quote_builder
 #: model_terms:ir.ui.view,arch_db:sale_pdf_quote_builder.quotation_document_kanban
@@ -127,21 +137,25 @@ msgid "Attachment URL"
 msgstr "URL atașament"
 
 #. module: sale_pdf_quote_builder
-#: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_sale_order__available_product_document_ids
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_sale_order_line__available_product_document_ids
 msgid "Available Product Documents"
 msgstr "Documente de produs disponibile"
 
 #. module: sale_pdf_quote_builder
+#: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_sale_order__available_quotation_document_ids
+msgid "Available Quotation Documents"
+msgstr "Documente de cotație disponibile"
+
+#. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__checksum
 msgid "Checksum/SHA1"
-msgstr "Suma de control/SHA1"
+msgstr "Checksum/SHA1"
 
 #. module: sale_pdf_quote_builder
 #. odoo-javascript
 #: code:addons/sale_pdf_quote_builder/static/src/js/custom_content_kanban_like_widget/custom_field_card/custom_field_card.js:0
 msgid "Click to write content for the PDF quote..."
-msgstr "Faceți clic pentru a scrie conținutul pentru oferta PDF..."
+msgstr "Faceți clic pentru a scrie conținut pentru cotația PDF..."
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__company_id
@@ -152,12 +166,12 @@ msgstr "Companie"
 #: model_terms:ir.ui.view,arch_db:sale_pdf_quote_builder.product_document_form
 #: model_terms:ir.ui.view,arch_db:sale_pdf_quote_builder.quotation_document_form
 msgid "Configure dynamic fields"
-msgstr "Configurează câmpuri dinamice"
+msgstr "Configurați câmpuri dinamice"
 
 #. module: sale_pdf_quote_builder
 #: model_terms:ir.ui.view,arch_db:sale_pdf_quote_builder.product_document_form
 msgid "Configure the path to fill the form fields."
-msgstr "Configurează calea pentru completarea câmpurilor formularului."
+msgstr "Configurați calea pentru a completa câmpurile formularului."
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__create_uid
@@ -184,7 +198,7 @@ msgstr "Personalizabil"
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_sale_order__customizable_pdf_form_fields
 msgid "Customizable PDF Form Fields"
-msgstr "Câmpuri PDF personalizabile"
+msgstr "Câmpuri de formular PDF personalizabile"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__db_datas
@@ -194,7 +208,7 @@ msgstr "Date din baza de date"
 #. module: sale_pdf_quote_builder
 #: model_terms:ir.ui.view,arch_db:sale_pdf_quote_builder.quotation_document_kanban
 msgid "Delete"
-msgstr "Șterge"
+msgstr "Ștergere"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__description
@@ -202,7 +216,12 @@ msgid "Description"
 msgstr "Descriere"
 
 #. module: sale_pdf_quote_builder
+#: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_ir_actions_report__display_name
+#: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_product_document__display_name
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__display_name
+#: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_sale_order__display_name
+#: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_sale_order_line__display_name
+#: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_sale_order_template__display_name
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_sale_pdf_form_field__display_name
 msgid "Display Name"
 msgstr "Nume afișat"
@@ -277,18 +296,18 @@ msgstr "Câmpuri formular incluse"
 #: model:ir.model.constraint,message:sale_pdf_quote_builder.constraint_sale_pdf_form_field_unique_name_per_doc_type
 msgid "Form field name must be unique for a given document type."
 msgstr ""
-"Numele câmpului formularului trebuie să fie unic pentru un anumit tip de "
+"Numele câmpului formular trebuie să fie unic pentru un anumit tip de "
 "document."
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model,name:sale_pdf_quote_builder.model_sale_pdf_form_field
 msgid "Form fields of inside quotation documents."
-msgstr "Câmpuri formular din documentele de ofertă."
+msgstr "Câmpuri de formular ale documentelor de cotație interne."
 
 #. module: sale_pdf_quote_builder
-#: model_terms:ir.ui.view,arch_db:sale_pdf_quote_builder.quotation_document_search_view
-msgid "Group By"
-msgstr "Grupează după"
+#: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__has_thumbnail
+msgid "Has Thumbnail"
+msgstr "Are miniatură"
 
 #. module: sale_pdf_quote_builder
 #. odoo-python
@@ -321,10 +340,23 @@ msgid "History"
 msgstr "Istoric"
 
 #. module: sale_pdf_quote_builder
+#: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_ir_actions_report__id
+#: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_product_document__id
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__id
+#: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_sale_order__id
+#: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_sale_order_line__id
+#: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_sale_order_template__id
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_sale_pdf_form_field__id
 msgid "ID"
 msgstr "ID"
+
+#. module: sale_pdf_quote_builder
+#: model:ir.model.fields,help:sale_pdf_quote_builder.field_quotation_document__add_by_default
+msgid ""
+"If checked, this header or footer will be added by default on new quotes."
+msgstr ""
+"Dacă este bifat, acest antet sau subsol va fi adăugat în mod implicit la "
+"noile cotații."
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,help:sale_pdf_quote_builder.field_quotation_document__active
@@ -332,7 +364,7 @@ msgid ""
 "If unchecked, it will allow you to hide the header or footer without "
 "removing it."
 msgstr ""
-"Dacă nu este bifat, vă permite să ascundeți antetul sau subsolul fără a le "
+"Dacă este debifat, vă va permite să ascundeți antetul sau subsolul fără a îl "
 "elimina."
 
 #. module: sale_pdf_quote_builder
@@ -343,7 +375,7 @@ msgstr "Înălțime imagine"
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__image_src
 msgid "Image Src"
-msgstr "Sursa imagine"
+msgstr "Sursă imagine"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__image_width
@@ -358,7 +390,7 @@ msgstr "Conținut indexat"
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields.selection,name:sale_pdf_quote_builder.selection__product_document__attached_on_sale__inside
 msgid "Inside quote pdf"
-msgstr "În interiorul ofertei PDF"
+msgstr "În interiorul pdf-ului cotației"
 
 #. module: sale_pdf_quote_builder
 #. odoo-python
@@ -367,8 +399,8 @@ msgid ""
 "Invalid form field name %(field_name)s. A form field name in a header or a "
 "footer can not start with \"sol_id_\"."
 msgstr ""
-"Nume de câmp formular invalid %(field_name)s. Un câmp de formular dintr-un "
-"antet sau subsol nu poate începe cu \"sol_id_\"."
+"Invalid form field name %(field_name)s. A form field name in a header or a "
+"footer can not start with \"sol_id_\"."
 
 #. module: sale_pdf_quote_builder
 #. odoo-python
@@ -377,8 +409,8 @@ msgid ""
 "Invalid form field name %(field_name)s. It should only contain "
 "alphanumerics, hyphens or underscores."
 msgstr ""
-"Nume de câmp formular invalid %(field_name)s. Trebuie să conțină doar "
-"caractere alfanumerice, cratime sau underscore."
+"Invalid form field name %(field_name)s. It should only contain "
+"alphanumerics, hyphens or underscores."
 
 #. module: sale_pdf_quote_builder
 #. odoo-python
@@ -387,18 +419,18 @@ msgid ""
 "Invalid path %(path)s. It should only contain alphanumerics, hyphens, "
 "underscores or points."
 msgstr ""
-"Cale invalidă %(path)s. Trebuie să conțină doar caractere alfanumerice, "
-"cratime, underscore sau puncte."
+"Invalid path %(path)s. It should only contain alphanumerics, hyphens, "
+"underscores or points."
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_sale_order__is_pdf_quote_builder_available
 msgid "Is Pdf Quote Builder Available"
-msgstr "Este disponibil Pdf Quote Builder"
+msgstr "Este disponibil constructorul de cotații PDF"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__public
 msgid "Is public document"
-msgstr "Este un document public"
+msgstr "Este document public"
 
 #. module: sale_pdf_quote_builder
 #. odoo-python
@@ -407,8 +439,8 @@ msgid ""
 "It seems that we're not able to process this pdf inside a quotation. It is "
 "either encrypted, or encoded in a format we do not support."
 msgstr ""
-"Se pare că nu putem procesa acest pdf în interiorul unei oferte. Este fie "
-"criptat, fie codificat într-un format pe care nu îl acceptăm."
+"Se pare că nu putem procesa acest pdf într-o cotație. Este fie criptat, sau "
+"codificat într-un format pe care nu îl suportăm."
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__key
@@ -419,7 +451,7 @@ msgstr "Cheie"
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__write_uid
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_sale_pdf_form_field__write_uid
 msgid "Last Updated by"
-msgstr "Ultima actualizare făcută de"
+msgstr "Ultima actualizare de către"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__write_date
@@ -430,12 +462,12 @@ msgstr "Ultima actualizare la"
 #. module: sale_pdf_quote_builder
 #: model_terms:ir.ui.view,arch_db:sale_pdf_quote_builder.quotation_document_form
 msgid "Mark fields as safe to fill in the quote."
-msgstr "Marchează câmpurile ca sigure pentru completare în ofertă."
+msgstr "Marcați câmpurile ca sigure pentru a le completa în cotație."
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__mimetype
 msgid "Mime Type"
-msgstr "Tip MIME"
+msgstr "Tip Mime"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__name
@@ -452,18 +484,18 @@ msgstr "Nu"
 #. odoo-python
 #: code:addons/sale_pdf_quote_builder/models/product_document.py:0
 msgid "Only PDF documents can be attached inside a quote."
-msgstr "Doar documentele PDF pot fi atașate în cadrul unei oferte."
+msgstr "Numai documentele PDF pot fi atașate într-o cotație."
 
 #. module: sale_pdf_quote_builder
 #. odoo-python
 #: code:addons/sale_pdf_quote_builder/models/quotation_document.py:0
 msgid "Only PDF documents can be used as header or footer."
-msgstr "Doar documentele PDF pot fi folosite ca antet sau subsol."
+msgstr "Numai documentele PDF pot fi utilizate ca antet sau subsol."
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__original_id
 msgid "Original (unoptimized, unresized) attachment"
-msgstr "Atașament original (neoptimizat, nemodificat)"
+msgstr "Atașament original (neoptimizat, neredimensionat)"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_sale_pdf_form_field__path
@@ -477,16 +509,16 @@ msgid ""
 "                <br>\n"
 "                to boost your sales."
 msgstr ""
-"Personalizează ofertele cu pagini de antet și subsol atractive<br>\n"
-"pentru a-ți crește vânzările."
+"Personalizați cotațiile dvs. cu pagini de antet și subsol atractive\n"
+"                <br>\n"
+"                pentru a vă stimula vânzările."
 
 #. module: sale_pdf_quote_builder
 #. odoo-python
 #: code:addons/sale_pdf_quote_builder/models/sale_pdf_form_field.py:0
 msgid "Please use only relational fields until the last value of your path."
 msgstr ""
-"Vă rugăm să folosiți doar câmpuri relaționale până la ultima valoare din "
-"calea dvs."
+"Vă rugăm să utilizați doar câmpuri relaționale până la ultima valoare a căii."
 
 #. module: sale_pdf_quote_builder
 #. odoo-python
@@ -520,55 +552,63 @@ msgid ""
 "                        If empty, it will use those define in the company "
 "settings. <br/>"
 msgstr ""
-"Furnizați pagini de antet și subsol pentru a compune o ofertă atractivă cu "
-"mai multe informații\n"
-"despre compania dvs., produsele și serviciile dvs. <br/>\n"
-"PDF-ul ofertelor va fi construit prin alăturarea paginilor de antet, "
-"descrierilor de produs,\n"
-"detaliilor ofertei și apoi paginilor de subsol. <br/>\n"
-"Dacă este gol, se vor folosi cele definite în setările companiei. <br/>"
+"Oferiți pagini de antet și pagini de subsol pentru a compune o cotație "
+"atractivă cu mai multe informații\n"
+"                        despre compania dvs., produsele și serviciile dvs. "
+"<br/>\n"
+"                        PDF-ul cotațiilor dvs. va fi construit prin punerea "
+"împreună a paginilor de antet, descrierilor produselor,\n"
+"                        detaliile cotației și apoi paginile de subsol. <br/>"
+"\n"
+"                        Dacă este gol, va folosi cele definite în setările "
+"\"\"companie. <br/>"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.actions.report,name:sale_pdf_quote_builder.action_report_saleorder_raw
 msgid "Quotation / Order"
-msgstr "Ofertă / Comandă"
+msgstr "Cotație / Comandă"
 
 #. module: sale_pdf_quote_builder
 #: model_terms:ir.ui.view,arch_db:sale_pdf_quote_builder.quotation_document_search_view
 msgid "Quotation Document"
-msgstr "Document ofertă"
+msgstr "Document de cotație"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_sale_pdf_form_field__quotation_document_ids
 msgid "Quotation Documents"
-msgstr "Documente ofertă"
+msgstr "Documente de cotație"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model,name:sale_pdf_quote_builder.model_sale_order_template
 #: model_terms:ir.ui.view,arch_db:sale_pdf_quote_builder.quotation_document_search_view
 msgid "Quotation Template"
-msgstr "Șablon ofertă"
+msgstr "Șablon de cotație"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__quotation_template_ids
 msgid "Quotation Templates"
-msgstr "Șabloane de ofertă"
+msgstr "Șabloane de cotație"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model,name:sale_pdf_quote_builder.model_quotation_document
 msgid "Quotation's Headers & Footers"
-msgstr "Antete și subsoluri ofertă"
+msgstr "Antetele și subsolurile cotației"
 
 #. module: sale_pdf_quote_builder
 #: model_terms:ir.ui.view,arch_db:sale_pdf_quote_builder.sale_order_form_inherit_sale_pdf_quote_builder
 #: model_terms:ir.ui.view,arch_db:sale_pdf_quote_builder.sale_order_template_form
 msgid "Quote Builder"
-msgstr "Generator de oferte"
+msgstr "Constructor de cotații"
+
+#. module: sale_pdf_quote_builder
+#: model_terms:ir.ui.view,arch_db:sale_pdf_quote_builder.sale_order_template_form
+msgid "Quote Builder Demo Video"
+msgstr "Videoclip demo Constructor de cotații"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__ir_attachment_id
 msgid "Related attachment"
-msgstr "Atașament aferent"
+msgstr "Atașament asociat"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model,name:sale_pdf_quote_builder.model_ir_actions_report
@@ -598,13 +638,14 @@ msgstr "Nume resursă"
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_product_document__attached_on_sale
 msgid "Sale : Visible at"
-msgstr "Vânzare : Vizibil la"
+msgstr "Vânzare: Vizibil la"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.actions.server,name:sale_pdf_quote_builder.cron_post_upgrade_assign_missing_form_fields_ir_actions_server
 msgid "Sale Pdf Quote Builder: assign form fields to documents post upgrade"
 msgstr ""
-"Sale Pdf Quote Builder: asignează câmpuri formular documentelor după upgrade"
+"Constructor cotație PDF vânzări: atribuire câmpuri formular documentelor "
+"după actualizare"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model,name:sale_pdf_quote_builder.model_sale_order
@@ -635,7 +676,7 @@ msgstr "Câmpul %(field_name)s nu există pe modelul %(model_name)s"
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,help:sale_pdf_quote_builder.field_sale_pdf_form_field__name
 msgid "The form field name as written in the PDF."
-msgstr "Numele câmpului formularului așa cum este scris în PDF."
+msgstr "Numele câmpului formular așa cum este scris în PDF."
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,help:sale_pdf_quote_builder.field_sale_pdf_form_field__path
@@ -643,8 +684,8 @@ msgid ""
 "The path to follow to dynamically fill the form field. \n"
 "Leave empty to be able to customized it in the quotation form."
 msgstr ""
-"Calea de urmat pentru a completa dinamic câmpul formularului.\n"
-"Lăsați gol pentru a putea fi personalizat în formularul de ofertă."
+"Calea de urmat pentru a completa dinamic câmpul formular. \n"
+"Lăsați gol pentru a putea să îl personalizați în formularul de cotație."
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,help:sale_pdf_quote_builder.field_sale_order_line__product_document_ids
@@ -652,8 +693,8 @@ msgid ""
 "The product documents for this order line that will be merged in the PDF "
 "quote."
 msgstr ""
-"Documentele de produs pentru această linie de comandă care vor fi îmbinate "
-"în oferta PDF."
+"Documentele produsului pentru această linie de comandă care vor fi îmbinate "
+"în cotația PDF."
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__theme_template_id
@@ -666,6 +707,11 @@ msgid "This document"
 msgstr "Acest document"
 
 #. module: sale_pdf_quote_builder
+#: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__thumbnail
+msgid "Thumbnail"
+msgstr "Miniatură"
+
+#. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__type
 msgid "Type"
 msgstr "Tip"
@@ -673,7 +719,7 @@ msgstr "Tip"
 #. module: sale_pdf_quote_builder
 #: model_terms:ir.actions.act_window,help:sale_pdf_quote_builder.quotation_document_action
 msgid "Upload quotation headers and footers"
-msgstr "Încarcă antete și subsoluri ofertă"
+msgstr "Încărcați antetele și subsolurile cotației"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_quotation_document__url
@@ -700,8 +746,8 @@ msgstr "Site web"
 #: code:addons/sale_pdf_quote_builder/models/product_document.py:0
 msgid "When attached inside a quote, the document must be a file, not a URL."
 msgstr ""
-"Când este atașat în interiorul unei oferte, documentul trebuie să fie un "
-"fișier, nu un URL."
+"Când este atașat într-o cotație, documentul trebuie să fie un fișier, nu un "
+"URL."
 
 #. module: sale_pdf_quote_builder
 #. odoo-python
@@ -715,10 +761,10 @@ msgid ""
 "You can either upload a file from your computer or copy/paste an internet "
 "link to your file."
 msgstr ""
-"Poți încărca un fișier din calculator sau poți copia/lipi un link de "
-"internet către fișierul tău."
+"Puteți fie să încărcați un fișier de pe computerul dvs., fie să copiați/"
+"lipiți un link de internet către fișierul dvs."
 
 #. module: sale_pdf_quote_builder
 #: model_terms:ir.ui.view,arch_db:sale_pdf_quote_builder.quotation_document_form
 msgid "on"
-msgstr "pe"
+msgstr "activat"

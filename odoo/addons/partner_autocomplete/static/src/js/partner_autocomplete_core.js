@@ -1,4 +1,3 @@
-/** @odoo-module **/
 /* global checkVATNumber */
 
 import { loadJS } from "@web/core/assets";
@@ -20,6 +19,8 @@ export function usePartnerAutocomplete() {
 
     const notification = useService("notification");
     const orm = useService("orm");
+
+    let lastNoResultsQuery = null;
 
     onWillStart(async () => {
         await loadJS("/partner_autocomplete/static/lib/jsvat.js");
@@ -58,7 +59,7 @@ export function usePartnerAutocomplete() {
         value = value.trim();
         const isVAT = await isVATNumber(value);
         if (isVAT){
-            value = sanitizeVAT(value);
+        	value = sanitizeVAT(value);
         }
         const isGST = isGSTNumber(value);
         return await getSuggestions(value, isVAT || isGST, queryCountryId);
@@ -72,10 +73,14 @@ export function usePartnerAutocomplete() {
      * @private
      */
     function enrichCompany(company) {
+        const context = {
+            'enriched_company_data': company,
+        };
+
         if (isGSTNumber(company.query)){
             return orm.call('res.partner', 'enrich_by_gst', [company.query]);
         }
-        return orm.call('res.partner', 'enrich_by_duns', [company.duns]);
+        return orm.call('res.partner', 'enrich_by_duns', [company.duns], { context: context });
     }
 
     function removeUselessFields(company, fieldsToKeep) {
@@ -135,6 +140,13 @@ export function usePartnerAutocomplete() {
     async function getSuggestions(value, isVAT, queryCountryId) {
         const method = isVAT ? 'autocomplete_by_vat' : 'autocomplete_by_name';
 
+        // Optimization: if the search query starts with the same content as a previous query for
+        // which there was no results, there won't be any results for the current query.
+        // E.g., if there is no results for query "abc123", there won't be any results for query "abc1234".
+        if (!isVAT && lastNoResultsQuery && value.startsWith(lastNoResultsQuery)) {
+            return [];
+        }
+
         const prom = orm.silent.call(
             'res.partner',
             method,
@@ -142,11 +154,16 @@ export function usePartnerAutocomplete() {
         );
 
         const suggestions = await keepLastOdoo.add(prom);
+
+        if (!isVAT && suggestions.length === 0) {
+            lastNoResultsQuery = value;
+        }
+
         await Promise.all(suggestions.map(async (suggestion) => {
             suggestion.query = value;  // Save queried value (name, VAT) for later
             suggestion.description = '';
-            if (suggestion.city){
-                suggestion.description += suggestion.city;
+            if (suggestion.city || suggestion.city_id){
+                suggestion.description += suggestion.city || suggestion.city_id.display_name;
             }
             // Show country name only if searching worldwide
             if (queryCountryId === 0 && suggestion.country_id && suggestion.country_id.display_name) {

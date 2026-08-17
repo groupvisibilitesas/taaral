@@ -19,12 +19,14 @@ test("should remove `style.color` from table and apply it to tds", async () => {
                 </tbody></table>
             `),
         contentBeforeEdit: unformat(`
+            <p data-selection-placeholder=""><br></p>
             <table style="" class="o_selected_table">
                 <tbody>
                     <tr><td class="o_selected_td" style="color: red;">ab</td></tr>
                     <tr><td style="color: red;">ab</td></tr>
                 </tbody>
             </table>
+            <p data-selection-placeholder=""><br></p>
         `),
     });
 });
@@ -38,41 +40,21 @@ test("should remove `style.color` from table and apply it to td without `style.c
                 </tbody></table>
             `),
         contentBeforeEdit: unformat(`
+            <p data-selection-placeholder=""><br></p>
             <table style="">
                 <tbody>
                     <tr><td style="color: red;">ab</td></tr>
                     <tr><td style="color: green;">ab</td></tr>
                 </tbody>
             </table>
+            <p data-selection-placeholder=""><br></p>
         `),
     });
 });
 
-test("should not distribute table color to tds of a nested table", async () => {
+test("Should properly add feffs around icons", async () => {
     await testEditor({
-        contentBefore: unformat(`
-                <table style="color: red;"><tbody>
-                    <tr><td>ab</td></tr>
-                    <tr><td>
-                        <table><tbody>
-                            <tr><td>cd</td></tr>
-                        </tbody></table>
-                    </td></tr>
-                </tbody></table>
-            `),
-        contentBeforeEdit: unformat(`
-            <table style="">
-                <tbody>
-                    <tr><td style="color: red;">ab</td></tr>
-                    <tr><td style="color: red;">
-                        <table>
-                            <tbody>
-                                <tr><td>cd</td></tr>
-                            </tbody>
-                        </table>
-                    </td></tr>
-                </tbody>
-            </table>
-        `),
+        contentBefore: `<div><span class="fa fa-glass" contenteditable="false"></span></div>`,
+        contentBeforeEdit: `<div class="o-paragraph">\ufeff<span class="fa fa-glass" contenteditable="false">\u200b</span>\ufeff</div>`,
     });
 });

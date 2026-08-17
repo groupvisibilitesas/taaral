@@ -8,15 +8,43 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.tools import float_repr, format_datetime
 
+ADJUSTMENT_REASONS = [
+    ("BR-KSA-17-reason-1", "Cancellation or suspension of the supplies after its occurrence either wholly or partially"),
+    ("BR-KSA-17-reason-2", "In case of essential change or amendment in the supply, which leads to the change of the VAT due"),
+    ("BR-KSA-17-reason-3", "Amendment of the supply value which is pre-agreed upon between the supplier and consumer"),
+    ("BR-KSA-17-reason-4", "In case of goods or services refund"),
+    ("BR-KSA-17-reason-5", "In case of change in Seller's or Buyer's information"),
+]
+
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    l10n_sa_qr_code_str = fields.Char(string='Zatka QR Code', compute='_compute_qr_code_str')
+    l10n_sa_qr_code_str = fields.Char(string='Zatka QR Code', compute='_compute_qr_code_str', compute_sudo=True)
+    l10n_sa_show_reason = fields.Boolean(compute="_compute_show_l10n_sa_reason")
+    l10n_sa_reason = fields.Selection(string="ZATCA Reason", selection=ADJUSTMENT_REASONS, copy=False)
     l10n_sa_confirmation_datetime = fields.Datetime(string='ZATCA Issue Date',
                                                     readonly=True,
                                                     copy=False,
                                                     help="""Date on which the invoice is generated as final document (after securing all internal approvals).""")
+
+    def _get_name_invoice_report(self):
+        # EXTENDS account
+        self.ensure_one()
+        if self.company_id.country_code == 'SA':
+            return 'l10n_sa.l10n_sa_report_invoice_document'
+        return super()._get_name_invoice_report()
+
+    def _l10n_gcc_get_invoice_title(self):
+        # EXTENDS l10n_gcc_invoice
+        self.ensure_one()
+        if self.company_id.country_code != "SA":
+            return super()._l10n_gcc_get_invoice_title()
+
+        if self._l10n_sa_is_simplified():
+            return self.env._("Simplified Tax Invoice")
+
+        return self.env._("Tax Invoice")
 
     @api.depends('country_code', 'move_type')
     def _compute_show_delivery_date(self):
@@ -71,6 +99,15 @@ class AccountMove(models.Model):
     def _l10n_sa_reset_confirmation_datetime(self):
         for move in self.filtered(lambda m: m.country_code == 'SA'):
             move.l10n_sa_confirmation_datetime = False
+
+    def _l10n_sa_get_adjustment_reason(self):
+        self.ensure_one()
+        readable_zatca_reason = dict(self._fields['l10n_sa_reason']._description_selection(self.env)).get(self.l10n_sa_reason)
+        return readable_zatca_reason if self.l10n_sa_show_reason else self.ref
+
+    def _compute_show_l10n_sa_reason(self):
+        for record in self:
+            record.l10n_sa_show_reason = record.country_code == 'SA' and (record.move_type == 'out_refund' or (record.move_type == 'out_invoice' and record.debit_origin_id))
 
     def _get_iso_format_asia_riyadh_date(self, separator=' '):
         return f'%Y-%m-%d{separator}%H:%M:%S'

@@ -134,6 +134,7 @@ class AccountMove(models.Model):
         comodel_name="l10n_ec.sri.payment",
         string="Payment Method (SRI)",
         help="Ecuador: Payment Methods Defined by the SRI.",
+        default=lambda self: self.env['l10n_ec.sri.payment'].search([], limit=1),
     )
 
     @api.model
@@ -148,7 +149,7 @@ class AccountMove(models.Model):
     def _get_l10n_latam_documents_domain(self):
         self.ensure_one()
         domain = super()._get_l10n_latam_documents_domain()
-        if self.country_code == 'EC' and self.journal_id.l10n_latam_use_documents:
+        if self.country_code == 'EC' and self.l10n_latam_use_documents:
             if self.debit_origin_id:  # show/hide the debit note document type
                 domain.extend([('internal_type', '=', 'debit_note')])
             elif self.move_type in ('out_invoice', 'in_invoice'):
@@ -169,7 +170,7 @@ class AccountMove(models.Model):
         """If use documents then will create a new starting sequence using the document type code prefix and the
         journal document number with a 8 padding number"""
         if (
-            self.journal_id.l10n_latam_use_documents
+            self.l10n_latam_use_documents
             and self.company_id.country_id.code == "EC"
         ):
             if self.l10n_latam_document_type_id:

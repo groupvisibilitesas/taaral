@@ -5,12 +5,12 @@
 # Bone NI <bounkirdni@gmail.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-06-06 12:06+0000\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-03 02:16+0000\n"
 "Last-Translator: Bone NI <bounkirdni@gmail.com>\n"
-"Language-Team: Lao <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Lao <https://translate.odoo.com/projects/odoo-19/"
 "portal_rating/lo/>\n"
 "Language: lo\n"
 "MIME-Version: 1.0\n"
@@ -20,17 +20,27 @@ msgstr ""
 "X-Generator: Weblate 2026.6.1\n"
 
 #. module: portal_rating
+#: model_terms:ir.ui.view,arch_db:portal_rating.rating_rating_view_form
+msgid "<span> on </span>"
+msgstr "<span> ເມື່ອ </span>"
+
+#. module: portal_rating
+#: model_terms:ir.ui.view,arch_db:portal_rating.rating_rating_view_form
+msgid "<span>by </span>"
+msgstr "<span> ໂດຍ </span>"
+
+#. module: portal_rating
 #. odoo-javascript
-#: code:addons/portal_rating/static/src/js/portal_rating_composer.js:0
+#: code:addons/portal_rating/static/src/interactions/portal_rating_composer.js:0
 #: model_terms:ir.ui.view,arch_db:portal_rating.rating_stars_static_popup_composer
 msgid "Add Review"
-msgstr "ເພີ່ມການຣີວິວ"
+msgstr "ເພີ່ມການວິຈານ"
 
 #. module: portal_rating
 #. odoo-javascript
 #: code:addons/portal_rating/static/src/xml/portal_tools.xml:0
 msgid "Average"
-msgstr "ສະເລ່ຍ"
+msgstr "ຄ່າສະເລ່ຍ"
 
 #. module: portal_rating
 #. odoo-javascript
@@ -68,6 +78,13 @@ msgid "Details"
 msgstr "ລາຍລະອຽດ"
 
 #. module: portal_rating
+#: model:ir.model.fields,field_description:portal_rating.field_ir_http__display_name
+#: model:ir.model.fields,field_description:portal_rating.field_mail_message__display_name
+#: model:ir.model.fields,field_description:portal_rating.field_rating_rating__display_name
+msgid "Display Name"
+msgstr "ຊື່ທີ່ສະແດງ"
+
+#. module: portal_rating
 #. odoo-javascript
 #: code:addons/portal_rating/static/src/chatter/frontend/message_patch.xml:0
 msgid "Edit"
@@ -75,15 +92,10 @@ msgstr "ແກ້ໄຂ"
 
 #. module: portal_rating
 #. odoo-javascript
-#: code:addons/portal_rating/static/src/js/portal_rating_composer.js:0
+#: code:addons/portal_rating/static/src/interactions/portal_rating_composer.js:0
 #: model_terms:ir.ui.view,arch_db:portal_rating.rating_stars_static_popup_composer
 msgid "Edit Review"
-msgstr "ແກ້ໄຂການຣີວິວ"
-
-#. module: portal_rating
-#: model:ir.model,name:portal_rating.model_mail_thread
-msgid "Email Thread"
-msgstr "ສາຍການສົນທະນາອີເມວ"
+msgstr "ແກ້ໄຂການວິຈານ"
 
 #. module: portal_rating
 #. odoo-javascript
@@ -111,6 +123,13 @@ msgid "Half a star"
 msgstr "ເຄິ່ງດາວ"
 
 #. module: portal_rating
+#: model:ir.model.fields,field_description:portal_rating.field_ir_http__id
+#: model:ir.model.fields,field_description:portal_rating.field_mail_message__id
+#: model:ir.model.fields,field_description:portal_rating.field_rating_rating__id
+msgid "ID"
+msgstr "ID"
+
+#. module: portal_rating
 #. odoo-python
 #: code:addons/portal_rating/controllers/portal_rating.py:0
 msgid "Invalid rating"
@@ -125,13 +144,13 @@ msgstr "ຂໍ້ຄວາມ"
 #. odoo-javascript
 #: code:addons/portal_rating/static/src/xml/portal_rating_composer.xml:0
 msgid "Modify your review"
-msgstr "ປັບປຸງການຣີວິວຂອງທ່ານ"
+msgstr "ປັບປ່ຽນການວິຈານຂອງທ່ານ"
 
 #. module: portal_rating
 #. odoo-javascript
-#: code:addons/portal_rating/static/src/js/portal_rating_composer.js:0
+#: code:addons/portal_rating/static/src/interactions/portal_rating_composer.js:0
 msgid "Post review"
-msgstr "ສົ່ງການຣີວິວ"
+msgstr "ສົ່ງການວິຈານ"
 
 #. module: portal_rating
 #. odoo-javascript
@@ -148,7 +167,7 @@ msgstr "ເຜີຍແຜ່ເມື່ອ"
 #. module: portal_rating
 #: model:ir.model.fields,field_description:portal_rating.field_rating_rating__publisher_comment
 msgid "Publisher comment"
-msgstr "ຄຳເຫັນຈາກຜູ້ເຜີຍແຜ່"
+msgstr "ຄຳເຫັນຂອງຜູ້ເຜີຍແຜ່"
 
 #. module: portal_rating
 #: model:ir.model,name:portal_rating.model_rating_rating
@@ -159,41 +178,41 @@ msgstr "ການໃຫ້ຄະແນນ"
 #. odoo-javascript
 #: code:addons/portal_rating/static/src/xml/portal_tools.xml:0
 msgid "Remove Selection"
-msgstr "ລຶບການເລືອກ"
+msgstr "ເອົາການເລືອກອອກ"
 
 #. module: portal_rating
 #. odoo-javascript
-#: code:addons/portal_rating/static/src/js/portal_rating_composer.js:0
+#: code:addons/portal_rating/static/src/interactions/portal_rating_composer.js:0
 #: model_terms:ir.ui.view,arch_db:portal_rating.rating_stars_static_popup_composer
 msgid "Review"
-msgstr "ການຣີວິວ"
+msgstr "ການວິຈານ"
 
 #. module: portal_rating
 #. odoo-javascript
-#: code:addons/portal_rating/static/src/js/portal_composer.js:0
+#: code:addons/portal_rating/static/src/interactions/portal_composer.js:0
 msgid ""
 "The rating is required. Please make sure to select one before sending your "
 "review."
 msgstr ""
-"ຈຳເປັນຕ້ອງໃຫ້ຄະແນນ. ກະລຸນາກວດສອບໃຫ້ແນ່ໃຈວ່າໄດ້ເລືອກແລ້ວກ່ອນທີ່ຈະສົ່ງການຣີວິວຂອງທ່ານ."
+"ຈຳເປັນຕ້ອງໃຫ້ຄະແນນ. ກະລຸນາກວດສອບໃຫ້ແນ່ໃຈວ່າໄດ້ເລືອກອັນໃດອັນໜຶ່ງກ່ອນສົ່ງການວິຈານຂອງທ່ານ."
 
 #. module: portal_rating
 #. odoo-javascript
-#: code:addons/portal_rating/static/src/js/portal_rating_composer.js:0
+#: code:addons/portal_rating/static/src/interactions/portal_rating_composer.js:0
 msgid "Update review"
-msgstr "ອັບເດດການຣີວິວ"
+msgstr "ອັບເດດການວິຈານ"
 
 #. module: portal_rating
 #. odoo-python
 #: code:addons/portal_rating/models/rating_rating.py:0
 msgid "Updating rating comment require write access on related record"
-msgstr "ການອັບເດດຄຳເຫັນການໃຫ້ຄະແນນຈຳເປັນຕ້ອງມີສິດໃນການຂຽນລົງໃນບັນທຶກທີ່ກ່ຽວຂ້ອງ"
+msgstr "ການອັບເດດຄຳເຫັນການໃຫ້ຄະແນນ ຕ້ອງການສິດໃນການຂຽນລົງໃນບັນທຶກທີ່ກ່ຽວຂ້ອງ"
 
 #. module: portal_rating
 #. odoo-javascript
 #: code:addons/portal_rating/static/src/xml/portal_rating_composer.xml:0
 msgid "Write a review"
-msgstr "ຂຽນການຣີວິວ"
+msgstr "ຂຽນການວິຈານ"
 
 #. module: portal_rating
 #. odoo-javascript

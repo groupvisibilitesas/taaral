@@ -1,6 +1,3 @@
-/** @odoo-module **/
-
-import { queryOne } from "@odoo/hoot-dom";
 import { browser } from "@web/core/browser/browser";
 import { registry } from "@web/core/registry";
 import * as tourUtils from "@website_sale/js/tours/tour_utils";
@@ -80,7 +77,7 @@ registry.category("web_tour.tours").add('shop_cart_recovery', {
     {
         content: "check the mail is sent, grab the recovery link, and logout",
         trigger: ".o-mail-Message-body a:text(Resume order)",
-        run: function () {
+        run({ queryOne }) {
             var link = queryOne('.o-mail-Message-body a:contains("Resume order")').getAttribute('href');
             browser.localStorage.setItem(recoveryLinkKey, link);
             window.location.href = "/web/session/logout?redirect=/";

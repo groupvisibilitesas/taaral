@@ -9,13 +9,13 @@ from odoo.addons.sms.tools.sms_tools import sms_content_to_rendered_html
 from odoo.exceptions import UserError
 
 
-class SendSMS(models.TransientModel):
+class SmsComposer(models.TransientModel):
     _name = 'sms.composer'
     _description = 'Send SMS Wizard'
 
     @api.model
     def default_get(self, fields):
-        result = super(SendSMS, self).default_get(fields)
+        result = super().default_get(fields)
 
         result['res_model'] = result.get('res_model') or self.env.context.get('active_model')
 
@@ -47,7 +47,9 @@ class SendSMS(models.TransientModel):
     # options for comment and mass mode
     mass_keep_log = fields.Boolean('Keep a note on document', default=True)
     mass_force_send = fields.Boolean('Send directly', default=False)
-    mass_use_blacklist = fields.Boolean('Use blacklist', default=True)
+    use_exclusion_list = fields.Boolean(
+        'Use Exclusion List', default=True, copy=False,
+        help='Prevent sending messages to blacklisted contacts. Disable only when absolutely necessary.')
     # recipients
     recipient_valid_count = fields.Integer('# Valid recipients', compute='_compute_recipients', compute_sudo=False)
     recipient_invalid_count = fields.Integer('# Invalid recipients', compute='_compute_recipients', compute_sudo=False)
@@ -120,7 +122,8 @@ class SendSMS(models.TransientModel):
                 composer.recipient_single_number_itf = ''
                 continue
             records.ensure_one()
-            res = records._sms_get_recipients_info(force_field=composer.number_field_name, partner_fallback=True)
+            # If the composer was opened with a specific field use that, otherwise get the partner's
+            res = records._sms_get_recipients_info(force_field=composer.number_field_name, partner_fallback=not composer.number_field_name)
             if not composer.recipient_single_number_itf:
                 composer.recipient_single_number_itf = res[records.id]['sanitized'] or res[records.id]['number'] or ''
             if not composer.number_field_name:
@@ -247,14 +250,17 @@ class SendSMS(models.TransientModel):
     def _action_send_sms_mass(self, records=None):
         records = records if records is not None else self._get_records()
 
-        sms_record_values = self._prepare_mass_sms_values(records)
-        sms_all = self._prepare_mass_sms(records, sms_record_values)
-        if sms_all and self.mass_keep_log and records and isinstance(records, self.pool['mail.thread']):
-            log_values = self._prepare_mass_log_values(records, sms_record_values)
-            records._message_log_batch(**log_values)
+        sms_record_values_filtered = self._filter_out_and_handle_revoked_sms_values(self._prepare_mass_sms_values(records))
+        records_filtered = records.filtered(lambda record: record.id in sms_record_values_filtered)
+        if self.mass_keep_log and sms_record_values_filtered and isinstance(records_filtered, self.pool['mail.thread']):
+            log_values = self._prepare_mass_log_values(records_filtered, sms_record_values_filtered)
+            mail_messages = records_filtered._message_log_batch(**log_values)
+            for idx, record in enumerate(records_filtered):
+                sms_record_values_filtered[record.id]['mail_message_id'] = mail_messages[idx].id
+        sms_all = self._prepare_mass_sms(records_filtered, sms_record_values_filtered)
 
         if sms_all and self.mass_force_send:
-            sms_all.filtered(lambda sms: sms.state == 'outgoing').send(auto_commit=False, raise_exception=False)
+            sms_all.filtered(lambda sms: sms.state == 'outgoing').send(raise_exception=False)
             return self.env['sms.sms'].sudo().search([('id', 'in', sms_all.ids)])
         return sms_all
 
@@ -262,10 +268,19 @@ class SendSMS(models.TransientModel):
     # Mass mode specific
     # ------------------------------------------------------------
 
+    def _filter_out_and_handle_revoked_sms_values(self, sms_values_all):
+        """Meant to be overridden to filter out and handle sms that must not be sent.
+
+        :param dict sms_values_all: sms values by res_id
+        :returns: filtered sms_vals_all
+        :rtype: dict
+        """
+        return sms_values_all
+
     def _get_blacklist_record_ids(self, records, recipients_info):
         """ Get a list of blacklisted records. Those will be directly canceled
         with the right error code. """
-        if self.mass_use_blacklist:
+        if self.use_exclusion_list:
             bl_numbers = self.env['phone.blacklist'].sudo().search([]).mapped('number')
             return [r.id for r in records if recipients_info[r.id]['sanitized'] in bl_numbers]
         return []

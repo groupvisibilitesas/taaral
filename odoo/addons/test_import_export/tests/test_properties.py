@@ -1,5 +1,7 @@
 import json
-from odoo.tests.common import RecordCapturer, HttpCase, new_test_user
+
+from odoo.tests import new_test_user
+from odoo.tests.common import RecordCapturer, HttpCase
 
 
 class TestPropertiesExportImport(HttpCase):
@@ -224,6 +226,40 @@ class TestPropertiesExportImport(HttpCase):
             ],
         )
 
+    def test_properties_type_field_accessible(self):
+        """Test get_fields works even property_defination model is not accessible."""
+
+        property_def = [{'name': 'date', 'type': 'date', 'string': 'Date', 'default': '2025-11-11'}]
+        record = self.env['export.aggregator.admin'].create({'definition_properties': property_def})
+        self.env['export.aggregator.one2many'].create([
+            {
+                'admin_property_def': record.id,
+                'admin_property': {'date': '2025-11-09'}
+            }
+        ])
+        new_test_user(self.env, login='import_test')
+        self.authenticate('import_test', 'import_test')
+        res = self.url_open(
+            "/web/export/get_fields",
+            data=json.dumps({"params": {"model": 'export.aggregator.one2many',
+                                        'import_compat': True,
+                                        'domain': []}}),
+            headers={"Content-Type": "application/json"}
+        )
+        self.assertEqual(
+            [dict_field['id'] for dict_field in json.loads(res.content)['result']],
+            [
+                'active',
+                'admin_property_def',
+                'admin_property.date',
+                'id',
+                'name',
+                'parent_id',
+                'admin_property',
+                'value'
+            ],
+        )
+
     def test_export_complex_path_properties(self):
         path_records = self.env['import.path.properties'].create([
             {
@@ -266,6 +302,12 @@ class TestPropertiesExportImport(HttpCase):
                 ['Name Partner 1,Name Partner 2,Name Partner 3', '', True],
             ]
         )
+
+    def test_export_properties_field(self):
+        """Test that the 'properties' field exports as a dictionary."""
+        export_data = self.properties_records[0].export_data(['properties']).get('datas', [])
+        self.assertIsInstance(export_data[0][0], dict)
+        self.assertEqual(export_data[0][0], {'char_prop': 'Not the default', 'selection_prop': 'selection_2'})
 
     def test_import_properties(self):
         def_record_1 = self.definition_records[0]
@@ -328,7 +370,7 @@ class TestPropertiesExportImport(HttpCase):
             },
         )
 
-        with RecordCapturer(self.ModelProperty, []) as capture:
+        with RecordCapturer(self.ModelProperty) as capture:
             results = import_wizard.execute_import(
                 [fnames[0] for fnames in preview['matches'].values()],
                 [],

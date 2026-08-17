@@ -29,29 +29,4 @@
             </cac:Delivery>
         </t>
     </template>
-
-    <template id="ubl_tr_InvoiceLineType" inherit_id="account_edi_ubl_cii.ubl_21_InvoiceLineType" primary="True">
-        <xpath expr="//*[local-name()='AllowanceCharge']" position="before">
-            <t xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2">
-                <t t-call="{{InvoiceLineDelivery_template}}">
-                    <t t-set="vals" t-value="vals.get('line_delivery_vals', {})"/>
-                </t>
-            </t>
-        </xpath>
-    </template>
-
-    <template id="ubl_tr_export_InvoiceType" inherit_id="l10n_tr_nilvera_einvoice.ubl_tr_InvoiceType" primary="True">
-        <xpath expr="//*[local-name()='AccountingCustomerParty']" position="after">
-            <cac:BuyerCustomerParty xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
-                xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
-                <t t-set="buyer_customer_party_vals" t-value="vals.get('buyer_customer_party_vals', {})"/>
-                <cbc:AdditionalAccountID t-out="buyer_customer_party_vals.get('additional_account_id')"/>
-                <cac:Party>
-                    <t t-call="{{PartyType_template}}">
-                        <t t-set="vals" t-value="buyer_customer_party_vals.get('party_vals', {})"/>
-                    </t>
-                </cac:Party>
-            </cac:BuyerCustomerParty>
-        </xpath>
-    </template>
 </odoo>

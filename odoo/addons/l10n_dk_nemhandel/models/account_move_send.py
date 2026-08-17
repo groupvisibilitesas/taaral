@@ -32,7 +32,7 @@ class AccountMoveSend(models.AbstractModel):
             invoice_edi_format = move_data.get('invoice_edi_format') or 'oioubl_21'
             return all([
                 self._is_applicable_to_company(method, move.company_id),
-                partner._get_nemhandel_verification_state(invoice_edi_format) == 'valid',
+                partner.nemhandel_verification_state == 'valid',
                 move._need_ubl_cii_xml(invoice_edi_format)
                 or move.ubl_cii_xml_id and move.nemhandel_move_state not in {'processing', 'done'},
             ])
@@ -132,4 +132,4 @@ class AccountMoveSend(models.AbstractModel):
                 self.env.ref('l10n_dk_nemhandel.ir_cron_nemhandel_get_message_status')._trigger(at=fields.Datetime.now() + timedelta(minutes=5))
 
         if self._can_commit():
-            self._cr.commit()
+            self.env.cr.commit()

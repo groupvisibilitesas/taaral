@@ -1,5 +1,3 @@
-/** @odoo-module **/
-
     import { registry } from "@web/core/registry";
     import FinalSteps from "@website_event_booth_exhibitor/../tests/tours/website_event_booth_exhibitor_steps";
 
@@ -13,7 +11,7 @@
         expectUnloadPage: true,
     }, {
         content: 'Browse Booths',
-        trigger: 'a:contains("Get A Booth")',
+        trigger: 'a:contains("Become exhibitor")',
         run: "click",
         expectUnloadPage: true,
     }, {
@@ -45,9 +43,4 @@
     },
     {
         trigger: "input[name='sponsor_name'], input[name='sponsor_email'], input[name='sponsor_phone']",
-    },
-    {
-        content: "Validate booth details",
-        trigger: 'button.o_wbooth_registration_confirm',
-        run: 'click',
     }, ...new FinalSteps()._getSteps()].filter(Boolean)});

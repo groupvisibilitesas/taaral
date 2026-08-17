@@ -2,6 +2,8 @@ import { describe, expect, test } from "@odoo/hoot";
 import { setupEditor, testEditor } from "../_helpers/editor";
 import { getContent } from "../_helpers/selection";
 import { execCommand } from "../_helpers/userCommands";
+import { simulateArrowKeyPress } from "../_helpers/user_actions";
+import { animationFrame, click, tick } from "@odoo/hoot-dom";
 
 async function insertSeparator(editor) {
     execCommand(editor, "insertSeparator");
@@ -12,8 +14,17 @@ describe("insert separator", () => {
         await testEditor({
             contentBefore: "<p>[]<br></p>",
             stepFunction: insertSeparator,
-            contentAfterEdit: `<hr contenteditable="false"><p placeholder='Type "/" for commands' class="o-we-hint">[]<br></p>`,
+            contentAfterEdit: `<p data-selection-placeholder="" style="margin: 8px 0px -9px;"><br></p><hr contenteditable="false"><p o-we-hint-text='Type "/" for commands' class="o-we-hint">[]<br></p>`,
             contentAfter: "<hr><p>[]<br></p>",
+        });
+    });
+
+    test("should insert a separator inside editable with contenteditable set to false before the block", async () => {
+        await testEditor({
+            contentBefore: "<p>[]abc<br></p>",
+            stepFunction: insertSeparator,
+            contentAfterEdit: `<p data-selection-placeholder="" style="margin: 8px 0px -9px;"><br></p><hr contenteditable="false"><p>[]abc<br></p>`,
+            contentAfter: "<hr><p>[]abc<br></p>",
         });
     });
 
@@ -21,7 +32,7 @@ describe("insert separator", () => {
         await testEditor({
             contentBefore: "<p>content</p><p>[]<br></p>",
             stepFunction: insertSeparator,
-            contentAfterEdit: `<p>content</p><hr contenteditable="false"><p placeholder='Type "/" for commands' class="o-we-hint">[]<br></p>`,
+            contentAfterEdit: `<p>content</p><hr contenteditable="false"><p o-we-hint-text='Type "/" for commands' class="o-we-hint">[]<br></p>`,
             contentAfter: "<p>content</p><hr><p>[]<br></p>",
         });
     });
@@ -30,7 +41,7 @@ describe("insert separator", () => {
         await testEditor({
             contentBefore: "<p>content</p><p>text[]</p>",
             stepFunction: insertSeparator,
-            contentAfterEdit: `<p>content</p><p>text</p><hr contenteditable="false"><p placeholder='Type "/" for commands' class="o-we-hint">[]<br></p>`,
+            contentAfterEdit: `<p>content</p><p>text</p><hr contenteditable="false"><p o-we-hint-text='Type "/" for commands' class="o-we-hint">[]<br></p>`,
             contentAfter: "<p>content</p><p>text</p><hr><p>[]<br></p>",
         });
     });
@@ -100,7 +111,50 @@ describe("insert separator", () => {
         el.append(div);
         editor.shared.history.addStep();
         expect(getContent(el)).toBe(
-            `<p placeholder='Type "/" for commands' class="o-we-hint">[]<br></p><div><hr contenteditable="false"></div>`
+            `<p o-we-hint-text='Type "/" for commands' class="o-we-hint">[]<br></p><div><hr contenteditable="false"></div><p data-selection-placeholder=""><br></p>`
         );
+    });
+
+    test("should apply custom selection on separator when selected", async () => {
+        const { el, editor } = await setupEditor("<p>abc</p><p>x[]yz</p>");
+        await insertSeparator(editor);
+        expect(getContent(el)).toBe(
+            `<p>abc</p><p>xyz</p><hr contenteditable="false"><p o-we-hint-text='Type "/" for commands' class="o-we-hint">[]<br></p>`
+        );
+
+        simulateArrowKeyPress(editor, ["Shift", "ArrowUp"]);
+        await animationFrame();
+
+        expect(getContent(el)).toBe(
+            `<p>abc</p><p>xyz]</p><hr contenteditable="false" class="o_selected_hr"><p>[<br></p>`
+        );
+    });
+
+    test("should remove custom selection on separator when not selected", async () => {
+        const { el, editor } = await setupEditor(
+            '<p>[abc</p><hr contenteditable="false"><p>xyz]</p>'
+        );
+        expect(getContent(el)).toBe(
+            `<p>[abc</p><hr contenteditable="false" class="o_selected_hr"><p>xyz]</p>`
+        );
+
+        simulateArrowKeyPress(editor, ["Shift", "ArrowUp"]);
+        await animationFrame();
+
+        expect(getContent(el)).toBe(`<p>[abc]</p><hr contenteditable="false"><p>xyz</p>`);
+    });
+
+    test("should remove custom selection on separator when click outside of editor", async () => {
+        const { el } = await setupEditor('<p>[abc</p><hr contenteditable="false"><p>xyz]</p>');
+        expect(getContent(el)).toBe(
+            `<p>[abc</p><hr contenteditable="false" class="o_selected_hr"><p>xyz]</p>`
+        );
+
+        const selection = document.getSelection();
+        await click(document.body);
+        selection.setPosition(document.body);
+        await tick();
+
+        expect(getContent(el)).toBe(`<p>abc</p><hr contenteditable="false"><p>xyz</p>`);
     });
 });

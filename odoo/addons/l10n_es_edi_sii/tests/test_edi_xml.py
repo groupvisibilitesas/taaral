@@ -1291,7 +1291,7 @@ class TestEdiXmls(TestEsEdiCommon):
         with freeze_time(self.frozen_today), \
              patch('odoo.addons.l10n_es_edi_sii.models.account_edi_format.AccountEdiFormat._l10n_es_edi_call_web_service_sign',
                    new=mocked_l10n_es_edi_call_web_service_sign):
-            self.env.company.account_tax_periodicity = 'trimester'
+            self.env.company.account_return_periodicity = 'trimester'
             invoice = self._create_invoice(
                 date='2019-04-02',
                 post=True,

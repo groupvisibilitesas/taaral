@@ -3,19 +3,20 @@
 # * base_setup
 #
 # Translators:
-# Wil Odoo, 2024
-# Manon Rondou, 2025
-# Erwin van der Ploeg <erwin@odooexperts.nl>, 2025
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
-# Bren Driesen <brdri@odoo.com>, 2026.
+# Martin Trigaux, 2022
+# Erwin van der Ploeg <erwin@odooexperts.nl>, 2023, 2026.
+# Jolien De Paepe, 2023
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# Bren Driesen <brdri@odoo.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-06-06 10:27+0000\n"
-"Last-Translator: Bren Driesen <brdri@odoo.com>\n"
-"Language-Team: Dutch <https://translate.odoo.com/projects/odoo-18/base_setup/"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-02 17:04+0000\n"
+"Last-Translator: Erwin van der Ploeg <erwin@odooexperts.nl>\n"
+"Language-Team: Dutch <https://translate.odoo.com/projects/odoo-19/base_setup/"
 "nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -110,6 +111,15 @@ msgstr ""
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
+msgid ""
+"<strong>Save</strong> this page and come back here to set up Google Places "
+"API key"
+msgstr ""
+"<strong>Sla deze pagina op</strong> en kom hier terug om de Google Places "
+"API-sleutel in te stellen"
+
+#. module: base_setup
+#: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid "<strong>Save</strong> this page and come back here to set up reCaptcha."
 msgstr ""
 "<strong>Bewaar </strong> deze pagina en kom hier terug om reCaptcha in te "
@@ -126,7 +136,7 @@ msgstr ""
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid "API Keys"
-msgstr "API keys"
+msgstr "API-sleutels"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
@@ -134,7 +144,7 @@ msgid ""
 "API Keys allow your users to access Odoo with external tools when multi-"
 "factor authentication is enabled."
 msgstr ""
-"API Keys geven je gebruikers toegang tot Odoo met externe tools wanneer "
+"API-sleutels geven je gebruikers toegang tot Odoo met externe tools wanneer "
 "multifactorauthenticatie is ingeschakeld."
 
 #. module: base_setup
@@ -187,13 +197,13 @@ msgstr "Dit geeft je de mogelijkheid van het gebruik van meerdere valuta's"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
-msgid "Automatically enrich your contact base with company data"
-msgstr "Vul automatisch je contacten aan met bedrijfsgegevens"
+msgid "Autocomplete partner addresses with Google Places"
+msgstr "Adressen van partners automatisch invullen met Google Places"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
-msgid "Automatically generate counterpart documents in recipient companies"
-msgstr "Automatisch tegendocumenten genereren in ontvangende bedrijven"
+msgid "Automatically enrich your contact base with company data"
+msgstr "Vul automatisch je contacten aan met bedrijfsgegevens"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
@@ -265,12 +275,25 @@ msgid "Contacts"
 msgstr "Contacten"
 
 #. module: base_setup
+#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__company_country_group_codes
+msgid "Country Group Codes"
+msgstr "Codes landengroepen"
+
+#. module: base_setup
+#: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
+msgid ""
+"Create corresponding in/out orders and bills when you sell/buy between your "
+"companies"
+msgstr ""
+"Maak bij onderlinge verkopen en inkopen de bijbehorende inkomende en "
+"uitgaande orders en facturen aan"
+
+#. module: base_setup
 #: model:ir.model.fields,field_description:base_setup.field_res_config_settings__report_footer
 msgid "Custom Report Footer"
 msgstr "Aangepaste voettekst"
 
 #. module: base_setup
-#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__user_default_rights
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid "Default Access Rights"
 msgstr "Standaard toegangsrechten"
@@ -278,13 +301,21 @@ msgstr "Standaard toegangsrechten"
 #. module: base_setup
 #. odoo-python
 #: code:addons/base_setup/models/res_config_settings.py:0
-msgid "Default User Template not found."
-msgstr "Standaard gebruikerssjabloon niet gevonden."
+msgid "Default access for new users"
+msgstr "Standaardtoegang voor nieuwe gebruikers"
+
+#. module: base_setup
+#: model:ir.model.fields,field_description:base_setup.field_ir_http__display_name
+#: model:ir.model.fields,field_description:base_setup.field_kpi_provider__display_name
+#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:base_setup.field_res_users__display_name
+msgid "Display Name"
+msgstr "Schermnaam"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid "Document Layout"
-msgstr "Document Lay-out"
+msgstr "Lay-out van documenten"
 
 #. module: base_setup
 #: model:ir.model.fields,field_description:base_setup.field_res_config_settings__external_report_layout_id
@@ -295,6 +326,12 @@ msgstr "Documentsjabloon"
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid "Edit Layout"
 msgstr "Lay-out bewerken"
+
+#. module: base_setup
+#. odoo-python
+#: code:addons/base_setup/models/res_config_settings.py:0
+msgid "Edit new user default group"
+msgstr "Bewerk standaardgroep voor nieuwe gebruiker"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
@@ -308,7 +345,7 @@ msgstr ""
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid "Find free high-resolution images from Unsplash"
-msgstr "Vind gratis hoge resolutie afbeeldingen van Unsplash"
+msgstr "Vind gratis afbeeldingen van Unsplash in hoge resolutie"
 
 #. module: base_setup
 #: model:ir.model.fields,help:base_setup.field_res_config_settings__report_footer
@@ -337,14 +374,22 @@ msgid "Geolocation"
 msgstr "Geolocatie"
 
 #. module: base_setup
-#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_product_images
-msgid "Get product pictures using barcode"
-msgstr "Krijg productfoto's met behulp van barcode"
+#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_google_address_autocomplete
+msgid "Google Address Autocomplete"
+msgstr "Google Address Autocomplete"
 
 #. module: base_setup
 #: model:ir.model,name:base_setup.model_ir_http
 msgid "HTTP Routing"
 msgstr "HTTP routing"
+
+#. module: base_setup
+#: model:ir.model.fields,field_description:base_setup.field_ir_http__id
+#: model:ir.model.fields,field_description:base_setup.field_kpi_provider__id
+#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__id
+#: model:ir.model.fields,field_description:base_setup.field_res_users__id
+msgid "ID"
+msgstr "ID"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
@@ -400,7 +445,7 @@ msgstr "Mail-plug-in"
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid "Manage API Keys"
-msgstr "API Keys beheren"
+msgstr "API-sleutels beheren"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
@@ -455,7 +500,7 @@ msgstr "Odoo"
 #. module: base_setup
 #: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_partner_autocomplete
 msgid "Partner Autocomplete"
-msgstr "Partner Autocomplete"
+msgstr "Partner Automatisch aanvullen"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
@@ -466,6 +511,11 @@ msgstr "Prestaties"
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid "Permissions"
 msgstr "Toestemmingen"
+
+#. module: base_setup
+#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_voip
+msgid "Phone"
+msgstr "Telefoon"
 
 #. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
@@ -491,6 +541,12 @@ msgstr "Bescherm je formulieren tegen spam en misbruik."
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid "Protect your forms with CF Turnstile."
 msgstr "Bescherm je formulieren met CF Turnstile."
+
+#. module: base_setup
+#. odoo-javascript
+#: code:addons/base_setup/static/src/views/module_views.xml:0
+msgid "Reset Updating States"
+msgstr "Updatestatussen resetten"
 
 #. module: base_setup
 #: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_sms
@@ -582,11 +638,6 @@ msgid "VAT"
 msgstr "Btw"
 
 #. module: base_setup
-#: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_voip
-msgid "VoIP"
-msgstr "VoIP"
-
-#. module: base_setup
 #: model_terms:ir.ui.view,arch_db:base_setup.res_config_settings_view_form
 msgid ""
 "When populating your address book, Odoo provides a list of matching "
@@ -607,3 +658,52 @@ msgstr "U moet de Chat-app installeren kunnen gebruiken."
 #: model:ir.model.fields,field_description:base_setup.field_res_config_settings__module_google_recaptcha
 msgid "reCAPTCHA"
 msgstr "reCAPTCHA"
+
+#~ msgid "Asterisk (VoIP)"
+#~ msgstr "Asterisk (VoIP)"
+
+#~ msgid ""
+#~ "Automatically generate counterpart documents for orders/invoices between "
+#~ "companies"
+#~ msgstr ""
+#~ "Genereer automatisch tegendocumenten tussen bedrijven voor orders/"
+#~ "facturen."
+
+#~ msgid ""
+#~ "By default, new users get highest access rights for all installed apps."
+#~ msgstr ""
+#~ "Standaard krijgen nieuwe gebruikers de hoogste toegangsrechten voor alle "
+#~ "geïnstalleerde apps."
+
+#~ msgid "Default User Template not found."
+#~ msgstr "Standaard gebruikerssjabloon niet gevonden."
+
+#~ msgid "Documentation"
+#~ msgstr "Documentatie"
+
+#~ msgid "Geo Localization"
+#~ msgstr "Geo localisatie"
+
+#~ msgid "GeoLocalize your partners"
+#~ msgstr "Geo-lokaliseer je relaties"
+
+#~ msgid "Get product pictures using barcode"
+#~ msgstr "Krijg productfoto's met behulp van barcode"
+
+#~ msgid "Google Calendar"
+#~ msgstr "Google Agenda"
+
+#~ msgid "On Apple Store"
+#~ msgstr "Op Apple Store"
+
+#~ msgid "On Google Play"
+#~ msgstr "Op Google Play"
+
+#~ msgid "Outlook Calendar"
+#~ msgstr "Outlook Agenda"
+
+#~ msgid "Synchronize your calendar with Google Calendar"
+#~ msgstr "Synchroniseer je agenda met Google kalender"
+
+#~ msgid "Synchronize your calendar with Outlook"
+#~ msgstr "Synchroniseer je agenda met Outlook"

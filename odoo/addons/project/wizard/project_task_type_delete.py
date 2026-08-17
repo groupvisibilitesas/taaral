@@ -4,7 +4,7 @@
 from odoo import api, fields, models, _
 
 
-class ProjectTaskTypeDelete(models.TransientModel):
+class ProjectTaskTypeDeleteWizard(models.TransientModel):
     _name = 'project.task.type.delete.wizard'
     _description = 'Project Task Stage Delete Wizard'
 

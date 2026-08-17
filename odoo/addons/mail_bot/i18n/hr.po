@@ -3,20 +3,19 @@
 # * mail_bot
 #
 # Translators:
-# Tina Milas, 2024
-# Bole <bole@dajmi5.com>, 2024
-# Karolina Tonković <karolina.tonkovic@storm.hr>, 2024
-# Ivica Dimjašević, 2025
-# Luka Carević <luka@uvid.hr>, 2025
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Vojislav Opačić <vojislav.opacic@gmail.com>, 2022
+# Tina Milas, 2022
+# Bole <bole@dajmi5.com>, 2022
+# Martin Trigaux, 2022
+# Boris Peko <boris.peko@ecodica.eu>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-04-17 16:21+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Croatian <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-06 02:55+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Croatian <https://translate.odoo.com/projects/odoo-19/"
 "mail_bot/hr/>\n"
 "Language: hr\n"
 "MIME-Version: 1.0\n"
@@ -24,7 +23,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: mail_bot
 #. odoo-python
@@ -44,18 +43,24 @@ msgstr "Onemogućen"
 #. module: mail_bot
 #: model:ir.model,name:mail_bot.model_discuss_channel
 msgid "Discussion Channel"
-msgstr "Kanal rasprava"
+msgstr "Kanal rasprave"
+
+#. module: mail_bot
+#: model:ir.model.fields,field_description:mail_bot.field_discuss_channel__display_name
+#: model:ir.model.fields,field_description:mail_bot.field_mail_bot__display_name
+#: model:ir.model.fields,field_description:mail_bot.field_res_users__display_name
+msgid "Display Name"
+msgstr "Naziv za prikaz"
 
 #. module: mail_bot
 #. odoo-python
 #: code:addons/mail_bot/models/mail_bot.py:0
 msgid ""
-"Good, you can customize canned responses in the Discuss application.%"
-"(new_line)s%(new_line)s%(bold_start)sIt's the end of this overview%"
-"(bold_end)s, you can now %(bold_start)sclose this conversation%(bold_end)s "
-"or start the tour again with typing %(command_start)sstart the tour%"
-"(command_end)s. Enjoy discovering Odoo!"
+"Great! You can customize %(bold_start)scanned responses%(bold_end)s in the "
+"Discuss app."
 msgstr ""
+"Odlično! Možete prilagoditi %(bold_start)sspremljene odgovore%(bold_end)s u "
+"aplikaciji Discuss."
 
 #. module: mail_bot
 #. odoo-python
@@ -96,6 +101,13 @@ msgid ""
 msgstr ""
 "Nisam dovoljno pametan da odgovorim na vaše pitanje.%(new_line)sZa praćenje "
 "mog vodiča pitajte: %(command_start)sstart the tour%(command_end)s."
+
+#. module: mail_bot
+#: model:ir.model.fields,field_description:mail_bot.field_discuss_channel__id
+#: model:ir.model.fields,field_description:mail_bot.field_mail_bot__id
+#: model:ir.model.fields,field_description:mail_bot.field_res_users__id
+msgid "ID"
+msgstr "ID"
 
 #. module: mail_bot
 #: model:ir.model.fields.selection,name:mail_bot.selection__res_users__odoobot_state__idle
@@ -162,22 +174,22 @@ msgstr "Status OdooBota"
 #. module: mail_bot
 #: model:ir.model.fields,field_description:mail_bot.field_res_users__odoobot_failed
 msgid "Odoobot Failed"
-msgstr "Odoobot je neuspješan"
+msgstr "Odoobot nije uspio"
 
 #. module: mail_bot
 #: model:ir.model.fields.selection,name:mail_bot.selection__res_users__odoobot_state__onboarding_attachement
 msgid "Onboarding attachment"
-msgstr "Onboarding privitak"
+msgstr "Uvodni korak: privitak"
 
 #. module: mail_bot
 #: model:ir.model.fields.selection,name:mail_bot.selection__res_users__odoobot_state__onboarding_canned
 msgid "Onboarding canned"
-msgstr "Pripremljen predložak za Onboarding"
+msgstr "Uvodni korak: spremljeni odgovori"
 
 #. module: mail_bot
 #: model:ir.model.fields.selection,name:mail_bot.selection__res_users__odoobot_state__onboarding_command
 msgid "Onboarding command"
-msgstr "Onboarding naredba"
+msgstr "Uvodni korak: naredba"
 
 #. module: mail_bot
 #: model:ir.model.fields.selection,name:mail_bot.selection__res_users__odoobot_state__onboarding_emoji
@@ -234,10 +246,22 @@ msgstr "To nije lijepo! Ja sam bot, ali imam osjećaje... 💔"
 #. module: mail_bot
 #. odoo-python
 #: code:addons/mail_bot/models/mail_bot.py:0
+msgid ""
+"That’s the end of this overview. You can %(bold_start)sclose this "
+"conversation%(bold_end)s or type %(command_start)sstart the tour%"
+"(command_end)s to see it again. Enjoy exploring Odoo!"
+msgstr ""
+"To je kraj ovog pregleda. Možete %(bold_start)szatvoriti ovaj razgovor%"
+"(bold_end)s ili upisati %(command_start)sstart the tour%(command_end)s da ga "
+"ponovno pogledate. Uživajte u istraživanju Odooa!"
+
+#. module: mail_bot
+#. odoo-python
+#: code:addons/mail_bot/models/mail_bot.py:0
 msgid "This is a temporary canned response to see how canned responses work."
 msgstr ""
-"Ovo je privremeni unaprijed pripremljeni odgovor kako bismo vidjeli kako "
-"unaprijed pripremljeni odgovori funkcioniraju."
+"Ovo je privremeni spremljeni odgovor kako biste vidjeli kako spremljeni "
+"odgovori funkcioniraju."
 
 #. module: mail_bot
 #. odoo-python
@@ -284,9 +308,11 @@ msgstr "Korisnik"
 #. odoo-python
 #: code:addons/mail_bot/models/mail_bot.py:0
 msgid ""
-"Wonderful! 😇%(new_line)sTry typing %(command_start)s:%(command_end)s to use "
-"canned responses. I've created a temporary one for you."
+"Wonderful! 😇%(new_line)sTry typing %(command_start)s::%(command_end)s to "
+"use canned responses. I've created a temporary one for you."
 msgstr ""
+"Sjajno! 😇%(new_line)sPokušajte upisati %(command_start)s::%(command_end)s "
+"za korištenje spremljenih odgovora. Kreirao sam privremeni za vas."
 
 #. module: mail_bot
 #. odoo-python
@@ -339,3 +365,9 @@ msgstr "ljubav"
 #: code:addons/mail_bot/models/mail_bot.py:0
 msgid "start the tour"
 msgstr "start the tour"
+
+#~ msgid "Email Thread"
+#~ msgstr "Nit e-pošte"
+
+#~ msgid "HTTP Routing"
+#~ msgstr "HTTP usmjeravanje"

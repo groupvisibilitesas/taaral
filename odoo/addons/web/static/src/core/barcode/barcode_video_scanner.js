@@ -24,6 +24,7 @@ export class BarcodeVideoScanner extends Component {
         onReady: { type: Function, optional: true },
         onResult: Function,
         onError: Function,
+        placeholder: { type: String, optional: true },
         delayBetweenScan: { type: Number, optional: true },
     };
     static defaultProps = {
@@ -89,6 +90,9 @@ export class BarcodeVideoScanner extends Component {
             if (!ready) {
                 return;
             }
+            if (this.videoPreviewRef.el.paused) {
+                await this.videoPreviewRef.el.play();
+            }
             const { height, width } = getComputedStyle(this.videoPreviewRef.el);
             const divWidth = width.slice(0, -2);
             const divHeight = height.slice(0, -2);
@@ -97,6 +101,7 @@ export class BarcodeVideoScanner extends Component {
                 const [track] = tracks;
                 const settings = track.getSettings();
                 this.zoomRatio = Math.min(divWidth / settings.width, divHeight / settings.height);
+                this.addZoomSlider(track, settings);
             }
             this.detectorTimeout = setTimeout(this.detectCode.bind(this), 100);
         });
@@ -203,6 +208,23 @@ export class BarcodeVideoScanner extends Component {
             }
         }
         return newObject;
+    }
+
+    addZoomSlider(track, settings) {
+        const zoom = track.getCapabilities().zoom;
+        if (zoom?.min !== undefined && zoom?.max !== undefined) {
+            const inputElement = document.createElement("input");
+            inputElement.type = "range";
+            inputElement.min = zoom.min;
+            inputElement.max = zoom.max;
+            inputElement.step = zoom.step || 1;
+            inputElement.value = settings.zoom;
+            inputElement.classList.add("align-self-end", "m-5", "z-1");
+            inputElement.addEventListener("input", async (event) => {
+                await track?.applyConstraints({ advanced: [{ zoom: inputElement.value }] });
+            });
+            this.videoPreviewRef.el.parentElement.appendChild(inputElement);
+        }
     }
 }
 

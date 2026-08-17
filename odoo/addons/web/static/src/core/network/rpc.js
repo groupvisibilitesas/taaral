@@ -1,5 +1,6 @@
 import { EventBus } from "@odoo/owl";
 import { browser } from "../browser/browser";
+import { omit } from "../utils/objects";
 
 /**
  * @typedef {{
@@ -11,6 +12,16 @@ import { browser } from "../browser/browser";
  */
 
 export const rpcBus = new EventBus();
+
+const RPC_SETTINGS = new Set(["cache", "silent", "xhr", "headers"]);
+function validateRPCSettings(settings) {
+    if (!Object.keys(settings).every((key) => RPC_SETTINGS.has(key))) {
+        throw new Error(`The settings for rpc should be ${[...RPC_SETTINGS].join(" ")}`);
+    }
+    if ("cache" in settings && "xhr" in settings) {
+        throw new Error("Can't use 'cache' and 'xhr' at the same time");
+    }
+}
 
 // -----------------------------------------------------------------------------
 // Errors
@@ -29,7 +40,10 @@ export class RPCError extends Error {
 
 export class ConnectionLostError extends Error {
     constructor(url, ...args) {
-        super(`Connection to "${url}" couldn't be established or was interrupted`, ...args);
+        const message = url
+            ? `Connection to "${url}" couldn't be established or was interrupted`
+            : "Connection couldn't be established or was interrupted";
+        super(message, ...args);
         this.url = url;
     }
 }
@@ -59,7 +73,21 @@ export function makeErrorFromResponse(response) {
 }
 
 // -----------------------------------------------------------------------------
-// Main RPC method
+// Cache RPC method
+// -----------------------------------------------------------------------------
+
+let rpcCache;
+
+rpc.setCache = function (cache) {
+    rpcCache = cache;
+};
+
+rpcBus.addEventListener("CLEAR-CACHES", (event) => {
+    rpcCache?.invalidate(event.detail);
+});
+
+// -----------------------------------------------------------------------------
+// Main RPC
 // -----------------------------------------------------------------------------
 let rpcId = 0;
 export function rpc(url, params = {}, settings = {}) {
@@ -67,6 +95,15 @@ export function rpc(url, params = {}, settings = {}) {
 }
 // such that it can be overriden in tests
 rpc._rpc = function (url, params, settings) {
+    validateRPCSettings(settings);
+    if (settings.cache && rpcCache) {
+        return rpcCache.read(
+            params?.method || url, // table
+            JSON.stringify({ url, params }), // key
+            () => rpc._rpc(url, params, omit(settings, "cache")),
+            typeof settings.cache === "boolean" ? {} : settings.cache // cache can be boolean or an object with options (or an empty object of course)
+        );
+    }
     const XHR = browser.XMLHttpRequest;
     const data = {
         id: rpcId++,
@@ -113,7 +150,6 @@ rpc._rpc = function (url, params, settings) {
                 return resolve(responseResult);
             }
             const error = makeErrorFromResponse(responseError);
-            error.id = data.id;
             error.model = data.params.model;
             rpcBus.trigger("RPC:RESPONSE", { data, settings, error });
             reject(error);

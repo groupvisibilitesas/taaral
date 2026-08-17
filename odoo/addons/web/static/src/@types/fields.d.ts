@@ -25,12 +25,13 @@ declare module "fields" {
 
     interface INumerical {
         aggregator:
+            | "array_agg_distinct"
             | "array_agg"
             | "avg"
             | "bool_and"
             | "bool_or"
-            | "count"
             | "count_distinct"
+            | "count"
             | "max"
             | "min"
             | "sum";

@@ -139,6 +139,11 @@ test(`display correct column header for days, independent of the timezone`, asyn
     ]);
 });
 
+test("remove row when no day of current month", async () => {
+    await start();
+    expect(".fc-day-other, .fc-day-disabled").toHaveCount(76);
+});
+
 test("resize callback is being called", async () => {
     patchWithCleanup(CalendarYearRenderer.prototype, {
         onWindowResize() {

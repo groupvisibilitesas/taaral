@@ -1,7 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-
 from odoo import Command
-
 from odoo.addons.hr_expense.tests.common import TestExpenseCommon
 from odoo.addons.sale.tests.common import TestSaleCommon
 from odoo.tests import Form, tagged
@@ -17,17 +15,16 @@ class TestSaleExpense(TestExpenseCommon, TestSaleCommon):
         product_form.can_be_expensed = False
         self.product_a.product_tmpl_id = product_form.save()
 
-        project = self.env['project.project'].create({'name': 'SO Project'})
+        project = self.env['project.project'].sudo().create({'name': 'SO Project'})
         # Remove the analytic account auto-generated when creating a timesheetable project if it exists
         project.account_id = False
 
         so = self.env['sale.order'].create({
             'partner_id': self.partner_a.id,
-            'order_line': [(0, 0, {
+            'order_line': [Command.create({
                 'name': self.product_a.name,
                 'product_id': self.product_a.id,
                 'product_uom_qty': 2,
-                'product_uom': self.product_a.uom_id.id,
                 'price_unit': self.product_a.list_price,
             })],
             'project_id': project.id,
@@ -40,7 +37,7 @@ class TestSaleExpense(TestExpenseCommon, TestSaleCommon):
 
         # Make sure the user has access to analytic accounting, otherwise the 'analytic_distribution' field will not appear
         # in the view and will not be computed
-        self.env.user.write({'groups_id': [Command.link(self.env.ref('analytic.group_analytic_accounting').id)]})
+        self.env.user.write({'group_ids': [Command.link(self.env.ref('analytic.group_analytic_accounting').id)]})
         # Set the expense policy to 'sales_price' to make the 'sale_order_id' field visible on the form view
         self.product_c.expense_policy = 'sales_price'
 
@@ -51,7 +48,7 @@ class TestSaleExpense(TestExpenseCommon, TestSaleCommon):
         })
 
         # Project Will use another analytic plan than the product
-        project = self.env['project.project'].create({'name': 'SO Project'})
+        project = self.env['project.project'].sudo().create({'name': 'SO Project'})
         project.account_id = self.analytic_account_3
 
         # Set an analytic distribution using account_1 on the product that will be used on the expense
@@ -66,16 +63,13 @@ class TestSaleExpense(TestExpenseCommon, TestSaleCommon):
                 'name': self.product_c.name,
                 'product_id': self.product_c.id,
                 'product_uom_qty': 2,
-                'product_uom': self.product_c.uom_id.id,
                 'price_unit': self.product_c.list_price,
             })],
             'project_id': project.id,
         }
         so1 = self.env['sale.order'].create(so_values)
-
-        expense = self.env['hr.expense'].create({
+        expense = self.create_expenses({
             'name': 'Expense Test',
-            'employee_id': self.expense_employee.id,
             'sale_order_id': so1.id,
             'product_id': self.product_c.id,
         })

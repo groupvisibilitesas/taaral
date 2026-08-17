@@ -14,7 +14,6 @@ class TestUBLBE(TestUBLCommon, TestAccountMoveSendCommon):
     @TestUBLCommon.setup_country("be")
     def setUpClass(cls):
         super().setUpClass()
-        cls.env['ir.config_parameter'].sudo().set_param('account_edi_ubl_cii.use_new_dict_to_xml_helpers', 'False')
 
         cls.company.vat = "BE0246697724"
 
@@ -59,6 +58,7 @@ class TestUBLBE(TestUBLCommon, TestAccountMoveSendCommon):
             'type_tax_use': 'sale',
             'country_id': cls.env.ref('base.be').id,
             'sequence': 10,
+            'ubl_cii_tax_category_code': 'S',
         })
 
         cls.tax_15 = cls.env['account.tax'].create({
@@ -83,6 +83,7 @@ class TestUBLBE(TestUBLCommon, TestAccountMoveSendCommon):
             'amount': 6,
             'type_tax_use': 'sale',
             'country_id': cls.env.ref('base.be').id,
+            'ubl_cii_tax_category_code': 'S',
         })
 
         cls.tax_0 = cls.env['account.tax'].create({
@@ -91,6 +92,7 @@ class TestUBLBE(TestUBLCommon, TestAccountMoveSendCommon):
             'amount': 0,
             'type_tax_use': 'sale',
             'country_id': cls.env.ref('base.be').id,
+            'ubl_cii_tax_category_code': 'E',
         })
 
         cls.env['res.partner.bank'].sudo().create({
@@ -117,7 +119,6 @@ class TestUBLBE(TestUBLCommon, TestAccountMoveSendCommon):
         if "predict_bill_product" in company._fields:
             company.predict_bill_product = True
 
-        self.env['ir.config_parameter'].sudo().set_param('account_edi_ubl_cii.use_new_dict_to_xml_helpers', True)
         invoice = self._generate_move(
             self.partner_1,
             self.partner_2,
@@ -181,7 +182,6 @@ class TestUBLBE(TestUBLCommon, TestAccountMoveSendCommon):
         if "predict_bill_product" in company._fields:
             company.predict_bill_product = True
 
-        self.env['ir.config_parameter'].sudo().set_param('account_edi_ubl_cii.use_new_dict_to_xml_helpers', True)
         refund = self._generate_move(
             self.partner_1,
             self.partner_2,

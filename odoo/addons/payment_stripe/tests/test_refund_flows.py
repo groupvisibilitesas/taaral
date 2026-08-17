@@ -19,10 +19,10 @@ class TestRefundFlows(StripeCommon, PaymentHttpCommon):
         transaction. """
         source_tx = self._create_transaction('redirect', state='done')
         with patch(
-            'odoo.addons.payment_stripe.models.payment_provider.PaymentProvider'
-            '._stripe_make_request', return_value=self.refund_object
+            'odoo.addons.payment.models.payment_provider.PaymentProvider._send_api_request',
+            return_value=self.refund_object,
         ):
-            source_tx._send_refund_request()
+            source_tx._refund()
         refund_tx = self.env['payment.transaction'].search(
             [('source_transaction_id', '=', source_tx.id)]
         )
@@ -34,34 +34,33 @@ class TestRefundFlows(StripeCommon, PaymentHttpCommon):
     )
     def test_canceled_refund_webhook_notification_triggers_processing(self):
         """ Test that receiving a webhook notification for a refund cancellation
-        (`charge.refund.updated` event) triggers the processing of the notification data. """
+        (`charge.refund.updated` event) triggers the processing of the payment data. """
         source_tx = self._create_transaction('redirect', state='done')
         source_tx._create_child_transaction(
             source_tx.amount, is_refund=True, provider_reference=self.refund_object['id']
         )
         url = self._build_url(StripeController._webhook_url)
         with patch(
-            'odoo.addons.payment_stripe.controllers.main.StripeController'
-            '._verify_notification_signature'
+            'odoo.addons.payment_stripe.controllers.main.StripeController._verify_signature'
         ), patch(
-            'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
-            '._handle_notification_data'
-        ) as handle_notification_data_mock:
-            self._make_json_request(url, data=self.canceled_refund_notification_data)
-        self.assertEqual(handle_notification_data_mock.call_count, 1)
+            'odoo.addons.payment.models.payment_transaction.PaymentTransaction._process'
+        ) as process_mock:
+            self._make_json_request(url, data=self.canceled_refund_payment_data)
+        self.assertEqual(process_mock.call_count, 1)
 
-    @mute_logger('odoo.addons.payment_stripe.controllers.main')
+    @mute_logger(
+        'odoo.addons.payment_stripe.controllers.main',
+        'odoo.addons.payment_stripe.models.payment_transaction',
+    )
     def test_void_webhook_notification_does_not_trigger_processing(self):
         self.provider.capture_manually = True
         tx = self._create_transaction('direct', state='authorized')
         url = self._build_url(StripeController._webhook_url)
         with patch(
-            'odoo.addons.payment_stripe.controllers.main.StripeController'
-            '._verify_notification_signature'
+            'odoo.addons.payment_stripe.controllers.main.StripeController._verify_signature'
         ), patch(
-            'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
-            '._handle_notification_data'
-        ) as handle_notification_data_mock:
+            'odoo.addons.payment.models.payment_transaction.PaymentTransaction._process'
+        ) as process_mock:
             self._make_json_request(url, data=self.void_payment_data)
-        self.assertEqual(handle_notification_data_mock.call_count, 0)
+        self.assertEqual(process_mock.call_count, 0)
         self.assertFalse(tx.child_transaction_ids)

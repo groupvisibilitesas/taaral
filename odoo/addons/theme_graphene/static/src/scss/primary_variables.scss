@@ -111,6 +111,10 @@ $o-website-values-palettes: (
     ),
 );
 
+$base-1: map-get($o-color-palettes, 'base-1');
+$base-1: map-merge($base-1, ('footer': 5));
+$o-color-palettes: map-merge($o-color-palettes, ('base-1': $base-1));
+
 $o-color-palettes-compatibility-indexes: (
     1: 'graphene-1',
     2: 'graphene-2',
@@ -139,7 +143,7 @@ $o-color-palettes-compatibility-indexes: (
 // Shapes
 //------------------------------------------------------------------------------
 
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Origins/02_001', (4: 2, 5: rgba(0, 0, 0, 0)));
-$o-bg-shapes: add-extra-shape-colors-mapping('web_editor', 'Origins/02_001', 'second', (4: 2, 5: rgba(0, 0, 0, 0)));
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Origins/06_001', (3: 2));
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Zigs/01_001', (2: 4));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Origins/02_001', (4: 2, 5: rgba(0, 0, 0, 0)));
+$o-bg-shapes: add-extra-shape-colors-mapping('html_builder', 'Origins/02_001', 'second', (4: 2, 5: rgba(0, 0, 0, 0)));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Origins/06_001', (3: 2));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Zigs/01_001', (2: 4));

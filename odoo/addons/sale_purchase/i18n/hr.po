@@ -3,20 +3,20 @@
 # * sale_purchase
 #
 # Translators:
-# Matej Mijoč, 2024
-# Karolina Tonković <karolina.tonkovic@storm.hr>, 2024
-# Bole <bole@dajmi5.com>, 2024
-# Luka Carević <luka@uvid.hr>, 2025
-# Karlo Mikešić <karlo@uvid.hr>, 2025.
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Karolina Tonković <karolina.tonkovic@storm.hr>, 2022
+# Martin Trigaux, 2022
+# Bole <bole@dajmi5.com>, 2022
+# Matej Mijoč, 2022
+# Vladimir Vrgoč, 2023
+# Boris Peko <boris.peko@ecodica.eu>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-20 18:39+0000\n"
-"PO-Revision-Date: 2026-05-02 09:06+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Croatian <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-05 15:19+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Croatian <https://translate.odoo.com/projects/odoo-19/"
 "sale_purchase/hr/>\n"
 "Language: hr\n"
 "MIME-Version: 1.0\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.17\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: sale_purchase
 #: model_terms:ir.ui.view,arch_db:sale_purchase.exception_purchase_on_sale_cancellation
@@ -37,14 +37,18 @@ msgstr ""
 "            Moguća potreba za ručnim radnjama."
 
 #. module: sale_purchase
-#: model_terms:ir.ui.view,arch_db:sale_purchase.sale_order_inherited_form_purchase
-msgid "<span class=\"o_stat_text\">Purchase</span>"
-msgstr ""
-
-#. module: sale_purchase
 #: model_terms:ir.ui.view,arch_db:sale_purchase.purchase_order_inherited_form_sale
 msgid "<span class=\"o_stat_text\">Sale</span>"
 msgstr "<span class=\"o_stat_text\">Prodaja</span>"
+
+#. module: sale_purchase
+#: model:ir.model.fields,field_description:sale_purchase.field_product_template__display_name
+#: model:ir.model.fields,field_description:sale_purchase.field_purchase_order__display_name
+#: model:ir.model.fields,field_description:sale_purchase.field_purchase_order_line__display_name
+#: model:ir.model.fields,field_description:sale_purchase.field_sale_order__display_name
+#: model:ir.model.fields,field_description:sale_purchase.field_sale_order_line__display_name
+msgid "Display Name"
+msgstr "Naziv za prikaz"
 
 #. module: sale_purchase
 #: model_terms:ir.ui.view,arch_db:sale_purchase.exception_sale_on_purchase_cancellation
@@ -55,7 +59,7 @@ msgstr "Došlo je do iznimke/i na nabavnom nalogu/zima:"
 #: model_terms:ir.ui.view,arch_db:sale_purchase.exception_purchase_on_sale_cancellation
 #: model_terms:ir.ui.view,arch_db:sale_purchase.exception_purchase_on_sale_quantity_decreased
 msgid "Exception(s) occurred on the sale order(s):"
-msgstr "Došlo je do iznimke/iznimki na prodajnom nalogu/nalozima:"
+msgstr "Došlo je do iznimke/i na prodajnom nalogu/zima:"
 
 #. module: sale_purchase
 #: model_terms:ir.ui.view,arch_db:sale_purchase.exception_purchase_on_sale_cancellation
@@ -68,6 +72,15 @@ msgstr "Iznimka(e):"
 #: model:ir.model.fields,field_description:sale_purchase.field_sale_order_line__purchase_line_ids
 msgid "Generated Purchase Lines"
 msgstr "Generirane linije nabave"
+
+#. module: sale_purchase
+#: model:ir.model.fields,field_description:sale_purchase.field_product_template__id
+#: model:ir.model.fields,field_description:sale_purchase.field_purchase_order__id
+#: model:ir.model.fields,field_description:sale_purchase.field_purchase_order_line__id
+#: model:ir.model.fields,field_description:sale_purchase.field_sale_order__id
+#: model:ir.model.fields,field_description:sale_purchase.field_sale_order_line__id
+msgid "ID"
+msgstr "ID"
 
 #. module: sale_purchase
 #: model:ir.model.fields,help:sale_purchase.field_product_product__service_to_purchase
@@ -118,8 +131,7 @@ msgstr "Izvorna stavka prodaje"
 msgid ""
 "Please define the vendor from whom you would like to purchase this service "
 "automatically."
-msgstr ""
-"Molimo definirajte dobavljača od kojeg želite automatski nabaviti ovu uslugu."
+msgstr "Definirajte dobavljača od kojeg želite automatski kupovati ovu uslugu."
 
 #. module: sale_purchase
 #: model:ir.model,name:sale_purchase.model_product_template
@@ -133,19 +145,19 @@ msgid "Product that is not a service can not create RFQ."
 msgstr "Proizvod koji nije usluga ne može kreirati RFQ."
 
 #. module: sale_purchase
-#: model:ir.model,name:sale_purchase.model_purchase_order
-msgid "Purchase Order"
-msgstr "Nalog za nabavu"
+#: model_terms:ir.ui.view,arch_db:sale_purchase.sale_order_inherited_form_purchase
+msgid "Purchase"
+msgstr "Nabava"
 
 #. module: sale_purchase
-#: model:ir.model.fields,field_description:sale_purchase.field_sale_order_cancel__display_purchase_orders_alert
-msgid "Purchase Order Alert"
-msgstr ""
+#: model:ir.model,name:sale_purchase.model_purchase_order
+msgid "Purchase Order"
+msgstr "Nabavni nalog"
 
 #. module: sale_purchase
 #: model:ir.model,name:sale_purchase.model_purchase_order_line
 msgid "Purchase Order Line"
-msgstr "Stavka naloga nabave"
+msgstr "Stavka nabavnog naloga"
 
 #. module: sale_purchase
 #. odoo-python
@@ -178,11 +190,6 @@ msgid "Sales Order"
 msgstr "Prodajni nalog"
 
 #. module: sale_purchase
-#: model:ir.model,name:sale_purchase.model_sale_order_cancel
-msgid "Sales Order Cancel"
-msgstr ""
-
-#. module: sale_purchase
 #: model:ir.model,name:sale_purchase.model_sale_order_line
 msgid "Sales Order Line"
 msgstr "Stavka prodajnog naloga"
@@ -200,11 +207,11 @@ msgid "Subcontract Service"
 msgstr "Usluga podizvođača"
 
 #. module: sale_purchase
-#: model_terms:ir.ui.view,arch_db:sale_purchase.sale_order_cancel_view_form
+#: model:ir.model.fields,field_description:sale_purchase.field_purchase_order__has_sale_order
 msgid ""
-"There are active purchase orders linked to this sale order that are not "
-"cancelled automatically! <br/>"
+"Technical field for whether the purchase order has associated sale orders"
 msgstr ""
+"Tehničko polje za označavanje ima li nabavni nalog povezane prodajne naloge"
 
 #. module: sale_purchase
 #. odoo-python

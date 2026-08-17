@@ -1,6 +1,7 @@
 import { describe, test } from "@odoo/hoot";
 import { testEditor } from "./_helpers/editor";
 import { unformat } from "./_helpers/format";
+import { FORMATTABLE_TAGS } from "@html_editor/utils/formatting";
 
 /**
  * content of the "init" sub suite in editor.test.js
@@ -97,12 +98,14 @@ describe("No orphan inline elements compatibility mode", () => {
         });
     });
 
-    test("should wrap a div.o_image direct child of the editable into a block", async () => {
+    test("should wrap a div.o_file_box direct child of the editable into a block", async () => {
         await testEditor({
-            contentBefore: '<p>abc</p><div class="o_image"></div><p>def</p>',
+            contentBefore:
+                '<p>abc</p><span class="o_file_box" contenteditable="false"><a href="#" title="document" data-mimetype="application/pdf"></a></span><p>def</p>',
             contentBeforeEdit:
-                '<p>abc</p><div><div class="o_image" contenteditable="false"></div></div><p>def</p>',
-            contentAfter: '<p>abc</p><div><div class="o_image"></div></div><p>def</p>',
+                '<p>abc</p><div class="o-paragraph">\ufeff<span class="o_file_box" contenteditable="false"><a href="#" title="document" data-mimetype="application/pdf"></a></span>\ufeff</div><p>def</p>',
+            contentAfter:
+                '<p>abc</p><div><span class="o_file_box"><a href="#" title="document" data-mimetype="application/pdf"></a></span></div><p>def</p>',
         });
     });
 });
@@ -363,6 +366,24 @@ describe("formatting normalization", () => {
         await testEditor({
             contentBefore: `<p><small><small>text</small></small></p>`,
             contentAfter: `<p><small>text</small></p>`,
+        });
+    });
+
+    for (const tagName of FORMATTABLE_TAGS.map((tag) => tag.toLowerCase())) {
+        test(`merges adjacent formattable ${tagName}`, async () => {
+            await testEditor({
+                contentBefore: `<p><${tagName}>A</${tagName}><${tagName}>B</${tagName}></p>`,
+                contentAfter: `<p><${tagName}>AB</${tagName}></p>`,
+            });
+        });
+    }
+});
+
+describe("Editor config initialization", () => {
+    test("should replace empty content by a default baseContainer, even if not provided in the config", async () => {
+        await testEditor({
+            config: { content: "" },
+            contentAfter: "<p><br></p>",
         });
     });
 });

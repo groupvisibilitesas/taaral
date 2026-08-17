@@ -4,13 +4,14 @@ import re
 from itertools import product
 
 from odoo import Command, _, api, models
+from odoo.exceptions import RedirectWarning
 from .eu_account_map import EU_ACCOUNT_MAP
 from .eu_field_map import EU_FIELD_MAP
 from .eu_tag_map import EU_TAG_MAP
 from .eu_tax_map import EU_TAX_MAP
 
 
-class Company(models.Model):
+class ResCompany(models.Model):
     _inherit = 'res.company'
 
     @api.model
@@ -44,6 +45,57 @@ class Company(models.Model):
                 ('foreign_vat', '!=', False),
             ])
             oss_countries = eu_countries - company.account_fiscal_country_id - multi_tax_reports_countries_fpos.country_id
+            tg = self.env['account.tax.group'].search([
+                *self.env['account.tax.group']._check_company_domain(company),
+                ('tax_payable_account_id', '!=', False),
+                ('tax_receivable_account_id', '!=', False)], limit=1)
+            if not tg:
+                raise RedirectWarning(
+                    self.env._("To properly configure OSS tax mapping, the domestic tax group you are using must have the necessary accounts defined."),
+                    self.env['account.tax.group'].search(self.env['account.tax.group']._check_company_domain(company))._get_records_action(name=self.env._("Tax Groups")),
+                    self.env._("View Tax Groups"),
+                )
+            default_oss_payable_account = self.env['account.account']
+
+            eu_vat_country_group_id = self.env.ref('account.europe_vat').id
+            eu_b2c_fp = self.env['account.fiscal.position'].search([
+                ('company_id', '=', company.id),
+                ('country_group_id', '=', eu_vat_country_group_id),
+                ('auto_apply', '=', True),
+                ('vat_required', '=', False),
+            ], limit=1)
+            offset = 1
+            if eu_b2c_fp:
+                # oss fp must come before eu b2c fp
+                oss_fp_sequence = eu_b2c_fp.sequence
+                to_bump = eu_b2c_fp | self.env['account.fiscal.position'].search([
+                    ('company_id', '=', company.id),
+                    ('sequence', '>', oss_fp_sequence),
+                ])
+            else:
+                eu_b2b_fp = self.env['account.fiscal.position'].search([
+                    ('company_id', '=', company.id),
+                    ('country_group_id', '=', eu_vat_country_group_id),
+                    ('auto_apply', '=', True),
+                    ('vat_required', '=', True),
+                ], limit=1)
+                if eu_b2b_fp:
+                    # oss fp must come after eu b2b fp
+                    oss_fp_sequence = eu_b2b_fp.sequence + 1
+                    offset = 2
+                    to_bump = self.env['account.fiscal.position'].search([
+                        ('company_id', '=', company.id),
+                        ('sequence', '>', eu_b2b_fp.sequence),
+                    ])
+                else:
+                    oss_fp_sequence = self.env['account.fiscal.position'].search([
+                        ('company_id', '=', company.id)],
+                        limit=1, order='sequence desc',
+                    ).sequence + 1
+                    to_bump = []
+            for fp in to_bump:
+                fp.sequence += offset
+
             for destination_country in oss_countries:
                 mapping = []
                 fpos = self.env['account.fiscal.position'].search([
@@ -58,19 +110,35 @@ class Company(models.Model):
                         'country_id': destination_country.id,
                         'company_id': company.id,
                         'auto_apply': True,
+                        'sequence': oss_fp_sequence,
                     })
 
-                foreign_taxes = {tax.amount: tax for tax in fpos.tax_ids.tax_dest_id if tax.amount_type == 'percent'}
+                foreign_taxes = {tax.amount: tax for tax in fpos.tax_ids if tax.amount_type == 'percent'}
 
                 for domestic_tax in taxes:
                     tax_amount = EU_TAX_MAP.get((domestic_tax.country_id.code, domestic_tax.amount, destination_country.code), False)
-                    if tax_amount and domestic_tax not in fpos.tax_ids.tax_src_id:
+                    if tax_amount and domestic_tax not in fpos.tax_ids.original_tax_ids:
                         if not foreign_taxes.get(tax_amount, False):
                             oss_tax_group_local_xml_id = f"{company.id}_oss_tax_group_{str(tax_amount).replace('.', '_')}_{company.account_fiscal_country_id.code}"
                             if not self.env.ref(f"account.{oss_tax_group_local_xml_id}", raise_if_not_found=False):
-                                tg = self.env['account.tax.group'].search([
-                                    *self.env['account.tax.group']._check_company_domain(company),
-                                    ('tax_payable_account_id', '!=', False)], limit=1)
+                                if not default_oss_payable_account:
+                                    default_oss_payable_account = self.env['account.account'].create([{
+                                        'name': f'{tg.tax_payable_account_id.name} OSS',
+                                        'code': self.env['account.account']._search_new_account_code(tg.tax_payable_account_id.with_company(company).code),
+                                        'account_type': tg.tax_payable_account_id.account_type,
+                                        'reconcile': tg.tax_payable_account_id.reconcile,
+                                        'non_trade': tg.tax_payable_account_id.non_trade,
+                                        'company_ids': [Command.link(company.id)],
+                                    }])
+                                    default_oss_receivable_account = self.env['account.account'].create([{
+                                        'name': f'{tg.tax_receivable_account_id.name} OSS',
+                                        'code': self.env['account.account']._search_new_account_code(tg.tax_receivable_account_id.with_company(company).code),
+                                        'account_type': tg.tax_receivable_account_id.account_type,
+                                        'reconcile': tg.tax_receivable_account_id.reconcile,
+                                        'non_trade': tg.tax_receivable_account_id.non_trade,
+                                        'company_ids': [Command.link(company.id)],
+                                    }])
+
                                 self.env['ir.model.data'].create({
                                     'name': oss_tax_group_local_xml_id,
                                     'module': 'account',
@@ -79,8 +147,8 @@ class Company(models.Model):
                                         'name': f'OSS {tax_amount}%',
                                         'country_id': company.account_fiscal_country_id.id,
                                         'company_id': company.id,
-                                        'tax_payable_account_id': tg.tax_payable_account_id.id,
-                                        'tax_receivable_account_id': tg.tax_receivable_account_id.id,
+                                        'tax_payable_account_id': default_oss_payable_account.id,
+                                        'tax_receivable_account_id': default_oss_receivable_account.id,
                                     }).id,
                                     'noupdate': True,
                                 })
@@ -105,13 +173,10 @@ class Company(models.Model):
                                 'country_id': company.account_fiscal_country_id.id,
                                 'sequence': 1000,
                                 'company_id': company.id,
+                                'fiscal_position_ids': [Command.link(fpos.id)],
+                                'original_tax_ids': [Command.link(domestic_tax.id)],
                                 **extra_fields,
                             })
-                        mapping.append((0, 0, {'tax_src_id': domestic_tax.id, 'tax_dest_id': foreign_taxes[tax_amount].id}))
-                if mapping:
-                    fpos.write({
-                        'tax_ids': mapping
-                    })
 
     def _get_repartition_lines_oss(self):
         self.ensure_one()
@@ -187,7 +252,7 @@ class Company(models.Model):
         for repartition_line_key, tag_xml_id in tag_for_country.items():
             tag = self.env.ref(tag_xml_id) if tag_xml_id else self.env['account.account.tag']
             if tag and tag._name == "account.report.expression":
-                tag = tag._get_matching_tags("+")
+                tag = tag._get_matching_tags()
             mapping[repartition_line_key] = tag + oss_tag
 
         return mapping

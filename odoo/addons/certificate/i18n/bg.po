@@ -2,24 +2,17 @@
 # This file contains the translation of the following modules:
 # * certificate
 #
-# Translators:
-# Petko Karamotchev, 2024
-# Maria Boyadjieva <marabo2000@gmail.com>, 2024
-# Albena Mincheva <albena_vicheva@abv.bg>, 2024
-# KeyVillage, 2024
-# aleksandar ivanov, 2024
-# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2024
-# Veselina Slavkova, 2025
 # Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 # Odoo Translation Bot <c3p@odoo.com>, 2026.
+# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-03 17:39+0000\n"
-"PO-Revision-Date: 2026-08-08 17:09+0000\n"
+"POT-Creation-Date: 2026-07-10 17:36+0000\n"
+"PO-Revision-Date: 2026-08-05 02:46+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-19/"
 "certificate/bg/>\n"
 "Language: bg\n"
 "MIME-Version: 1.0\n"
@@ -54,7 +47,7 @@ msgstr "Добавяне, редактиране и изтриване на кл
 #: model_terms:ir.ui.view,arch_db:certificate.certificate_certificate_view_search
 #: model_terms:ir.ui.view,arch_db:certificate.certificate_key_view_search
 msgid "Archived"
-msgstr "Архивиран"
+msgstr "Архивирано"
 
 #. module: certificate
 #: model_terms:ir.ui.view,arch_db:certificate.certificate_certificate_view_search
@@ -129,7 +122,7 @@ msgstr "Създайте първи ключ"
 #: model:ir.model.fields,field_description:certificate.field_certificate_certificate__create_uid
 #: model:ir.model.fields,field_description:certificate.field_certificate_key__create_uid
 msgid "Created by"
-msgstr "Създаден от"
+msgstr "Създадено от"
 
 #. module: certificate
 #: model:ir.model.fields,field_description:certificate.field_certificate_certificate__create_date
@@ -230,6 +223,14 @@ msgstr "Грешка при зареждане"
 #: code:addons/certificate/models/key.py:0
 msgid "Make sure to use a private key to sign documents."
 msgstr "Уверете се, че използвате частен ключ за подписване на документи."
+
+#. module: certificate
+#. odoo-python
+#: code:addons/certificate/models/key.py:0
+msgid "Make sure to use a public key to verify the signature of documents."
+msgstr ""
+"Уверете се, че използвате публичен ключ за проверка на подписа на "
+"документите."
 
 #. module: certificate
 #: model_terms:ir.ui.view,arch_db:certificate.res_config_settings_view_form
@@ -355,13 +356,13 @@ msgstr "Сертификатът и публичният ключ не са съ
 
 #. module: certificate
 #: model:ir.model.fields,help:certificate.field_certificate_certificate__date_end
-msgid "The date on which the certificate expires (UTC)"
-msgstr "Датата, на която сертификатът изтича (UTC)"
+msgid "The date on which the certificate expires"
+msgstr "Датата, на която сертификатът изтича"
 
 #. module: certificate
 #: model:ir.model.fields,help:certificate.field_certificate_certificate__date_start
-msgid "The date on which the certificate starts to be valid (UTC)"
-msgstr "Дата на влизане в сила на сертификата (UTC)"
+msgid "The date on which the certificate starts to be valid"
+msgstr "Датата, от която сертификатът става валиден"
 
 #. module: certificate
 #. odoo-python
@@ -452,6 +453,16 @@ msgid ""
 msgstr ""
 "Неподдържан алгоритъм за асиметрична криптография „%s“. В момента за "
 "подписване се поддържат: EC и RSA."
+
+#. module: certificate
+#. odoo-python
+#: code:addons/certificate/models/key.py:0
+msgid ""
+"Unsupported asymmetric cryptography algorithm '%s'. Currently supported for "
+"signature: ED25519, EC and RSA."
+msgstr ""
+"Неподдържан алгоритъм за асиметрична криптография „%s“. В момента за "
+"подписване се поддържат: ED25519, EC и RSA."
 
 #. module: certificate
 #. odoo-python

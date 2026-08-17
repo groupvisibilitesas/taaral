@@ -98,20 +98,17 @@ class ResCompany(models.Model):
         for record in self:
             if not record.pdp_identifier:
                 continue
+            match = PDP_identifier_re.match(record.pdp_identifier or '')
             update = {
                 'peppol_eas': '0225',
                 'peppol_endpoint': record.pdp_identifier,  # Will be verified by `_check_peppol_fields` constraint
             }
-            match = PDP_identifier_re.match(record.pdp_identifier or '')
             siren = match and match.group(1)
             if not siren:
                 raise UserError(self.env._("The identifier %s is not valid. The expected format is: SIREN, SIREN_SIRET, SIREN_SIRET_CodeRoutage or SIREN_SuffixeAdressage", record.pdp_identifier))
-            if not record.siret:
+            if not record.company_registry:
                 siret = match.group(2)[1:] if match and match.group(2) else False  # Remove `_` at the start
-                if siret:
-                    update['siret'] = siret
-                else:
-                    update['company_registry'] = siren
+                update['company_registry'] = siret or siren
 
             record.partner_id.write(update)
 
@@ -143,10 +140,10 @@ class ResCompany(models.Model):
                 company_id=company.id,
             ) for company in companies),
         )
-        self.env.cr.execute(
+        res = self.env.execute_query(
             self._l10n_fr_pdp_get_f10_moves_query(tuple(account_ids), date_company_conditions),
         )
-        moves = self.env['account.move'].browse(res[0] for res in self.env.cr.fetchall())
+        moves = self.env['account.move'].browse(move_id for move_id, in res)
         moves._compute_l10n_fr_pdp_flow_10_operation_type()
         moves._compute_l10n_fr_pdp_flow_10_report_type()
 

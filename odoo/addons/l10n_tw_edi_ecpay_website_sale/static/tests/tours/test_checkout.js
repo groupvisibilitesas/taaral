@@ -49,7 +49,7 @@ registry.category("web_tour.tours").add("test_validate_customer_info_error", {
         },
         {
             content: "Continue Checkout",
-            trigger: '.btn-primary:contains("Continue checkout")',
+            trigger: "a[name='website_sale_main_button']",
             run: "click",
         },
         {
@@ -71,7 +71,7 @@ registry.category("web_tour.tours").add("test_validate_customer_info_error", {
         },
         {
             content: "Continue Checkout",
-            trigger: '.btn-primary:contains("Continue checkout")',
+            trigger: "a[name='website_sale_main_button']",
             run: "click",
         },
         {
@@ -126,7 +126,7 @@ registry.category("web_tour.tours").add("test_checkout_b2c_carrier", {
         },
         {
             content: "Continue Checkout",
-            trigger: '.btn-primary:contains("Continue checkout")',
+            trigger: "a[name='website_sale_main_button']",
             run: "click",
             expectUnloadPage: true,
         },
@@ -203,7 +203,7 @@ registry.category("web_tour.tours").add("test_checkout_b2c_love_code", {
         },
         {
             content: "Continue Checkout",
-            trigger: '.btn-primary:contains("Continue checkout")',
+            trigger: "a[name='website_sale_main_button']",
             run: "click",
             expectUnloadPage: true,
         },
@@ -280,7 +280,7 @@ registry.category("web_tour.tours").add("test_checkout_b2b", {
         },
         {
             content: "Continue Checkout",
-            trigger: '.btn-primary:contains("Continue checkout")',
+            trigger: "a[name='website_sale_main_button']",
             run: "click",
             expectUnloadPage: true,
         },
@@ -332,7 +332,7 @@ registry.category("web_tour.tours").add("test_checkout_b2c_mobile_barcode", {
         },
         {
             content: "Continue Checkout",
-            trigger: '.btn-primary:contains("Continue checkout")',
+            trigger: "a[name='website_sale_main_button']",
             run: "click",
             expectUnloadPage: true,
         },

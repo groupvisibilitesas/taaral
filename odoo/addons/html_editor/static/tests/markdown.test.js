@@ -1,6 +1,7 @@
-import { describe, test } from "@odoo/hoot";
+import { describe, expect, test } from "@odoo/hoot";
+import { animationFrame, press } from "@odoo/hoot-dom";
 import { patchWithCleanup } from "@web/../tests/web_test_helpers";
-import { testEditor } from "./_helpers/editor";
+import { base64Img, setupEditor, testEditor } from "./_helpers/editor";
 import { insertText } from "./_helpers/user_actions";
 
 describe("inline code", () => {
@@ -8,7 +9,9 @@ describe("inline code", () => {
         await testEditor({
             contentBefore: "<p>`ab[]cd</p>",
             stepFunction: async (editor) => await insertText(editor, "`"),
-            contentAfter: '<p>\u200B<code class="o_inline_code">ab</code>\u200B[]cd</p>',
+            contentAfterEdit:
+                '<p>\ufeff<code class="o_inline_code">\ufeffab\ufeff</code>\ufeff[]cd</p>',
+            contentAfter: '<p><code class="o_inline_code">ab</code>[]cd</p>',
         });
     });
 
@@ -17,7 +20,9 @@ describe("inline code", () => {
         await testEditor({
             contentBefore: "<p>[]ab`cd</p>",
             stepFunction: async (editor) => await insertText(editor, "`"),
-            contentAfter: '<p>\u200B<code class="o_inline_code">[]ab</code>cd</p>',
+            contentAfterEdit:
+                '<p>\ufeff<code class="o_inline_code">[]\ufeffab\ufeff</code>\ufeffcd</p>',
+            contentAfter: '<p><code class="o_inline_code">[]ab</code>cd</p>',
         });
     });
 
@@ -25,7 +30,9 @@ describe("inline code", () => {
         await testEditor({
             contentBefore: "<p>ab`cd[]ef</p>",
             stepFunction: async (editor) => await insertText(editor, "`"),
-            contentAfter: '<p>ab<code class="o_inline_code">cd</code>\u200B[]ef</p>',
+            contentAfterEdit:
+                '<p>ab\ufeff<code class="o_inline_code">\ufeffcd\ufeff</code>\ufeff[]ef</p>',
+            contentAfter: '<p>ab<code class="o_inline_code">cd</code>[]ef</p>',
         });
     });
 
@@ -34,6 +41,8 @@ describe("inline code", () => {
         await testEditor({
             contentBefore: "<p>ab[]cd`ef</p>",
             stepFunction: async (editor) => await insertText(editor, "`"),
+            contentAfterEdit:
+                '<p>ab\ufeff<code class="o_inline_code">[]\ufeffcd\ufeff</code>\ufeffef</p>',
             contentAfter: '<p>ab<code class="o_inline_code">[]cd</code>ef</p>',
         });
     });
@@ -42,7 +51,9 @@ describe("inline code", () => {
         await testEditor({
             contentBefore: "<p>ab`cd[]</p>",
             stepFunction: async (editor) => await insertText(editor, "`"),
-            contentAfter: '<p>ab<code class="o_inline_code">cd</code>\u200B[]</p>',
+            contentAfterEdit:
+                '<p>ab\ufeff<code class="o_inline_code">\ufeffcd\ufeff</code>\ufeff[]</p>',
+            contentAfter: '<p>ab<code class="o_inline_code">cd</code>[]</p>',
         });
     });
 
@@ -51,6 +62,8 @@ describe("inline code", () => {
         await testEditor({
             contentBefore: "<p>ab[]cd`</p>",
             stepFunction: async (editor) => await insertText(editor, "`"),
+            contentAfterEdit:
+                '<p>ab\ufeff<code class="o_inline_code">[]\ufeffcd\ufeff</code>\ufeff</p>',
             contentAfter: '<p>ab<code class="o_inline_code">[]cd</code></p>',
         });
     });
@@ -60,7 +73,9 @@ describe("inline code", () => {
             contentBefore: "<p>a`b`cd[]e`f</p>",
             stepFunction: async (editor) => await insertText(editor, "`"),
             // The closest PREVIOUS backtick is prioritary
-            contentAfter: '<p>a`b<code class="o_inline_code">cd</code>\u200B[]e`f</p>',
+            contentAfterEdit:
+                '<p>a`b\ufeff<code class="o_inline_code">\ufeffcd\ufeff</code>\ufeff[]e`f</p>',
+            contentAfter: '<p>a`b<code class="o_inline_code">cd</code>[]e`f</p>',
         });
     });
 
@@ -69,6 +84,8 @@ describe("inline code", () => {
             contentBefore: "<p>ab[]cd`e`f</p>",
             stepFunction: async (editor) => await insertText(editor, "`"),
             // If there is no previous backtick, use the closest NEXT backtick.
+            contentAfterEdit:
+                '<p>ab\ufeff<code class="o_inline_code">[]\ufeffcd\ufeff</code>\ufeffe`f</p>',
             contentAfter: '<p>ab<code class="o_inline_code">[]cd</code>e`f</p>',
         });
     });
@@ -93,6 +110,8 @@ describe("inline code", () => {
         await testEditor({
             contentBefore: '<p>a<code class="o_inline_code">b`cd[]e</code>f</p>',
             stepFunction: async (editor) => await insertText(editor, "`"),
+            contentAfterEdit:
+                '<p>a\ufeff<code class="o_inline_code">\ufeffb`cd`[]e\ufeff</code>\ufefff</p>',
             contentAfter: '<p>a<code class="o_inline_code">b`cd`[]e</code>f</p>',
         });
     });
@@ -109,7 +128,9 @@ describe("inline code", () => {
 
                 await insertText(editor, "`");
             },
-            contentAfter: '<p>ab<code class="o_inline_code">c</code>\u200B[]d</p>',
+            contentAfterEdit:
+                '<p>ab\ufeff<code class="o_inline_code">\ufeffc\ufeff</code>\ufeff[]d</p>',
+            contentAfter: '<p>ab<code class="o_inline_code">c</code>[]d</p>',
         });
     });
 
@@ -125,7 +146,9 @@ describe("inline code", () => {
 
                 await insertText(editor, "`");
             },
-            contentAfter: '<p>a<code class="o_inline_code">b</code>\u200B[]cd</p>',
+            contentAfterEdit:
+                '<p>a\ufeff<code class="o_inline_code">\ufeffb\ufeff</code>\ufeff[]cd</p>',
+            contentAfter: '<p>a<code class="o_inline_code">b</code>[]cd</p>',
         });
     });
 
@@ -142,7 +165,9 @@ describe("inline code", () => {
 
                 await insertText(editor, "`");
             },
-            contentAfter: '<p>ab<code class="o_inline_code">c</code>\u200B[]de</p>',
+            contentAfterEdit:
+                '<p>ab\ufeff<code class="o_inline_code">\ufeffc\ufeff</code>\ufeff[]de</p>',
+            contentAfter: '<p>ab<code class="o_inline_code">c</code>[]de</p>',
         });
     });
 
@@ -158,7 +183,9 @@ describe("inline code", () => {
 
                 await insertText(editor, "`");
             },
-            contentAfter: '<p>\u200B<code class="o_inline_code">ab</code>\u200B[]c</p>',
+            contentAfterEdit:
+                '<p>\ufeff<code class="o_inline_code">\ufeffab\ufeff</code>\ufeff[]c</p>',
+            contentAfter: '<p><code class="o_inline_code">ab</code>[]c</p>',
         });
     });
 
@@ -174,6 +201,8 @@ describe("inline code", () => {
 
                 await insertText(editor, "`");
             },
+            contentAfterEdit:
+                '<p>ab\ufeff<code class="o_inline_code">[]\ufeffc\ufeff</code>\ufeff</p>',
             contentAfter: '<p>ab<code class="o_inline_code">[]c</code></p>',
         });
     });
@@ -210,11 +239,128 @@ describe("inline code", () => {
         });
     });
 
+    test("should wrap selection in inline code (1)", async () => {
+        await testEditor({
+            contentBefore: "<p>a[bc]d</p>",
+            stepFunction: async (editor) => insertText(editor, "`"),
+            contentAfterEdit:
+                '<p>a\ufeff<code class="o_inline_code">\ufeffbc[]\ufeff</code>\ufeffd</p>',
+            contentAfter: '<p>a<code class="o_inline_code">bc[]</code>d</p>',
+        });
+    });
+
+    test("should wrap selection in inline code (2)", async () => {
+        await testEditor({
+            contentBefore: `<p>ab[cd<a href="#">test</a>ef]gh</p>`,
+            stepFunction: async (editor) => insertText(editor, "`"),
+            contentAfterEdit: `<p>ab\ufeff<code class="o_inline_code">\ufeffcd\ufeff<a href="#">\ufefftest\ufeff</a>\ufeffef[]\ufeff</code>\ufeffgh</p>`,
+            contentAfter: `<p>ab<code class="o_inline_code">cd<a href="#">test</a>ef[]</code>gh</p>`,
+        });
+    });
+
+    test("should split selected inline element and wrap only the selected text in inline code", async () => {
+        await testEditor({
+            contentBefore: "<p>ab[cd<strong>ef]g</strong>h</p>",
+            stepFunction: async (editor) => insertText(editor, "`"),
+            contentAfterEdit:
+                '<p>ab\ufeff<code class="o_inline_code">\ufeffcd<strong>ef[]</strong>\ufeff</code>\ufeff<strong>g</strong>h</p>',
+            contentAfter:
+                '<p>ab<code class="o_inline_code">cd<strong>ef[]</strong></code><strong>g</strong>h</p>',
+        });
+    });
+
+    test("should split selected inline element and wrap only the selected text in inline code(1)", async () => {
+        await testEditor({
+            contentBefore: "<p><strong>a<u>b[cd</u>ef]g</strong></p>",
+            stepFunction: async (editor) => insertText(editor, "`"),
+            contentAfterEdit:
+                '<p><strong>a<u>b</u></strong>\ufeff<code class="o_inline_code">\ufeff<strong><u>cd</u>ef[]</strong>\ufeff</code>\ufeff<strong>g</strong></p>',
+            contentAfter:
+                '<p><strong>a<u>b</u></strong><code class="o_inline_code"><strong><u>cd</u>ef[]</strong></code><strong>g</strong></p>',
+        });
+    });
+
+    test("should apply inline code when selection partially includes a link", async () => {
+        await testEditor({
+            contentBefore: `<p>ab[cd<a href="#">te]st</a>ef</p>`,
+            stepFunction: async (editor) => insertText(editor, "`"),
+            contentAfterEdit:
+                '<p>ab\ufeff<code class="o_inline_code">\ufeffcd\ufeff<a href="#" class="o_link_in_selection">\ufeffte[]\ufeff</a>\ufeff</code>\ufeff<a href="#">\ufeffst\ufeff</a>\ufeffef</p>',
+            contentAfter:
+                '<p>ab<code class="o_inline_code">cd<a href="#">te[]</a></code><a href="#">st</a>ef</p>',
+        });
+    });
+
+    test("should wrap text selection in inline code but skip images (1)", async () => {
+        await testEditor({
+            contentBefore: `<p>a[bc<img src="${base64Img}">de]f</p>`,
+            stepFunction: async (editor) => insertText(editor, "`"),
+            contentAfterEdit: `<p>a\ufeff<code class="o_inline_code">\ufeffbc\ufeff</code>\ufeff<img src="${base64Img}">\ufeff<code class="o_inline_code">\ufeffde[]\ufeff</code>\ufefff</p>`,
+            contentAfter: `<p>a<code class="o_inline_code">bc</code><img src="${base64Img}"><code class="o_inline_code">de[]</code>f</p>`,
+        });
+    });
+
+    test("should wrap text selection in inline code but skip images (2)", async () => {
+        await testEditor({
+            contentBefore: `<p>a[bcde<img src="${base64Img}">]</p>`,
+            stepFunction: async (editor) => insertText(editor, "`"),
+            contentAfterEdit: `<p>a\ufeff<code class="o_inline_code">\ufeffbcde[]\ufeff</code>\ufeff<img src="${base64Img}"></p>`,
+            contentAfter: `<p>a<code class="o_inline_code">bcde[]</code><img src="${base64Img}"></p>`,
+        });
+    });
+
+    test("should convert partially selected button into link and wrap selection in inline code", async () => {
+        await testEditor({
+            contentBefore: `<p>ab[cd<a href="#" class="btn btn-primary">te]st</a>ef</p>`,
+            stepFunction: async (editor) => insertText(editor, "`"),
+            contentAfterEdit:
+                '<p>ab\ufeff<code class="o_inline_code">\ufeffcd\ufeff<a href="#" class="o_link_in_selection">\ufeffte[]\ufeff</a>\ufeff</code>\ufeff<a href="#" class="btn btn-primary">\ufeffst\ufeff</a>\ufeffef</p>',
+            contentAfter:
+                '<p>ab<code class="o_inline_code">cd<a href="#">te[]</a></code><a href="#" class="btn btn-primary">st</a>ef</p>',
+        });
+    });
+
+    test("should not create an empty inline code when there is no text between two backticks", async () => {
+        await testEditor({
+            contentBefore: "<p>a`[]b</p>",
+            stepFunction: async (editor) => insertText(editor, "`"),
+            contentAfterEdit: "<p>a``[]b</p>",
+            contentAfter: "<p>a``[]b</p>",
+        });
+    });
+
+    test("should not create an empty inline code when there is a backtick between two backticks", async () => {
+        await testEditor({
+            contentBefore: "<p>a``[]b</p>",
+            stepFunction: async (editor) => insertText(editor, "`"),
+            contentAfterEdit: "<p>a```[]b</p>",
+            contentAfter: "<p>a```[]b</p>",
+        });
+    });
+
+    test("should not apply inline code when selection spans multiple block elements", async () => {
+        await testEditor({
+            contentBefore: "<p>a[b</p><p>cd</p><p>e]f</p>",
+            stepFunction: async (editor) => insertText(editor, "`"),
+            contentAfter: "<p>a`[]f</p>",
+        });
+    });
+
+    test.tags("desktop");
+    test("should not open the odoo global command bar when pressing ctrl+k inside a inline code element", async () => {
+        await setupEditor(`<p><code class="o_inline_code">[test]</code></p>`);
+
+        // Pressing ctrl+k to open odoo global command bar
+        await press(["ctrl", "k"]);
+        await animationFrame();
+        expect('.o_command span[title="Create link"]').toHaveCount(0);
+    });
+
     test("should not trigger list shorthand inside a code block", async () => {
         await testEditor({
             contentBefore: "<pre>[]<br></pre>",
             stepFunction: async (editor) => await insertText(editor, "* "),
-            contentAfter: "<pre>* []<br></pre>",
+            contentAfter: "<pre>* []</pre>",
         });
     });
 
@@ -222,7 +368,7 @@ describe("inline code", () => {
         await testEditor({
             contentBefore: "<pre>[]<br></pre>",
             stepFunction: async (editor) => await insertText(editor, "# "),
-            contentAfter: "<pre># []<br></pre>",
+            contentAfter: "<pre># []</pre>",
         });
     });
 });

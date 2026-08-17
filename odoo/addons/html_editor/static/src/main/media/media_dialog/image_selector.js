@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "@odoo/owl";
+import { useRef, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { rpc } from "@web/core/network/rpc";
 import { KeepLast } from "@web/core/utils/concurrency";
 import { DEFAULT_PALETTE } from "@html_editor/utils/color";
 import { getCSSVariableValue, getHtmlStyle } from "@html_editor/utils/formatting";
 import { Attachment, FileSelector, IMAGE_EXTENSIONS, IMAGE_MIMETYPES } from "./file_selector";
+import { isSrcCorsProtected } from "@html_editor/utils/image";
 
 export class AutoResizeImage extends Attachment {
     static template = "html_editor.AutoResizeImage";
@@ -17,14 +18,6 @@ export class AutoResizeImage extends Attachment {
         this.state = useState({
             loaded: false,
         });
-
-        useEffect(
-            () => {
-                this.image.el.addEventListener("load", () => this.onImageLoaded());
-                return this.image.el.removeEventListener("load", () => this.onImageLoaded());
-            },
-            () => []
-        );
     }
 
     async onImageLoaded() {
@@ -92,6 +85,8 @@ export class ImageSelector extends FileSelector {
         this.MIN_ROW_HEIGHT = 128;
 
         this.fileMimetypes = IMAGE_MIMETYPES.join(",");
+        this.isImageField =
+            !!this.props.media?.closest("[data-oe-type=image]") || !!this.props.addFieldImage;
         this.isProcessingClick = false;
     }
 
@@ -173,11 +168,22 @@ export class ImageSelector extends FileSelector {
     }
 
     async uploadFiles(files) {
-        await this.uploadService.uploadFiles(
+        let abortFn;
+
+        const uploadPromise = this.uploadService.uploadFiles(
             files,
-            { resModel: this.props.resModel, resId: this.props.resId, isImage: true },
-            (attachment) => this.onUploaded(attachment)
+            {
+                resModel: this.props.resModel,
+                resId: this.props.resId,
+                isImage: true,
+            },
+            (attachment) => this.onUploaded(attachment),
+            (abort) => {
+                abortFn = abort;
+            }
         );
+        this.props.setAbortUploadsCallback(() => abortFn?.());
+        await uploadPromise;
     }
 
     async validateUrl(...args) {
@@ -193,6 +199,30 @@ export class ImageSelector extends FileSelector {
         return { isValidFileFormat, isValidUrl };
     }
 
+    async onLoadUploadedUrl(url, resolve) {
+        const urlPathname = new URL(url, window.location.href).pathname;
+        const imageExtension = IMAGE_EXTENSIONS.find((format) => urlPathname.endsWith(format));
+        if (this.isImageField && imageExtension === ".webp") {
+            // Do not allow the user to replace an image field by a
+            // webp CORS protected image as we are not currently
+            // able to manage the report creation if such images are
+            // in there (as the equivalent jpeg can not be
+            // generated). It also causes a problem for resize
+            // operations as 'libwep' can not be used.
+            this.notificationService.add(
+                _t(
+                    "You can not replace a field by this image. If you want to use this image, first save it on your computer and then upload it here."
+                ),
+                {
+                    type: "danger",
+                    sticky: true,
+                }
+            );
+            return resolve();
+        }
+        super.onLoadUploadedUrl(url, resolve);
+    }
+
     isInitialMedia(attachment) {
         if (this.props.media.dataset.originalSrc) {
             return this.props.media.dataset.originalSrc === attachment.image_src;
@@ -202,6 +232,20 @@ export class ImageSelector extends FileSelector {
 
     async fetchAttachments(limit, offset) {
         const attachments = await super.fetchAttachments(limit, offset);
+        if (this.isImageField) {
+            // The image is a field; mark the attachments if they are linked to
+            // a webp CORS protected image. Indeed, in this case, they should
+            // not be selectable on the media dialog (due to a problem of image
+            // resize and report creation).
+            for (const attachment of attachments) {
+                if (
+                    attachment.mimetype === "image/webp" &&
+                    (await isSrcCorsProtected(attachment.image_src))
+                ) {
+                    attachment.unselectable = true;
+                }
+            }
+        }
         // Color-substitution for dynamic SVG attachment
         const primaryColors = {};
         const htmlStyle = getHtmlStyle(document);
@@ -243,7 +287,7 @@ export class ImageSelector extends FileSelector {
         this.state.isFetchingLibrary = true;
         try {
             const response = await rpc(
-                "/web_editor/media_library_search",
+                "/html_editor/media_library_search",
                 {
                     query: this.state.needle,
                     offset: offset,
@@ -305,6 +349,18 @@ export class ImageSelector extends FileSelector {
             return;
         }
         this.isProcessingClick = true;
+        if (attachment.unselectable) {
+            this.notificationService.add(
+                _t(
+                    "You can not replace a field by this image. If you want to use this image, first save it on your computer and then upload it here."
+                ),
+                {
+                    type: "danger",
+                    sticky: true,
+                }
+            );
+            return;
+        }
         this.selectAttachment(attachment);
         if (!this.props.multiSelect) {
             await this.props.save();

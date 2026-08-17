@@ -1,6 +1,8 @@
 import { isBlock } from "@html_editor/utils/blocks";
-import { blendColors } from "@html_editor/utils/color";
 import { getAdjacentPreviousSiblings } from "@html_editor/utils/dom_traversal";
+import { loadImage } from "@html_editor/utils/image_processing";
+import { getImageSrc } from "@html_editor/utils/image";
+import { blendColors } from "@web/core/utils/colors";
 
 function parentsGet(node, root = undefined) {
     const parents = [];
@@ -33,12 +35,15 @@ function commonParentGet(node1, node2, root = undefined) {
 //--------------------------------------------------------------------------
 
 const RE_COL_MATCH = /(^| )col(-[\w\d]+)*( |$)/;
-const RE_OFFSET_MATCH = /(^| )offset(-[\w\d]+)*( |$)/;
+const RE_COL_MD_MATCH = /(^| )col-md(-\d+)*( |$)/;
+const RE_OFFSET_MATCH = /(^| )offset(-[\w\d]+)+( |$)/;
+const RE_OFFSET_MD_MATCH = /(^| )offset-md(-\d+)+( |$)/;
 const RE_PADDING_MATCH = /[ ]*padding[^;]*;/g;
 const RE_PADDING = /([\d.]+)/;
 const RE_WHITESPACE = /[\s\u200b]*/;
-const SELECTORS_IGNORE = /(^\*$|:hover|:before|:after|:active|:link|::|'|\([^(),]+[,(])|@page/;
+const SELECTORS_IGNORE = /(^\*$|:hover|:before|:after|:active|:link|::|')|@page/; // :not(:has) should be legal
 const RE_THEME_COLOR_CLASS = /^bg-o-color-\d+$/;
+const CONVERT_INLINE_BLACKLIST_CLASSES = ["o_mail_redirect"];
 // CSS properties relating to font, which Outlook seem to have trouble inheriting.
 const FONT_PROPERTIES_TO_INHERIT = [
     "color",
@@ -66,6 +71,11 @@ export const TABLE_STYLES = {
     "text-align": "inherit",
     "font-size": "unset",
     "line-height": "inherit",
+};
+
+export const BASIC_THEME_TABLE_STYLES = {
+    "background-color": "transparent",
+    color: "inherit",
 };
 
 const GROUPED_STYLES = {
@@ -103,7 +113,13 @@ const GROUPED_STYLES = {
  * @param {HTMLElement} element
  */
 export function addTables(element) {
+    const isInBasicTheme = Boolean(element.querySelector(".o_layout.o_basic_theme"));
     for (const snippet of element.querySelectorAll(".o_mail_snippet_general, .o_layout")) {
+        if (isInBasicTheme) {
+            for (const [property, value] of Object.entries(BASIC_THEME_TABLE_STYLES)) {
+                snippet.style.setProperty(property, value);
+            }
+        }
         // Convert all snippets and the mailing itself into table > tr > td
         const table = _createTable(snippet.attributes);
 
@@ -122,7 +138,7 @@ export function addTables(element) {
             const padding = "34px"; // This is what's needed to align the content with Apple Mail's header.
             style.textContent =
                 `@media{@media{.o_basic_theme div.o_apple_wrapper_padding{padding:${snippet.style.padding};}}}` +
-                `@media(min-width:961px){@media{@media{.o_basic_theme div.o_apple_wrapper_padding{padding-left:${padding};}}}}`;
+                `@media(min-width:737px){@media{@media{.o_basic_theme div.o_apple_wrapper_padding{padding-left:${padding};}}}}`;
             div.before(style);
         }
         table.appendChild(row);
@@ -282,9 +298,19 @@ export function bootstrapToTable(element) {
             bootstrapRow.remove();
 
             // COLUMNS
-            const bootstrapColumns = [...tr.children].filter(
-                (column) => column.className && column.className.match(RE_COL_MATCH)
-            );
+            const bootstrapColumns = [...tr.children].filter((column) => {
+                let match = column.className && column.className.match(RE_COL_MATCH);
+                const size = match ? _getColumnSize(column) : undefined;
+                while (match) {
+                    column.classList.remove(match[0].trim());
+                    match = column.className && column.className.match(RE_COL_MATCH);
+                }
+                if (size !== undefined) {
+                    // Only keep the final column size. Everything else was stripped.
+                    column.classList.add(`col${size ? `-${size}` : ``}`);
+                }
+                return size !== undefined;
+            });
 
             // 1. Replace generic "col" classes with specific "col-n", computed
             //    by sharing the available space between them.
@@ -308,9 +334,11 @@ export function bootstrapToTable(element) {
                 if (offsetSize) {
                     const newColumn = document.createElement("div");
                     newColumn.classList.add(`col-${offsetSize}`);
-                    bootstrapColumn.classList.remove(
-                        bootstrapColumn.className.match(RE_OFFSET_MATCH)[0].trim()
-                    );
+                    let match = bootstrapColumn.className.match(RE_OFFSET_MATCH);
+                    while (match) {
+                        bootstrapColumn.classList.remove(match[0].trim());
+                        match = bootstrapColumn.className.match(RE_OFFSET_MATCH);
+                    }
                     bootstrapColumn.before(newColumn);
                     bootstrapColumns.splice(columnIndex, 0, newColumn);
                     columnIndex++;
@@ -329,12 +357,6 @@ export function bootstrapToTable(element) {
                     currentCol = grid[gridIndex];
                     _applyColspan(currentCol, columnSize, containerWidth);
                     gridIndex += columnSize;
-                    if (columnIndex === bootstrapColumns.length - 1) {
-                        // We handled all the columns but there is still space
-                        // in the row. Insert the columns and fill the row.
-                        _applyColspan(grid[gridIndex], 12 - gridIndex, containerWidth);
-                        currentRow.append(...grid.filter((td) => td.getAttribute("colspan")));
-                    }
                 } else if (gridIndex + columnSize === 12) {
                     // Finish the row.
                     currentCol = grid[gridIndex];
@@ -350,9 +372,11 @@ export function bootstrapToTable(element) {
                         gridIndex = 0;
                     }
                 } else {
-                    // Fill the row with what was in the grid before it
-                    // overflowed.
-                    _applyColspan(grid[gridIndex], 12 - gridIndex, containerWidth);
+                    if (gridIndex < 12) {
+                        // Fill the row with what was in the grid before it
+                        // overflowed.
+                        _applyColspan(grid[gridIndex], 12 - gridIndex, containerWidth);
+                    }
                     currentRow.append(...grid.filter((td) => td.getAttribute("colspan")));
                     // Start a new row that starts with the current col.
                     const previousRow = currentRow;
@@ -362,12 +386,14 @@ export function bootstrapToTable(element) {
                     currentCol = grid[0];
                     _applyColspan(currentCol, columnSize, containerWidth);
                     gridIndex = columnSize;
-                    if (columnIndex === bootstrapColumns.length - 1 && gridIndex < 12) {
+                }
+                if (columnIndex === bootstrapColumns.length - 1) {
+                    if (gridIndex < 12) {
                         // We handled all the columns but there is still space
                         // in the row. Insert the columns and fill the row.
                         _applyColspan(grid[gridIndex], 12 - gridIndex, containerWidth);
-                        currentRow.append(...grid.filter((td) => td.getAttribute("colspan")));
                     }
+                    currentRow.append(...grid.filter((td) => td.getAttribute("colspan")));
                 }
                 if (currentCol) {
                     for (const attr of bootstrapColumn.attributes) {
@@ -530,7 +556,7 @@ export function classToStyle(element, cssRules) {
             }
         }
         style = correctBorderAttributes(style);
-        if (Object.keys(style || {}).length === 0) {
+        if (Object.keys(style || {}).length === 0 || node.nodeName === "T") {
             writes.push(() => {
                 node.removeAttribute("style");
             });
@@ -629,6 +655,10 @@ export function classToStyle(element, cssRules) {
                         computedStyle.getPropertyValue(prop) ||
                         computedStyle.getPropertyValue(styleName);
                     node.style.setProperty(styleName, value);
+                    if (value.includes("calc(")) {
+                        // If value included a calc(), assign the node's computed style property value for Outlook compatibility
+                        node.style.setProperty(styleName, computedStyle.getPropertyValue(styleName));
+                    }
                 }
             }
         });
@@ -642,6 +672,45 @@ export function classToStyle(element, cssRules) {
                 const computedStyle = getComputedStyle(node);
                 for (const prop of propsToConvert) {
                     node.style.setProperty(prop, computedStyle[prop]);
+                }
+            }
+        });
+
+        const matchedBlacklistRules = nodeRules?.filter((rule) =>
+            CONVERT_INLINE_BLACKLIST_CLASSES.some(
+                (cls) => rule.selector.includes(cls) && node.classList.contains(cls)
+            )
+        );
+
+        const blacklistedStyles = {};
+        for (const rule of matchedBlacklistRules) {
+            for (const [key, value] of Object.entries(rule.style)) {
+                if (
+                    !blacklistedStyles[key] ||
+                    !blacklistedStyles[key].includes("important") ||
+                    value.includes("important")
+                ) {
+                    blacklistedStyles[key] = value;
+                }
+            }
+        }
+
+        for (const [key, value] of Object.entries(blacklistedStyles)) {
+            if (value && value.endsWith("important")) {
+                blacklistedStyles[key] = value.replace(/\s*!important\s*$/, "");
+            }
+        }
+
+        // Find styles to remove if they are from a blacklisted class and match
+        // existing styles.
+        const stylesToRemove = Object.fromEntries(
+            Object.entries(css).filter(([key, value]) => blacklistedStyles[key] === value)
+        );
+        // Remove style from blacklisted classes.
+        writes.push(() => {
+            for (const [key] of Object.entries(stylesToRemove)) {
+                if (node.style[key]) {
+                    node.style.removeProperty(key);
                 }
             }
         });
@@ -833,6 +902,7 @@ function enforceImagesResponsivity(element) {
  *                            specificity: number;}>
  */
 export async function toInline(element, cssRules) {
+    await waitUntilImagesLoaded(element);
     // Fix card-img-top heights (must happen before we transform everything).
     for (const imgTop of element.querySelectorAll(".card-img-top")) {
         imgTop.style.setProperty("height", _getHeight(imgTop) + "px");
@@ -958,15 +1028,15 @@ function fontToImg(element) {
 
     for (const font of element.querySelectorAll(".fa")) {
         let icon, content;
-        fonts.fontIcons.find((fontIcon) => {
-            return fonts.getCssSelectors(fontIcon.parser).find((data) => {
+        fonts.fontIcons.find((fontIcon) =>
+            fonts.getCssSelectors(fontIcon.parser).find((data) => {
                 if (font.matches(data.selector.replace(/::?before/g, ""))) {
                     icon = data.names[0].split("-").shift();
                     content = data.css.match(/content:\s*['"]?(.)['"]?/)[1];
                     return true;
                 }
-            });
-        });
+            })
+        );
         if (content) {
             const color = _getStylePropertyValue(font, "color").replace(/\s/g, "");
             let backgroundColoredElement = font;
@@ -1005,10 +1075,9 @@ function fontToImg(element) {
             const image = document.createElement("img");
             image.setAttribute("width", intrinsicWidth);
             image.setAttribute("height", intrinsicHeight);
-            // @todo @phoenix adapt controller to html_editor
             image.setAttribute(
                 "src",
-                `/web_editor/font_to_img/${content.charCodeAt(0)}/${encodeURIComponent(
+                `/mail/font_to_img/${content.charCodeAt(0)}/${encodeURIComponent(
                     color
                 )}/${encodeURIComponent(bg)}/${Math.max(1, Math.round(intrinsicWidth))}x${Math.max(
                     1,
@@ -1226,26 +1295,6 @@ export function formatTables(element) {
         }
     }
 }
-export function splitSelectors(str) {
-    const result = [];
-    let current = "";
-    let depth = 0;
-    for (const char of str) {
-        if (char === "(") {
-            depth++;
-        } else if (char === ")") {
-            depth--;
-        }
-        if (char === "," && depth === 0) {
-            result.push(current.trim());
-            current = "";
-        } else {
-            current += char;
-        }
-    }
-    result.push(current.trim());
-    return result;
-}
 /**
  * Parse through the given document's stylesheets, preprocess(*) them and return
  * the result as an array of objects, each containing a selector string , a
@@ -1260,7 +1309,7 @@ export function splitSelectors(str) {
  */
 export function getCSSRules(doc) {
     const cssRules = [];
-    for (const sheet of doc.styleSheets) {
+    for (const sheet of [...doc.styleSheets, ...doc.adoptedStyleSheets]) {
         // try...catch because browser may not able to enumerate rules for cross-domain sheets
         let rules;
         try {
@@ -1274,7 +1323,7 @@ export function getCSSRules(doc) {
             const conditionText = rule.conditionText;
             const minWidthMatch = conditionText && conditionText.match(/\(min-width *: *(\d+)/);
             const minWidth = minWidthMatch && +(minWidthMatch[1] || "0");
-            if (minWidth && minWidth >= 992) {
+            if (minWidth && minWidth >= 768) {
                 // Large min-width media queries should be included.
                 // eg., .container has a default max-width for all screens.
                 let mediaRules;
@@ -1288,7 +1337,7 @@ export function getCSSRules(doc) {
             for (const subRule of subRules) {
                 const selectorText = subRule.selectorText || "";
                 // Split selectors, making sure not to split at commas in parentheses.
-                for (const selector of splitSelectors(selectorText)) {
+                for (const selector of splitSelectorAroundCommasOutsideParentheses(selectorText)) {
                     if (selector && !SELECTORS_IGNORE.test(selector)) {
                         cssRules.push({ selector: selector.trim(), rawRule: subRule });
                         if (selector === "body") {
@@ -1660,6 +1709,10 @@ function _computeStyleAndSpecificityOnRules(cssRules) {
                     style,
                     specificity: _computeSpecificity(cssRule.selector),
                 });
+            } else {
+                Object.assign(cssRule, {
+                    specificity: 0,
+                });
             }
         }
     }
@@ -1731,7 +1784,10 @@ function _createTable(attributes = []) {
  * @returns {number}
  */
 function _getColumnSize(column) {
-    const colMatch = column.className.match(RE_COL_MATCH);
+    let colMatch = column.className.match(RE_COL_MD_MATCH);
+    if (!colMatch) {
+        colMatch = column.className.match(RE_COL_MATCH);
+    }
     const colOptions = colMatch[2] && colMatch[2].substr(1).split("-");
     const colSize =
         (colOptions && (colOptions.length === 2 ? +colOptions[1] : +colOptions[0])) || 0;
@@ -1746,7 +1802,10 @@ function _getColumnSize(column) {
  * @returns {number}
  */
 function _getColumnOffsetSize(column) {
-    const offsetMatch = column.className.match(RE_OFFSET_MATCH);
+    let offsetMatch = column.className.match(RE_OFFSET_MD_MATCH);
+    if (!offsetMatch) {
+        offsetMatch = column.className.match(RE_OFFSET_MATCH);
+    }
     const offsetOptions = offsetMatch && offsetMatch[2] && offsetMatch[2].substr(1).split("-");
     const offsetSize =
         (offsetOptions && (offsetOptions.length === 2 ? +offsetOptions[1] : +offsetOptions[0])) ||
@@ -2038,6 +2097,51 @@ function removeBlacklistedStyles(rule, node) {
     return styles;
 }
 
+export function splitSelectorAroundCommasOutsideParentheses(selector) {
+    if (selector.indexOf(",") === -1) {
+        return [selector].filter(Boolean);
+    }
+    const result = [];
+    let start = 0;
+    let depth = 0;
+    let inString;
+    for (let i = 0; i < selector.length; i++) {
+        const char = selector[i];
+        if (inString) {
+            if (char === inString && selector[i - 1] !== "\\") {
+                inString = undefined;
+            }
+            continue;
+        }
+        switch (char) {
+            case "'":
+            case '"':
+                inString = char;
+                break;
+            case "(":
+                depth++;
+                break;
+            case ")":
+                depth--;
+                if (depth < 0) {
+                    return [selector];
+                }
+                break;
+            case ",":
+                if (depth === 0) {
+                    result.push(selector.slice(start, i));
+                    start = i + 1;
+                }
+                break;
+        }
+    }
+    if (depth > 0) {
+        return [selector];
+    }
+    result.push(selector.slice(start));
+    return result.filter(Boolean);
+}
+
 /**
  * Corrects the `border-style` attribute in the provided inline style string.
  * This is specifically for Outlook, which displays borders even when their widths are set to 0px.
@@ -2095,4 +2199,15 @@ function correctBorderAttributes(style) {
         return style;
     }
     return style.trim().replace(/;?$/, "; border-style: solid;");
+}
+
+function waitUntilImagesLoaded(root) {
+    const promises = [];
+    for (const img of root.querySelectorAll('img[src]:not([src=""])')) {
+        const src = getImageSrc(img);
+        if (src) {
+            promises.push(loadImage(src));
+        }
+    }
+    return Promise.allSettled(promises);
 }

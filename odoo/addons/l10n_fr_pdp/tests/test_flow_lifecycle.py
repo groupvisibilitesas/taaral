@@ -29,7 +29,7 @@ class TestPdpReportsFlowLifecycle(TestL10nFrPdpCommon):
             'l10n_fr_pdp_pilot_phase': True,
             'l10n_fr_pdp_send_to_ppf': True,
             'name': 'NOM MATELAS',
-            'siret': '34057796400024',
+            'company_registry': '34057796400024',
             'vat': 'FR23334175221',
         })
         cls.company.invalidate_recordset([
@@ -83,7 +83,7 @@ class TestPdpReportsFlowLifecycle(TestL10nFrPdpCommon):
         return self.env['account.chart.template'].ref('tva_sale_service_0')
 
     def _get_tax_on_payment_20(self):
-        return self.env['account.chart.template'].ref('tva_normale_encaissement')
+        return self.env['account.chart.template'].ref('tva_acq_encaissement')
 
     def _get_tax_sale_good_intra_0(self):
         return self.env['account.chart.template'].ref('tva_sale_good_intra_0')
@@ -95,7 +95,7 @@ class TestPdpReportsFlowLifecycle(TestL10nFrPdpCommon):
         return self.env['account.chart.template'].ref('tva_normale_ttc')
 
     def _get_tax_on_payment_20_tax_included(self):
-        return self.env['account.chart.template'].ref('tva_normale_encaissement_ttc')
+        return self.env['account.chart.template'].ref('tva_acq_encaissement_TTC')
 
     def _get_purchase_tax_on_payment(self):
         return self.env['account.chart.template'].ref('tva_acq_encaissement')

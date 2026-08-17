@@ -13,7 +13,7 @@ class AccountMove(models.Model):
         invoice_digits = re.sub(r"\D", "", self.name or "") or str(self.id)
         if len(invoice_digits) > max_digits:
             raise ValidationError(
-                self.env._(
+               self.env._(
                     "FIK %(prefix)s reference cannot be generated: invoice number '%(invoice)s' has more than %(max_digits)s digits."
                 ) % {
                     "prefix": prefix,

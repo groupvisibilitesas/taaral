@@ -3,25 +3,24 @@
 # * sale_crm
 #
 # Translators:
-# Nurlan Farajov <coolinuxoid@gmail.com>, 2024
-# Jumshud Sultanov <cumshud@gmail.com>, 2024
-# erpgo translator <jumshud@erpgo.az>, 2024
-# ERPGo Odoo <erpgo.odoo@gmail.com>, 2025.
+# Jumshud Sultanov <cumshud@gmail.com>, 2022
+# erpgo translator <jumshud@erpgo.az>, 2022
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2025-11-07 15:25+0000\n"
-"Last-Translator: ERPGo Odoo <erpgo.odoo@gmail.com>\n"
-"Language-Team: Azerbaijani <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-02 17:45+0000\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"Language-Team: Azerbaijani <https://translate.odoo.com/projects/odoo-19/"
 "sale_crm/az/>\n"
 "Language: az\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: sale_crm
 #: model_terms:ir.ui.view,arch_db:sale_crm.crm_case_form_view_oppor
@@ -49,6 +48,11 @@ msgid "Create a new customer"
 msgstr "Yenu müştəri yaradın"
 
 #. module: sale_crm
+#: model:ir.model,website_form_label:sale_crm.model_crm_lead
+msgid "Create an Opportunity"
+msgstr "Fürsət yaradın"
+
+#. module: sale_crm
 #: model:ir.model,name:sale_crm.model_crm_quotation_partner
 msgid "Create new or use existing Customer on new Quotation"
 msgstr ""
@@ -63,12 +67,12 @@ msgstr "Yeni qiymət təklifi yaradın"
 #. module: sale_crm
 #: model:ir.model.fields,field_description:sale_crm.field_crm_quotation_partner__create_uid
 msgid "Created by"
-msgstr "Yaradan"
+msgstr "Tərəfindən yaradılıb"
 
 #. module: sale_crm
 #: model:ir.model.fields,field_description:sale_crm.field_crm_quotation_partner__create_date
 msgid "Created on"
-msgstr "Yaradılma tarixi"
+msgstr "Tarixdə yaradıldı"
 
 #. module: sale_crm
 #: model:ir.model.fields,field_description:sale_crm.field_crm_quotation_partner__partner_id
@@ -76,9 +80,12 @@ msgid "Customer"
 msgstr "Müştəri"
 
 #. module: sale_crm
+#: model:ir.model.fields,field_description:sale_crm.field_crm_lead__display_name
 #: model:ir.model.fields,field_description:sale_crm.field_crm_quotation_partner__display_name
+#: model:ir.model.fields,field_description:sale_crm.field_crm_team__display_name
+#: model:ir.model.fields,field_description:sale_crm.field_sale_order__display_name
 msgid "Display Name"
-msgstr "Görünən Adı"
+msgstr "Ekran Adı"
 
 #. module: sale_crm
 #: model:ir.model.fields.selection,name:sale_crm.selection__crm_quotation_partner__action__nothing
@@ -92,14 +99,12 @@ msgid "Expected revenue has been updated based on the linked Sales Orders."
 msgstr ""
 
 #. module: sale_crm
+#: model:ir.model.fields,field_description:sale_crm.field_crm_lead__id
 #: model:ir.model.fields,field_description:sale_crm.field_crm_quotation_partner__id
+#: model:ir.model.fields,field_description:sale_crm.field_crm_team__id
+#: model:ir.model.fields,field_description:sale_crm.field_sale_order__id
 msgid "ID"
 msgstr "ID"
-
-#. module: sale_crm
-#: model:ir.model.fields,field_description:sale_crm.field_res_users__target_sales_invoiced
-msgid "Invoiced in Sales Orders Target"
-msgstr "Satış Sifarişləri Hədəfində Hesab Fakturalaşdırıb"
 
 #. module: sale_crm
 #: model:ir.model.fields,field_description:sale_crm.field_crm_quotation_partner__write_uid
@@ -113,8 +118,8 @@ msgstr "Son Yenilənmə tarixi"
 
 #. module: sale_crm
 #: model:ir.model,name:sale_crm.model_crm_lead
-msgid "Lead/Opportunity"
-msgstr "Hədəf Müştəri/Fürsət"
+msgid "Lead"
+msgstr "Hədəf Müştəri"
 
 #. module: sale_crm
 #: model:ir.model.fields.selection,name:sale_crm.selection__crm_quotation_partner__action__exist
@@ -171,7 +176,7 @@ msgstr "Qiymət Təklifləri"
 #. module: sale_crm
 #: model_terms:ir.ui.view,arch_db:sale_crm.crm_lead_merge_summary_inherit_sale_crm
 msgid "Sale Orders"
-msgstr "Satış Sifarişləri"
+msgstr "Satiş Sifarişləri"
 
 #. module: sale_crm
 #. odoo-python
@@ -190,12 +195,6 @@ msgid "Sales Team"
 msgstr "Satış Komandası"
 
 #. module: sale_crm
-#. odoo-python
-#: code:addons/sale_crm/models/crm_team.py:0
-msgid "Sales: Untaxed Total"
-msgstr "Satışlar: Vergiləndirilməmiş Cəmi Məbləğ"
-
-#. module: sale_crm
 #: model:ir.model.fields,field_description:sale_crm.field_crm_lead__sale_amount_total
 msgid "Sum of Orders"
 msgstr "Sifarişlərin Toplamı"
@@ -206,12 +205,16 @@ msgid "Untaxed Total of Confirmed Orders"
 msgstr "Vergiləndirliməmiş Təsdiqlənmiş Sifarişlərin Toplamı"
 
 #. module: sale_crm
-#: model:ir.model,name:sale_crm.model_res_users
-msgid "User"
-msgstr "İstifadəçi"
-
-#. module: sale_crm
 #. odoo-python
 #: code:addons/sale_crm/wizard/crm_opportunity_to_quotation.py:0
 msgid "You can only apply this action from a lead."
 msgstr "Bu əməliyyatı yalnız potensial müştəridən tətbiq edə bilərsiniz"
+
+#~ msgid "Last Modified on"
+#~ msgstr "Son Dəyişdirilmə tarixi"
+
+#~ msgid "Lead/Opportunity"
+#~ msgstr "Hədəf Müştəri/Fürsət"
+
+#~ msgid "User"
+#~ msgstr "İstifadəçi"

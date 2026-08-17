@@ -12,7 +12,7 @@ from odoo.exceptions import UserError
 class TestTimesheetGlobalTimeOff(common.TransactionCase):
 
     def setUp(self):
-        super(TestTimesheetGlobalTimeOff, self).setUp()
+        super().setUp()
         # Creates 1 test company and a calendar for employees that
         # work part time. Then creates an employee per calendar (one
         # for the standard calendar and one for the one we created)
@@ -239,14 +239,20 @@ class TestTimesheetGlobalTimeOff(common.TransactionCase):
         # So we need to check that the timesheets don't have more than 8 hours per day.
         self.assertEqual(leave_task.effective_hours, 80)
 
-    def test_search_is_timeoff_task(self):
-        """ Test the search method on is_timeoff_task
-        with and without any hr.leave.type with timesheet_task_id defined"""
-        leaves_types_with_task_id = self.env['hr.leave.type'].search([('timesheet_task_id', '!=', False)])
-        self.env['project.task'].search([('is_timeoff_task', '!=', False)])
+    def test_timeoff_task_creation_with_global_leave(self):
+        """ Test the search method on is_timeoff_task"""
+        task_count = self.env['project.task'].search_count([('is_timeoff_task', '!=', False)])
 
-        leaves_types_with_task_id.write({'timesheet_task_id': False})
-        self.env['project.task'].search([('is_timeoff_task', '!=', False)])
+        # Create a leave and validate it
+        self.env['resource.calendar.leaves'].create({
+            'name': 'Test',
+            'calendar_id': self.test_company.resource_calendar_id.id,
+            'date_from': datetime(2021, 1, 4, 7, 0, 0, 0),
+            'date_to': datetime(2021, 1, 8, 18, 0, 0, 0),
+        })
+
+        new_task_count = self.env['project.task'].search_count([('is_timeoff_task', '!=', False)])
+        self.assertEqual(task_count + 1, new_task_count)
 
     def test_timesheet_creation_for_global_time_off_wo_calendar(self):
         leave_start_datetime = datetime(2021, 1, 4, 7, 0)  # This is a monday
@@ -427,6 +433,7 @@ class TestTimesheetGlobalTimeOff(common.TransactionCase):
         test_user = self.env['res.users'].with_company(self.test_company).create({
             'name': 'Jonathan Doe',
             'login': 'jdoe@example.com',
+            'group_ids': self.env.ref('hr_timesheet.group_hr_timesheet_user'),
         })
         test_user.with_company(self.test_company).action_create_employee()
         test_user.employee_id.write({
@@ -443,17 +450,14 @@ class TestTimesheetGlobalTimeOff(common.TransactionCase):
         hr_leave_start_datetime = datetime(next_monday.year, next_monday.month, next_monday.day, 8, 0, 0) # monday next week
         hr_leave_end_datetime = hr_leave_start_datetime + timedelta(days=4, hours=9) # friday next week
 
-        self.env.company = self.test_company
+        self.env = self.env(context=dict(self.env.context, allowed_company_ids=self.test_company.ids))
 
         internal_project = self.test_company.internal_project_id
         internal_task_leaves = self.test_company.leave_timesheet_task_id
 
         hr_leave_type_with_ts = self.env['hr.leave.type'].create({
             'name': 'Leave Type with timesheet generation',
-            'requires_allocation': 'no',
-            'timesheet_generate': True,
-            'timesheet_project_id': internal_project.id,
-            'timesheet_task_id': internal_task_leaves.id,
+            'requires_allocation': False,
         })
 
         # create and validate a leave for full time employee
@@ -465,7 +469,7 @@ class TestTimesheetGlobalTimeOff(common.TransactionCase):
             'request_date_from': hr_leave_start_datetime,
             'request_date_to': hr_leave_end_datetime,
         })
-        holiday.sudo().action_validate()
+        holiday.sudo().action_approve()
         self.assertEqual(len(holiday.timesheet_ids), 5)
 
         # create overlapping global time off, with some margin over working day to account for different timezones
@@ -508,7 +512,7 @@ class TestTimesheetGlobalTimeOff(common.TransactionCase):
             'request_date_from': hr_leave_start_datetime,
             'request_date_to': hr_leave_end_datetime,
         })
-        holiday2.sudo().action_validate()
+        holiday2.sudo().action_approve()
 
         # recreate the global time off
         global_time_off = self.env['resource.calendar.leaves'].create({
@@ -542,7 +546,7 @@ class TestTimesheetGlobalTimeOff(common.TransactionCase):
             'request_date_from': hr_leave_start_datetime,
             'request_date_to': hr_leave_end_datetime,
         })
-        holiday3.sudo().action_validate()
+        holiday3.sudo().action_approve()
 
         self.assertEqual(len(holiday3.timesheet_ids), 3)
         global_time_off.unlink()
@@ -592,6 +596,7 @@ class TestTimesheetGlobalTimeOff(common.TransactionCase):
         self.flexible_calendar = self.env['resource.calendar'].create({
             'name': 'Flexible Calendar',
             'hours_per_day': 7.0,
+            'hours_per_week': 7.0,
             'full_time_required_hours': 7.0,
             'flexible_hours': True,
             'company_id': self.test_company.id,

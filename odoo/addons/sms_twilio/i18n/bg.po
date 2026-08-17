@@ -3,14 +3,15 @@
 # * sms_twilio
 #
 # Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 18:38+0000\n"
-"PO-Revision-Date: 2026-07-28 16:49+0000\n"
+"POT-Creation-Date: 2026-04-10 18:39+0000\n"
+"PO-Revision-Date: 2026-08-04 12:23+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-19/"
 "sms_twilio/bg/>\n"
 "Language: bg\n"
 "MIME-Version: 1.0\n"
@@ -30,6 +31,12 @@ msgstr "%(failure_type)s: %(failure_reason)s"
 #: code:addons/sms_twilio/tools/sms_api.py:0
 msgid "'To' and 'From' numbers cannot be the same"
 msgstr "Номерата 'До' и 'От' не могат да бъдат еднакви"
+
+#. module: sms_twilio
+#. odoo-python
+#: code:addons/sms_twilio/tools/sms_api.py:0
+msgid "A 'From' number is required to send a message"
+msgstr "За изпращане на съобщение е необходим номер 'От'"
 
 #. module: sms_twilio
 #. odoo-python
@@ -81,7 +88,7 @@ msgstr "Фирма"
 #. module: sms_twilio
 #: model:ir.model,name:sms_twilio.model_res_config_settings
 msgid "Config Settings"
-msgstr "Конфигурационни настройки"
+msgstr "Настройки"
 
 #. module: sms_twilio
 #: model_terms:ir.ui.view,arch_db:sms_twilio.res_config_settings_view_form
@@ -102,7 +109,7 @@ msgstr "Код на държава"
 #: model:ir.model.fields,field_description:sms_twilio.field_sms_twilio_account_manage__create_uid
 #: model:ir.model.fields,field_description:sms_twilio.field_sms_twilio_number__create_uid
 msgid "Created by"
-msgstr "Създаден от"
+msgstr "Създадено от"
 
 #. module: sms_twilio
 #: model:ir.model.fields,field_description:sms_twilio.field_sms_twilio_account_manage__create_date
@@ -126,6 +133,12 @@ msgid "Discard"
 msgstr "Отхвърлете"
 
 #. module: sms_twilio
+#: model:ir.model.fields,field_description:sms_twilio.field_mail_notification__display_name
+#: model:ir.model.fields,field_description:sms_twilio.field_res_company__display_name
+#: model:ir.model.fields,field_description:sms_twilio.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:sms_twilio.field_sms_composer__display_name
+#: model:ir.model.fields,field_description:sms_twilio.field_sms_sms__display_name
+#: model:ir.model.fields,field_description:sms_twilio.field_sms_tracker__display_name
 #: model:ir.model.fields,field_description:sms_twilio.field_sms_twilio_account_manage__display_name
 #: model:ir.model.fields,field_description:sms_twilio.field_sms_twilio_number__display_name
 msgid "Display Name"
@@ -140,7 +153,7 @@ msgstr "Грешка: %s"
 #. module: sms_twilio
 #: model:ir.model.fields,field_description:sms_twilio.field_sms_sms__failure_type
 msgid "Failure Type"
-msgstr "Вид на грешката"
+msgstr "Тип на грешката"
 
 #. module: sms_twilio
 #: model:ir.model.fields,field_description:sms_twilio.field_mail_notification__failure_type
@@ -151,9 +164,15 @@ msgstr "Тип на грешката"
 #: model:ir.model.fields.selection,name:sms_twilio.selection__mail_notification__failure_type__twilio_from_to
 #: model:ir.model.fields.selection,name:sms_twilio.selection__sms_sms__failure_type__twilio_from_to
 msgid "From / To identic"
-msgstr "Идентични От / До"
+msgstr "От / До са еднакви"
 
 #. module: sms_twilio
+#: model:ir.model.fields,field_description:sms_twilio.field_mail_notification__id
+#: model:ir.model.fields,field_description:sms_twilio.field_res_company__id
+#: model:ir.model.fields,field_description:sms_twilio.field_res_config_settings__id
+#: model:ir.model.fields,field_description:sms_twilio.field_sms_composer__id
+#: model:ir.model.fields,field_description:sms_twilio.field_sms_sms__id
+#: model:ir.model.fields,field_description:sms_twilio.field_sms_tracker__id
 #: model:ir.model.fields,field_description:sms_twilio.field_sms_twilio_account_manage__id
 #: model:ir.model.fields,field_description:sms_twilio.field_sms_twilio_number__id
 msgid "ID"
@@ -198,7 +217,7 @@ msgstr "Последно актуализирано на"
 #. module: sms_twilio
 #: model:ir.model,name:sms_twilio.model_sms_tracker
 msgid "Link SMS to mailing/sms tracking models"
-msgstr "Свързване на SMS с моделите за проследяване на кампании/SMS"
+msgstr "Свързване на SMS с моделите за проследяване на разпращане/sms"
 
 #. module: sms_twilio
 #. odoo-python
@@ -216,7 +235,7 @@ msgstr "Известия за съобщения"
 #: model:ir.model.fields.selection,name:sms_twilio.selection__mail_notification__failure_type__twilio_from_missing
 #: model:ir.model.fields.selection,name:sms_twilio.selection__sms_sms__failure_type__twilio_from_missing
 msgid "Missing From Number"
-msgstr "Липсва номер От"
+msgstr "Липсва номер 'От'"
 
 #. module: sms_twilio
 #: model_terms:ir.ui.view,arch_db:sms_twilio.sms_twilio_account_manage_view_form

@@ -156,7 +156,7 @@ class TestEmployee(TransactionCase):
             ('employee_id', '=', employee.id)]))
         generic_time_off_type = self.env['hr.leave.type'].create({
             'name': 'Generic Time Off',
-            'requires_allocation': 'no',
+            'requires_allocation': False,
             'leave_validation_type': 'both',
             'company_id': self.company.id,
         })
@@ -167,7 +167,7 @@ class TestEmployee(TransactionCase):
             'request_date_from': '2020-01-02 08:00:00',
             'request_date_to': '2020-01-07 17:00:00',
         })
-        leave.action_validate()
+        leave._action_validate()
         timesheets = self.env['account.analytic.line'].search([
             ('employee_id', '=', employee.id)])
         self.assertEqual(len(timesheets), old_timesheet_count + 4, "4 new Timesheets should be generated for timeoff that doesn't fall on a week-end")

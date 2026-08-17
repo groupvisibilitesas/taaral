@@ -42,11 +42,24 @@ class AccountMove(models.Model):
 
     @api.model
     def _get_ubl_cii_builder_from_xml_tree(self, tree):
+        # Deprecated
         # Extends account_edi_ubl_cii
         customization_id = tree.find('{*}CustomizationID')
         if customization_id is not None and 'OIOUBL-2' in customization_id.text:
             return self.env['account.edi.xml.oioubl_21']
         return super()._get_ubl_cii_builder_from_xml_tree(tree)
+
+    def _get_import_file_type(self, file_data):
+        """ Identify OIOUBL files. """
+        # EXTENDS 'account'
+        if (
+            file_data['xml_tree'] is not None
+            and (customization_id := file_data['xml_tree'].findtext('{*}CustomizationID'))
+            and customization_id == 'OIOUBL-2.1'
+        ):
+            return 'account.edi.xml.oioubl_21'
+
+        return super()._get_import_file_type(file_data)
 
     def action_cancel_nemhandel_documents(self):
         # if the nemhandel_move_state is processing/done
@@ -55,6 +68,11 @@ class AccountMove(models.Model):
             raise UserError(_("Cannot cancel an entry that has already been sent to Nemhandel"))
         self.nemhandel_move_state = False
         self.sending_data = False
+
+    def action_send_and_print(self):
+        for move in self:
+            move.commercial_partner_id.button_nemhandel_check_partner_endpoint(company=move.company_id)
+        return super().action_send_and_print()
 
     def _need_ubl_cii_xml(self, ubl_cii_format):
         res = super()._need_ubl_cii_xml(ubl_cii_format)

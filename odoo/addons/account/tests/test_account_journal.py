@@ -3,17 +3,19 @@
 from ast import literal_eval
 from unittest.mock import patch
 
+from odoo import http
+from odoo.tools import hash_sign
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.account.models.account_payment_method import AccountPaymentMethod
 from odoo.addons.mail.tests.common import MailCommon
+from odoo.tests import Form, tagged, HttpCase, new_test_user
 from odoo.addons.test_mail.data.test_mail_data import MAIL_EML_ATTACHMENT
-from odoo.tests import Form, tagged, new_test_user
 from odoo.exceptions import UserError, ValidationError
-from odoo import Command
+from odoo import fields, Command
 
 
 @tagged('post_install', '-at_install')
-class TestAccountJournal(AccountTestInvoicingCommon):
+class TestAccountJournal(AccountTestInvoicingCommon, HttpCase):
 
     @classmethod
     def setUpClass(cls):
@@ -29,8 +31,40 @@ class TestAccountJournal(AccountTestInvoicingCommon):
         journal_bank.currency_id = self.other_currency
 
         # Try to set a different currency on the 'debit' account.
-        with self.assertRaises(ValidationError), self.cr.savepoint():
+        with self.assertRaises(ValidationError):
             journal_bank.default_account_id.currency_id = self.company_data['currency']
+
+    def test_euro_payment_reference_generation(self):
+        """
+        Test the generation of European (ISO 11649) payment references to ensure
+        it correctly handles various journal short codes.
+        """
+        journal = self.company_data['default_journal_sale']
+        journal.invoice_reference_model = 'euro'
+
+        # Case 1: Code contains alphanumeric value.
+        journal.code = 'INV'
+        invoice_valid = self.init_invoice("out_invoice", products=self.product_a)
+        invoice_valid.journal_id = journal
+        invoice_valid.action_post()
+        self.assertTrue(invoice_valid.payment_reference, "A payment reference should be generated.")
+        self.assertIn('INV', invoice_valid.payment_reference, "The reference should be based on the journal code.")
+
+        # Case 2: Code contains a hyphen.
+        journal.code = 'INV-'
+        invoice_invalid = self.init_invoice("out_invoice", products=self.product_a)
+        invoice_invalid.journal_id = journal
+        invoice_invalid.action_post()
+        self.assertTrue(invoice_invalid.payment_reference, "A payment reference should be generated.")
+        self.assertIn(str(journal.id), invoice_invalid.payment_reference, "The reference should fall back to using the journal ID.")
+
+        # Case 3: Code is non-ASCII but alphanumeric (e.g., Greek letter 'INVα'). # noqa: RUF003
+        journal.code = 'INVα'
+        invoice_unicode = self.init_invoice("out_invoice", products=self.product_a)
+        invoice_unicode.journal_id = journal
+        invoice_unicode.action_post()
+        self.assertTrue(invoice_unicode.payment_reference, "A payment reference should be generated.")
+        self.assertIn(str(journal.id), invoice_unicode.payment_reference, "The reference should fall back to using the journal ID for non-ASCII codes.")
 
     def test_changing_journal_company(self):
         ''' Ensure you can't change the company of an account.journal if there are some journal entries '''
@@ -42,61 +76,8 @@ class TestAccountJournal(AccountTestInvoicingCommon):
             'journal_id': self.company_data['default_journal_sale'].id,
         })
 
-        with self.assertRaisesRegex(UserError, "entries linked to it"), self.cr.savepoint():
+        with self.assertRaisesRegex(UserError, "entries linked to it"):
             self.company_data['default_journal_sale'].company_id = self.company_data_2['company']
-
-    def test_account_control_post_journal_entry(self):
-        move_vals = {
-            'line_ids': [
-                (0, 0, {
-                    'name': 'debit',
-                    'account_id': self.company_data['default_account_revenue'].id,
-                    'debit': 100.0,
-                    'credit': 0.0,
-                }),
-                (0, 0, {
-                    'name': 'credit',
-                    'account_id': self.company_data['default_account_expense'].id,
-                    'debit': 0.0,
-                    'credit': 100.0,
-                }),
-            ],
-        }
-
-        # Should fail because 'default_account_expense' is not allowed.
-        self.company_data['default_journal_misc'].account_control_ids |= self.company_data['default_account_revenue']
-        with self.assertRaises(UserError), self.cr.savepoint():
-            self.env['account.move'].create(move_vals).action_post()
-
-        # Should be allowed because both accounts are accepted.
-        self.company_data['default_journal_misc'].account_control_ids |= self.company_data['default_account_expense']
-        self.env['account.move'].create(move_vals).action_post()
-
-    def test_account_control_existing_journal_entry(self):
-        self.env['account.move'].create({
-            'line_ids': [
-                (0, 0, {
-                    'name': 'debit',
-                    'account_id': self.company_data['default_account_revenue'].id,
-                    'debit': 100.0,
-                    'credit': 0.0,
-                }),
-                (0, 0, {
-                    'name': 'credit',
-                    'account_id': self.company_data['default_account_expense'].id,
-                    'debit': 0.0,
-                    'credit': 100.0,
-                }),
-            ],
-        })
-
-        # There is already an other line using the 'default_account_expense' account.
-        with self.assertRaises(ValidationError), self.cr.savepoint():
-            self.company_data['default_journal_misc'].account_control_ids |= self.company_data['default_account_revenue']
-
-        # Assigning both should be allowed
-        self.company_data['default_journal_misc'].account_control_ids = \
-            self.company_data['default_account_revenue'] + self.company_data['default_account_expense']
 
     def test_account_journal_add_new_payment_method_multi(self):
         """
@@ -116,10 +97,11 @@ class TestAccountJournal(AccountTestInvoicingCommon):
                 'payment_type': 'inbound'
             })
 
-            journals = self.env['account.journal'].search([('inbound_payment_method_line_ids.code', '=', 'multi')])
+        bank_journals_count = self.env['account.journal'].search_count([('type', '=', 'bank')])
+        edited_journals_count = self.env['account.journal'].search_count([('inbound_payment_method_line_ids.code', '=', 'multi')])
 
-            # The two bank journals have been set
-            self.assertEqual(len(journals), 2)
+        # The bank journals have been set
+        self.assertEqual(bank_journals_count, edited_journals_count)
 
     def test_remove_payment_method_lines(self):
         """
@@ -154,7 +136,7 @@ class TestAccountJournal(AccountTestInvoicingCommon):
             {"name": "OD_BLABLU"},
         ])
 
-        self.assertEqual(sorted(new_journals.mapped("code")), ["GEN1", "OD_BL"], "The journals should be set correctly")
+        self.assertEqual(sorted(new_journals.mapped("code")), ["MISC1", "OD_BL"], "The journals should be set correctly")
 
     def test_archive_used_journal(self):
         journal = self.env['account.journal'].create({
@@ -195,6 +177,81 @@ class TestAccountJournal(AccountTestInvoicingCommon):
         journals.action_unarchive()
         self.assertTrue(journals[0].active)
         self.assertTrue(journals[1].active)
+
+    def test_journal_notifications_unsubscribe(self):
+        journal = self.company_data['default_journal_purchase']
+        journal.incoming_einvoice_notification_email = 'test@example.com'
+
+        self.authenticate(self.env.user.login, self.env.user.login)
+        res = self.url_open(
+            f'/my/journal/{journal.id}/unsubscribe',
+            data={'csrf_token': http.Request.csrf_token(self)},
+            method='POST',
+        )
+        res.raise_for_status()
+
+        self.assertFalse(journal.incoming_einvoice_notification_email)
+
+    def test_journal_notifications_unsubscribe_success(self):
+        journal = self.company_data['default_journal_purchase']
+        email = 'test@example.com'
+        journal.incoming_einvoice_notification_email = email
+
+        self.authenticate(None, None)
+        token = hash_sign(
+            self.env,
+            journal._get_journal_notification_unsubscribe_scope(),
+            {'email_to_unsubscribe': email, 'journal_id': journal.id},
+        )
+
+        res = self.url_open(
+            f'/my/journal/{journal.id}/unsubscribe?token={token}',
+            data={'csrf_token': http.Request.csrf_token(self)},
+            method='POST',
+        )
+        res.raise_for_status()
+
+        self.assertFalse(journal.incoming_einvoice_notification_email)
+
+    def test_journal_notifications_unsubscribe_errors(self):
+        journal = self.company_data['default_journal_purchase']
+        email = 'test@example.com'
+        self.authenticate(None, None)
+        valid_token = hash_sign(
+            self.env(su=True),
+            journal._get_journal_notification_unsubscribe_scope(),
+            {'email_to_unsubscribe': email, 'journal_id': journal.id},
+        )
+
+        def _get_token():
+            return
+
+        def _unsubscribe(token, journal_id=journal.id):
+            return self.url_open(
+                f'/my/journal/{journal_id}/unsubscribe?token={token}',
+                data={'csrf_token': http.Request.csrf_token(self)},
+                method='POST',
+            )
+
+        with self.subTest('invalid_token'):
+            journal.incoming_einvoice_notification_email = email
+            res = _unsubscribe('invalid_token')
+            self.assertEqual(res.status_code, 403)
+            self.assertEqual(journal.incoming_einvoice_notification_email, email)
+
+        with self.subTest('already_unsubscribed'):
+            journal.incoming_einvoice_notification_email = email
+            first_unsubscribe = _unsubscribe(valid_token)
+            first_unsubscribe.raise_for_status()
+            self.assertFalse(journal.incoming_einvoice_notification_email)
+            second_unsubscribe = _unsubscribe(valid_token)
+            self.assertEqual(second_unsubscribe.status_code, 404)
+
+        with self.subTest('wrong_journal_id'):
+            journal.incoming_einvoice_notification_email = email
+            res = _unsubscribe(valid_token, journal_id=journal.id + 1)
+            self.assertEqual(res.status_code, 403)
+            self.assertEqual(journal.incoming_einvoice_notification_email, email)
 
 
 @tagged('post_install', '-at_install', 'mail_alias')
@@ -277,7 +334,7 @@ class TestAccountJournalAlias(AccountTestInvoicingCommon, MailCommon):
         # assert base test data
         company_name = 'company_1_data'
         journal_code = 'BILL'
-        journal_name = 'Vendor Bills'
+        journal_name = 'Purchases'
         journal_alias = journal.alias_id
         self.assertEqual(journal.code, journal_code)
         self.assertEqual(journal.company_id.name, company_name)
@@ -297,7 +354,7 @@ class TestAccountJournalAlias(AccountTestInvoicingCommon, MailCommon):
         self.assertFalse(journal_alias.alias_force_thread_id, 'Journal alias should create new moves')
         self.assertEqual(journal_alias.alias_model_id, self.env['ir.model']._get('account.move'),
                          'Journal alias targets moves')
-        self.assertEqual(journal_alias.alias_name, f'vendor-bills-{company_name}')
+        self.assertEqual(journal_alias.alias_name, f'purchases-{company_name}')
         self.assertEqual(journal_alias.alias_parent_model_id, self.env['ir.model']._get('account.journal'),
                          'Journal alias owned by journal itself')
         self.assertEqual(journal_alias.alias_parent_thread_id, journal.id,
@@ -307,10 +364,10 @@ class TestAccountJournalAlias(AccountTestInvoicingCommon, MailCommon):
         for alias_name, expected in [
             (False, False),
             ('', False),
-            (' ', f'vendor-bills-{company_name}'),  # error recuperation
-            ('.', f'vendor-bills-{company_name}'),  # error recuperation
-            ('😊', f'vendor-bills-{company_name}'),  # resets, unicode not supported
-            ('ぁ', f'vendor-bills-{company_name}'),  # resets, non ascii not supported
+            (' ', f'purchases-{company_name}'),  # error recuperation
+            ('.', f'purchases-{company_name}'),  # error recuperation
+            ('😊', f'purchases-{company_name}'),  # resets, unicode not supported
+            ('ぁ', f'purchases-{company_name}'),  # resets, non ascii not supported
             ('Youpie Boum', 'youpie-boum'),
         ]:
             with self.subTest(alias_name=alias_name):
@@ -363,6 +420,48 @@ class TestAccountJournalAlias(AccountTestInvoicingCommon, MailCommon):
         })
         self.assertEqual(journal.alias_name, f'test-journal-{company_name}')
         self.assertEqual(journal2.alias_name, f'test-journal-{company_name}-b')
+
+    def test_non_latin_journal_code_payment_reference(self):
+        """ Ensure non-Latin journal codes do not cause errors and payment references are valid """
+        non_latin_code = 'TΠY'
+        latin_code = 'TPY'
+
+        journal_non_latin = self.env['account.journal'].create({
+            'name': 'Test Journal',
+            'type': 'sale',
+            'code': non_latin_code,
+            'invoice_reference_model': 'euro'
+        })
+        journal_latin = self.env['account.journal'].create({
+            'name': 'Test Journal',
+            'type': 'sale',
+            'code': latin_code,
+            'invoice_reference_model': 'euro'
+        })
+
+        invoice_non_latin = self.init_invoice(
+            move_type='out_invoice',
+            partner=self.partner_a,
+            invoice_date=fields.Date.today(),
+            post=True,
+            products=[self.product_a],
+            journal=journal_non_latin,
+        )
+        invoice_latin = self.init_invoice(
+            move_type='out_invoice',
+            partner=self.partner_a,
+            invoice_date=fields.Date.today(),
+            post=True,
+            products=[self.product_a],
+            journal=journal_latin,
+        )
+
+        expected_id = str(invoice_non_latin.journal_id.id)
+        ref_parts_non_latin = invoice_non_latin.payment_reference.split()
+        self.assertEqual(ref_parts_non_latin[1][:len(expected_id)], expected_id, "The reference should start with " + expected_id)
+
+        ref_parts_latin = invoice_latin.payment_reference.split()
+        self.assertIn(ref_parts_latin[1][:3], latin_code, f"Expected journal code '{latin_code}' in second part of reference")
 
     def test_use_default_account_from_journal(self):
         """
@@ -422,7 +521,7 @@ class TestAccountJournalAlias(AccountTestInvoicingCommon, MailCommon):
     def test_alias_uniqueness_without_domain(self):
         """Ensure alias_name is unique even if alias_domain is not defined."""
         default_account = self.env['account.account'].search(
-            domain=[('deprecated', '=', False), ('account_type', 'in', ('income', 'income_other'))],
+            domain=[('account_type', 'in', ('income', 'income_other'))],
             limit=1,
         )
         with Form(self.env['account.journal']) as journal_form:

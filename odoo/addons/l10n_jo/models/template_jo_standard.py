@@ -1,5 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import models
+from odoo import _, models
 from odoo.addons.account.models.chart_template import template
 
 
@@ -11,13 +11,9 @@ class AccountChartTemplate(models.AbstractModel):
         return {
             'property_account_receivable_id': 'jo_account_100201',
             'property_account_payable_id': 'jo_account_200101',
-            'property_account_expense_categ_id': 'jo_account_500101',
-            'property_account_income_categ_id': 'jo_account_400101',
             'property_account_expense_id': 'jo_account_500101',
             'property_account_income_id': 'jo_account_400101',
             'property_stock_valuation_account_id': 'jo_account_100502',
-            'property_stock_account_input_categ_id': 'jo_account_100503',
-            'property_stock_account_output_categ_id': 'jo_account_100504',
             'property_stock_account_production_cost_id': 'jo_account_100505',
             'code_digits': '6',
         }
@@ -27,7 +23,6 @@ class AccountChartTemplate(models.AbstractModel):
         return {
             self.env.company.id: {
                 'account_fiscal_country_id': 'base.jo',
-                'tax_calculation_rounding_method': 'round_globally',
                 'bank_account_code_prefix': '1000',
                 'cash_account_code_prefix': '1009',
                 'transfer_account_code_prefix': '1001',
@@ -41,5 +36,28 @@ class AccountChartTemplate(models.AbstractModel):
                 'default_cash_difference_expense_account_id': 'jo_account_500909',
                 'deferred_expense_account_id': 'jo_account_100416',
                 'deferred_revenue_account_id': 'jo_account_200401',
+                'expense_account_id': 'jo_account_500101',
+                'income_account_id': 'jo_account_400101',
+                'account_stock_journal_id': 'inventory_valuation',
+                'account_stock_valuation_id': 'jo_account_100502',
+            },
+        }
+
+    @template('jo_standard', 'account.journal')
+    def _get_jo_standard_account_journal(self):
+        return {
+            'cash': {
+                'name': _("Cash"),
+                'type': 'cash',
+                'show_on_dashboard': True,
+            },
+        }
+
+    @template('jo_standard', 'account.account')
+    def _get_jo_standard_account_account(self):
+        return {
+            'jo_account_100502': {
+                'account_stock_expense_id': 'jo_account_500907',
+                'account_stock_variation_id': 'jo_account_500905',
             },
         }

@@ -2,7 +2,7 @@
 
 from freezegun import freeze_time
 
-from odoo import Command
+from odoo.fields import Command
 from odoo.tests import Form, tagged
 from odoo.tools import float_compare
 
@@ -73,7 +73,6 @@ class TestDeliveryCost(DeliveryCommon, SaleCommon):
             'list_price': 75.0,
             'standard_price': 30.0,
             'uom_id': self.product_uom_hour.id,
-            'uom_po_id': self.product_uom_hour.id,
             'name': 'Service',
             'type': 'service'
         })
@@ -109,7 +108,6 @@ class TestDeliveryCost(DeliveryCommon, SaleCommon):
                 Command.create({
                     'product_id': self.product_consultant.id,
                     'product_uom_qty': 24,
-                    'product_uom': self.product_uom_hour.id,
                     'price_unit': 75.00,
                 }),
                 Command.create({
@@ -223,6 +221,9 @@ class TestDeliveryCost(DeliveryCommon, SaleCommon):
 
         self.env.ref('base.group_user').write({'implied_ids': [(4, self.env.ref('product.group_product_pricelist').id)]})
 
+        fiscal_position = self.env['account.fiscal.position'].create({
+            'name': 'fiscal_pos_a',
+        })
         tax_price_include, tax_price_exclude = self.env['account.tax'].create([{
             'name': '10% inc',
             'type_tax_use': 'sale',
@@ -235,24 +236,16 @@ class TestDeliveryCost(DeliveryCommon, SaleCommon):
             'type_tax_use': 'sale',
             'amount_type': 'percent',
             'amount': 15,
+            'fiscal_position_ids': [Command.link(fiscal_position.id)],
         }])
-
-        fiscal_position = self.env['account.fiscal.position'].create({
-            'name': 'fiscal_pos_a',
-            'tax_ids': [
-                (0, None, {
-                    'tax_src_id': tax_price_include.id,
-                    'tax_dest_id': tax_price_exclude.id,
-                }),
-            ],
-        })
+        tax_price_exclude.original_tax_ids = tax_price_include
 
         # Setting tax on delivery product
         self.normal_delivery.product_id.taxes_id = tax_price_include
 
         # Create sales order
         # Required to see `pricelist_id` in the view
-        self.env.user.groups_id += self.env.ref('product.group_product_pricelist')
+        self.env.user.group_ids += self.env.ref('product.group_product_pricelist')
         order_form = Form(self.env['sale.order'].with_context(tracking_disable=True))
         order_form.partner_id = self.partner
         order_form.fiscal_position_id = fiscal_position
@@ -461,7 +454,7 @@ class TestDeliveryCost(DeliveryCommon, SaleCommon):
         delivery_line = sale_order.order_line.filtered(lambda l: l.is_delivery)
 
         # delivery line should have taxes from the branch company
-        self.assertRecordValues(delivery_line, [{'product_id': delivery_product.id, 'tax_id': tax_b.ids}])
+        self.assertRecordValues(delivery_line, [{'product_id': delivery_product.id, 'tax_ids': tax_b.ids}])
 
         # update delivery product by setting only the tax from parent company
         delivery_product.write({'taxes_id': [Command.set((tax_a).ids)]})
@@ -475,7 +468,7 @@ class TestDeliveryCost(DeliveryCommon, SaleCommon):
         delivery_line = sale_order.order_line.filtered(lambda l: l.is_delivery)
 
         # delivery line should have taxes from the parent company as there is no tax from the branch company
-        self.assertRecordValues(delivery_line, [{'product_id': delivery_product.id, 'tax_id': tax_a.ids}])
+        self.assertRecordValues(delivery_line, [{'product_id': delivery_product.id, 'tax_ids': tax_a.ids}])
 
     def test_update_weight_in_shipping_when_change_quantity(self):
         product_test = self.env['product.product'].create({
@@ -488,7 +481,6 @@ class TestDeliveryCost(DeliveryCommon, SaleCommon):
                 Command.create({
                     'product_id': product_test.id,
                     'product_uom_qty': 10,
-                    'product_uom': self.uom_unit.id,
                 }),
             ],
         })
@@ -582,7 +574,6 @@ class TestDeliveryCost(DeliveryCommon, SaleCommon):
                 'name': 'PC Assamble + 2GB RAM',
                 'product_id': self.product.id,
                 'product_uom_qty': 1,
-                'product_uom': self.uom_unit.id,
                 'price_unit': 750.00,
             })],
         })
@@ -635,12 +626,10 @@ class TestDeliveryCost(DeliveryCommon, SaleCommon):
                 Command.create({
                     "product_id": product_combo.id,
                     "product_uom_qty": 5,
-                    "product_uom": self.uom_unit.id,
                 }),
                 Command.create({
                     "product_id": self.product.id,
                     "product_uom_qty": 5,
-                    "product_uom": self.uom_unit.id,
                 })
             ],
         })

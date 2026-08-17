@@ -8,21 +8,43 @@ import { getActiveHotkey } from "@web/core/hotkeys/hotkey_service";
 import { usePosition } from "@web/core/position/position_hook";
 import { useService } from "@web/core/utils/hooks";
 
+/**
+ * Returns a string representation of the options, to tell a new set of options
+ * apart from the same set rebuilt at the next render. Every field is taken into
+ * account because `label` is optional (an option can be rendered by an
+ * arbitrary `optionTemplate`), and records are identified by their local id.
+ *
+ * @param {Object[]} options
+ * @returns {string}
+ */
+function optionsToString(options) {
+    return options
+        .map((option) =>
+            Object.entries(option)
+                .map(([name, value]) => `${name}:${value?.localId ?? value}`)
+                .join(",")
+        )
+        .join("\n");
+}
+
 export class NavigableList extends Component {
     static components = { ImStatus };
     static template = "mail.NavigableList";
     static props = {
         anchorRef: { optional: true },
-        autoSelectFirst: { type: Boolean, optional: true },
         class: { type: String, optional: true },
-        hint: { type: String, optional: true },
         onSelect: { type: Function },
         options: { type: Array },
         optionTemplate: { type: String, optional: true },
         position: { type: String, optional: true },
+        closeOnSelect: { type: Boolean, optional: true },
         isLoading: { type: Boolean, optional: true },
     };
-    static defaultProps = { position: "bottom", isLoading: false, autoSelectFirst: true };
+    static defaultProps = {
+        position: "bottom",
+        closeOnSelect: true,
+        isLoading: false,
+    };
 
     setup() {
         super.setup();
@@ -39,10 +61,7 @@ export class NavigableList extends Component {
         onExternalClick("root", async (ev) => {
             // Let event be handled by bubbling handlers first.
             await new Promise(setTimeout);
-            if (
-                isEventHandled(ev, "composer.onClickTextarea") ||
-                isEventHandled(ev, "channelSelector.onClickInput")
-            ) {
+            if (isEventHandled(ev, "composer.onClickTextarea")) {
                 return;
             }
             this.close();
@@ -50,10 +69,13 @@ export class NavigableList extends Component {
         // position and size
         usePosition("root", () => this.props.anchorRef, { position: this.props.position });
         useEffect(
+            // Open on mount and when a new set of options arrives. In particular,
+            // do not re-open on unrelated re-renders after the user closed the
+            // list (Escape, click away): the options are then the same.
             () => {
                 this.open();
             },
-            () => [this.props]
+            () => [optionsToString(this.props.options)]
         );
         useEffect(
             () => {
@@ -79,14 +101,14 @@ export class NavigableList extends Component {
     open() {
         this.state.open = true;
         this.state.activeIndex = null;
-        if (this.props.autoSelectFirst) {
-            this.navigate("first");
-        }
+        this.navigate("first");
     }
 
     close() {
-        this.state.open = false;
-        this.state.activeIndex = null;
+        if (this.props.closeOnSelect) {
+            this.state.open = false;
+            this.state.activeIndex = null;
+        }
     }
 
     selectOption(ev, index, params = {}) {

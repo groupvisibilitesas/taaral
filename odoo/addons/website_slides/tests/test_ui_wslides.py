@@ -4,16 +4,19 @@ import base64
 import logging
 
 from dateutil.relativedelta import relativedelta
-from markupsafe import Markup
+from unittest.mock import patch
 
 from odoo import http, tests
 from odoo.addons.base.tests.common import HttpCaseWithUserPortal
 from odoo.addons.gamification.tests.common import HttpCaseGamification
+from odoo.addons.mail.models.mail_message import MailMessage
 from odoo.fields import Command, Datetime
 from odoo.tools import mute_logger
 from odoo.tools.misc import file_open
+import unittest
 
 _logger = logging.getLogger(__name__)
+
 
 class TestUICommon(HttpCaseGamification, HttpCaseWithUserPortal):
 
@@ -168,7 +171,7 @@ class TestUi(TestUICommon):
         user_demo = self.user_demo
         user_demo.write({
             'karma': 1,
-            'groups_id': [(6, 0, self.env.ref('base.group_user').ids)]
+            'group_ids': [(6, 0, self.env.ref('base.group_user').ids)]
         })
 
         self.start_tour('/slides', 'course_member', login=user_demo.login)
@@ -177,7 +180,7 @@ class TestUi(TestUICommon):
         user_demo = self.user_demo
         user_demo.write({
             'karma': 1,
-            'groups_id': [(6, 0, (self.env.ref('base.group_user') | self.env.ref('website_slides.group_website_slides_officer')).ids)]
+            'group_ids': [(6, 0, (self.env.ref('base.group_user') | self.env.ref('website_slides.group_website_slides_officer')).ids)]
         })
 
         self.start_tour('/slides', 'course_member', login=user_demo.login)
@@ -192,7 +195,7 @@ class TestUi(TestUICommon):
         # group_website_designer
         user_demo = self.user_demo
         user_demo.write({
-            'groups_id': [(5, 0), (4, self.env.ref('base.group_user').id), (4, self.env.ref('website.group_website_restricted_editor').id)]
+            'group_ids': [(5, 0), (4, self.env.ref('base.group_user').id), (4, self.env.ref('website.group_website_restricted_editor').id)]
         })
         user_demo = self.user_demo
         self.env['slide.slide.partner'].create({
@@ -211,7 +214,7 @@ class TestUi(TestUICommon):
     def test_course_reviews_elearning_officer(self):
         user_demo = self.user_demo
         user_demo.write({
-            'groups_id': [(6, 0, (self.env.ref('base.group_user') | self.env.ref('website_slides.group_website_slides_officer')).ids)]
+            'group_ids': [(6, 0, (self.env.ref('base.group_user') | self.env.ref('website_slides.group_website_slides_officer')).ids)]
         })
 
         # The user must be a course member before being able to post a log note.
@@ -220,6 +223,17 @@ class TestUi(TestUICommon):
             body='Log note', subtype_xmlid='mail.mt_note', message_type='comment')
 
         self.start_tour('/slides', 'course_reviews', login=user_demo.login)
+
+    def test_course_review_comment(self):
+        self.channel._action_add_members(self.user_demo.partner_id)
+        self.channel.with_user(self.user_demo).message_post(
+            body="New Review",
+            message_type="comment",
+            rating_value="3",
+            subtype_xmlid="mail.mt_comment",
+        )
+
+        self.start_tour("/slides", "course_reviews_comment", login=self.user_admin.login)
 
     def test_course_reviews_reaction_public(self):
         password = "Pl1bhD@2!kXZ"
@@ -258,44 +272,37 @@ class TestUi(TestUICommon):
             rating_value="3",
             subtype_xmlid="mail.mt_comment"
         )
-        self.start_tour(
-            "/slides",
-            "course_review_modification_by_admin",
-            login=self.user_admin.login,
-        )
-
-    def test_slide_comments(self):
         slide = self.channel.slide_ids.filtered(lambda s: s.name == "Gardening: The Know-How")[0]
+        base_vals = {"message_type": "comment", "model": "slide.slide", "res_id": slide.id}
         self.env["mail.message"].create(
             [
-                # Two first messages should not be considered comments.
+                # First message should not be considered comment.
                 {
+                    **base_vals,
                     "body": "Test note",
-                    "message_type": "comment",
-                    "model": "slide.slide",
-                    "res_id": slide.id,
                     "subtype_id": self.env.ref("mail.mt_note").id,
-                },
-                {
-                    "body": Markup('<span class="o-mail-Message-edited"></span>'),
-                    "message_type": "comment",
-                    "model": "slide.slide",
-                    "res_id": slide.id,
-                    "subtype_id": self.env.ref("mail.mt_comment").id,
                 },
                 *[
                     {
+                        **base_vals,
                         "body": f"Comment {i + 1}",
-                        "message_type": "comment",
-                        "model": "slide.slide",
-                        "res_id": slide.id,
                         "subtype_id": self.env.ref("mail.mt_comment").id,
                     }
-                    for i in range(31)
+                    for i in range(4)
                 ],
             ]
         )
-        self.start_tour(f"/slides/slide/{slide.id}", "slide_comments", login="admin")
+        original_fetch = MailMessage._message_fetch
+        with patch.object(
+            MailMessage,
+            "_message_fetch",
+            lambda self, domain, **kw: original_fetch(self, domain, **{"limit": 3, **kw}),
+        ):
+            self.start_tour(
+                "/slides",
+                "course_review_modification_by_admin",
+                login=self.user_admin.login,
+            )
 
     def test_fullscreen_slide_text_highlights(self):
         self.env['slide.slide'].create({
@@ -324,7 +331,7 @@ class TestUiPublisher(HttpCaseGamification):
     def test_course_publisher_elearning_manager(self):
         user_demo = self.user_demo
         user_demo.write({
-            'groups_id': [
+            'group_ids': [
                 (5, 0),
                 (4, self.env.ref('base.group_user').id),
                 (4, self.env.ref('website_slides.group_website_slides_manager').id)
@@ -384,7 +391,7 @@ class TestUiPublisherYoutube(HttpCaseGamification):
         # remove membership because we need to be able to join the course during the tour
         user_demo = self.user_demo
         user_demo.write({
-            'groups_id': [(5, 0), (4, self.env.ref('base.group_user').id)]
+            'group_ids': [(5, 0), (4, self.env.ref('base.group_user').id)]
         })
         self.env.ref('website_slides.slide_channel_demo_3_furn0')._remove_membership(self.env.ref('base.partner_demo').ids)
 
@@ -393,7 +400,7 @@ class TestUiPublisherYoutube(HttpCaseGamification):
     def test_course_publisher_elearning_manager(self):
         user_demo = self.user_demo
         user_demo.write({
-            'groups_id': [(5, 0), (4, self.env.ref('base.group_user').id), (4, self.env.ref('website_slides.group_website_slides_manager').id)]
+            'group_ids': [(5, 0), (4, self.env.ref('base.group_user').id), (4, self.env.ref('website_slides.group_website_slides_manager').id)]
         })
 
         self.start_tour(self.env['website'].get_client_action_url('/slides'), 'course_publisher', login=user_demo.login)

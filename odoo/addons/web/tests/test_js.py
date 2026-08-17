@@ -188,7 +188,7 @@ class WebSuite(QunitCommon, HOOTCommon):
     @odoo.tests.no_retry
     def test_unit_desktop(self):
         # Unit tests suite (desktop)
-        self.browser_js(f'/web/tests?headless&loglevel=2&preset=desktop&timeout=15000{self.hoot_filters}', "", "", login='admin', timeout=1800, success_signal="[HOOT] Test suite succeeded", error_checker=unit_test_error_checker)
+        self.browser_js(f'/web/tests?headless&loglevel=2&preset=desktop&timeout=15000{self.hoot_filters}', "", "", login='admin', timeout=3600, success_signal="[HOOT] Test suite succeeded", error_checker=unit_test_error_checker)
 
     @odoo.tests.no_retry
     def test_hoot(self):
@@ -204,12 +204,11 @@ class WebSuite(QunitCommon, HOOTCommon):
         self._check_forbidden_statements('web.assets_unit_tests')
         # Checks that no test is using `only` or `debug` as it prevents other tests to be run
         self._check_only_call('web.qunit_suite_tests')
-        self._check_only_call('web.qunit_mobile_suite_tests')
 
     def _check_forbidden_statements(self, bundle):
         # As we currently are not in a request context, we cannot render `web.layout`.
         # We then re-define it as a minimal proxy template.
-        self.env.ref('web.layout').write({'arch_db': '<t t-name="web.layout"><head><meta charset="utf-8"/><t t-esc="head"/></head></t>'})
+        self.env.ref('web.layout').write({'arch_db': '<t t-name="web.layout"><html><head><meta charset="utf-8"/><link/><script id="web.layout.odooscript"/><meta/><t t-esc="head"/></head><body><t t-out="0"/></body></html></t>'})
 
         assets = self.env['ir.qweb']._get_asset_content(bundle)[0]
         if len(assets) == 0:
@@ -228,7 +227,7 @@ class WebSuite(QunitCommon, HOOTCommon):
         # ! DEPRECATED
         # As we currently aren't in a request context, we can't render `web.layout`.
         # redefinied it as a minimal proxy template.
-        self.env.ref('web.layout').write({'arch_db': '<t t-name="web.layout"><head><meta charset="utf-8"/><t t-esc="head"/></head></t>'})
+        self.env.ref('web.layout').write({'arch_db': '<t t-name="web.layout"><html><head><meta charset="utf-8"/><link/><script id="web.layout.odooscript"/><meta/><t t-esc="head"/></head><body><t t-out="0"/></body></html></t>'})
 
         assets = self.env['ir.qweb']._get_asset_content(suite)[0]
         if len(assets) == 0:
@@ -252,8 +251,4 @@ class MobileWebSuite(QunitCommon, HOOTCommon):
     @odoo.tests.no_retry
     def test_unit_mobile(self):
         # Unit tests suite (mobile)
-        self.browser_js(f'/web/tests?headless&loglevel=2&preset=mobile&tag=-headless&timeout=15000{self.hoot_filters}', "", "", login='admin', timeout=1800, success_signal="[HOOT] Test suite succeeded", error_checker=unit_test_error_checker)
-
-    def test_qunit_mobile(self):
-        # ! DEPRECATED
-        self.browser_js(f'/web/tests/legacy/mobile?mod=web{self.qunit_filters}', "", "", login='admin', timeout=1800, success_signal="QUnit test suite done.", error_checker=qunit_error_checker)
+        self.browser_js(f'/web/tests?headless&loglevel=2&preset=mobile&tag=-headless&timeout=15000{self.hoot_filters}', "", "", login='admin', timeout=2100, success_signal="[HOOT] Test suite succeeded", error_checker=unit_test_error_checker)

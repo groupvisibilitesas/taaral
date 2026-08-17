@@ -60,13 +60,14 @@ class TestHrLeaveReport(TestHrHolidaysCommon):
                 'date_from': '2026-02-01',
                 'number_of_days': '1.5',
             },
-        ]).action_validate()
+        ]).action_approve()
 
         self.env['hr.leave'].create([
             {
                 'employee_id': self.employee_emp.id,
                 'holiday_status_id': self.overtime_leave_type.id,
                 'request_date_from': '2025-12-02',
+                'request_date_to': '2025-12-02',
                 'request_unit_hours': True,
                 'request_hour_from': 8,
                 'request_hour_to': 17,
@@ -75,6 +76,7 @@ class TestHrLeaveReport(TestHrHolidaysCommon):
                 'employee_id': self.employee_emp.id,
                 'holiday_status_id': self.overtime_leave_type.id,
                 'request_date_from': '2026-01-02',
+                'request_date_to': '2026-01-02',
                 'request_unit_hours': True,
                 'request_hour_from': 8,
                 'request_hour_to': 17,
@@ -83,14 +85,16 @@ class TestHrLeaveReport(TestHrHolidaysCommon):
                 'employee_id': self.employee_emp.id,
                 'holiday_status_id': self.overtime_leave_type.id,
                 'request_date_from': '2026-02-02',
+                'request_date_to': '2026-02-02',
                 'request_unit_hours': True,
                 'request_hour_from': 8,
                 'request_hour_to': 17,
             },
-        ]).action_validate()
+        ]).action_approve()
+
+        self.env.flush_all()
 
         domain = [
-            ('company_id', '=', self.employee_emp.company_id.id),
             ('employee_id', '=', self.employee_emp.id),
             ('leave_type', '=', self.overtime_leave_type.id),
         ]
@@ -116,8 +120,8 @@ class TestHrLeaveReport(TestHrHolidaysCommon):
             Allocation A should remain untouched (10 days), and Allocation B
             should have 1 day deducted (9 days), totaling 19 remaining days.
         """
-        self.alloc_a.action_validate()
-        self.alloc_b.action_validate()
+        self.alloc_a.action_approve()
+        self.alloc_b.action_approve()
         self.env['hr.leave'].create([
             {
                 'employee_id': self.employee_emp.id,
@@ -125,7 +129,7 @@ class TestHrLeaveReport(TestHrHolidaysCommon):
                 'request_date_from': '2026-01-01',
                 'request_date_to': '2026-01-01',
             },
-        ]).action_validate()
+        ]).action_approve()
 
         domain = [
             ('employee_id', '=', self.employee_emp.id),
@@ -154,8 +158,8 @@ class TestHrLeaveReport(TestHrHolidaysCommon):
             L2 should deduct from Allocation A, leaving 8 days in Allocation A.
             L3 should deduct 8 days from Allocation A (emptying it) and 3 days from Allocation B.
         """
-        self.alloc_a.action_validate()
-        self.alloc_b.action_validate()
+        self.alloc_a.action_approve()
+        self.alloc_b.action_approve()
 
         # Leave L1: 2024 (1 day)
         self.env['hr.leave'].create([
@@ -165,7 +169,7 @@ class TestHrLeaveReport(TestHrHolidaysCommon):
                 'request_date_from': '2024-01-01',
                 'request_date_to': '2024-01-01',
             },
-        ]).action_validate()
+        ]).action_approve()
         self.assertEqual(self.alloc_a.leaves_taken, 1)
         self.assertEqual(self.alloc_b.leaves_taken, 0)
 
@@ -177,7 +181,7 @@ class TestHrLeaveReport(TestHrHolidaysCommon):
                 'request_date_from': '2025-01-01',
                 'request_date_to': '2025-01-01',
             },
-        ]).action_validate()
+        ]).action_approve()
         self.assertEqual(self.alloc_a.leaves_taken, 2)
         self.assertEqual(self.alloc_b.leaves_taken, 0)
 
@@ -189,7 +193,7 @@ class TestHrLeaveReport(TestHrHolidaysCommon):
                 'request_date_from': '2025-01-02',
                 'request_date_to': '2025-01-16',
             },
-        ]).action_validate()
+        ]).action_approve()
         self.assertEqual(self.alloc_a.leaves_taken, 10)
         self.assertEqual(self.alloc_b.leaves_taken, 3)
 

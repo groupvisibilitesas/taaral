@@ -24,4 +24,6 @@ class TestGenericLocalization(TestPointOfSaleHttpCommon):
 
     def test_generic_localization(self):
         self.main_pos_config.open_ui()
-        self.start_pos_tour("generic_localization_tour", login="accountman")
+        url = "/pos/ui?config_id=%d" % self.main_pos_config.id
+        url += "&company_name=%s" % self.main_pos_config.company_id.name
+        self.start_tour(url, "generic_localization_tour", login="accountman")

@@ -2,22 +2,26 @@
 # This file contains the translation of the following modules:
 # * sms_twilio
 #
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# "Tiffany Chang (tic)" <tic@odoo.com>, 2025, 2026.
+# "Maitê Dietze (madi)" <madi@odoo.com>, 2025, 2026.
+# "Malaz Siddig Elsayed Abuidris (msea)" <msea@odoo.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 18:38+0000\n"
-"PO-Revision-Date: 2025-12-31 08:45+0000\n"
+"POT-Creation-Date: 2026-04-10 18:39+0000\n"
+"PO-Revision-Date: 2026-08-06 22:30+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Portuguese (Brazil) <https://translate.odoo.com/projects/"
-"odoo-18/sms_twilio/pt_BR/>\n"
+"Language-Team: Portuguese (Brazil) <https://translate.odoo.com/projects/odoo-"
+"19/sms_twilio/pt_BR/>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.14.3\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: sms_twilio
 #. odoo-python
@@ -30,6 +34,12 @@ msgstr "%(failure_type)s: %(failure_reason)s"
 #: code:addons/sms_twilio/tools/sms_api.py:0
 msgid "'To' and 'From' numbers cannot be the same"
 msgstr "Os números “Para” e “De” não podem ser iguais."
+
+#. module: sms_twilio
+#. odoo-python
+#: code:addons/sms_twilio/tools/sms_api.py:0
+msgid "A 'From' number is required to send a message"
+msgstr "É necessário um número de remetente para enviar uma mensagem"
 
 #. module: sms_twilio
 #. odoo-python
@@ -81,7 +91,7 @@ msgstr "Empresa"
 #. module: sms_twilio
 #: model:ir.model,name:sms_twilio.model_res_config_settings
 msgid "Config Settings"
-msgstr "Configurações"
+msgstr "Ajuste de configurações"
 
 #. module: sms_twilio
 #: model_terms:ir.ui.view,arch_db:sms_twilio.res_config_settings_view_form
@@ -96,7 +106,7 @@ msgstr "País"
 #. module: sms_twilio
 #: model:ir.model.fields,field_description:sms_twilio.field_sms_twilio_number__country_code
 msgid "Country Code"
-msgstr "Código do país"
+msgstr "Código do País"
 
 #. module: sms_twilio
 #: model:ir.model.fields,field_description:sms_twilio.field_sms_twilio_account_manage__create_uid
@@ -126,6 +136,12 @@ msgid "Discard"
 msgstr "Descartar"
 
 #. module: sms_twilio
+#: model:ir.model.fields,field_description:sms_twilio.field_mail_notification__display_name
+#: model:ir.model.fields,field_description:sms_twilio.field_res_company__display_name
+#: model:ir.model.fields,field_description:sms_twilio.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:sms_twilio.field_sms_composer__display_name
+#: model:ir.model.fields,field_description:sms_twilio.field_sms_sms__display_name
+#: model:ir.model.fields,field_description:sms_twilio.field_sms_tracker__display_name
 #: model:ir.model.fields,field_description:sms_twilio.field_sms_twilio_account_manage__display_name
 #: model:ir.model.fields,field_description:sms_twilio.field_sms_twilio_number__display_name
 msgid "Display Name"
@@ -154,6 +170,12 @@ msgid "From / To identic"
 msgstr "De / Para iguais"
 
 #. module: sms_twilio
+#: model:ir.model.fields,field_description:sms_twilio.field_mail_notification__id
+#: model:ir.model.fields,field_description:sms_twilio.field_res_company__id
+#: model:ir.model.fields,field_description:sms_twilio.field_res_config_settings__id
+#: model:ir.model.fields,field_description:sms_twilio.field_sms_composer__id
+#: model:ir.model.fields,field_description:sms_twilio.field_sms_sms__id
+#: model:ir.model.fields,field_description:sms_twilio.field_sms_tracker__id
 #: model:ir.model.fields,field_description:sms_twilio.field_sms_twilio_account_manage__id
 #: model:ir.model.fields,field_description:sms_twilio.field_sms_twilio_number__id
 msgid "ID"
@@ -304,8 +326,8 @@ msgid ""
 "The ISO country code in two chars. \n"
 "You can use this field for quick search."
 msgstr ""
-"O código ISO do país em dois caracteres.\n"
-"Você pode usar este campo para pesquisas rápidas."
+"O código ISO do país em dois caracteres. \n"
+"Você pode usar este campo para uma pesquisa rápida."
 
 #. module: sms_twilio
 #. odoo-python
@@ -396,3 +418,75 @@ msgstr "abcde12345abcde12345abcde12345ab"
 
 #~ msgid "+1 555-123-4567"
 #~ msgstr "+1 555-123-4567"
+
+#~ msgid ""
+#~ "Any number here that is not on Twilio will be deleted and the ordering "
+#~ "will be reset to Twilio's."
+#~ msgstr ""
+#~ "Números que não estejam no Twilio serão excluídos e a ordem será "
+#~ "redefinida para a do Twilio."
+
+#~ msgid "Authentication error"
+#~ msgstr "Erro de autenticação"
+
+#~ msgid "Cancel"
+#~ msgstr "Cancelar"
+
+#~ msgid "Error message"
+#~ msgstr "Mensagem de erro"
+
+#~ msgid "Manage Twilio Connection"
+#~ msgstr "Gerenciar conexão Twilio"
+
+#~ msgid "Odoo IAP"
+#~ msgstr "Odoo IAP"
+
+#~ msgid "Save"
+#~ msgstr "Salvar"
+
+#~ msgid "Success message"
+#~ msgstr "Mensagem de sucesso"
+
+#~ msgid "Testing"
+#~ msgstr "Testando"
+
+#, python-format
+#~ msgid "The Twilio StatusCallback URL is incorrect"
+#~ msgstr "O URL do StatusCallback da Twilio está incorreto"
+
+#, python-format
+#~ msgid "The number you're trying to reach is not correctly formatted."
+#~ msgstr ""
+#~ "O número que você está tentando contatar não está formatado corretamente."
+
+#~ msgid "To Number"
+#~ msgstr "Para o número"
+
+#, fuzzy
+#~ msgid "Twilio"
+#~ msgstr "Twilio"
+
+#~ msgid ""
+#~ "When sending an SMS to a partner, Odoo will pick the first number "
+#~ "available\n"
+#~ "                        from the same country as the recipient. If no "
+#~ "number exists for this country,\n"
+#~ "                        Odoo will use the first one available."
+#~ msgstr ""
+#~ "Ao enviar uma mensagem SMS para um parceiro, o Odoo selecionará o "
+#~ "primeiro número disponível\n"
+#~ "                        do mesmo país do destinatário. Se não houver "
+#~ "nenhum número disponível para esse país,\n"
+#~ "                        o Odoo utilizará o primeiro número disponível."
+
+#~ msgid "You can access the documentation"
+#~ msgstr "Você pode acessar a documentação"
+
+#~ msgid ""
+#~ "by clicking here\n"
+#~ "                        <i class=\"fa fa-external-link\" aria-"
+#~ "hidden=\"true\"/>"
+#~ msgstr ""
+#~ "clicando aqui\n"
+#~ "                        <i class=\"fa fa-external-link\" aria-"
+#~ "hidden=\"true\"/>"

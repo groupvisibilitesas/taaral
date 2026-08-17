@@ -44,7 +44,7 @@ CRC8_TABLE = [
 ]
 
 
-class L10nEsEdiTbaiDocument(models.Model):
+class L10n_Es_Edi_TbaiDocument(models.Model):
     _name = 'l10n_es_edi_tbai.document'
     _description = 'TicketBAI Document'
 
@@ -304,7 +304,6 @@ class L10nEsEdiTbaiDocument(models.Model):
             'sender_vat': sender.vat[2:] if sender.vat.startswith('ES') else sender.vat,
             'fiscal_year': str(self.date.year),
             'freelancer': freelancer,
-            'is_freelancer': freelancer,  # For bugfix, will be removed in master
             'epigrafe': self.env['ir.config_parameter'].sudo().get_param('l10n_es_edi_tbai.epigrafe', '')
         }
         lroe_values.update({'tbai_b64_list': [base64.b64encode(self.xml_attachment_id.raw).decode()]})
@@ -410,7 +409,7 @@ class L10nEsEdiTbaiDocument(models.Model):
         if not partner._l10n_es_is_foreign() and partner.vat:
             recipient_values['nif'] = partner.vat[2:] if partner.vat.startswith('ES') else partner.vat
 
-        elif partner.country_id in self.env.ref('base.europe').country_ids:
+        elif partner.country_id and 'EU' in partner.country_id.country_group_codes:
             recipient_values['alt_id_type'] = '02'
 
         else:
@@ -440,6 +439,10 @@ class L10nEsEdiTbaiDocument(models.Model):
             **self._get_regime_code_value(values['taxes'], values['is_simplified']),
             **self._get_refunded_values(values),
         }
+        # Regime key override for Canarias/Ceuta/Melilla and no_sujeto_loc
+        if values['partner'] and values['partner'].country_id.code == 'ES' and values['partner'].state_id.code in ('TF', 'GC', 'CE', 'ME'):
+            if any(t.l10n_es_type == 'no_sujeto_loc' for t in values['taxes']):
+                sale_values.update({'regime_key': ['08']})
 
         if not values['partner'] or not values['partner']._l10n_es_is_foreign() or values["is_simplified"]:
             sale_values.update(**self._get_importe_desglose_es_partner(values['base_lines'], values['is_refund']))

@@ -4,7 +4,7 @@
 {
     'name': 'MRP Subcontracting Repair',
     'version': '1.0',
-    'category': 'Manufacturing/Repair',
+    'category': 'Supply Chain/Repair',
     'description': """
 Bridge module between MRP subcontracting and Repair
     """,
@@ -13,5 +13,6 @@ Bridge module between MRP subcontracting and Repair
     ],
     'installable': True,
     'auto_install': True,
+    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 }

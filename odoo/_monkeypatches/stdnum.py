@@ -51,7 +51,7 @@ def new_get_soap_client(wsdlurl, timeout=30):
     return _soap_clients[(wsdlurl, timeout)]
 
 
-def patch_stdnum():
+def patch_module():
     if parse_version(version("python-stdnum")) >= parse_version("2.0"):
         return  # nothing to patch
 

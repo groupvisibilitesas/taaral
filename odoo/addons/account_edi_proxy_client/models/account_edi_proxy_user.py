@@ -1,18 +1,17 @@
 import base64
 import logging
 import uuid
+from typing import Literal
 
-import psycopg2.errors
 import requests
 
 from odoo import _, fields, models
-from odoo.exceptions import UserError
-from odoo.tools import index_exists
+from odoo.exceptions import LockError, UserError
 from .account_edi_proxy_auth import OdooEdiProxyAuth
 
 _logger = logging.getLogger(__name__)
 
-TIMEOUT = 30
+DEFAULT_TIMEOUT = 30
 
 
 class AccountEdiProxyError(Exception):
@@ -23,7 +22,7 @@ class AccountEdiProxyError(Exception):
         super().__init__(message or code)
 
 
-class AccountEdiProxyClientUser(models.Model):
+class Account_Edi_Proxy_ClientUser(models.Model):
     """Represents a user of the proxy for an electronic invoicing format.
     An edi_proxy_user has a unique identification on a specific format (for example, the vat for Peppol) which
     allows to identify him when receiving a document addressed to him. It is linked to a specific company on a specific
@@ -35,7 +34,7 @@ class AccountEdiProxyClientUser(models.Model):
 
     active = fields.Boolean(default=True)
     id_client = fields.Char(required=True)
-    company_id = fields.Many2one('res.company', string='Company', required=True,
+    company_id = fields.Many2one('res.company', string='Company', required=True, index=True,
         default=lambda self: self.env.company)
     edi_identification = fields.Char(required=True, help="The unique id that identifies this user, typically the vat")
     private_key_id = fields.Many2one(
@@ -46,6 +45,14 @@ class AccountEdiProxyClientUser(models.Model):
         help="The key to encrypt all the user's data",
     )
     refresh_token = fields.Char(groups="base.group_system")
+    is_token_out_of_sync = fields.Boolean(
+        string='Token Out of Sync',
+        help="This field is used to indicate that the edi user token is out of sync with the proxy server. "
+             "It is set to True when the token needs to be refreshed or updated.",
+    )
+    token_sync_version = fields.Integer(
+        string='Token Sync Version',
+    )
     proxy_type = fields.Selection(selection=[], required=True)
     edi_mode = fields.Selection(
         selection=[
@@ -56,21 +63,11 @@ class AccountEdiProxyClientUser(models.Model):
         string='EDI operating mode',
     )
 
-    _sql_constraints = [
-        ('unique_id_client', 'unique(id_client)', 'This id_client is already used on another user.'),
-        ('unique_active_company_proxy', '', 'This company has an active user already created for this EDI type'),
-    ]
-
-    def _auto_init(self):
-        super()._auto_init()
-        if not index_exists(self.env.cr, 'account_edi_proxy_client_user_unique_active_company_proxy'):
-            self.env.cr.execute("""
-                CREATE UNIQUE INDEX account_edi_proxy_client_user_unique_active_company_proxy
-                                 ON account_edi_proxy_client_user(company_id, proxy_type, edi_mode)
-                              WHERE (active = True)
-            """)
-
-        self.env.cr.execute("DROP INDEX IF EXISTS account_edi_proxy_client_user_unique_active_edi_identification")
+    _unique_id_client = models.Constraint('unique(id_client)', "This id_client is already used on another user.")
+    _unique_active_company_proxy = models.UniqueIndex(
+        '(company_id, proxy_type, edi_mode) WHERE (active IS TRUE)',
+        "This company has an active user already created for this EDI type",
+    )
 
     def _get_proxy_urls(self):
         # To extend
@@ -96,7 +93,7 @@ class AccountEdiProxyClientUser(models.Model):
         '''
         return False
 
-    def _make_request(self, url, params=False):
+    def _make_request(self, url, params=False, *, auth_type: Literal['hmac', 'asymmetric'] = 'hmac'):
         ''' Make a request to proxy and handle the generic elements of the reponse (errors, new refresh token).
         '''
         payload = {
@@ -114,9 +111,9 @@ class AccountEdiProxyClientUser(models.Model):
             res = requests.post(
                 url,
                 json=payload,
-                timeout=TIMEOUT,
+                timeout=DEFAULT_TIMEOUT,
                 headers={'content-type': 'application/json'},
-                auth=OdooEdiProxyAuth(user=self))
+                auth=OdooEdiProxyAuth(user=self, auth_type=auth_type))
             res.raise_for_status()
             response = res.json()
         except (ValueError, requests.exceptions.ConnectionError, requests.exceptions.MissingSchema, requests.exceptions.Timeout, requests.exceptions.HTTPError) as e:
@@ -141,15 +138,15 @@ class AccountEdiProxyClientUser(models.Model):
             error_code = proxy_error['code']
             if error_code == 'refresh_token_expired':
                 self._renew_token()
-                self.env.cr.commit() # We do not want to lose it if in the _make_request below something goes wrong
-                return self._make_request(url, params)
+                self.env.cr.commit()  # We do not want to lose it if in the _make_request below something goes wrong
+                return self._make_request(url, params, auth_type='hmac')
             if error_code == 'no_such_user':
                 # This error is also raised if the user didn't exchange data and someone else claimed the edi_identificaiton.
                 self.sudo().active = False
             if error_code == 'invalid_signature':
                 raise AccountEdiProxyError(
                     error_code,
-                    _("Invalid signature for request. This might be due to another connection to odoo Access Point "
+                    _("Failed to connect to Odoo Access Point server. This might be due to another connection to Odoo Access Point "
                       "server. It can occur if you have duplicated your database. \n\n"
                       "If you are not sure how to fix this, please contact our support."),
                 )
@@ -216,9 +213,8 @@ class AccountEdiProxyClientUser(models.Model):
         This method makes a request to get a new refresh token.
         '''
         try:
-            with self.env.cr.savepoint(flush=False):
-                self.env.cr.execute('SELECT * FROM account_edi_proxy_client_user WHERE id IN %s FOR UPDATE NOWAIT', [tuple(self.ids)])
-        except psycopg2.errors.LockNotAvailable:
+            self.lock_for_update()
+        except LockError:
             return
         response = self._make_request(self._get_server_url() + '/iap/account_edi/1/renew_token')
         if 'error' in response:

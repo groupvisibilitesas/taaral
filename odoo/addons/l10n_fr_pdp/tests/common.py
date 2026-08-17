@@ -46,7 +46,7 @@ class TestL10nFrPdpCommon(TestUblCiiCommon, TestAccountMoveSendCommon):
             'zip': '35043',
             'vat': 'FR91746948785',
             'phone': '+33612345678',
-            'pdp_identifier': '968515759_96851575905899'  # Should set siret, peppol_eas and peppol_endpoint
+            'pdp_identifier': '968515759_96851575905899'  # Should set company_id, peppol_eas and peppol_endpoint
         })
         cls.env['res.partner.bank'].create({
             'acc_type': 'iban',
@@ -77,7 +77,7 @@ class TestL10nFrPdpCommon(TestUblCiiCommon, TestAccountMoveSendCommon):
             'country_id': cls.env.ref('base.fr').id,
             'phone': '+33 1 23 45 67 89',
             'vat': 'FR23334175221',
-            'siret': '96851575905823',
+            'company_registry': '96851575905823',
             'invoice_edi_format': 'ubl_21_fr',
             'peppol_eas': '0225',
             'peppol_endpoint': '968515759_96851575905823',

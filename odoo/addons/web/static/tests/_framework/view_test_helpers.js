@@ -8,6 +8,8 @@ import {
     getFixture,
     queryAll,
     queryAllTexts,
+    queryFirst,
+    runAllTimers,
     tick,
 } from "@odoo/hoot";
 import { Component, onMounted, useSubEnv, xml } from "@odoo/owl";
@@ -16,11 +18,16 @@ import { MainComponentsContainer } from "@web/core/main_components_container";
 import { View } from "@web/views/view";
 import { mountWithCleanup } from "./component_test_helpers";
 import { contains } from "./dom_test_helpers";
-import { getService } from "./env_test_helpers";
+import { getMockEnv, getService } from "./env_test_helpers";
 import { registerInlineViewArchs } from "./mock_server/mock_model";
 
 /**
  * @typedef {import("@web/views/view").Config} Config
+ *
+ * @typedef {{
+ *  value?: string;
+ *  index?: number;
+ * }} EditSelectMenuParams
  *
  * @typedef {ViewProps & {
  *  archs?: Record<string, string>
@@ -129,7 +136,10 @@ export async function clickCancel(options) {
  * @param {SelectorOptions} [options]
  */
 export async function clickFieldDropdown(fieldName, options) {
-    await contains(buildSelector(`[name='${fieldName}'] .dropdown input`, options)).click();
+    const selector = getMockEnv().isSmall
+        ? `[name='${fieldName}'] input`
+        : `[name='${fieldName}'] .dropdown input`;
+    await contains(buildSelector(selector, options)).click();
 }
 
 /**
@@ -138,6 +148,10 @@ export async function clickFieldDropdown(fieldName, options) {
  * @param {SelectorOptions} [options]
  */
 export async function clickFieldDropdownItem(fieldName, itemContent, options) {
+    if (getMockEnv().isSmall) {
+        await contains(`.o_kanban_record:contains('${itemContent}')`).click();
+        return;
+    }
     const dropdowns = queryAll(
         buildSelector(`[name='${fieldName}'] .dropdown .dropdown-menu`, options)
     );
@@ -300,4 +314,54 @@ export async function hideTab() {
     document.dispatchEvent(new Event("visibilitychange"));
     await tick();
     Object.defineProperty(document, "visibilityState", prop);
+}
+
+/**
+ * Changes or clears the value in a SelectMenu component, supporting when
+ * the input is displayed in the toggler, in a Dropdown menu or in a
+ * BottomSheet as well. The helper can directly select a value if it's
+ * displayed or perform a search in the SelectMenu input if present.
+ * @param {string} selector
+ * @param {EditSelectMenuParams} [params]
+ */
+export async function editSelectMenu(selector, { value, index }) {
+    async function selectItem(value) {
+        const elementToSelect = queryFirst(`.o_select_menu_item:contains(${value})`);
+        if (elementToSelect) {
+            await click(elementToSelect);
+            return;
+        } else {
+            await contains(inputSelector).edit(value, { confirm: false });
+            await runAllTimers();
+            return selectItem(value);
+        }
+    }
+    let inputSelector = buildSelector(selector);
+    const selectMenuId = queryFirst(inputSelector).closest(".o_select_menu").dataset.id;
+    if (!queryFirst(`.o_select_menu_menu [data-id='${selectMenuId}']`)) {
+        await contains(inputSelector).click();
+    }
+    if (queryFirst(".o_select_menu_menu input")) {
+        inputSelector = ".o_select_menu_menu input";
+        await contains(inputSelector).click();
+    }
+    if (index !== undefined) {
+        return await contains(`.o_select_menu_item:nth-of-type(${index + 1})`).click();
+    }
+    if (value === "") {
+        // Because this helper must work even when no input is editable (searchable=false),
+        // we unselect the currently selected value with the 'X' button
+        const clearButton = queryFirst(
+            `.o_select_menu[data-id='${selectMenuId}'] .o_select_menu_toggler_clear, .o_select_menu_menu .o_clear_button`
+        );
+        if (clearButton) {
+            await click(clearButton);
+        } else {
+            await contains(inputSelector).edit("", { confirm: false });
+            queryFirst(inputSelector).dispatchEvent(new Event("blur"));
+        }
+    } else {
+        await selectItem(value);
+    }
+    await animationFrame();
 }

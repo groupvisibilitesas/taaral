@@ -1,11 +1,10 @@
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
-
 from odoo import api, models
 from odoo.addons.iap import jsonrpc
 
 DEFAULT_IAP_ENDPOINT = "https://l10n-in-edi.api.odoo.com"
 DEFAULT_IAP_TEST_ENDPOINT = "https://l10n-in-edi-demo.api.odoo.com"
 IAP_SERVICE_NAME = 'l10n_in_edi'
+TEST_GST_NUMBER = '24FANCY1234AAZA'
 
 
 class IapAccount(models.Model):
@@ -17,15 +16,15 @@ class IapAccount(models.Model):
         user_token = self.get(IAP_SERVICE_NAME)
         params.update({
             "dbuuid": IrConfigParam.get_param("database.uuid"),
-            "account_token": user_token.account_token,
+            "account_token": user_token.sudo().account_token,
         })
         gsp_provider = IrConfigParam.get_param("l10n_in.gsp_provider")
         if gsp_provider:
             params.update({"gsp_provider": gsp_provider})
-        if is_production:
-            default_endpoint = DEFAULT_IAP_ENDPOINT
-        else:
+        if params.get('gstin') == TEST_GST_NUMBER:
             default_endpoint = DEFAULT_IAP_TEST_ENDPOINT
+        else:
+            default_endpoint = DEFAULT_IAP_ENDPOINT if is_production else DEFAULT_IAP_TEST_ENDPOINT
         endpoint = IrConfigParam.get_param(config_parameter, default_endpoint)
         url = "%s%s" % (endpoint, url_path)
         return jsonrpc(url, params=params, timeout=timeout)

@@ -49,8 +49,26 @@ class TestAccountPartner(AccountTestInvoicingCommon):
             },
         ]).action_post()
 
+        # rank updates are updated in the post-commit phase
+        with self.enter_registry_test_mode():
+            self.env.cr.postcommit.run()
         self.assertEqual(self.partner_a.supplier_rank, 1)
         self.assertEqual(self.partner_a.customer_rank, 1)
+
+        # a second move is updated in postcommit
+        self.env['account.move'].create([
+            {
+                'move_type': 'out_invoice',
+                'date': '2017-01-02',
+                'invoice_date': '2017-01-02',
+                'partner_id': self.partner_a.id,
+                'invoice_line_ids': [(0, 0, {'name': 'aaaa', 'price_unit': 100.0})],
+            },
+        ]).action_post()
+        # rank updates are updated in the post-commit phase
+        with self.enter_registry_test_mode():
+            self.env.cr.postcommit.run()
+        self.assertEqual(self.partner_a.customer_rank, 2)
 
     def test_manually_write_partner_id(self):
         move = self.env['account.move'].create({
@@ -60,7 +78,7 @@ class TestAccountPartner(AccountTestInvoicingCommon):
             'invoice_line_ids': [Command.create({
                 'quantity': 1,
                 'price_unit': 500.0,
-                'tax_ids': [],
+                'tax_ids': [Command.link(self.tax_sale_a.id)],
             })],
         })
         move.action_post()
@@ -69,7 +87,8 @@ class TestAccountPartner(AccountTestInvoicingCommon):
         receivable_lines = (move + reversal).line_ids.filtered(lambda l: l.display_type == 'payment_term')
 
         # Changing the partner should be possible despite being in locked periods as long as the VAT is the same
-        move.company_id.fiscalyear_lock_date = move.date
+        move.company_id.fiscalyear_lock_date = '9999-12-31'
+        move.company_id.tax_lock_date = '9999-12-31'
 
         # Initially, move's commercial partner should be partner_a
         self.assertEqual(move.commercial_partner_id, self.partner_a)
@@ -118,16 +137,17 @@ class TestAccountPartner(AccountTestInvoicingCommon):
         self.partner_a.parent_id = self.partner_b
 
     def test_res_partner_bank(self):
+        self.env.user.group_ids = (
+            self.env.ref('base.group_partner_manager')
+            + self.env.ref('account.group_account_user')
+            + self.env.ref('account.group_validate_bank_account')
+        )
+
         partner = self.env['res.partner'].create({'name': 'MyCustomer'})
         account = self.env['res.partner.bank'].create({
             'acc_number': '123456789',
             'partner_id': partner.id,
         })
-        self.env.user.groups_id = (
-            self.env.ref('base.group_partner_manager')
-            + self.env.ref('account.group_account_user')
-            + self.env.ref('account.group_validate_bank_account')
-        )
         account.allow_out_payment = True
 
         with self.assertRaisesRegex(UserError, "has been trusted"), self.cr.savepoint():
@@ -140,7 +160,7 @@ class TestAccountPartner(AccountTestInvoicingCommon):
         account.allow_out_payment = False
         account.write({'acc_number': '1234567890999000'})
 
-        account.env.user.groups_id -= self.env.ref('account.group_validate_bank_account')
+        self.env.user.group_ids -= self.env.ref('account.group_validate_bank_account')
         with self.assertRaisesRegex(UserError, "You do not have the rights to trust"), self.cr.savepoint():
             account.write({'allow_out_payment': True})
 

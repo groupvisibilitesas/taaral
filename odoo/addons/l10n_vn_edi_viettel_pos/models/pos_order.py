@@ -18,7 +18,7 @@ class PosOrder(models.Model):
     def _prepare_invoice_vals(self):
         vals = super()._prepare_invoice_vals()
 
-        if self.country_code != 'VN' or not self.config_id.l10n_vn_auto_send_to_sinvoice:
+        if self.company_id.country_id.code != 'VN' or not self.config_id.l10n_vn_auto_send_to_sinvoice:
             return vals
 
         # Get the symbol as sudo() as pos users are not allowed to access the field due to the groups setting
@@ -39,7 +39,7 @@ class PosOrder(models.Model):
         return vals
 
     def _create_invoice(self, move_vals):
-        if self.country_code == 'VN' and self.config_id.l10n_vn_auto_send_to_sinvoice:
+        if self.company_id.country_id.code == 'VN' and self.config_id.l10n_vn_auto_send_to_sinvoice:
             # When auto-sending to SInvoice, we want to skip fetching the SInvoice files
             # right after sending the invoice to reduce the time spent in the POS checkout flow.
             # The SInvoice files will be fetched by printing the invoice from the POS order page

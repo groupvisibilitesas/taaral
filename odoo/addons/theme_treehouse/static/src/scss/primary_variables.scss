@@ -36,6 +36,10 @@ $o-website-values-palettes: (
     ),
 );
 
+$default-28: map-get($o-color-palettes, 'default-28');
+$default-28: map-merge($default-28, ('footer': 5));
+$o-color-palettes: map-merge($o-color-palettes, ('default-28': $default-28));
+
 //------------------------------------------------------------------------------
 // Fonts
 //------------------------------------------------------------------------------
@@ -159,8 +163,6 @@ $o-theme-color-palettes: map-merge($o-theme-color-palettes,
     )
 );
 
-$o-selected-color-palettes-names: append($o-selected-color-palettes-names, 'default-28');
-
 $o-color-palettes-compatibility-indexes: (
     1: 'treehouse-1',
     2: 'treehouse-2',
@@ -191,5 +193,5 @@ $o-color-palettes-compatibility-indexes: (
 // Shapes
 //------------------------------------------------------------------------------
 
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Rainy/08_001', (1: 1, 4: 1));
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Floats/12', (1: 2, 2: 2, 3: 2, 5: 2));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Rainy/08_001', (1: 1, 4: 1));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Floats/12', (1: 2, 2: 2, 3: 2, 5: 2));

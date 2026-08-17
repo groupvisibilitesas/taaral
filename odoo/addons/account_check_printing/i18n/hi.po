@@ -1,32 +1,35 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* account_check_printing
+# * account_check_printing
 #
-# Translators:
-# Martin Trigaux, 2024
-# Wil Odoo, 2024
-# Manav Shah, 2025
-# Ujjawal Pathak, 2025
-#
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~18.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Ujjawal Pathak, 2025\n"
-"Language-Team: Hindi (https://app.transifex.com/odoo/teams/41243/hi/)\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-02 17:17+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Hindi <https://translate.odoo.com/projects/odoo-19/"
+"account_check_printing/hi/>\n"
 "Language: hi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: account_check_printing
 #. odoo-python
 #: code:addons/account_check_printing/models/account_journal.py:0
 msgid "%(journal)s: Check Number Sequence"
 msgstr "%(journal)s: चेक नंबर सिक्वेंस"
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "%(number)s in journal %(journal)s"
+msgstr "जर्नल %(journal)s में %(number)s"
 
 #. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.account_journal_dashboard_kanban_view_inherited
@@ -43,7 +46,8 @@ msgstr "<span>&amp;nbsp;</span>"
 msgid ""
 "Adjust the margins of generated checks to make it fit your printer's "
 "settings."
-msgstr "प्रिंटर में चेक सही से छपे, इसके लिए चेक के मार्जिन को अपने प्रिंटर के हिसाब से सेट करें."
+msgstr ""
+"प्रिंटर में चेक सही से छपे, इसके लिए चेक के मार्जिन को अपने प्रिंटर के हिसाब से सेट करें।"
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_account_payment__check_amount_in_words
@@ -77,7 +81,7 @@ msgstr "बाएं तरफ की मार्जिन की जांच 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_account_payment__check_number
 msgid "Check Number"
-msgstr "चेक नंबर "
+msgstr "चेक नंबर"
 
 #. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.view_account_journal_form_inherited
@@ -110,7 +114,7 @@ msgstr "चेक नंबर में सिर्फ 0 से 9 तक क�
 #: model:ir.model.fields,help:account_check_printing.field_account_journal__check_manual_sequencing
 #: model:ir.model.fields,help:account_check_printing.field_account_payment__check_manual_sequencing
 msgid "Check this option if your pre-printed checks are not numbered."
-msgstr "अगर आपके चेक पर पहले से कोई नंबर नहीं है, तो इस विकल्प को चुनें."
+msgstr "अगर आपके चेक पर पहले से कोई नंबर नहीं है, तो इस विकल्प को चुनें।"
 
 #. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.account_journal_dashboard_kanban_view_inherited
@@ -127,7 +131,7 @@ msgstr "चेक्स"
 #. module: account_check_printing
 #: model:ir.model.fields,help:account_check_printing.field_account_journal__check_sequence_id
 msgid "Checks numbering sequence."
-msgstr "चेक के नंबरों का सही क्रम."
+msgstr "चेक के नंबरों का सही क्रम।"
 
 #. module: account_check_printing
 #. odoo-python
@@ -154,7 +158,7 @@ msgstr "कॉन्फ़िगरेशन सेटिंग"
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__create_uid
 msgid "Created by"
-msgstr "द्वारा निर्मित"
+msgstr "इन्होंने बनाया"
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__create_date
@@ -167,9 +171,14 @@ msgid "Default"
 msgstr "डिफ़ॉल्ट"
 
 #. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_account_journal__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment_method__display_name
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_res_company__display_name
+#: model:ir.model.fields,field_description:account_check_printing.field_res_config_settings__display_name
 msgid "Display Name"
-msgstr "डिस्प्ले नाम"
+msgstr "डिस्प्ले का नाम"
 
 #. module: account_check_printing
 #. odoo-python
@@ -178,7 +187,17 @@ msgid "Go to the configuration panel"
 msgstr "कॉन्फ़िगरेशन पैनल पर जाएं"
 
 #. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment__check_layout_available
+msgid "Has Check Layout"
+msgstr "क्या चेक लेआउट है"
+
+#. module: account_check_printing
+#: model:ir.model.fields,field_description:account_check_printing.field_account_journal__id
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment__id
+#: model:ir.model.fields,field_description:account_check_printing.field_account_payment_method__id
 #: model:ir.model.fields,field_description:account_check_printing.field_print_prenumbered_checks__id
+#: model:ir.model.fields,field_description:account_check_printing.field_res_company__id
+#: model:ir.model.fields,field_description:account_check_printing.field_res_config_settings__id
 msgid "ID"
 msgstr "आईडी"
 
@@ -188,7 +207,8 @@ msgstr "आईडी"
 msgid ""
 "In order to print multiple checks at once, they must belong to the same bank "
 "journal."
-msgstr "एक ही समय में कई चेक प्रिंट करने के लिए, उन्हें एक ही बैंक जर्नल का होना चाहिए."
+msgstr ""
+"एक ही समय में कई चेक प्रिंट करने के लिए, उन्हें एक ही बैंक जर्नल का होना चाहिए।"
 
 #. module: account_check_printing
 #: model:ir.model,name:account_check_printing.model_account_journal
@@ -223,26 +243,12 @@ msgid ""
 "submitting a batch deposit to your bank. Module account_batch_payment is "
 "necessary.\n"
 "SEPA Credit Transfer: Pay in the SEPA zone by submitting a SEPA Credit "
-"Transfer file to your bank. Module account_sepa is necessary.\n"
+"Transfer file to your bank. Module account_iso20022 is necessary.\n"
 "SEPA Direct Debit: Get paid in the SEPA zone thanks to a mandate your "
-"partner will have granted to you. Module account_sepa is necessary.\n"
+"partner will have granted to you. Module account_iso20022 is necessary.\n"
+"U.S. ISO20022: Pay in the US by submitting an ISO20022 file to your bank. "
+"Module account_iso20022 is necessary.\n"
 msgstr ""
-"मैनुअल: आप Odoo सिस्टम के बाहर किसी भी तरीके से भुगतान प्राप्त कर सकते हैं और पेमेंट कर सकत "
-"हैं, जैसे कैश या सीधा बैंक ट्रांसफर.\n"
-"पेमेंट प्रोवाइडर्स: हर पेमेंट प्रोवाइडर का अपना तरीका होता है. आप ग्राहक के सेव किए गए "
-"कार्ड के 'पेमेंट टोकन' का इस्तेमाल करके, ऑनलाइन खरीद या सदस्यता के लिए लेन-देन का अनुरोध "
-"कर सकते हैं.\n"
-"चेक: आप बिलों का भुगतान चेक के द्वारा कर सकते हैं और उन चेक को Odoo से ही प्रिंट भी कर "
-"सकते हैं.\n"
-"बैच डिपॉज़िट: यह सुविधा आपको एक ही बार में कई ग्राहकों के चेक इकट्ठा करके, उन्हें अपने बैंक में "
-"एक साथ जमा करने की अनुमति देती है. इस प्रक्रिया को करने के लिए आपको "
-"account_batch_payment नाम का मॉड्यूल चाहिए होगा.\n"
-"SEPA क्रेडिट ट्रांसफ़र: इस सुविधा से आप SEPA में भुगतान कर सकते हैं. इसके लिए आपको अपने बैंक "
-"में एक SEPA क्रेडिट ट्रांसफर फ़ाइल जमा करनी होगी. इस सुविधा का उपयोग करने के लिए "
-"account_sepa मॉड्यूल की ज़रूरत होगी.\n"
-"SEPA डायरेक्ट डेबिट: इस सुविधा से आप SEPA में भुगतान प्राप्त कर सकते हैं. यह तब संभव होगा "
-"जब आपके पार्टनर ने आपको इसके लिए मैंडेट दिया हो. इस सुविधा का उपयोग करने के लिए "
-"account_sepa मॉड्यूल की ज़रूरत होगी.\n"
 
 #. module: account_check_printing
 #: model:ir.model.fields,field_description:account_check_printing.field_res_company__account_check_printing_multi_stub
@@ -261,7 +267,7 @@ msgstr "अगला चेक नंबर"
 #: code:addons/account_check_printing/models/account_journal.py:0
 #: code:addons/account_check_printing/wizard/print_prenumbered_checks.py:0
 msgid "Next Check Number should only contains numbers."
-msgstr "अगले चेक नंबर में सिर्फ़ 0 से 9 तक के नंबर ही इस्तेमाल करें."
+msgstr "अगले चेक नंबर में सिर्फ़ 0 से 9 तक के नंबर ही इस्तेमाल करें।"
 
 #. module: account_check_printing
 #: model:ir.model.fields.selection,name:account_check_printing.selection__res_company__account_check_printing_layout__disabled
@@ -298,7 +304,7 @@ msgstr ""
 msgid ""
 "Please enter the number of the first pre-printed check that you are about to "
 "print on."
-msgstr "जिस पहले चेक पर आप अभी प्रिंट कर रहे हैं, उसका नंबर यहां लिखें."
+msgstr "जिस पहले चेक पर आप अभी प्रिंट कर रहे हैं, उसका नंबर यहां लिखें।"
 
 #. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.print_pre_numbered_checks_view
@@ -349,7 +355,7 @@ msgid ""
 "In order to disable the printing feature, select 'None'."
 msgstr ""
 "आप जिस चेक पेपर पर प्रिंट करने वाले हैं, उसका फॉर्मेट चुनें. अगर आप चेक प्रिंटिंग नहीं करना "
-"चाहते, तो 'कोई नहीं' चुनें."
+"चाहते, तो 'कोई नहीं' चुनें।"
 
 #. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.view_account_payment_form_inherited
@@ -374,7 +380,7 @@ msgid ""
 "Invoicing/Accounting Settings and try again."
 msgstr ""
 "आपने जो चेक का लेआउट चुना है, उसमें कोई दिक्कत है. आप इनवॉइसिंग/अकाउंटिंग की सेटिंग में जाकर "
-"कोई दूसरा डिजाइन चुनें और दोबारा कोशिश करें."
+"कोई दूसरा डिजाइन चुनें और दोबारा कोशिश करें।"
 
 #. module: account_check_printing
 #. odoo-python
@@ -402,7 +408,7 @@ msgid ""
 "the bank, you can only use a greater number."
 msgstr ""
 "पिछला चेक नंबर %s था. बैंक को कोई दिक्कत न हो, इसके लिए आपको अब सिर्फ़ उससे बड़ा नंबर "
-"ही इस्तेमाल करना है."
+"ही इस्तेमाल करना है।"
 
 #. module: account_check_printing
 #: model:ir.model.fields,help:account_check_printing.field_account_payment__check_number
@@ -413,7 +419,7 @@ msgid ""
 msgstr ""
 "जो जर्नल आपने चुना है, वह चेक नंबर प्रिंट के लिए तैयार है. अगर आपके पास पहले से प्रिंट हुए चेक "
 "हैं जिन पर नंबर हैं या अभी जो नंबरिंग चल रही है वह गलत है, तो आप उसे जर्नल की सेटिंग वाले "
-"पेज पर जाकर ठीक कर सकते हैं."
+"पेज पर जाकर ठीक कर सकते हैं।"
 
 #. module: account_check_printing
 #: model:ir.model.fields,help:account_check_printing.field_res_company__account_check_printing_multi_stub
@@ -423,7 +429,7 @@ msgid ""
 "they don't fit on a single page."
 msgstr ""
 "अगर एक चेक से बहुत सारी पेमेंट की गई हैं और उनका हिसाब-किताब एक पेज पर फिट नहीं हो "
-"रहा, तो आप इस विकल्प को चुनकर उसे कई पेजों पर प्रिंट कर सकते हैं."
+"रहा, तो आप इस विकल्प को चुनकर उसे कई पेजों पर प्रिंट कर सकते हैं।"
 
 #. module: account_check_printing
 #: model:ir.model.fields,help:account_check_printing.field_res_company__account_check_printing_date_label
@@ -433,13 +439,14 @@ msgid ""
 "Disable this if your pre-printed check includes the date label."
 msgstr ""
 "इस विकल्प को चालू करें, तो चेक पर तारीख अपने-आप प्रिंट हो जाएगी. अगर आपके चेक पर पहले से "
-"ही तारीख लिखने की जगह है, तो इस विकल्प को बंद कर दें."
+"ही तारीख लिखने की जगह है, तो इस विकल्प को बंद कर दें।"
 
 #. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.print_pre_numbered_checks_view
 msgid ""
 "This will allow to save on payments the number of the corresponding check."
-msgstr "इस सेटिंग से आप पेमेंट करते समय, उस पेमेंट के साथ चेक का नंबर भी जोड़ सकते हैं."
+msgstr ""
+"इस सेटिंग से आप पेमेंट करते समय, उस पेमेंट के साथ चेक का नंबर भी जोड़ सकते हैं।"
 
 #. module: account_check_printing
 #: model_terms:ir.ui.view,arch_db:account_check_printing.view_account_payment_form_inherited
@@ -460,4 +467,22 @@ msgid ""
 msgstr ""
 "चेक प्रिंट करने के लिए आपको पहले उसका लेआउट चुनना होगा. इसके लिए आपको सॉफ्टवेयर की "
 "इनवॉइसिंग/अकाउंटिंग सेटिंग्स में जाना है, वहां 'चेक्स लेआउट' का विकल्प खोजना है, और फिर "
-"अपनी पसंद का लेआउट चुनना है."
+"अपनी पसंद का लेआउट चुनना है।"
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "check_number"
+msgstr "check_number"
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "out_refund"
+msgstr "out_refund"
+
+#. module: account_check_printing
+#. odoo-python
+#: code:addons/account_check_printing/models/account_payment.py:0
+msgid "sep"
+msgstr "sep"

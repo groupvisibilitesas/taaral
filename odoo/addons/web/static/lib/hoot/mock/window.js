@@ -25,6 +25,7 @@ import {
     mockedWindowScrollTo,
 } from "./animation";
 import { MockConsole } from "./console";
+import { mockCrypto } from "./crypto";
 import { MockDate, MockIntl } from "./date";
 import { MockClipboardItem, mockNavigator } from "./navigator";
 import {
@@ -509,11 +510,13 @@ const WINDOW_MOCK_DESCRIPTORS = {
     clearTimeout: { value: mockedClearTimeout, writable: false },
     ClipboardItem: { value: MockClipboardItem },
     console: { value: mockConsole, writable: false },
+    crypto: { value: mockCrypto, writable: false },
     Date: { value: MockDate, writable: false },
     fetch: { value: interactor("server", mockedFetch).as("fetch"), writable: false },
     history: { value: mockHistory },
     innerHeight: { get: () => getCurrentDimensions().height },
     innerWidth: { get: () => getCurrentDimensions().width },
+    isSecureContext: { value: true, writable: false },
     Intl: { value: MockIntl },
     localStorage: { value: mockLocalStorage, writable: false },
     matchMedia: { value: mockedMatchMedia },

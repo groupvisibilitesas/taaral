@@ -3,11 +3,12 @@ import logging
 from base64 import b64encode
 from datetime import timedelta
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models, _
 from odoo.tools import str2bool
 
 from odoo.addons.account.models.company import PEPPOL_DEFAULT_COUNTRIES, PEPPOL_LIST
 from odoo.addons.account_edi_proxy_client.models.account_edi_proxy_user import AccountEdiProxyError
+from odoo.addons.account_peppol.exceptions import get_peppol_error_message
 
 _logger = logging.getLogger(__name__)
 
@@ -16,18 +17,24 @@ class AccountMoveSend(models.AbstractModel):
     _inherit = 'account.move.send'
 
     @api.model
-    def _get_default_sending_method(self, move) -> str:
+    def _get_default_sending_methods(self, move) -> set:
+        """ By default, we use the sending method set on the partner or email and peppol. """
         # EXTENDS 'account'
-        preferred_method = move.commercial_partner_id.with_company(move.company_id).invoice_sending_method
-        company_registered_on_peppol = move.company_id.account_peppol_proxy_state not in ('not_registered', 'in_verification')
+        default_sending_methods = super()._get_default_sending_methods(move)
         if (
-            company_registered_on_peppol
-            and not preferred_method
-            and self._is_applicable_to_move('peppol', move)
+            self._is_applicable_to_move('peppol', move)
             and any(country in PEPPOL_DEFAULT_COUNTRIES for country in move.commercial_partner_id.mapped('country_id.code'))
         ):
-            return 'peppol'
-        return super()._get_default_sending_method(move)
+            default_sending_methods.add('peppol')
+        return default_sending_methods
+
+    @api.model
+    def _generate_and_send_invoices(self, moves, from_cron=False, allow_raising=True, allow_fallback_pdf=False, **custom_settings):
+        for partner, company in moves.grouped(lambda m: (m.commercial_partner_id, m.company_id)):
+            if partner.with_company(company).peppol_verification_state != 'valid' and self._is_applicable_to_company('peppol', company):
+                partner.button_account_peppol_check_partner_endpoint(company=company)
+
+        return super()._generate_and_send_invoices(moves, from_cron, allow_raising, allow_fallback_pdf, **custom_settings)
 
     # -------------------------------------------------------------------------
     # ALERTS
@@ -82,11 +89,9 @@ class AccountMoveSend(models.AbstractModel):
             return moves.partner_id.commercial_partner_id
 
         def filter_peppol_state(moves, states):
-            return peppol_partner(moves.filtered(
-                lambda m: self.env['res.partner'].with_company(m.company_id)._get_peppol_verification_state(
-                    peppol_partner(m).peppol_endpoint,
-                    peppol_partner(m).peppol_eas,
-                    moves_data[m]['invoice_edi_format']) in states))
+            return peppol_partner(
+                moves.filtered(lambda m: peppol_partner(m).with_company(m.company_id).peppol_verification_state in states)
+            )
 
         alerts = super()._get_alerts(moves, moves_data)
         # Check for invalid peppol partners.
@@ -100,25 +105,28 @@ class AccountMoveSend(models.AbstractModel):
             }
         not_peppol_moves = moves.filtered(lambda m: 'peppol' not in moves_data[m]['sending_methods'])
         info_always_on_countries = {'BE', 'FI', 'LU', 'LV', 'NL', 'NO', 'SE', 'FR'}
-        can_send = self.env['account_edi_proxy_client.user']._get_can_send_domain()
         moves_not_sent_peppol = moves.filtered(lambda m: not m.peppol_is_sent)
         any_moves_not_sent_peppol = bool(moves_not_sent_peppol)
         what_is_peppol_alert = self._get_peppol_what_is_peppol_alert(moves, moves_data, moves_not_sent_peppol)
         always_on_companies = moves.company_id.filtered(
-            lambda c: c.country_code in info_always_on_countries and c.account_peppol_proxy_state not in can_send
+            lambda c: c.country_code in info_always_on_countries and not c.peppol_can_send
         )
-        if always_on_companies and any_moves_not_sent_peppol and not filter_peppol_state(moves, ['not_valid', 'not_verified']):
+        if all((
+            always_on_companies,
+            any_moves_not_sent_peppol,
+            not filter_peppol_state(moves, ['not_valid', 'not_verified']),
+        )):
             alerts.pop('account_edi_ubl_cii_configure_company', False)
             alerts['account_peppol_what_is_peppol'] = {
                 'message': self._get_peppol_what_is_peppol_message(always_on_companies, moves, moves_not_sent_peppol),
                 **what_is_peppol_alert,
             }
-        elif (
-            (peppol_not_selected_partners := filter_peppol_state(not_peppol_moves, ['valid']))
-            and any_moves_not_sent_peppol
-            and any(code in PEPPOL_DEFAULT_COUNTRIES for code in peppol_partner(moves).mapped('country_id.code'))
-            and len(peppol_not_selected_partners) == 1  # Check for not peppol partners that are on the network
-        ):
+        elif all((
+            (peppol_not_selected_partners := filter_peppol_state(not_peppol_moves, ['valid'])),
+            any_moves_not_sent_peppol,
+            any(code in PEPPOL_DEFAULT_COUNTRIES for code in peppol_partner(moves).mapped('country_id.code')),
+            len(peppol_not_selected_partners) == 1,  # Check for not peppol partners that are on the network
+        )):
             alerts['account_peppol_partner_want_peppol'] = {
                 'message': self._get_peppol_partner_want_peppol_message(peppol_not_selected_partners, moves_not_sent_peppol),
                 **what_is_peppol_alert,
@@ -179,24 +187,18 @@ class AccountMoveSend(models.AbstractModel):
     def _get_default_invoice_edi_format(self, move, **kwargs) -> str:
         # EXTENDS 'account' - default on bis3 if Peppol is set but no format on the partner
         invoice_edi_format = super()._get_default_invoice_edi_format(move, **kwargs)
-        if 'peppol' in kwargs.get('sending_methods', {}):
+        if 'peppol' in kwargs.get('sending_methods', []):
             return move.partner_id.with_company(move.company_id)._get_peppol_edi_format()
         return invoice_edi_format
 
     def _get_mail_layout(self):
-        # EXTENDS 'account'
-        # TODO remove the fallback in master
-        if self.env.ref('account_peppol.mail_notification_layout_with_responsible_signature_and_peppol',
-                        raise_if_not_found=False):
-            return 'account_peppol.mail_notification_layout_with_responsible_signature_and_peppol'
-        return super()._get_mail_layout()
+        # OVERRIDE 'account'
+        return 'account_peppol.mail_notification_layout_with_responsible_signature_and_peppol'
 
     def _do_peppol_pre_send(self, moves):
         if len(moves.company_id) == 1:
-            can_send = self.env['account_edi_proxy_client.user']._get_can_send_domain()
-            if moves.company_id.account_peppol_proxy_state not in can_send:
-                registration_wizard = self.env['peppol.registration'].create({'company_id': moves.company_id.id})
-                return registration_wizard._action_open_peppol_form(reopen=False)
+            if not moves.company_id.peppol_can_send:
+                return self.env['peppol.registration'].with_context(default_company_id=moves.company_id.id)._action_open_peppol_form(reopen=False)
 
         for move in moves:
             if move.peppol_move_state in ('ready', False):
@@ -205,7 +207,7 @@ class AccountMoveSend(models.AbstractModel):
     def _is_applicable_to_company(self, method, company):
         # EXTENDS 'account'
         if method == 'peppol':
-            return company.country_code in PEPPOL_LIST and company.account_peppol_proxy_state != 'rejected'
+            return company.country_code in PEPPOL_LIST and company.account_peppol_proxy_state not in ('not_registered', 'in_verification', 'rejected')
         else:
             return super()._is_applicable_to_company(method, company)
 
@@ -214,8 +216,8 @@ class AccountMoveSend(models.AbstractModel):
         if method == 'peppol':
             partner = move.partner_id.commercial_partner_id.with_company(move.company_id)
             invoice_edi_format = move_data.get('invoice_edi_format') or partner._get_peppol_edi_format()
-
-            partner.button_account_peppol_check_partner_endpoint(company=move.company_id)
+            if partner.peppol_verification_state == 'not_verified':
+                partner.button_account_peppol_check_partner_endpoint(company=move.company_id)
             if partner.peppol_verification_state != 'valid' and partner.peppol_endpoint and partner.peppol_eas in ('0208', '9925'):
                 # only for BE participants
                 inverse_eas = '9925' if partner.peppol_eas == '0208' else '0208'
@@ -230,13 +232,13 @@ class AccountMoveSend(models.AbstractModel):
                     })
                     partner.button_account_peppol_check_partner_endpoint(company=move.company_id)
 
-            result = all([
+            return all([
+                partner.country_code in PEPPOL_LIST,
                 self._is_applicable_to_company(method, move.company_id),
                 partner.peppol_verification_state == 'valid',
                 move.company_id.account_peppol_proxy_state != 'rejected',
                 move._need_ubl_cii_xml(invoice_edi_format) or move.ubl_cii_xml_id and not move.peppol_is_sent,
             ])
-            return result
         else:
             return super()._is_applicable_to_move(method, move, **move_data)
 
@@ -262,27 +264,7 @@ class AccountMoveSend(models.AbstractModel):
         to_lock_peppol_invoices = self.env['account.move']
         for invoice, invoice_data in invoices_data.items():
             partner = invoice.partner_id.commercial_partner_id.with_company(invoice.company_id)
-            if 'peppol' in invoice_data['sending_methods']:
-                if not partner.peppol_eas or not partner.peppol_endpoint:
-                    invoice.peppol_move_state = 'error'
-                    invoice_data['error'] = _('The partner is missing Peppol EAS and/or Endpoint identifier.')
-                    continue
-
-                if (
-                    peppol_verification_state := self.env['res.partner']
-                        .with_context(check_self_billing_support=invoice._is_exportable_as_self_invoice())
-                        .with_company(invoice.company_id)
-                        ._get_peppol_verification_state(partner.peppol_endpoint, partner.peppol_eas, invoice_data['invoice_edi_format'])
-                 ) != 'valid':
-                    invoice.peppol_move_state = 'error'
-                    if peppol_verification_state == 'not_valid_format':
-                        invoice_data['error'] = _('The partner has indicated it does not accept this document type, so you cannot send this invoice via Peppol.')
-                    else:
-                        invoice_data['error'] = _('Please verify partner configuration in partner settings.')
-                    continue
-
-                if not self._is_applicable_to_move('peppol', invoice, **invoice_data):
-                    continue
+            if 'peppol' in invoice_data['sending_methods'] and self._is_applicable_to_move('peppol', invoice, **invoice_data):
 
                 edi_user, document = self._get_peppol_document_params(partner, invoice, invoice_data)
                 if not edi_user or not document:
@@ -307,7 +289,7 @@ class AccountMoveSend(models.AbstractModel):
             self._send_peppol_documents(invoices_data_peppol, edi_user, params)
 
         if self._can_commit():
-            self._cr.commit()
+            self.env.cr.commit()
 
     def _send_peppol_documents(self, invoices_data_peppol, edi_user, params):
         try:
@@ -318,13 +300,15 @@ class AccountMoveSend(models.AbstractModel):
         except AccountEdiProxyError as e:
             for invoice, invoice_data in invoices_data_peppol.items():
                 invoice.peppol_move_state = 'error'
-                invoice_data['error'] = e.message
+                invoice_data['error'] = {'error_title': e.message}
         else:
-            if response.get('error'):
+            if error_vals := response.get('error'):
                 # at the moment the only error that can happen here is ParticipantNotReady error
                 for invoice, invoice_data in invoices_data_peppol.items():
                     invoice.peppol_move_state = 'error'
-                    invoice_data['error'] = response['error']['message']
+                    invoice_data['error'] = {
+                        'error_title': get_peppol_error_message(self.env, error_vals),
+                    }
             else:
                 # the response only contains message uuids,
                 # so we have to rely on the order to connect peppol messages to account.move
@@ -351,12 +335,14 @@ class AccountMoveSend(models.AbstractModel):
                         for attachment in attachments_linked
                     ] + base_attachments
 
-                    new_message = invoice.with_context(no_new_invoice=True, no_document=True).message_post(
+                    new_message = invoice.with_context(no_document=True).message_post(
                         body=attachments_linked_message,
                         attachments=attachments_embedded
                     )
 
                     if new_message.attachment_ids.ids:
+                        if invoice.message_main_attachment_id in new_message.attachment_ids:
+                            invoice.message_main_attachment_id = None
                         self.env.cr.execute("UPDATE ir_attachment SET res_id = NULL WHERE id IN %s", [tuple(new_message.attachment_ids.ids)])
                         new_message.attachment_ids.invalidate_recordset(['res_id', 'res_model'], flush=False)
                         new_message.attachment_ids.write({
@@ -370,14 +356,26 @@ class AccountMoveSend(models.AbstractModel):
 
     def action_what_is_peppol_activate(self, moves):
         companies = moves.company_id
-        can_send = self.env['account_edi_proxy_client.user']._get_can_send_domain()
-        if len(companies) == 1 and companies.account_peppol_proxy_state not in can_send:
+        if len(companies) == 1 and not companies.peppol_can_send:
             action = self.env['peppol.registration']._action_open_peppol_form()
-            action['context'].update({
-                'active_model': 'account.move',
+            action['context'] = {
+                'active_model': "account.move",
                 'active_ids': moves.ids,
                 'dialog_size': 'medium',
-            })
+                **action['context'],
+            }
             return action
         else:
-            return moves.action_send_and_print()
+            # go back to previous (send and print) action
+            # to avoid doing participant SML lookup again, we don't go through action_send_and_print
+            return {
+                'name': _("Send"),
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'res_model': 'account.move.send.wizard' if len(moves) == 1 else 'account.move.send.batch.wizard',
+                'target': 'new',
+                'context': {
+                    'active_model': 'account.move',
+                    'active_ids': moves.ids
+                },
+            }

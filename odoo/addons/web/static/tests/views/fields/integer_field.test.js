@@ -155,6 +155,18 @@ test("with 'step' option", async () => {
     expect(".o_field_widget input").toHaveAttribute("step", "3");
 });
 
+test("with 'min'/'max' option", async () => {
+    Product._records = [{ id: 1, price: 10 }];
+    await mountView({
+        type: "form",
+        resModel: "product",
+        resId: 1,
+        arch: `<form><field name="price" options="{'type': 'number', 'min': 3, 'max': 10}"/></form>`,
+    });
+    expect(".o_field_widget input").toHaveAttribute("min", "3");
+    expect(".o_field_widget input").toHaveAttribute("max", "10");
+});
+
 test("without input type option", async () => {
     // `localization > grouping` required for this test is [3, 0], which is the default in mock server
     Product._records = [{ id: 1, price: 10 }];
@@ -201,15 +213,6 @@ test("basic flow in editable list view", async () => {
     expect('.o_field_widget[name="price"] input').toHaveValue("10");
     await contains(getFixture()).click();
     expect(queryAllTexts("td.o_data_cell")).toEqual(["-28", "10"]);
-});
-
-test("with placeholder", async () => {
-    await mountView({
-        type: "form",
-        resModel: "product",
-        arch: `<form><field name="price" placeholder="Placeholder"/></form>`,
-    });
-    expect(".o_field_widget input").toHaveAttribute("placeholder", "Placeholder");
 });
 
 test("with enable_formatting option as false", async () => {

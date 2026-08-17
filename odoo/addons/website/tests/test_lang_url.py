@@ -4,8 +4,7 @@ import json
 import lxml.html
 from urllib.parse import urlparse
 
-import odoo
-from odoo.addons.website.tools import MockRequest
+from odoo.addons.http_routing.tests.common import MockRequest
 from odoo.tests import HttpCase, tagged
 
 
@@ -49,8 +48,8 @@ class TestLangUrl(TestLangUrlCommon):
 
     def test_04_url_cook_lang_not_available(self):
         """ `nearest_lang` should filter out lang not available in frontend.
-        Eg: 1. go in backend in english -> request.context['lang'] = `en_US`
-            2. go in frontend, the request.context['lang'] is passed through
+        Eg: 1. go in backend in english -> request.env.context['lang'] = `en_US`
+            2. go in frontend, the request.env.context['lang'] is passed through
                `nearest_lang` which should not return english. More then a
                misbehavior it will crash in website language selector template.
         """
@@ -65,10 +64,6 @@ class TestLangUrl(TestLangUrlCommon):
                 session_info = json.loads(session_info_str[:-1])
                 self.assertEqual(session_info['user_context']['lang'], 'en_US', "ensure english was loaded")
                 self.assertEqual(session_info['bundle_params']['lang'], 'en_US', "ensure bundle use english")
-                with MockRequest(self.env) as req:
-                    backend_modules = list(req.registry._init_modules) + (odoo.conf.server_wide_modules or [])
-                en_hash = self.env['ir.http'].get_web_translations_hash(modules=backend_modules, lang='en_US')
-                self.assertEqual(session_info['cache_hashes']['translations'], en_hash)
                 break
         else:
             raise ValueError('Session info not found in web page')
@@ -91,10 +86,6 @@ class TestLangUrl(TestLangUrlCommon):
             if match:
                 session_info = json.loads(session_info_str[:-1])
                 self.assertEqual(session_info['bundle_params']['lang'], 'fr_FR', "ensure bundle use french")
-                with MockRequest(self.env):
-                    frontend_modules = self.env['ir.http'].get_translation_frontend_modules()
-                fr_hash = self.env['ir.http'].get_web_translations_hash(modules=frontend_modules, lang='fr_FR')
-                self.assertEqual(session_info['cache_hashes']['translations'], fr_hash)
                 break
         else:
             raise ValueError('Session info not found in web page')
@@ -153,7 +144,7 @@ class TestControllerRedirect(TestLangUrlCommon):
             if not msg:
                 msg = 'Url <%s> differ from <%s>.' % (url, expected_url)
 
-            r = self.url_open(url, head=True)
+            r = self.url_open(url, method='HEAD', allow_redirects=False)
             self.assertEqual(r.status_code, code)
             parsed_location = urlparse(r.headers.get('Location', ''))
             parsed_expected_url = urlparse(expected_url)

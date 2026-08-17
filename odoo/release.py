@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 RELEASE_LEVELS = [ALPHA, BETA, RELEASE_CANDIDATE, FINAL] = ['alpha', 'beta', 'candidate', 'final']
-RELEASE_LEVELS_DISPLAY = {ALPHA: ALPHA,
-                          BETA: BETA,
+RELEASE_LEVELS_DISPLAY = {ALPHA: 'a',
+                          BETA: 'b',
                           RELEASE_CANDIDATE: 'rc',
                           FINAL: ''}
 
@@ -12,9 +11,10 @@ RELEASE_LEVELS_DISPLAY = {ALPHA: ALPHA,
 # properly comparable using normal operators, for example:
 #  (6,1,0,'beta',0) < (6,1,0,'candidate',1) < (6,1,0,'candidate',2)
 #  (6,1,0,'candidate',2) < (6,1,0,'final',0) < (6,1,2,'final',0)
-version_info = (18, 0, 0, FINAL, 0, '')
-version = '.'.join(str(s) for s in version_info[:2]) + RELEASE_LEVELS_DISPLAY[version_info[3]] + str(version_info[4] or '') + version_info[5]
+# NOTE: during release, the MAJOR version can become an arbitrary string ('saas~xx')
+version_info = (19, 0, 0, FINAL, 0, '')
 series = serie = major_version = '.'.join(str(s) for s in version_info[:2])
+version = series + RELEASE_LEVELS_DISPLAY[version_info[3]] + str(version_info[4] or '') + version_info[5]
 
 product_name = 'Odoo'
 description = 'Odoo Server'
@@ -36,6 +36,10 @@ license = 'LGPL-3'
 
 nt_service_name = "odoo-server-" + series.replace('~','-')
 
-version += '-20260812'
+MIN_PY_VERSION = (3, 10)
+MAX_PY_VERSION = (3, 14)
+MIN_PG_VERSION = 13
 
-repos_heads = {'odoo': '263b39fca0d50333aad4312cdaa1e7e04c657ab0', 'enterprise': 'df4a091a20b9874047aefbcd1678a2634b16980f', 'design-themes': '52dbcf1c4f539dc015db4efa00f652e256d58328'}
+version += '-20260813'
+
+repos_heads = {'odoo': 'b7a675ccfce68c9557f1920a08e2c9e03d4a8b22', 'enterprise': '1d49c3731ece1549a7a168bb479773ea279322bd', 'design-themes': '5eeff9c446bc74ce463a61ca1f3387af4f257bd5'}

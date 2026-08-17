@@ -34,7 +34,7 @@ class TestTRNilveraEreceiptUpload(TestStockCommon):
     def test_ereceipt_xml_without_errors_upload(self):
         with file_open('l10n_tr_nilvera_edispatch/tests/test_files/test_ereceipt.xml', 'rb') as f:
             ereceipt_xml = self.env['ir.attachment'].create({
-                'name': 'E-Receipt Without Errors',
+                'name': 'test_ereceipt_upload.xml',
                 'type': 'binary',
                 'datas': base64.b64encode(f.read()),
             })
@@ -56,12 +56,12 @@ class TestTRNilveraEreceiptUpload(TestStockCommon):
             }],
         )
         self.assertRecordValues(
-            picking.move_ids_without_package,
+            picking.move_ids,
             [
                 {
                     'product_uom_qty': quantity,
                     'product_uom': uom,
-                    'location_id': self.supplier_location,
+                    'location_id': self.supplier_location.id,
                     'location_dest_id': warehouse_id.lot_stock_id.id,
                 }
                 for quantity, uom in [(1.0, self.uom_unit), (3.0, self.uom_kgm), (4.0, self.uom_grm)]
@@ -90,7 +90,7 @@ class TestTRNilveraEreceiptUpload(TestStockCommon):
             [
                 {'name': 'Test Driver', 'country_id': self.tr_country_id, 'vat': '11234570890'},
                 {'name': 'Test Driver2', 'country_id': self.tr_country_id, 'vat': '22345670891'},
-            ]
+            ],
         )
         self.assertRecordValues(
             picking.l10n_tr_nilvera_trailer_plate_ids,

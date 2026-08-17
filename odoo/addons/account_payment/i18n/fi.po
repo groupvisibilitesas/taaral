@@ -3,37 +3,36 @@
 # * account_payment
 #
 # Translators:
-# Atte Isopuro <atte.isopuro@web-veistamo.fi>, 2024
-# Veikko Väätäjä <veikko.vaataja@gmail.com>, 2024
-# Eino Mäkitalo <eino.makitalo@netitbe.fi>, 2024
-# Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2024
-# Kari Lindgren <kari.lindgren@emsystems.fi>, 2024
-# Tommi Rintala <tommi.rintala@gmail.com>, 2024
-# Mikko Salmela <salmemik@gmail.com>, 2024
-# Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2024
-# Martin Trigaux, 2024
-# Antti Oksman <antti.oksman@web-veistamo.fi>, 2024
-# Miika Nissi <miika.nissi@tawasta.fi>, 2024
-# Svante Suominen <svante.suominen@web-veistamo.fi>, 2024
-# Tuomas Lyyra <tuomas.lyyra@legenda.fi>, 2024
-# Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2024
-# Jessica Jakara, 2025
-# Saara Hakanen <sahak@odoo.com>, 2026.
+# Veikko Väätäjä <veikko.vaataja@gmail.com>, 2022
+# Svante Suominen <svante.suominen@web-veistamo.fi>, 2022
+# Antti Oksman <antti.oksman@web-veistamo.fi>, 2022
+# Tommi Rintala <tommi.rintala@gmail.com>, 2022
+# Eino Mäkitalo <eino.makitalo@netitbe.fi>, 2022
+# Miika Nissi <miika.nissi@tawasta.fi>, 2022
+# Martin Trigaux, 2022
+# Tuomas Lyyra <tuomas.lyyra@legenda.fi>, 2022
+# Kari Lindgren <kari.lindgren@emsystems.fi>, 2022
+# Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2022
+# Mikko Salmela <salmemik@gmail.com>, 2022
+# Tuomo Aura <tuomo.aura@web-veistamo.fi>, 2022
+# Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2023
+# "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
+# Saara Hakanen <sahak@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-01-29 17:39+0000\n"
+"POT-Creation-Date: 2026-05-29 17:36+0000\n"
+"PO-Revision-Date: 2026-08-02 18:02+0000\n"
 "Last-Translator: Saara Hakanen <sahak@odoo.com>\n"
-"Language-Team: Finnish <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Finnish <https://translate.odoo.com/projects/odoo-19/"
 "account_payment/fi/>\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.14.3\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: account_payment
 #. odoo-python
@@ -42,12 +41,12 @@ msgid ""
 "#%(number)s - Installment of <strong>%(amount)s</strong> due on <strong "
 "class=\"text-primary\">%(date)s</strong>"
 msgstr ""
-"#%(number)s - Maksuerän <strong>%(amount)s</strong> eräpäivä <strong class"
-"=\"text-primary\">%(date)s</strong>"
+"#%(number)s - Maksuerän <strong>%(amount)s</strong> eräpäivä <strong "
+"class=\"text-primary\">%(date)s</strong>"
 
 #. module: account_payment
 #. odoo-javascript
-#: code:addons/account_payment/static/src/js/portal_my_invoices_payment.js:0
+#: code:addons/account_payment/static/src/interactions/portal_my_invoices_payment_list.js:0
 msgid "%s day(s) overdue"
 msgstr "%s päivä(ä) myöhässä"
 
@@ -165,11 +164,6 @@ msgid "A token is required to create a new payment transaction."
 msgstr "Uuden maksutapahtuman luomiseen vaaditaan tunniste."
 
 #. module: account_payment
-#: model:onboarding.onboarding.step,button_text:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Activate Stripe"
-msgstr "Aktivoi Stripe"
-
-#. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_overdue_invoices_page
 msgid "Amount"
@@ -205,6 +199,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_payment.field_account_move__authorized_transaction_ids
 msgid "Authorized Transactions"
 msgstr "Valtuutetut tapahtumat"
+
+#. module: account_payment
+#: model:ir.model,name:account_payment.model_account_bank_statement_line
+msgid "Bank Statement Line"
+msgstr "Pankkitiliotteen rivi"
 
 #. module: account_payment
 #: model_terms:ir.ui.view,arch_db:account_payment.account_invoice_view_form_inherit_payment
@@ -244,7 +243,18 @@ msgid "Discount Date"
 msgstr "Alennuspäivä"
 
 #. module: account_payment
+#: model:ir.model.fields,field_description:account_payment.field_account_bank_statement_line__display_name
+#: model:ir.model.fields,field_description:account_payment.field_account_journal__display_name
+#: model:ir.model.fields,field_description:account_payment.field_account_move__display_name
+#: model:ir.model.fields,field_description:account_payment.field_account_payment__display_name
+#: model:ir.model.fields,field_description:account_payment.field_account_payment_method__display_name
+#: model:ir.model.fields,field_description:account_payment.field_account_payment_method_line__display_name
+#: model:ir.model.fields,field_description:account_payment.field_account_payment_register__display_name
+#: model:ir.model.fields,field_description:account_payment.field_payment_link_wizard__display_name
+#: model:ir.model.fields,field_description:account_payment.field_payment_provider__display_name
 #: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard__display_name
+#: model:ir.model.fields,field_description:account_payment.field_payment_transaction__display_name
+#: model:ir.model.fields,field_description:account_payment.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr "Näyttönimi"
 
@@ -269,11 +279,6 @@ msgstr "Tietoa ennakkomaksualennuksesta"
 #: model_terms:ir.ui.view,arch_db:account_payment.portal_invoice_payment
 msgid "Early Payment Discount of"
 msgstr "Ennakkomaksualennus"
-
-#. module: account_payment
-#: model:onboarding.onboarding.step,description:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Enable credit & debit card payments supported by Stripe."
-msgstr "Ota käyttöön Stripen tukemat luotto- ja pankkikorttimaksut."
 
 #. module: account_payment
 #: model:ir.model.fields.selection,name:account_payment.selection__payment_refund_wizard__support_refund__full_only
@@ -301,7 +306,18 @@ msgid "Has a pending refund"
 msgstr "Sisältää odottavan takaisinmaksun"
 
 #. module: account_payment
+#: model:ir.model.fields,field_description:account_payment.field_account_bank_statement_line__id
+#: model:ir.model.fields,field_description:account_payment.field_account_journal__id
+#: model:ir.model.fields,field_description:account_payment.field_account_move__id
+#: model:ir.model.fields,field_description:account_payment.field_account_payment__id
+#: model:ir.model.fields,field_description:account_payment.field_account_payment_method__id
+#: model:ir.model.fields,field_description:account_payment.field_account_payment_method_line__id
+#: model:ir.model.fields,field_description:account_payment.field_account_payment_register__id
+#: model:ir.model.fields,field_description:account_payment.field_payment_link_wizard__id
+#: model:ir.model.fields,field_description:account_payment.field_payment_provider__id
 #: model:ir.model.fields,field_description:account_payment.field_payment_refund_wizard__id
+#: model:ir.model.fields,field_description:account_payment.field_payment_transaction__id
+#: model:ir.model.fields,field_description:account_payment.field_res_config_settings__id
 msgid "ID"
 msgstr "Tunnus"
 
@@ -404,21 +420,6 @@ msgstr ""
 "Huomaa, että sellaisten palveluntarjoajien tunnisteet, jotka on määritetty "
 "ainaoastaan valtuuttamaan tapahtumia (summan tallentamisen sijaan), eivät "
 "ole käytettävissä."
-
-#. module: account_payment
-#: model:onboarding.onboarding.step,step_image_alt:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Onboarding Online Payments"
-msgstr "Verkkomaksujen käyttöönotto"
-
-#. module: account_payment
-#: model:ir.model,name:account_payment.model_onboarding_onboarding_step
-msgid "Onboarding Step"
-msgstr "Perehdytyksen askel"
-
-#. module: account_payment
-#: model:onboarding.onboarding.step,title:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Online Payments"
-msgstr "Verkkomaksut"
 
 #. module: account_payment
 #. odoo-python
@@ -616,11 +617,6 @@ msgid "State"
 msgstr "Tila"
 
 #. module: account_payment
-#: model:onboarding.onboarding.step,done_text:account_payment.onboarding_onboarding_step_payment_provider
-msgid "Step Completed!"
-msgstr "Vaihe valmis!"
-
-#. module: account_payment
 #: model:ir.model.fields,field_description:account_payment.field_account_payment__suitable_payment_token_ids
 #: model:ir.model.fields,field_description:account_payment.field_account_payment_register__suitable_payment_token_ids
 msgid "Suitable Payment Token"
@@ -649,11 +645,8 @@ msgstr "Päiväkirja, johon onnistuneet tapahtumat kirjataan."
 #. module: account_payment
 #. odoo-python
 #: code:addons/account_payment/models/payment_transaction.py:0
-msgid ""
-"The payment related to the transaction with reference %(ref)s has been "
-"posted: %(link)s"
-msgstr ""
-"Viitteellä %(ref)s olevaan tapahtumaan liittyvä maksu on kirjattu: %(link)s"
+msgid "The payment related to transaction %(ref)s has been posted: %(link)s"
+msgstr "Tapahtumaan %(ref)s liittyvä maksu on kirjattu: %(link)s"
 
 #. module: account_payment
 #. odoo-python
@@ -789,13 +782,13 @@ msgstr ""
 
 #. module: account_payment
 #. odoo-javascript
-#: code:addons/account_payment/static/src/js/portal_my_invoices_payment.js:0
+#: code:addons/account_payment/static/src/interactions/portal_my_invoices_payment_list.js:0
 msgid "due in %s day(s)"
 msgstr "erääntyy %s päivän kuluttua"
 
 #. module: account_payment
 #. odoo-javascript
-#: code:addons/account_payment/static/src/js/portal_my_invoices_payment.js:0
+#: code:addons/account_payment/static/src/interactions/portal_my_invoices_payment_list.js:0
 msgid "due today"
 msgstr "erääntyy tänään"
 
@@ -811,3 +804,37 @@ msgstr "myöhässä"
 
 #~ msgid "Code"
 #~ msgstr "Koodi"
+
+#~ msgid ""
+#~ "<strong>No suitable payment option could be found.</strong><br/>\n"
+#~ "                                If you believe that it is an error, "
+#~ "please contact the website administrator."
+#~ msgstr ""
+#~ "<strong>Sopivaa maksuvaihtoehtoa ei löytynyt.</strong><br/>\n"
+#~ "                                Jos uskot, että kyseessä on virhe, ota "
+#~ "yhteyttä sivuston ylläpitäjään. "
+
+#~ msgid "Pay with"
+#~ msgstr "Maksutapa"
+
+#~ msgid "Register Payment"
+#~ msgstr "Kirjaa maksu"
+
+#~ msgid ""
+#~ "The payment related to the transaction with reference %(ref)s has been "
+#~ "posted: %(link)s"
+#~ msgstr ""
+#~ "Viitteellä %(ref)s olevaan tapahtumaan liittyvä maksu on kirjattu: %"
+#~ "(link)s"
+
+#~ msgid "Type of Refund Supported"
+#~ msgstr "Tuettu maksupalautustyyppi"
+
+#~ msgid ""
+#~ "You can't delete a payment method that is linked to a provider in the "
+#~ "enabled or test state.\n"
+#~ "Linked provider(s): %s"
+#~ msgstr ""
+#~ "Et voi poistaa maksutapaa, joka on linkitetty palveluntarjoajaan, joka on "
+#~ "käytössä tai testitilassa.\n"
+#~ "Linkitetyt palveluntarjoajat: %s"

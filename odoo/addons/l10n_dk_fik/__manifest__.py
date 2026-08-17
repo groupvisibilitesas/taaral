@@ -13,5 +13,6 @@ Support Danish FIK number as payment references on customer invoices.
         "views/account_journal_view.xml",
     ],
     "auto_install": True,
+    "author": "Odoo S.A.",
     "license": "LGPL-3",
 }

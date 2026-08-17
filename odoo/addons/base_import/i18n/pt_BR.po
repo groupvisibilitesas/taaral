@@ -3,26 +3,27 @@
 # * base_import
 #
 # Translators:
-# Wil Odoo, 2024
-# Maitê Dietze, 2024
+# Martin Trigaux, 2022
+# Layna Nascimento, 2023
 #
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# "Maitê Dietze (madi)" <madi@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2025-12-31 08:42+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Portuguese (Brazil) <https://translate.odoo.com/projects/"
-"odoo-18/base_import/pt_BR/>\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-02 19:26+0000\n"
+"Last-Translator: \"Maitê Dietze (madi)\" <madi@odoo.com>\n"
+"Language-Team: Portuguese (Brazil) <https://translate.odoo.com/projects/odoo-"
+"19/base_import/pt_BR/>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : ((n != 0 && n % "
 "1000000 == 0) ? 1 : 2);\n"
-"X-Generator: Weblate 5.14.3\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: base_import
 #. odoo-javascript
@@ -149,8 +150,8 @@ msgstr "Cancelar"
 #: code:addons/base_import/static/src/import_model.js:0
 msgid "Click 'Resume' to proceed with the import, resuming at line %s."
 msgstr ""
-"Clique em 'Retomar' para prosseguir com a importação, retomando a partir da "
-"linha %s."
+"Clique em 'Retomar' para continuar a importação, retomando a partir da linha "
+"%s."
 
 #. module: base_import
 #. odoo-python
@@ -191,8 +192,8 @@ msgstr "Comentários"
 msgid ""
 "Could not retrieve URL: %(url)s [%(field_name)s: L%(line_number)d]: %(error)s"
 msgstr ""
-"Não foi possível recuperar a URL: %(url)s [%(field_name)s: L%"
-"(line_number)d]: %(error)s"
+"Não foi possível recuperar a URL: %(url)s [%(field_name)s: L%(line_number)"
+"d]: %(error)s"
 
 #. module: base_import
 #. odoo-javascript
@@ -258,6 +259,7 @@ msgstr "Atraso após cada lote"
 #. module: base_import
 #: model:ir.model.fields,field_description:base_import.field_base_import_import__display_name
 #: model:ir.model.fields,field_description:base_import.field_base_import_mapping__display_name
+#: model:ir.model.fields,field_description:base_import.field_res_users__display_name
 msgid "Display Name"
 msgstr "Nome exibido"
 
@@ -342,6 +344,12 @@ msgstr "Os arquivos do Excel são recomendados, pois a formatação é automáti
 #: code:addons/base_import/models/base_import.py:0
 msgid "External ID"
 msgstr "ID externo"
+
+#. module: base_import
+#. odoo-python
+#: code:addons/base_import/models/base_import.py:0
+msgid "Field '%(field)s' does not accept date/time values."
+msgstr "O campo \"%(field)s\" não aceita valores de data/hora."
 
 #. module: base_import
 #: model:ir.model.fields,field_description:base_import.field_base_import_mapping__field_name
@@ -435,6 +443,7 @@ msgstr "Aqui é o início do arquivo que não foi possível importar:"
 #. module: base_import
 #: model:ir.model.fields,field_description:base_import.field_base_import_import__id
 #: model:ir.model.fields,field_description:base_import.field_base_import_mapping__id
+#: model:ir.model.fields,field_description:base_import.field_res_users__id
 msgid "ID"
 msgstr "ID"
 
@@ -470,7 +479,7 @@ msgid ""
 "Image size excessive, imported images must be smaller than 42 million pixel"
 msgstr ""
 "O tamanho da imagem excede o limite. As imagens importadas devem ser menores "
-"que 42 milhões de pixels."
+"que 42 milhões de pixels"
 
 #. module: base_import
 #. odoo-javascript
@@ -511,6 +520,12 @@ msgstr "Importar registros"
 #. module: base_import
 #. odoo-javascript
 #: code:addons/base_import/static/src/import_action/import_action.js:0
+msgid "Imported records"
+msgstr "Registros importados"
+
+#. module: base_import
+#. odoo-javascript
+#: code:addons/base_import/static/src/import_action/import_action.js:0
 msgid "Importing"
 msgstr "Importação"
 
@@ -521,9 +536,9 @@ msgid ""
 "Invalid cell format at row %(row)s, column %(col)s: %(cell_value)s, with "
 "format: %(cell_format)s, as (%(format_type)s) formats are not supported."
 msgstr ""
-"Formato de célula inválido na linha %(row)s, colunas %(col)s: %"
-"(cell_value)s, com formatos: %(cell_format)s, pois formatos (%"
-"(format_type)s) não são suportados."
+"Formato de célula inválido na linha %(row)s, colunas %(col)s: %(cell_value)"
+"s, com formatos: %(cell_format)s, pois formatos (%(format_type)s) não são "
+"suportados."
 
 #. module: base_import
 #. odoo-python
@@ -666,7 +681,7 @@ msgstr "Modelo Res"
 #. odoo-javascript
 #: code:addons/base_import/static/src/import_action/import_action.xml:0
 msgid "Resume"
-msgstr "Continuar"
+msgstr "Retomar"
 
 #. module: base_import
 #. odoo-javascript
@@ -856,8 +871,8 @@ msgstr "Acompanhar histórico durante importação"
 msgid ""
 "Unable to load \"{extension}\" file: requires Python module \"{modname}\""
 msgstr ""
-"Não foi possível carregar  o arquivo \"{extension}\": o módulo Python "
-"\"{modname}\" é necessário"
+"Não foi possível carregar o arquivo \"{extension}\": o módulo Python \""
+"{modname}\" é necessário"
 
 #. module: base_import
 #. odoo-python
@@ -897,7 +912,7 @@ msgstr ""
 "Use HH para horas em um sistema de 24 horas, use II em conjunto com 'p' para "
 "um sistema de 12 horas (am/pm). É possível usar um formato personalizado "
 "além das sugestões fornecidas. Deixe em branco para que o Odoo adivinhe o "
-"formato (recomendado)."
+"formato (recomendado)"
 
 #. module: base_import
 #. odoo-javascript
@@ -911,7 +926,7 @@ msgstr ""
 "Use YYYY para representar o ano, MM para o mês e DD para o dia. Inclua "
 "separadores, como ponto, barra ou traço. Você pode usar um formato "
 "personalizado além das sugestões fornecidas. Deixe em branco para que o Odoo "
-"adivinhe o formato (recomendado)."
+"adivinhe o formato (recomendado)"
 
 #. module: base_import
 #. odoo-javascript
@@ -944,11 +959,11 @@ msgstr "Quando não for possível fazer a correspondência de um valor:"
 #. odoo-python
 #: code:addons/base_import/models/base_import.py:0
 msgid ""
-"You can not import images via URL, check with your administrator or support "
+"You can not import file via URL, check with your administrator or support "
 "for the reason."
 msgstr ""
-"Não é possível importar imagens via URL. Verifique com o administrador ou "
-"suporte para saber o motivo."
+"Não é possível importar arquivos via URL. Verifique o motivo com o "
+"administrador ou o suporte."
 
 #. module: base_import
 #. odoo-javascript
@@ -1011,3 +1026,32 @@ msgstr "segundos"
 #: code:addons/base_import/models/base_import.py:0
 msgid "unknown error code %s"
 msgstr "código de erro desconhecido %s"
+
+#~ msgid "Column %s contains incorrect values (value: %s)"
+#~ msgstr "A coluna %s contém valores incorretos (valor: %s)"
+
+#~ msgid "Column %s contains incorrect values. Error in line %d: %s"
+#~ msgstr "Coluna %s contém valores incorretos. Erro na linha %d: %s"
+
+#~ msgid "Error Parsing Date [%s:L%d]: %s"
+#~ msgstr "Erro de Análise de Data [%s:L%d]:%s"
+
+#~ msgid ""
+#~ "Import timed out. Please retry. If you still encounter this issue, the "
+#~ "file may be too big for the system's configuration, try to split it "
+#~ "(import less records per file)."
+#~ msgstr ""
+#~ "A importação teve o seu tempo esgotado. Por favor tente novamente. Se "
+#~ "você ainda encontrar esse problema, o arquivo pode ser muito grande para "
+#~ "a configuração do sistema, tente dividi-lo (importe menos registros por "
+#~ "arquivo)."
+
+#~ msgid "Load File"
+#~ msgstr "Carregar Arquivo"
+
+#~ msgid ""
+#~ "You can not import images via URL, check with your administrator or "
+#~ "support for the reason."
+#~ msgstr ""
+#~ "Você não pode importar imagens via URL, verifique com seu administrador "
+#~ "ou suporte o motivo"

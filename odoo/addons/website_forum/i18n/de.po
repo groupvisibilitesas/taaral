@@ -3,18 +3,20 @@
 # * website_forum
 #
 # Translators:
-# Wil Odoo, 2024
-# Larissa Manderfeld, 2024
-#
-# "Larissa Manderfeld (lman)" <lman@odoo.com>, 2026.
+# Friederike Fasterling-Nesselbosch, 2022
+# Martin Trigaux, 2022
+# Larissa Manderfeld, 2023
+# Stefan Reisich <nafex@gmx.net>, 2023
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# "Larissa Manderfeld (lman)" <lman@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:38+0000\n"
-"PO-Revision-Date: 2026-06-06 10:50+0000\n"
-"Last-Translator: \"Larissa Manderfeld (lman)\" <lman@odoo.com>\n"
-"Language-Team: German <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-02-20 18:37+0000\n"
+"PO-Revision-Date: 2026-08-02 17:38+0000\n"
+"Last-Translator: \"Dylan Kiss (dyki)\" <dyki@odoo.com>\n"
+"Language-Team: German <https://translate.odoo.com/projects/odoo-19/"
 "website_forum/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -25,13 +27,13 @@ msgstr ""
 
 #. module: website_forum
 #. odoo-javascript
-#: code:addons/website_forum/static/src/js/website_forum.js:0
+#: code:addons/website_forum/static/src/interactions/website_forum.js:0
 msgid " Flag"
 msgstr " Kennzeichnen"
 
 #. module: website_forum
 #. odoo-javascript
-#: code:addons/website_forum/static/src/js/website_forum.js:0
+#: code:addons/website_forum/static/src/interactions/website_forum.js:0
 msgid " Flagged"
 msgstr " Gekennzeichnet"
 
@@ -55,7 +57,23 @@ msgstr "# Beiträge"
 #: model:ir.model.fields,field_description:website_forum.field_forum_forum__total_views
 #: model_terms:ir.ui.view,arch_db:website_forum.forum_post_view_tree
 msgid "# Views"
-msgstr "# Ansichten"
+msgstr "Anzahl Ansichten"
+
+#. module: website_forum
+#. odoo-javascript
+#: code:addons/website_forum/static/src/interactions/website_forum.js:0
+msgid ""
+"%(link_start)sRead the guidelines to know how to gain karma.%(link_end)s"
+msgstr ""
+"%(link_start)sLesen Sie den Leitfaden, um zu erfahren, wie sie Karma-Punkte "
+"gewinnen.%(link_end)s"
+
+#. module: website_forum
+#. odoo-javascript
+#: code:addons/website_forum/static/src/interactions/website_forum.js:0
+msgid "%(score)s karma is required to perform this action."
+msgstr ""
+"%(score)s Karma-Punkte sind erforderlich, um diese Aktion durchzuführen."
 
 #. module: website_forum
 #. odoo-python
@@ -198,18 +216,6 @@ msgid "&amp;nbsp;"
 msgstr "&amp;nbsp;"
 
 #. module: website_forum
-#. odoo-javascript
-#: code:addons/website_forum/static/src/xml/website_forum_tags_wrapper.xml:0
-msgid "'Please enter 2 or more characters'"
-msgstr "„Bitte geben Sie 2 oder mehr Zeichen ein“"
-
-#. module: website_forum
-#. odoo-javascript
-#: code:addons/website_forum/static/src/xml/website_forum_tags_wrapper.xml:0
-msgid "'Tags'"
-msgstr "„Stichwörter“"
-
-#. module: website_forum
 #: model_terms:forum.forum,faq:website_forum.forum_help
 #: model_terms:ir.ui.view,arch_db:website_forum.default_faq
 msgid "(The above section was adapted from Stackoverflow’s FAQ.)"
@@ -241,6 +247,15 @@ msgid ""
 msgstr ""
 "65 % höhere Chance, eine Antwort\n"
 "        zu erhalten"
+
+#. module: website_forum
+#: model_terms:forum.forum,welcome_message:website_forum.forum_help
+msgid ""
+"<a class=\"btn btn-primary forum_register_url o_translate_inline\" href=\"/"
+"web/login\">Sign up</a>"
+msgstr ""
+"<a class=\"btn btn-primary forum_register_url o_translate_inline\" href=\"/"
+"web/login\">Registrieren</a>"
 
 #. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.post_display
@@ -304,10 +319,10 @@ msgid ""
 "to dilute the essence of questions and answers. For brief discussions please "
 "use commenting facility."
 msgstr ""
-"<b>Antworten sollen keine Diskussion beginnen.</b> Diese F&A der Community "
-"ist keine Diskussionsgruppe. Bitte vermeiden Sie Diskussionen in Ihren "
-"Antworten, denn sie machen Fragen und Antworten unübersichtlich. Nutzen Sie "
-"die Kommentierfunktion für kurze Diskussionen."
+"<b>Antworten sollen keine Diskussion beginnen.</b> Diese F&amp;A der "
+"Community ist keine Diskussionsgruppe. Bitte vermeiden Sie Diskussionen in "
+"Ihren Antworten, denn sie machen Fragen und Antworten unübersichtlich. "
+"Nutzen Sie die Kommentierfunktion für kurze Diskussionen."
 
 #. module: website_forum
 #: model_terms:forum.forum,faq:website_forum.forum_help
@@ -319,9 +334,9 @@ msgid ""
 "information."
 msgstr ""
 "<b>Antworten sollten nicht auf andere Fragen verweisen</b>. Stattdessen "
-"fügen Sie einen Kommentar hinzu mit dem Verweis „Mögliches Duplikat "
-"von ...“. Links zu anderen Fragen oder Antworten sind jedoch erlaubt, wenn "
-"sie wichtige zusätzliche Informationen enthalten."
+"fügen Sie einen Kommentar hinzu mit dem Verweis „Mögliches Duplikat von "
+"...“. Links zu anderen Fragen oder Antworten sind jedoch erlaubt, wenn sie "
+"wichtige zusätzliche Informationen enthalten."
 
 #. module: website_forum
 #: model_terms:forum.forum,faq:website_forum.forum_help
@@ -511,15 +526,6 @@ msgid "<i class=\"fa fa-comments-o me-1\" title=\"Forum\"/>"
 msgstr "<i class=\"fa fa-comments-o me-1\" title=\"Forum\"/>"
 
 #. module: website_forum
-#: model_terms:ir.ui.view,arch_db:website_forum.post_dropdown
-msgid ""
-"<i class=\"fa fa-ellipsis-h\" data-bs-toggle=\"tooltip\" data-bs-"
-"placement=\"top\" title=\"More\"/>"
-msgstr ""
-"<i class=\"fa fa-ellipsis-h\" data-bs-toggle=\"tooltip\" data-bs-"
-"placement=\"top\" title=\"More\"/>"
-
-#. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.forum_post_view_kanban
 msgid "<i class=\"fa fa-eye me-1\" title=\"Views\"/>"
 msgstr "<i class=\"fa fa-eye me-1\" title=\"Views\"/>"
@@ -662,9 +668,13 @@ msgstr ""
 "<i class=\"oi oi-arrow-right display-inline-block\"/> Zurück zur Fragenliste"
 
 #. module: website_forum
-#: model_terms:ir.ui.view,arch_db:website_forum.user_profile_sub_nav
-msgid "<i class=\"oi oi-chevron-left small\"/> Back"
-msgstr "<i class=\"oi oi-chevron-left small\"/> Zurück"
+#: model_terms:ir.ui.view,arch_db:website_forum.post_dropdown
+msgid ""
+"<i class=\"oi oi-ellipsis-h\" data-bs-toggle=\"tooltip\" data-bs-"
+"placement=\"top\" title=\"More\"/>"
+msgstr ""
+"<i class=\"oi oi-ellipsis-h\" data-bs-toggle=\"tooltip\" data-bs-"
+"placement=\"top\" title=\"Mehr\"/>"
 
 #. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.user_profile_content
@@ -864,7 +874,7 @@ msgstr "Eine Antwort akzeptieren"
 
 #. module: website_forum
 #. odoo-javascript
-#: code:addons/website_forum/static/src/js/website_forum.js:0
+#: code:addons/website_forum/static/src/interactions/website_forum.js:0
 msgid "Access Denied"
 msgstr "Zugriff verweigert"
 
@@ -873,7 +883,7 @@ msgstr "Zugriff verweigert"
 #: model:ir.model.fields,field_description:website_forum.field_forum_post__message_needaction
 #: model:ir.model.fields,field_description:website_forum.field_forum_tag__message_needaction
 msgid "Action Needed"
-msgstr "Aktion notwendig"
+msgstr "Aktion erforderlich"
 
 #. module: website_forum
 #: model:ir.model.fields,field_description:website_forum.field_forum_forum__active
@@ -1054,7 +1064,7 @@ msgstr "Archiviert"
 
 #. module: website_forum
 #. odoo-javascript
-#: code:addons/website_forum/static/src/js/website_forum.js:0
+#: code:addons/website_forum/static/src/interactions/website_forum.js:0
 msgid "Are you sure you want to delete this comment?"
 msgstr "Sind Sie sicher, dass Sie diesen Kommentar löschen möchten?"
 
@@ -1556,19 +1566,22 @@ msgid "Critic"
 msgstr "Kritik"
 
 #. module: website_forum
-#: model_terms:ir.ui.view,arch_db:website_forum.forum_searchbar_input_snippet_options
+#. odoo-javascript
+#: code:addons/website_forum/static/src/website_builder/forum_searchbar_option_plugin.js:0
 msgid "Date"
 msgstr "Datum"
 
 #. module: website_forum
-#: model_terms:ir.ui.view,arch_db:website_forum.forum_searchbar_input_snippet_options
-msgid "Date (high to low)"
-msgstr "Datum (absteigend)"
+#. odoo-javascript
+#: code:addons/website_forum/static/src/website_builder/forum_searchbar_option_plugin.js:0
+msgid "Date (new to old)"
+msgstr "Datum (neu zu alt)"
 
 #. module: website_forum
-#: model_terms:ir.ui.view,arch_db:website_forum.forum_searchbar_input_snippet_options
-msgid "Date (low to high)"
-msgstr "Datum (aufsteigend)"
+#. odoo-javascript
+#: code:addons/website_forum/static/src/website_builder/forum_searchbar_option_plugin.js:0
+msgid "Date (old to new)"
+msgstr "Datum (alt zu neu)"
 
 #. module: website_forum
 #: model:ir.model.fields,field_description:website_forum.field_forum_forum__default_order
@@ -1583,12 +1596,11 @@ msgstr "Standardsortierung"
 #. module: website_forum
 #: model:ir.model.fields,help:website_forum.field_gamification_challenge__challenge_category
 msgid "Define the visibility of the challenge through menus"
-msgstr ""
-"Legen Sie fest, in welchen Menüs die Herausforderung sichtbar sein soll"
+msgstr "Legen Sie fest, in welchen Menüs die Herausforderung sichtbar sein soll"
 
 #. module: website_forum
 #. odoo-javascript
-#: code:addons/website_forum/static/src/js/website_forum.js:0
+#: code:addons/website_forum/static/src/interactions/website_forum.js:0
 #: model_terms:ir.ui.view,arch_db:website_forum.moderation_queue
 #: model_terms:ir.ui.view,arch_db:website_forum.post_comment
 #: model_terms:ir.ui.view,arch_db:website_forum.post_dropdown
@@ -1637,9 +1649,10 @@ msgid "Deleted own post with 3 or more upvotes"
 msgstr "Eigenen Beitrag mit 3 oder mehr positiven Stimmen gelöscht"
 
 #. module: website_forum
+#. odoo-javascript
+#: code:addons/website_forum/static/src/website_builder/forum_searchbar_option_plugin.js:0
 #: model:ir.model.fields,field_description:website_forum.field_forum_forum__description
 #: model_terms:ir.ui.view,arch_db:website_forum.edit_post
-#: model_terms:ir.ui.view,arch_db:website_forum.forum_searchbar_input_snippet_options
 #: model_terms:ir.ui.view,arch_db:website_forum.new_question
 msgid "Description"
 msgstr "Beschreibung"
@@ -1688,6 +1701,11 @@ msgstr "Nachricht verwerfen"
 #: model:ir.model.fields,field_description:website_forum.field_forum_post_reason__display_name
 #: model:ir.model.fields,field_description:website_forum.field_forum_post_vote__display_name
 #: model:ir.model.fields,field_description:website_forum.field_forum_tag__display_name
+#: model:ir.model.fields,field_description:website_forum.field_gamification_challenge__display_name
+#: model:ir.model.fields,field_description:website_forum.field_gamification_karma_tracking__display_name
+#: model:ir.model.fields,field_description:website_forum.field_ir_attachment__display_name
+#: model:ir.model.fields,field_description:website_forum.field_res_users__display_name
+#: model:ir.model.fields,field_description:website_forum.field_website__display_name
 msgid "Display Name"
 msgstr "Anzeigename"
 
@@ -1955,6 +1973,7 @@ msgstr ""
 
 #. module: website_forum
 #. odoo-python
+#: code:addons/website_forum/controllers/website_forum.py:0
 #: code:addons/website_forum/models/website.py:0
 #: model:ir.actions.act_url,name:website_forum.action_open_forum
 #: model:ir.model,name:website_forum.model_forum_forum
@@ -1987,7 +2006,8 @@ msgid "Forum Name"
 msgstr "Name des Forums"
 
 #. module: website_forum
-#: model_terms:ir.ui.view,arch_db:website_forum.snippet_options
+#. odoo-javascript
+#: code:addons/website_forum/static/src/website_builder/forum_page_option_plugin.js:0
 msgid "Forum Page"
 msgstr "Forumseite"
 
@@ -2018,10 +2038,11 @@ msgid "Forum Tags"
 msgstr "Forumsstichwörter"
 
 #. module: website_forum
+#. odoo-javascript
+#: code:addons/website_forum/static/src/website_builder/forum_searchbar_option.xml:0
 #: model:ir.actions.act_window,name:website_forum.forum_forum_action
 #: model:ir.ui.menu,name:website_forum.menu_forum_global
 #: model_terms:ir.ui.view,arch_db:website_forum.forum_forum_view_tree
-#: model_terms:ir.ui.view,arch_db:website_forum.forum_searchbar_input_snippet_options
 msgid "Forums"
 msgstr "Foren"
 
@@ -2099,14 +2120,10 @@ msgid "Great Question"
 msgstr "Sehr gute Frage"
 
 #. module: website_forum
-#: model_terms:ir.ui.view,arch_db:website_forum.snippet_options
+#. odoo-javascript
+#: code:addons/website_forum/static/src/website_builder/forum_page_option.xml:0
 msgid "Grid"
 msgstr "Gitter"
-
-#. module: website_forum
-#: model_terms:ir.ui.view,arch_db:website_forum.forum_post_view_search
-msgid "Group By"
-msgstr "Gruppieren nach"
 
 #. module: website_forum
 #: model:ir.model.fields,field_description:website_forum.field_forum_forum__faq
@@ -2166,6 +2183,11 @@ msgstr "Hier ist eine Tabelle mit den Privilegien und dem Karma-Level"
 #: model:ir.model.fields,field_description:website_forum.field_forum_post_reason__id
 #: model:ir.model.fields,field_description:website_forum.field_forum_post_vote__id
 #: model:ir.model.fields,field_description:website_forum.field_forum_tag__id
+#: model:ir.model.fields,field_description:website_forum.field_gamification_challenge__id
+#: model:ir.model.fields,field_description:website_forum.field_gamification_karma_tracking__id
+#: model:ir.model.fields,field_description:website_forum.field_ir_attachment__id
+#: model:ir.model.fields,field_description:website_forum.field_res_users__id
+#: model:ir.model.fields,field_description:website_forum.field_website__id
 msgid "ID"
 msgstr "ID"
 
@@ -2227,10 +2249,10 @@ msgid ""
 "probably OK."
 msgstr ""
 "Wenn auf Sie eines dieser Beispiele zutrifft oder wenn Ihre Motivation für "
-"die Frage lautet „Ich möchte mich an einer Diskussion über ______ "
-"beteiligen“, dann sollten Sie nicht hier, sondern über unsere Mailinglisten "
-"fragen. Wenn Ihre Motivation jedoch lautet: „Ich möchte, dass andere mir "
-"______ erklären“, dann ist das wahrscheinlich in Ordnung."
+"die Frage lautet „Ich möchte mich an einer Diskussion über ______ beteiligen"
+"“, dann sollten Sie nicht hier, sondern über unsere Mailinglisten fragen. "
+"Wenn Ihre Motivation jedoch lautet: „Ich möchte, dass andere mir ______ "
+"erklären“, dann ist das wahrscheinlich in Ordnung."
 
 #. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.mark_as_offensive
@@ -2327,7 +2349,7 @@ msgstr "Es ist nicht erlaubt, für seinen eigenen Beitrag zu stimmen."
 
 #. module: website_forum
 #. odoo-javascript
-#: code:addons/website_forum/static/src/js/website_forum.js:0
+#: code:addons/website_forum/static/src/interactions/website_forum.js:0
 msgid "Karma Error"
 msgstr "Karma-Fehler"
 
@@ -2372,8 +2394,9 @@ msgid "Last Activity"
 msgstr "Letzte Aktivität"
 
 #. module: website_forum
+#. odoo-javascript
+#: code:addons/website_forum/static/src/website_builder/forum_page_option.xml:0
 #: model:ir.model.fields,field_description:website_forum.field_forum_forum__last_post_id
-#: model_terms:ir.ui.view,arch_db:website_forum.snippet_options
 msgid "Last Post"
 msgstr "Letzter Beitrag"
 
@@ -2404,7 +2427,8 @@ msgid "Last activity on"
 msgstr "Letzte Aktivität am"
 
 #. module: website_forum
-#: model_terms:ir.ui.view,arch_db:website_forum.snippet_options
+#. odoo-javascript
+#: code:addons/website_forum/static/src/website_builder/forum_page_option.xml:0
 msgid "Layout"
 msgstr "Layout"
 
@@ -2426,7 +2450,8 @@ msgid "LinkedIn"
 msgstr "LinkedIn"
 
 #. module: website_forum
-#: model_terms:ir.ui.view,arch_db:website_forum.snippet_options
+#. odoo-javascript
+#: code:addons/website_forum/static/src/website_builder/forum_page_option.xml:0
 msgid "List"
 msgstr "Liste"
 
@@ -2604,6 +2629,11 @@ msgid "No posts yet"
 msgstr "Noch keine Beiträge"
 
 #. module: website_forum
+#: model_terms:ir.ui.view,arch_db:website_forum.user_profile_content
+msgid "No results."
+msgstr "Keine Treffer."
+
+#. module: website_forum
 #: model:ir.model.fields,field_description:website_forum.field_forum_forum__karma_dofollow
 msgid "Nofollow links"
 msgstr "„Nofollow“-Links"
@@ -2629,7 +2659,7 @@ msgstr "Bemerkenswerte Antwort"
 #: model:ir.model.fields,field_description:website_forum.field_forum_post__message_needaction_counter
 #: model:ir.model.fields,field_description:website_forum.field_forum_tag__message_needaction_counter
 msgid "Number of Actions"
-msgstr "Anzahl der Aktionen"
+msgstr "Anzahl Aktionen"
 
 #. module: website_forum
 #: model:ir.model.fields,field_description:website_forum.field_forum_tag__posts_count
@@ -2641,7 +2671,7 @@ msgstr "Anzahl der Beiträge"
 #: model:ir.model.fields,field_description:website_forum.field_forum_post__message_has_error_counter
 #: model:ir.model.fields,field_description:website_forum.field_forum_tag__message_has_error_counter
 msgid "Number of errors"
-msgstr "Anzahl der Fehler"
+msgstr "Anzahl Fehler"
 
 #. module: website_forum
 #: model:ir.model.fields,field_description:website_forum.field_forum_forum__count_flagged_posts
@@ -2660,7 +2690,7 @@ msgstr "Anzahl der Nachrichten, die eine Aktion erfordern"
 #: model:ir.model.fields,help:website_forum.field_forum_post__message_has_error_counter
 #: model:ir.model.fields,help:website_forum.field_forum_tag__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr "Anzahl der Nachrichten mit Zustellungsfehler."
+msgstr "Anzahl Nachrichten mit Zustellungsfehler"
 
 #. module: website_forum
 #: model:ir.model.fields,field_description:website_forum.field_forum_forum__count_posts_waiting_validation
@@ -2683,7 +2713,7 @@ msgstr "Anstößig"
 
 #. module: website_forum
 #. odoo-javascript
-#: code:addons/website_forum/static/src/js/website_forum.js:0
+#: code:addons/website_forum/static/src/interactions/website_forum.js:0
 msgid "Offensive Post"
 msgstr "Anstößiger Beitrag"
 
@@ -2691,14 +2721,6 @@ msgstr "Anstößiger Beitrag"
 #: model_terms:ir.ui.view,arch_db:website_forum.moderation_queue
 msgid "Offensive Posts"
 msgstr "Anstößige Beiträge"
-
-#. module: website_forum
-#. odoo-javascript
-#: code:addons/website_forum/static/src/js/website_forum.js:0
-msgid "Oh no! Please <a href=\"%s\">sign in</a> to perform this action"
-msgstr ""
-"Oh nein! Bitte <a href=\"%s\">melden Sie sich an</a>, um diese Aktion "
-"auszuführen."
 
 #. module: website_forum
 #. odoo-javascript
@@ -2732,6 +2754,12 @@ msgstr "Gruppenzwang"
 #: model:ir.model.fields,field_description:website_forum.field_forum_post__plain_content
 msgid "Plain Content"
 msgstr "Unformatierter Inhalt"
+
+#. module: website_forum
+#. odoo-javascript
+#: code:addons/website_forum/static/src/xml/website_forum_tags_wrapper.xml:0
+msgid "Please enter 2 or more characters"
+msgstr "Geben Sie 2 oder mehr Zeichen ein"
 
 #. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.forum_model_nav
@@ -2795,7 +2823,8 @@ msgid "Post Closing Reason"
 msgstr "Grund für Beendigung des Beitrags"
 
 #. module: website_forum
-#: model_terms:ir.ui.view,arch_db:website_forum.snippet_options
+#. odoo-javascript
+#: code:addons/website_forum/static/src/website_builder/forum_page_option.xml:0
 msgid "Post Count"
 msgstr "Anzahl Beiträge"
 
@@ -3015,8 +3044,8 @@ msgstr "Re: %s"
 #. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.display_post_question_block
 #: model_terms:ir.ui.view,arch_db:website_forum.moderation_queue
-msgid "Read: #{question.name}"
-msgstr "Lesen: #{question.name}"
+msgid "Read: {{0}}"
+msgstr "Lesen: {{0}}"
 
 #. module: website_forum
 #: model:ir.model.fields,field_description:website_forum.field_forum_post__closed_reason_id
@@ -3149,6 +3178,21 @@ msgid "Scholar"
 msgstr "Azubi"
 
 #. module: website_forum
+#: model_terms:ir.ui.view,arch_db:website_forum.user_profile_content
+msgid "Search"
+msgstr "Suchen"
+
+#. module: website_forum
+#: model_terms:ir.ui.view,arch_db:website_forum.user_profile_content
+msgid "Search Answers..."
+msgstr "Antworten suchen …"
+
+#. module: website_forum
+#: model_terms:ir.ui.view,arch_db:website_forum.user_profile_content
+msgid "Search Questions..."
+msgstr "Fragen suchen …"
+
+#. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.forum_post_view_search
 msgid "Search in Post"
 msgstr "Suche in Beitrag"
@@ -3243,7 +3287,6 @@ msgstr "Ergebnisse werden angezeigt für"
 #. module: website_forum
 #. odoo-python
 #: code:addons/website_forum/models/forum_forum.py:0
-#: model_terms:forum.forum,welcome_message:website_forum.forum_help
 #: model_terms:ir.ui.view,arch_db:website_forum.forum_sign_up_cta
 #: model_terms:ir.ui.view,arch_db:website_forum.user_sidebar_header
 msgid "Sign up"
@@ -3284,8 +3327,7 @@ msgstr ""
 #. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.no_results_message
 msgid "Sorry, we could not find any <b>unsolved</b> results"
-msgstr ""
-"Es tut uns leid, wir konnten keine <b>ungelösten</b> Ergebnisse finden."
+msgstr "Es tut uns leid, wir konnten keine <b>ungelösten</b> Ergebnisse finden."
 
 #. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.no_results_message
@@ -3294,7 +3336,7 @@ msgstr "Es tut uns leid, wir konnten keine Ergebnisse finden"
 
 #. module: website_forum
 #. odoo-javascript
-#: code:addons/website_forum/static/src/js/website_forum.js:0
+#: code:addons/website_forum/static/src/interactions/website_forum.js:0
 msgid "Sorry, you cannot select your own posts as best answer"
 msgstr ""
 "Es tut uns leid, Sie können Ihre eigenen Beiträge nicht als beste Antwort "
@@ -3302,10 +3344,9 @@ msgstr ""
 
 #. module: website_forum
 #. odoo-javascript
-#: code:addons/website_forum/static/src/js/website_forum.js:0
+#: code:addons/website_forum/static/src/interactions/website_forum.js:0
 msgid "Sorry, you cannot vote for your own posts"
-msgstr ""
-"Es tut uns leid, Sie dürfen nicht über Ihren eigenen Beiträge abstimmen"
+msgstr "Es tut uns leid, Sie dürfen nicht über Ihren eigenen Beiträge abstimmen"
 
 #. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.moderation_queue
@@ -3363,6 +3404,8 @@ msgid "Tag name already exists!"
 msgstr "Stichwortbezeichnung existiert bereits!"
 
 #. module: website_forum
+#. odoo-javascript
+#: code:addons/website_forum/static/src/xml/website_forum_tags_wrapper.xml:0
 #: model:ir.model.fields,field_description:website_forum.field_forum_forum__tag_ids
 #: model:ir.model.fields,field_description:website_forum.field_forum_post__tag_ids
 #: model:ir.ui.menu,name:website_forum.menu_forum_tag_global
@@ -3397,11 +3440,6 @@ msgstr "Profi"
 #: model:gamification.goal.definition,name:website_forum.definition_teacher
 msgid "Teacher"
 msgstr "Lehrer"
-
-#. module: website_forum
-#: model:ir.model.fields,field_description:website_forum.field_forum_forum__teaser
-msgid "Teaser"
-msgstr "Teaser"
 
 #. module: website_forum
 #. odoo-javascript
@@ -3496,9 +3534,9 @@ msgid ""
 "represents number of votes for a post, and 'days' is number of days since "
 "the post creation"
 msgstr ""
-"Diese Formel wird verwendet für die Sortierung nach Relevanz. Die Variable "
-"„votes“ beinhaltet die Anzahl Stimmen für einen Beitrag und „days“ die "
-"Anzahl Tage seit Erstellung des Beitrags"
+"Diese Formel wird verwendet für die Sortierung nach Relevanz. Die Variable „"
+"votes“ beinhaltet die Anzahl Stimmen für einen Beitrag und „days“ die Anzahl "
+"Tage seit Erstellung des Beitrags"
 
 #. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.header
@@ -3507,13 +3545,13 @@ msgstr "Dieses Forum wurde archiviert."
 
 #. module: website_forum
 #. odoo-javascript
-#: code:addons/website_forum/static/src/js/website_forum.js:0
+#: code:addons/website_forum/static/src/interactions/website_forum.js:0
 msgid "This post can not be flagged"
 msgstr "Dieser Beitrag kann nicht gekennzeichnet werden."
 
 #. module: website_forum
 #. odoo-javascript
-#: code:addons/website_forum/static/src/js/website_forum.js:0
+#: code:addons/website_forum/static/src/interactions/website_forum.js:0
 msgid "This post is already flagged"
 msgstr "Dieser Beitrag ist bereits gekennzeichnet"
 
@@ -3530,8 +3568,8 @@ msgid ""
 "<b>Reject</b> this post."
 msgstr ""
 "Der Beitrag wartet auf Moderation und wurde noch nicht veröffentlicht.<br/>\n"
-"                    Als Moderator können Sie diesen Beitrag entweder "
-"<b>Akzeptieren</b> oder <b>Ablehnen</b>."
+"                    Als Moderator können Sie diesen Beitrag entweder <b>"
+"Akzeptieren</b> oder <b>Ablehnen</b>."
 
 #. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.post_description_full
@@ -3540,13 +3578,13 @@ msgstr "Diese Frage wurde gekennzeichnet"
 
 #. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.user_profile_content
-msgid "This user hasn't answered any questions yet. <br/>"
-msgstr "Dieser Benutzer hat noch keine Fragen beantwortet.<br/>"
+msgid "This user hasn't answered any questions yet."
+msgstr "Dieser Benutzer hat noch auf keine Fragen geantwortet."
 
 #. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.user_profile_content
-msgid "This user hasn't posted any questions yet.<br/>"
-msgstr "Dieser Benutzer hat noch keine Fragen gepostet.<br/>"
+msgid "This user hasn't posted any questions yet."
+msgstr "Dieser Benutzer hat noch keine Fragen veröffentlicht."
 
 #. module: website_forum
 #: model:forum.post.reason,name:website_forum.reason_14
@@ -3591,7 +3629,7 @@ msgid ""
 "asking subjective questions where …"
 msgstr ""
 "Um zu vermeiden, dass Ihre Frage markiert oder gar entfernt wird, vermeiden "
-"Sie subjektive Fragen, in denen ..."
+"Sie subjektive Fragen, in denen …"
 
 #. module: website_forum
 #: model:forum.post.reason,name:website_forum.reason_9
@@ -3931,13 +3969,13 @@ msgstr "Sie haben einen ausstehenden Beitrag"
 
 #. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.user_profile_content
-msgid "You have not answered any questions yet. <br/>"
-msgstr "Sie haben noch keine Fragen beantwortet.<br/>"
+msgid "You have not answered any questions yet."
+msgstr "Sie haben noch auf keine Fragen geantwortet."
 
 #. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.user_profile_content
-msgid "You have not posted any questions yet. <br/>"
-msgstr "Sie haben noch keine Fragen gepostet. <br/>"
+msgid "You have not posted any questions yet."
+msgstr "Sie haben noch keine Fragen veröffentlichen."
 
 #. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.user_votes
@@ -4171,12 +4209,6 @@ msgstr ""
 
 #. module: website_forum
 #. odoo-javascript
-#: code:addons/website_forum/static/src/js/website_forum.js:0
-msgid "karma is required to perform this action. "
-msgstr "Karma-Punkte sind erforderlich, um diese Aktion durchzuführen."
-
-#. module: website_forum
-#. odoo-javascript
 #: code:addons/website_forum/static/src/xml/public_templates.xml:0
 msgid "karma points"
 msgstr "Karma-Punkte"
@@ -4290,8 +4322,7 @@ msgstr ""
 #: model_terms:forum.forum,faq:website_forum.forum_help
 #: model_terms:ir.ui.view,arch_db:website_forum.default_faq
 msgid "what's the best way to use Odoo for a specific business need,"
-msgstr ""
-"wie man Odoo am besten für eine spezifische Geschäftsanforderung nutzt,"
+msgstr "wie man Odoo am besten für eine spezifische Geschäftsanforderung nutzt,"
 
 #. module: website_forum
 #: model_terms:ir.ui.view,arch_db:website_forum.author_box
@@ -4317,3 +4348,538 @@ msgstr "Ihre Biographie kann in einem Hilfefenster gesehen werden"
 #: model_terms:ir.ui.view,arch_db:website_forum.follow
 msgid "your email..."
 msgstr "Ihre E-Mail ..."
+
+#~ msgid ""
+#~ "<a class=\"btn-link o_translate_inline\" t-attf-href=\"/forum\"><i "
+#~ "class=\"oi oi-arrow-right display-inline-block\"/> Return to questions "
+#~ "list</a>"
+#~ msgstr ""
+#~ "<a class=\"btn-link o_translate_inline\" t-attf-href=\"/forum\"><i "
+#~ "class=\"oi oi-arrow-right display-inline-block\"/> Zurück zur "
+#~ "Fragenliste</a>"
+
+#~ msgid ""
+#~ "<a class=\"mb-2 o_translate_inline\" t-attf-href=\"/profile/users\" data-"
+#~ "bs-original-title=\"\" title=\"\" target=\"_blank\">Meet our community "
+#~ "members</a>"
+#~ msgstr ""
+#~ "<a class=\"mb-2 o_translate_inline\" t-attf-href=\"/profile/users\" data-"
+#~ "bs-original-title=\"\" title=\"\" target=\"_blank\">Unsere Community-"
+#~ "Mitglieder treffen</a>"
+
+#~ msgid "%d karma required to unlink a comment."
+#~ msgstr "%dKarma benötigt um Verlinkungen für Kommentare zu entfernen."
+
+#~ msgid "&amp;nbsp;and&amp;nbsp;"
+#~ msgstr "&amp;nbsp;and&amp;nbsp;"
+
+#~ msgid ", by"
+#~ msgstr ", von"
+
+#~ msgid ", consider <b>adding an example</b>."
+#~ msgstr ", denken Sie darüber nach <b>ein Beispiel hinzuzufügen</b>."
+
+#~ msgid "0 Answers"
+#~ msgstr "0 Antworten"
+
+#~ msgid "<b> [Offensive]</b>"
+#~ msgstr "<b> [Anstößig]</b>"
+
+#~ msgid "<b>Tags</b> I Follow"
+#~ msgstr "<b>Tags</b> den ich folge"
+
+#~ msgid ""
+#~ "<b>This forum is empty.</b><br/>\n"
+#~ "                    Be the first one asking a question"
+#~ msgstr ""
+#~ "<b>Dieses Forum ist leer.</b><br/>\n"
+#~ "                    Seien Sie der erste, der eine Frage beantwortet."
+
+#~ msgid "<b>What kinds of questions can I ask here?</b>"
+#~ msgstr "<b>Welche Fragen kann ich hier stellen?</b>"
+
+#~ msgid "<b>What should I avoid in my answers?</b>"
+#~ msgstr "<b>Was sollte ich bei meinen Antworten vermeiden?</b>"
+
+#~ msgid "<b>What should I avoid in my questions?</b>"
+#~ msgstr "<b>Was sollte ich in meinen Fragen vermeiden?</b>"
+
+#~ msgid "<b>[Answer]</b>"
+#~ msgstr "<b>[Antwort]</b>"
+
+#~ msgid ""
+#~ "<b>|</b>\n"
+#~ "                    <span class=\"fa fa-trophy bg-gold ms-2\" "
+#~ "role=\"img\" aria-label=\"Gold badge\" title=\"Gold badge\"/>"
+#~ msgstr ""
+#~ "<b>|</b>\n"
+#~ "                    <span class=\"fa fa-trophy bg-gold ms-2\" "
+#~ "role=\"img\" aria-label=\"Gold badge\" title=\"Gold badge\"/>"
+
+#~ msgid "<em class=\"d-block mb-2\">or</em>"
+#~ msgstr "<em class=\"d-block mb-2\">oder</em>"
+
+#~ msgid "<i class=\" fa fa-comment text-muted me-1\"/>Comment"
+#~ msgstr "<i class=\" fa fa-comment text-muted me-1\"/>Kommentieren"
+
+#~ msgid "<i class=\"fa fa-bell fa-fw\"/> Followed Posts"
+#~ msgstr "<i class=\"fa fa-bell fa-fw\"/> Verfolgte Beiträge"
+
+#~ msgid "<i class=\"fa fa-bug\"/> Filter Tool"
+#~ msgstr "<i class=\"fa fa-bug\"/> Filter-Tool"
+
+#~ msgid ""
+#~ "<i class=\"fa fa-check text-success d-block display-2\"/>\n"
+#~ "            <b>You've Completely Caught Up!</b><br/>"
+#~ msgstr ""
+#~ "<i class=\"fa fa-check text-success d-block display-2\"/>\n"
+#~ "            <b>Sie sind wieder auf dem neuesten Stand!</b><br/>"
+
+#~ msgid "<i class=\"fa fa-check-square-o fa-fw\"/> To Validate"
+#~ msgstr "<i class=\"fa fa-check-square-o fa-fw\"/> Zu Bestätigen"
+
+#~ msgid "<i class=\"fa fa-flag fa-fw\"/> Flagged"
+#~ msgstr "<i class=\"fa fa-flag fa-fw\"/> Gekennzeichnet"
+
+#~ msgid ""
+#~ "<i class=\"fa fa-flag ms-4 mr4\"/>\n"
+#~ "                                    Flagged"
+#~ msgstr ""
+#~ "<i class=\"fa fa-flag ms-4 mr4\"/>\n"
+#~ "                                    Gekennzeichnet"
+
+#~ msgid "<i class=\"fa fa-question-circle-o fa-fw\"/> My Posts"
+#~ msgstr "<i class=\"fa fa-question-circle-o fa-fw\"/> Meine Beiträge"
+
+#~ msgid "<i class=\"fa fa-reply me-1\"/>Answer"
+#~ msgstr "<i class=\"fa fa-reply me-1\"/>Antwort"
+
+#~ msgid "<i class=\"fa fa-share-alt text-muted me-1\"/>Share"
+#~ msgstr "<i class=\"fa fa-share-alt text-muted me-1\"/>Teilen"
+
+#~ msgid ""
+#~ "<i class=\"fa fa-share-alt text-muted\"/>\n"
+#~ "                                Share"
+#~ msgstr ""
+#~ "<i class=\"fa fa-share-alt text-muted\"/>\n"
+#~ "                                Teilen"
+
+#~ msgid "<i class=\"fa fa-star fa-fw\"/> Favourites"
+#~ msgstr "<i class=\"fa fa-star fa-fw\"/>Favoriten"
+
+#~ msgid "<i class=\"fa fa-tags fa-fw\"/> Followed Tags"
+#~ msgstr "<i class=\"fa fa-tags fa-fw\"/> Verfolgte Tags"
+
+#~ msgid "<i class=\"oi oi-chevron-left small\"/> Back"
+#~ msgstr "<i class=\"oi oi-chevron-left small\"/> Zurück"
+
+#~ msgid ""
+#~ "<small class=\"text-muted\">\n"
+#~ "                    Flagged\n"
+#~ "                </small>"
+#~ msgstr ""
+#~ "<small class=\"text-muted\">\n"
+#~ "Markiert\n"
+#~ "</small>"
+
+#~ msgid "<span class=\"badge text-bg-info\">Closed</span>"
+#~ msgstr "<span class=\"badge text-bg-info\">Geschlossen</span>"
+
+#~ msgid ""
+#~ "<span class=\"fa fa-trophy bg-bronze ms-2\" role=\"img\" aria-"
+#~ "label=\"Bronze badge\" title=\"Bronze badge\"/>"
+#~ msgstr ""
+#~ "<span class=\"fa fa-trophy bg-bronze ms-2\" role=\"img\" aria-"
+#~ "label=\"Bronze badge\" title=\"Bronze badge\"/>"
+
+#~ msgid ""
+#~ "<span class=\"fa fa-trophy bg-silver ms-2\" role=\"img\" aria-"
+#~ "label=\"Silver badge\" title=\"Silver badge\"/>"
+#~ msgstr ""
+#~ "<span class=\"fa fa-trophy bg-silver ms-2\" role=\"img\" aria-"
+#~ "label=\"Silver badge\" title=\"Silver badge\"/>"
+
+#~ msgid "<span class=\"fw-bold\">No answer posted yet.</span>"
+#~ msgstr "<span class=\"fw-bold\">Noch keine Antwort veröffentlicht.</span>"
+
+#~ msgid "<span class=\"fw-bold\">No question posted yet.</span>"
+#~ msgstr "<span class=\"fw-bold\">Noch keine Frage veröffentlicht.</span>"
+
+#~ msgid "<span class=\"mx-1 d-none d-sm-inline\">&amp;nbsp;|</span>"
+#~ msgstr "<span class=\"mx-1 d-none d-sm-inline\">&amp;nbsp;|</span>"
+
+#~ msgid "<span class=\"mx-1 text-400 d-none d-lg-block\">|</span>"
+#~ msgstr "<span class=\"mx-1 text-400 d-none d-lg-block\">|</span>"
+
+#~ msgid "<span class=\"mx-1\">|</span>"
+#~ msgstr "<span class=\"mx-1\">|</span>"
+
+#~ msgid ""
+#~ "<span class=\"mx-1\">|</span>\n"
+#~ "                    <i class=\"fa fa-star\"/>"
+#~ msgstr ""
+#~ "<span class=\"mx-1\">|</span>\n"
+#~ "                    <i class=\"fa fa-star\"/>"
+
+#~ msgid "<span class=\"mx-3  mx-lg-2 text-400 d-none d-md-inline\">|</span>"
+#~ msgstr "<span class=\"mx-3  mx-lg-2 text-400 d-none d-md-inline\">|</span>"
+
+#~ msgid "<span class=\"navbar-text me-1\">Go to:</span>"
+#~ msgstr "<span class=\"navbar-text me-1\">Gehen zu:</span>"
+
+#~ msgid "<span class=\"navbar-text me-3\">Show Tags Starting By</span>"
+#~ msgstr ""
+#~ "<span class=\"navbar-text me-3\">Stichwörter anzeigen, beginnend mit</"
+#~ "span>"
+
+#~ msgid ""
+#~ "<span class=\"o_wforum_answer_correct_badge border small border-success "
+#~ "rounded-pill fw-bold text-success ms-2 px-2\">\n"
+#~ "                            Best Answer\n"
+#~ "                        </span>"
+#~ msgstr ""
+#~ "<span class=\"o_wforum_answer_correct_badge border small border-success "
+#~ "rounded-pill fw-bold text-success ms-2 px-2\">\n"
+#~ "                            Beste Antwort\n"
+#~ "                        </span>"
+
+#~ msgid "<span>By </span>"
+#~ msgstr "<span>Von </span>"
+
+#~ msgid "A clear, explicit and concise title"
+#~ msgstr "Ein klarer, eindeutiger und prägnanter Titel"
+
+#~ msgid "About"
+#~ msgstr "Über"
+
+#~ msgid "All Forums"
+#~ msgstr "Alle Foren"
+
+#~ msgid "All Tags"
+#~ msgstr "Alle Stichwörter"
+
+#~ msgid "Allow Bump"
+#~ msgstr "Schubs erlauben"
+
+#~ msgid "Amazing! There are no unanswered questions left!"
+#~ msgstr "Fantastisch! Es gibt keine unbeantworteten Fragen!"
+
+#~ msgid "Answer"
+#~ msgstr "Antwort"
+
+#~ msgid "Back"
+#~ msgstr "Zurück"
+
+#~ msgid "Be less specific in your wording for a wider search result"
+#~ msgstr ""
+#~ "Seien Sie weniger spezifisch in Ihrer Formulierung, um ein breiteres "
+#~ "Suchergebnis zu erzielen"
+
+#~ msgid "Browse All"
+#~ msgstr "Alle durchsuchen"
+
+#~ msgid "Bumped on"
+#~ msgstr "Nach oben geschubst am"
+
+#~ msgid ""
+#~ "Check this box to display a popup for posts older than 10 days without "
+#~ "any given answer. The popup will offer to share it on social networks. "
+#~ "When shared, a question is bumped at the top of the forum."
+#~ msgstr ""
+#~ "Markieren Sie dieses Kästchen, damit sich ein Fenster öffnet mit "
+#~ "unbeantworteten Fragen, die älter als 10 Tage sind. Dort können Sie "
+#~ "Fragen in den sozialen Netzwerken teilen. Geteilte Fragen springen zum "
+#~ "Kopf des Forums."
+
+#~ msgid "Check your spelling and try again"
+#~ msgstr "Kontrollieren Sie Ihre Schreibweise und versuchen Sie es erneut"
+
+#~ msgid "Click to answer."
+#~ msgstr "Zum Antworten klicken."
+
+#~ msgid "Close Post"
+#~ msgstr "Beitrag schließen"
+
+#~ msgid "Comment this post..."
+#~ msgstr "Diesen Beitrag kommentieren..."
+
+#~ msgid "Comments"
+#~ msgstr "Kommentare"
+
+#~ msgid "Convert all answers to comments and vice versa"
+#~ msgstr "Alle Antworten in Kommentare umwandeln und umgekehrt"
+
+#~ msgid "Convert as a answer"
+#~ msgstr "In Antwort umwandeln"
+
+#~ msgid "Convert as a comment"
+#~ msgstr "In Kommentar umwandeln"
+
+#~ msgid "Convert own answers to comments and vice versa"
+#~ msgstr "Eigene Antworten in Kommentare umwandeln und umgekehrt"
+
+#~ msgid "Date (high to low)"
+#~ msgstr "Datum (absteigend)"
+
+#~ msgid "Date (low to high)"
+#~ msgstr "Datum (aufsteigend)"
+
+#~ msgid "Edit Forum in Backend"
+#~ msgstr "Forum im Backend bearbeiten"
+
+#~ msgid ""
+#~ "Example\n"
+#~ "                        <i class=\"fa fa-question-circle\"/>"
+#~ msgstr ""
+#~ "Beispiel\n"
+#~ "                        <i class=\"fa fa-question-circle\"/>"
+
+#~ msgid "Following"
+#~ msgstr "Abonniert"
+
+#~ msgid "Group By"
+#~ msgstr "Gruppieren nach"
+
+#~ msgid "Hide Intro"
+#~ msgstr "Intro ausblenden"
+
+#~ msgid "I'm <b>Following</b>"
+#~ msgstr "Ich <b>Followe</b>"
+
+#~ msgid "I'm Following"
+#~ msgstr "Ich folge"
+
+#~ msgid "Karma"
+#~ msgstr "Karma"
+
+#~ msgid "Last Post:"
+#~ msgstr "Letzter Post:"
+
+#~ msgid "Last activity date"
+#~ msgstr "Letzte Aktivität am"
+
+#~ msgid "Menu"
+#~ msgstr "Menü"
+
+#~ msgid "Moderation"
+#~ msgstr "Moderation"
+
+#~ msgid "More"
+#~ msgstr "Mehr"
+
+#~ msgid "Most answered"
+#~ msgstr "Am häufigsten beantwortet"
+
+#~ msgid "Most voted"
+#~ msgstr "Am häufigsten favorisiert"
+
+#~ msgid ""
+#~ "Move this question to the top of the list by sharing it on social "
+#~ "networks."
+#~ msgstr ""
+#~ "Verschieben Sie diese Frage an den Anfang der Liste, indem Sie sie über "
+#~ "soziale Netzwerke teilen."
+
+#~ msgid "My <b>Favourites</b>"
+#~ msgstr "Meine <b>Favoriten</b>"
+
+#~ msgid "My <b>Posts</b>"
+#~ msgstr "Meine <b>Beiträge</b>"
+
+#~ msgid "My Favourites"
+#~ msgstr "Meine Favoriten"
+
+#~ msgid "No activities yet!"
+#~ msgstr "Noch keine Aktivitäten!"
+
+#~ msgid "No favourite questions in this forum (yet).<br/>"
+#~ msgstr "Noch keine Lieblingsfragen in diesem Forum.<br/>"
+
+#~ msgid "No flagged posts"
+#~ msgstr "Keine markierten Beiträge"
+
+#~ msgid "No post to be validated"
+#~ msgstr "Kein zu validierender Post"
+
+#~ msgid "No tags"
+#~ msgstr "Keine Tags"
+
+#~ msgid "No vote given by you yet!"
+#~ msgstr "Sie haben noch keine Stimme abgegeben!"
+
+#~ msgid "Number of messages which requires an action"
+#~ msgstr "Anzahl der Nachrichten, die eine Aktion erfordern"
+
+#~ msgid "Only one answer per question is allowed"
+#~ msgstr "Pro Frage ist nur eine Antwort erlaubt"
+
+#~ msgid "Order by"
+#~ msgstr "Anordnen nach"
+
+#~ msgid "Our forums"
+#~ msgstr "Unsere Foren"
+
+#~ msgid "People"
+#~ msgstr "Personen"
+
+#~ msgid "Post Comment"
+#~ msgstr "Kommentar veröffentlichen"
+
+#~ msgid "Posts:"
+#~ msgstr "Posts:"
+
+#~ msgid "Question by"
+#~ msgstr "Frage von"
+
+#~ msgid "Read the guidelines to know how to gain karma."
+#~ msgstr ""
+#~ "Lesen Sie die Richtlinien um zu erfahren, wie sie Karmapunkte gewinnen."
+
+#~ msgid "Read: #{question.name}"
+#~ msgstr "Lesen: #{question.name}"
+
+#~ msgid "Register"
+#~ msgstr "Anmelden"
+
+#~ msgid "Restrict publishing to this website."
+#~ msgstr "Beschränken Sie die Veröffentlichung auf dieser Website."
+
+#~ msgid "Return to the forum."
+#~ msgstr "Zum Forum zurückkehren."
+
+#~ msgid "Return to the question list."
+#~ msgstr "Zurück zur Fragenliste"
+
+#~ msgid "Search Tips"
+#~ msgstr "Tipps für die Suche"
+
+#~ msgid "See"
+#~ msgstr "Ansehen"
+
+#~ msgid "Show"
+#~ msgstr "Zeigen"
+
+#~ msgid "Show Tags Starting By"
+#~ msgstr "Tags anzeigen beginnend mit"
+
+#~ msgid "Sign in"
+#~ msgstr "Anmelden"
+
+#~ msgid "Sorry you must be logged in to perform this action"
+#~ msgstr ""
+#~ "Tut uns leid. Sie müssen zum Ausführen dieser Aktion angemeldet sein."
+
+#~ msgid "Sorry you must be logged to flag a post"
+#~ msgstr "Sorry, Sie müssen angemeldet sein, um einen Beitrag zu markieren"
+
+#~ msgid "Sorry you must be logged to vote"
+#~ msgstr "Sorry, Sie müssen angemeldet sein, um abzustimmen"
+
+#~ msgid "Sorry, anonymous users cannot choose correct answer."
+#~ msgstr ""
+#~ "Sorry, Sie müssen angemeldet sein, um eine Antwort als korrekt zu "
+#~ "markieren."
+
+#~ msgid "Sorry, we could not find any <b>%s</b> result <b>%s</b> %s%s%s."
+#~ msgstr ""
+#~ "Entschuldigung, wir konnten kein <b>%s</b> Ergebnis finden <b>%s</"
+#~ "b>%s%s%s."
+
+#~ msgid "Tags I Follow"
+#~ msgstr "Tags I Folgen"
+
+#~ msgid "Teaser"
+#~ msgstr "Teaser"
+
+#~ msgid ""
+#~ "Technical field allowing to bump a question. Writing on this field will "
+#~ "trigger a write on write_date and therefore bump the post. Directly "
+#~ "writing on write_date is currently not supported and this field is a "
+#~ "workaround."
+#~ msgstr ""
+#~ "Technisches Feld um eine Frage an den Kopf zu schieben. Schreiben auf "
+#~ "dieses Feld steuert ein \"Write\" auf \"write_date\" und schiebt damit "
+#~ "den Beitrag. Direktes Schreiben auf \"write_date\" ist zur Zeit nicht "
+#~ "unterstützt, daher ist dieses Feld eine Hilfslösung."
+
+#~ msgid ""
+#~ "This community is for professional and enthusiast users, partners and "
+#~ "programmers."
+#~ msgstr ""
+#~ "Diese Gemeinschaft ist für professionelle und enthusiastische Nutzer, "
+#~ "Partner und Programmierer gedacht."
+
+#~ msgid "Toggle favorite status"
+#~ msgstr "Favoritenstatus umschalten"
+
+#~ msgid "Topics"
+#~ msgstr "Themen"
+
+#~ msgid "Trending"
+#~ msgstr "Populär"
+
+#~ msgid "Try searching for one or two words"
+#~ msgstr "Versuchen Sie, nach einem oder zwei Wörtern zu suchen"
+
+#~ msgid "Unlink all comments"
+#~ msgstr "Alle Kommentarverlinkungen aufheben"
+
+#~ msgid "Unlink own comments"
+#~ msgstr "Links zu eigenen Kommentaren aufheben"
+
+#~ msgid "Waiting for validation"
+#~ msgstr "Warten auf Bestätigung"
+
+#~ msgid "Waiting post"
+#~ msgstr "Wartender Beitrag"
+
+#~ msgid "You have no posts in this forum (yet)."
+#~ msgstr "Sie haben (noch) keine Posts in diesem Forum."
+
+#~ msgid "You're not following any topic in this forum (yet).<br/>"
+#~ msgstr "Sie verfolgen (noch) kein Thema in diesem Forum.<br/>"
+
+#~ msgid "[Closed]"
+#~ msgstr "[Geschlossen]"
+
+#~ msgid "[Deleted]"
+#~ msgstr "[Gelöscht]"
+
+#~ msgid "[Offensive]"
+#~ msgstr "[Beleidigend]"
+
+#~ msgid "activity date"
+#~ msgstr "Datum der Aktivität"
+
+#~ msgid "in your followed list"
+#~ msgstr "in Ihrer Favoritenliste"
+
+#~ msgid "most answered"
+#~ msgstr "meiste Antworten"
+
+#~ msgid "most voted"
+#~ msgstr "meiste Stimmen"
+
+#~ msgid "newest"
+#~ msgstr "neueste"
+
+#~ msgid "solved"
+#~ msgstr "gelöst"
+
+#~ msgid "to partecipate"
+#~ msgstr "um teilzunehmen"
+
+#~ msgid "trending"
+#~ msgstr "beliebt"
+
+#~ msgid "unanswered"
+#~ msgstr "nicht beantwortet"
+
+#~ msgid "unsolved"
+#~ msgstr "ungelöst"
+
+#~ msgid "| Flagged"
+#~ msgstr "| Markiert"
+
+#~ msgid "圾 Text"
+#~ msgstr "圾 Text"

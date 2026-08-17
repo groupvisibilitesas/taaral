@@ -1,6 +1,6 @@
 import {
-    click,
     contains,
+    click,
     insertText,
     openFormView,
     registerArchs,
@@ -9,8 +9,8 @@ import {
 } from "@mail/../tests/mail_test_helpers";
 import { beforeEach, describe, expect, test } from "@odoo/hoot";
 import { mockDate, mockTimeZone } from "@odoo/hoot-mock";
-import { defineTestMailModels, editSelect } from "@test_mail/../tests/test_mail_test_helpers";
-import { patchWithCleanup } from "@web/../tests/web_test_helpers";
+import { defineTestMailModels } from "@test_mail/../tests/test_mail_test_helpers";
+import { editSelectMenu, patchWithCleanup } from "@web/../tests/web_test_helpers";
 import { currencies } from "@web/core/currency";
 
 const archs = {
@@ -229,7 +229,7 @@ test("rendering of tracked field of type date: from a set date to no date", asyn
     await start();
     registerArchs(archs);
     await openFormView("mail.test.track.all", mailTestTrackAllId1);
-    await click("div[name=date_field] input");
+    await click("div[name=date_field] button");
     await insertText("div[name=date_field] input", "", { replace: true });
     await click(".o_form_button_save");
     await contains(".o-mail-Message-tracking", { text: "12/14/2018None(Date)" });
@@ -263,6 +263,7 @@ test("rendering of tracked field of type datetime: from a set date and time to n
     await start();
     registerArchs(archs);
     await openFormView("mail.test.track.all", mailTestTrackAllId1);
+    await click("div[name=datetime_field] button");
     await insertText("div[name=datetime_field] input", "", { replace: true });
     await click(".o_form_button_save");
     await contains(".o-mail-Message-tracking", { text: "12/14/2018 16:42:28None(Datetime)" });
@@ -302,7 +303,7 @@ test("rendering of tracked field of type selection: from a selection to no selec
     await start();
     registerArchs(archs);
     await openFormView("mail.test.track.all", mailTestTrackAllId1);
-    await editSelect("div[name=selection_field] select", "false");
+    await editSelectMenu("div[name=selection_field] input", { value: "" });
     await click(".o_form_button_save");
     await contains(".o-mail-Message-tracking", { text: "firstNone(Selection)" });
 });
@@ -313,7 +314,7 @@ test("rendering of tracked field of type selection: from no selection to a selec
     await start();
     registerArchs(archs);
     await openFormView("mail.test.track.all", mailTestTrackAllId1);
-    await editSelect("div[name=selection_field] select", '"first"');
+    await editSelectMenu("div[name=selection_field] input", { value: "First" });
     await click(".o_form_button_save");
     await contains(".o-mail-Message-tracking", { text: "Nonefirst(Selection)" });
 });
@@ -343,4 +344,42 @@ test("rendering of tracked field of type many2one: from no related record to hav
     await click("[name=many2one_field_id] .o-autocomplete--dropdown-item", { text: "Marc" });
     await click(".o_form_button_save");
     await contains(".o-mail-Message-tracking", { text: "NoneMarc(Many2one)" });
+});
+
+test("Search message with filter in chatter", async () => {
+    const pyEnv = await startServer();
+    const mailTestTrackAllId = pyEnv["mail.test.track.all"].create({});
+    pyEnv["mail.message"].create({
+        body: "Hermit",
+        model: "mail.test.track.all",
+        res_id: mailTestTrackAllId,
+    });
+    await start();
+    registerArchs(archs);
+    await openFormView("mail.test.track.all", mailTestTrackAllId);
+    await click("[name=many2one_field_id] input");
+    await click("[name=many2one_field_id] .o-autocomplete--dropdown-item", { text: "Hermit" });
+    await click(".o_form_button_save");
+    // Search message with filter
+    await click("[title='Search Messages']");
+    await insertText(".o_searchview_input", "Hermit");
+    await click("button[title='Filter Messages']");
+    await click("span", { text: "Conversations" });
+    await contains(".o-mail-SearchMessageResult .o-mail-Message", { text: "Hermit" });
+
+    await click("button[title='Filter Messages']");
+    await click("span", { text: "Tracked Changes" });
+    await contains(".o-mail-SearchMessageResult .o-mail-Message", { text: "Hermit" });
+
+    await click("button[title='Filter Messages']");
+    await click("span", { text: "All" });
+    await contains(".o-mail-SearchMessageResult .o-mail-Message", { count: 2 });
+    // works when no search term
+    await insertText(".o_searchview_input", "", { replace: true });
+    await click("button[title='Filter Messages']");
+    await click("span", { text: "Conversations" });
+    await contains(".o-mail-SearchMessageResult .o-mail-Message:has(:text(Hermit))");
+    await click("button[title='Filter Messages']");
+    await click("span", { text: "Tracked Changes" });
+    await contains(".o-mail-SearchMessageResult .o-mail-Message:has(:text(NoneHermit(Many2one)))");
 });

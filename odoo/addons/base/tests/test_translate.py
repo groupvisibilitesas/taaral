@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from hashlib import sha256
 from unittest.mock import patch
+import ast
 import logging
 import time
 
@@ -377,6 +378,39 @@ class TranslationToolsTestCase(BaseCase):
             f'translation {invalid!r} has non-translatable elements(elements not in TRANSLATED_ELEMENTS)',
         )
 
+    def test_translate_xml_fstring(self):
+        """ Test xml_translate() with formated string (ruby or jinja). """
+        terms = []
+        source = """<t t-name="stuff">
+                        <t t-set="first" t-value="33"/>
+                        <t t-set="second" t-valuef="no-translate-{{first}}"/>
+                        <t t-set="toto" t-valuef.translate="My ro-{{first}}"/>
+                        <span t-attf-title="Big #{toto} first {{first}} second:{{second}}"/>
+
+                        <div data-stuff.translate="cat"/>
+                    </t>"""
+        result = xml_translate(terms.append, source)
+        self.assertEqual(result, source)
+        self.assertItemsEqual(terms,
+            ['My ro-{{0}}', 'Big {{0}} first {{1}} second:{{2}}', 'cat'])
+
+        # try to insert malicious expression
+        malicous = {
+            'My ro-{{0}}': 'Translated ro-{{0}} and {{1+1}}',
+            'Big {{0}} first {{1}} second:{{2}}': 'Big Translated {{0}} second ({{2}}) first {{1+1}}',
+            'cat': 'dog',
+        }
+        result = xml_translate(malicous.get, source)
+
+        self.assertEqual(result, """<t t-name="stuff">
+                        <t t-set="first" t-value="33"/>
+                        <t t-set="second" t-valuef="no-translate-{{first}}"/>
+                        <t t-set="toto" t-valuef.translate="Translated ro-{{first}} and None"/>
+                        <span t-attf-title="Big Translated #{toto} second ({{second}}) first None"/>
+
+                        <div data-stuff.translate="dog"/>
+                    </t>""")
+
     def test_translate_html(self):
         """ Test html_translate(). """
         source = """<blockquote>A <h2>B</h2> C</blockquote>"""
@@ -429,7 +463,7 @@ class TestLanguageInstall(TransactionCase):
         def _load_module_terms(self, modules, langs, overwrite=False, imported_module=False):
             loaded.append((modules, langs, overwrite))
 
-        with patch('odoo.addons.base.models.ir_module.Module._load_module_terms', _load_module_terms):
+        with patch('odoo.addons.base.models.ir_module.IrModuleModule._load_module_terms', _load_module_terms):
             wizard.lang_install()
 
         # _load_module_terms is called once with lang='fr_FR' and overwrite=True
@@ -1237,7 +1271,7 @@ class TestXMLTranslation(TransactionCase):
     </div>
     <div class="s_table_of_content_main" data-name="Content">
         <section class="pb16">
-            <h1 data-anchor="true" class="o_default_snippet_text" id="table_of_content_heading_1672668075678_4">%s</h1>
+            <h1 data-anchor="true" id="table_of_content_heading_1672668075678_4">%s</h1>
         </section>
     </div>
 </form>'''
@@ -1287,7 +1321,7 @@ class TestXMLTranslation(TransactionCase):
     </div>
     <div class="s_table_of_content_main" data-name="Content">
         <section class="pb16">
-            <h1 data-anchor="true" class="o_default_snippet_text" id="table_of_content_heading_1672668075678_4">%s</h1>
+            <h1 data-anchor="true" id="table_of_content_heading_1672668075678_4">%s</h1>
         </section>
     </div>
 </form>'''
@@ -1591,6 +1625,43 @@ class TestXMLTranslation(TransactionCase):
                 f'arch_db for {lang} should be {archf2} when check_translations'
             )
 
+    def test_delay_translations_backend_edtition(self):
+        """ Ensure delayed translations are shown in backend view edition """
+        archf = '<form string="%s"><div>%s</div><div>%s</div></form>'
+        terms_fr = ('Couteau', 'Fourchette', 'Cuiller')
+        terms_en = ('Knife', 'Fork', 'Spoon')
+        view0 = self.create_view(archf, terms_fr, en_US=terms_en)
+        original_english = view0.arch_db
+        new_french = '<form>bonjour monde</form>'
+        view0.with_context(lang='fr_FR', delay_translations=True).arch_db = new_french
+        self.assertEqual(view0.arch_db, original_english)
+        self.assertEqual(view0.with_context(check_translations=True).arch_db, new_french)
+        context = ast.literal_eval(self.env.ref('base.action_ui_view').context)
+        self.assertTrue(context.get('check_translations'))
+
+    def test_t_call_no_normal_attribute_translation(self):
+        self.env['ir.ui.view'].create({
+            'type': 'qweb',
+            'key': 'test',
+            'arch': '<button><t t-out="placeholder"/></button>',
+        })
+        view0 = self.env['ir.ui.view'].with_context(lang='fr_FR', edit_translations=True).create({
+            'type': 'qweb',
+            'arch': '<t t-call="test" placeholder="hello"/>',
+        })
+        self.assertEqual(view0._render_template(view0.id, {'hello': 'world'}), '<button>world</button>')
+        self.assertEqual(view0.arch_db, '<t t-call="test" placeholder="hello"/>')
+
+        view0.arch = '<t t-call="test" placeholder.translate="hello"/>'
+        translate_node = (
+            f'<span data-oe-model="ir.ui.view" data-oe-id="{view0.id}"'
+            ' data-oe-field="arch_db" data-oe-translation-state="to_translate"'
+            ' data-oe-translation-source-sha="2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824">hello</span>'
+        )
+        self.assertEqual(view0._render_template(view0.id), f'<button>{translate_node}</button>')
+        translate_attr = translate_node.replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+        self.assertEqual(view0.arch_db, f'<t t-call="test" placeholder.translate="{translate_attr}"/>')
+
     def test_update_field_translations_source_lang(self):
         """ call update_field_translations with source_lang """
         archf = '<form string="%s"><div>%s</div><div>%s</div></form>'
@@ -1887,7 +1958,7 @@ class TestLanguageInstallPerformance(TransactionCase):
         self.assertFalse(fr_BE.active)
 
         t0 = time.time()
-        fr_BE.toggle_active()
+        fr_BE.action_unarchive()
         t1 = time.time()
         _stats_logger.info("installed language fr_BE in %.3fs", t1 - t0)
 

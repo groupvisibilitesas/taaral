@@ -307,6 +307,7 @@ class AccountMove(models.Model):
         if document.state in ('invoice_sent', 'bill_sent'):
             barcode_params = urlencode({
                 'barcode_type': 'QR',
+                'quiet': 0,
                 'value': document.mydata_url,
                 'width': 180,
                 'height': 180,
@@ -648,7 +649,7 @@ class AccountMove(models.Model):
         move_disallow_classification = self.is_purchase_document(include_receipts=True) and self.l10n_gr_edi_inv_type in TYPES_WITH_FORBIDDEN_CLASSIFICATION
 
         for line_no, line in enumerate(self.invoice_line_ids, start=1):
-            if line.display_type in ('line_section', 'line_note'):
+            if line.display_type in ('line_section', 'line_subsection', 'line_note'):
                 continue
             if move_disallow_classification and line.l10n_gr_edi_cls_category:
                 errors[f'l10n_gr_edi_{line_no}_forbidden_classification'] = {
@@ -728,7 +729,7 @@ class AccountMove(models.Model):
                     move._l10n_gr_edi_create_sent_document(document_values)
 
         if self._can_commit():
-            self._cr.commit()
+            self.env.cr.commit()
 
     def _l10n_gr_edi_send_invoices(self):
         """ Send batches of invoice SendInvoice XML to myDATA. """
@@ -767,7 +768,7 @@ class AccountMove(models.Model):
                 # Simulate the error handling behavior on invoice's send and print wizard.
                 # If we're only sending one bill, raise the warning error immediately.
                 if len(self) == 1 and self._can_commit():
-                    self._cr.commit()
+                    self.env.cr.commit()
                     raise UserError(error_message)
             else:
                 moves_to_send |= move

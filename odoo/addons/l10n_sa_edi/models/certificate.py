@@ -17,7 +17,7 @@ CERT_TEMPLATE_NAME = {
 MAX_ALLOWED_CSR_VALUE_LENGTH = 64
 
 
-class Certificate(models.Model):
+class CertificateCertificate(models.Model):
     _inherit = 'certificate.certificate'
 
     def _l10n_sa_get_issuer_name(self):
@@ -60,7 +60,7 @@ class Certificate(models.Model):
                 "name": _("Locality Name"),
             },
             "egs_serial": {
-                "value": f"1-Odoo|2-{version_info['server_serie']}|3-{journal.l10n_sa_serial_number}",
+                "value": f"1-Odoo|2-{version_info['server_serie']}|3-{journal.id}",
                 "name": _("Journal Serial Number"),
             },
             "org_uid": {

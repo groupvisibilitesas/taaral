@@ -1,26 +1,28 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* base_import_module
+# * base_import_module
 #
 # Translators:
-# Wil Odoo, 2024
-# Maitê Dietze, 2024
+# Martin Trigaux, 2022
 #
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# "Maitê Dietze (madi)" <madi@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~12.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Maitê Dietze, 2024\n"
-"Language-Team: Portuguese (Brazil) (https://app.transifex.com/odoo/teams/"
-"41243/pt_BR/)\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-02 20:17+0000\n"
+"Last-Translator: \"Dylan Kiss (dyki)\" <dyki@odoo.com>\n"
+"Language-Team: Portuguese (Brazil) <https://translate.odoo.com/projects/odoo-"
+"19/base_import_module/pt_BR/>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % "
-"1000000 == 0 ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : ((n != 0 && n % "
+"1000000 == 0) ? 1 : 2);\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: base_import_module
 #. odoo-python
@@ -96,6 +98,10 @@ msgstr "Criado em"
 
 #. module: base_import_module
 #: model:ir.model.fields,field_description:base_import_module.field_base_import_module__display_name
+#: model:ir.model.fields,field_description:base_import_module.field_base_module_uninstall__display_name
+#: model:ir.model.fields,field_description:base_import_module.field_ir_http__display_name
+#: model:ir.model.fields,field_description:base_import_module.field_ir_module_module__display_name
+#: model:ir.model.fields,field_description:base_import_module.field_ir_ui_view__display_name
 msgid "Display Name"
 msgstr "Nome exibido"
 
@@ -129,10 +135,19 @@ msgstr "Forçar a inicialização"
 msgid "Force init mode even if installed. (will update `noupdate='1'` records)"
 msgstr ""
 "Forçar inicialização, mesmo se instalado (atualizará registros com "
-"`noupdate='1'`)."
+"`noupdate='1'`)"
+
+#. module: base_import_module
+#: model:ir.model,name:base_import_module.model_ir_http
+msgid "HTTP Routing"
+msgstr "Roteamento HTTP"
 
 #. module: base_import_module
 #: model:ir.model.fields,field_description:base_import_module.field_base_import_module__id
+#: model:ir.model.fields,field_description:base_import_module.field_base_module_uninstall__id
+#: model:ir.model.fields,field_description:base_import_module.field_ir_http__id
+#: model:ir.model.fields,field_description:base_import_module.field_ir_module_module__id
+#: model:ir.model.fields,field_description:base_import_module.field_ir_ui_view__id
 msgid "ID"
 msgstr "ID"
 
@@ -241,11 +256,21 @@ msgid "No file sent."
 msgstr "Nenhum arquivo enviado."
 
 #. module: base_import_module
-#: model_terms:ir.ui.view,arch_db:base_import_module.view_base_module_import
-msgid "Note: you can only import data modules (.xml files and static assets)"
+#. odoo-python
+#: code:addons/base_import_module/models/ir_module.py:0
+msgid "No manifest found in '%(modules)s'. Can't import the zip file."
 msgstr ""
-"Observação: só é possível importar módulos de dados (arquivos xml e static "
+"Nenhum manifesto encontrado em '%(modules)s'. Não é possível importar o "
+"arquivo zip."
+
+#. module: base_import_module
+#: model_terms:ir.ui.view,arch_db:base_import_module.view_base_module_import
+msgid ""
+"Note: you can only import data modules (.xml files, i18n files and static "
 "assets)"
+msgstr ""
+"Observação: você só pode importar módulos de dados (arquivos .xml, arquivos "
+"i18n e ativos estáticos)"
 
 #. module: base_import_module
 #: model:ir.model.fields.selection,name:base_import_module.selection__ir_module_module__module_type__official
@@ -281,6 +306,16 @@ msgstr "Status"
 msgid "Studio customizations require the Odoo Studio app."
 msgstr ""
 "Personalizações do Estúdio requerem a instalação do aplicativo Odoo Estúdio."
+
+#. module: base_import_module
+#. odoo-python
+#: code:addons/base_import_module/models/ir_module.py:0
+msgid ""
+"The assets path in the manifest of imported module '%(module_name)s' cannot "
+"contain glob wildcards (e.g., *, **)."
+msgstr ""
+"O caminho dos recursos no manifesto do módulo importado '%(module_name)s' "
+"não pode conter caracteres curinga globais (ex.: *, **)."
 
 #. module: base_import_module
 #. odoo-python
@@ -333,3 +368,35 @@ msgstr "concluído"
 #: model:ir.model.fields.selection,name:base_import_module.selection__base_import_module__state__init
 msgid "init"
 msgstr "init"
+
+#~ msgid "Import App"
+#~ msgstr "Importar App"
+
+#~ msgid "Import module"
+#~ msgstr "Importar módulo"
+
+#~ msgid "Last Modified on"
+#~ msgstr "Última modificação em"
+
+#~ msgid ""
+#~ "Note: you can only import data modules (.xml files and static assets)"
+#~ msgstr ""
+#~ "Nova: você só pode importar módulos de dados (arquivos xml e static)"
+
+#~ msgid "Open Modules"
+#~ msgstr "Módulos Abertos"
+
+#~ msgid "Select module package to import (.zip file):"
+#~ msgstr "Selecione pacote do módulo para importar (arquivo .zip)"
+
+#~ msgid "Studio customizations require Studio"
+#~ msgstr "Personalizações do Studio exigem a instalação do Studio"
+
+#~ msgid ""
+#~ "Unmet module dependencies: \n"
+#~ "\n"
+#~ " - %s"
+#~ msgstr ""
+#~ "Dependências de módulo não atendidas: \n"
+#~ "\n"
+#~ " - %s"

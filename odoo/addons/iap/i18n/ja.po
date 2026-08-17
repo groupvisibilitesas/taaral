@@ -3,18 +3,18 @@
 # * iap
 #
 # Translators:
-# Wil Odoo, 2024
-# Junko Augias, 2024
+# Martin Trigaux, 2022
 #
-# "Junko Augias (juau)" <juau@odoo.com>, 2026.
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# "Junko Augias (juau)" <juau@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~15.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-06-06 10:22+0000\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-02 13:34+0000\n"
 "Last-Translator: \"Junko Augias (juau)\" <juau@odoo.com>\n"
-"Language-Team: Japanese <https://translate.odoo.com/projects/odoo-18/iap/ja/>"
+"Language-Team: Japanese <https://translate.odoo.com/projects/odoo-19/iap/ja/>"
 "\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -55,8 +55,8 @@ msgid ""
 "An error occurred while reaching %s. Please contact Odoo support if this "
 "error persists."
 msgstr ""
-" %s到達中にエラーが発生しました。エラーが続く場合はOdooサポートにご連絡下さ"
-"い。"
+"%s到達中にエラーが発生しました。エラーが続く場合はOdooサポートにご連絡下さい"
+"。"
 
 #. module: iap
 #: model:ir.model.fields,field_description:iap.field_iap_account__balance
@@ -67,18 +67,6 @@ msgstr "残高"
 #: model:ir.model.fields.selection,name:iap.selection__iap_account__state__banned
 msgid "Banned"
 msgstr "禁止済"
-
-#. module: iap
-#. odoo-javascript
-#: code:addons/iap/static/src/js/insufficient_credit_error_handler.js:0
-msgid "Buy credits"
-msgstr "クレジットを購入"
-
-#. module: iap
-#. odoo-javascript
-#: code:addons/iap/static/src/xml/iap_templates.xml:0
-msgid "Cancel"
-msgstr "キャンセル"
 
 #. module: iap
 #: model:ir.model.fields,field_description:iap.field_iap_account__company_ids
@@ -110,6 +98,7 @@ msgstr "説明"
 
 #. module: iap
 #: model:ir.model.fields,field_description:iap.field_iap_account__display_name
+#: model:ir.model.fields,field_description:iap.field_iap_enrich_api__display_name
 #: model:ir.model.fields,field_description:iap.field_iap_service__display_name
 msgid "Display Name"
 msgstr "表示名"
@@ -122,7 +111,7 @@ msgstr "Eメール警告受信者"
 #. module: iap
 #: model:ir.model.fields,field_description:iap.field_iap_account__warning_threshold
 msgid "Email Alert Threshold"
-msgstr " Eメール警告閾値"
+msgstr "Eメール警告しきい値"
 
 #. module: iap
 #: model:iap.service,description:iap.iap_service_reveal
@@ -131,8 +120,9 @@ msgid ""
 "leads, generate leads based on a set of criteria and enrich the company data "
 "of your opportunities."
 msgstr ""
-"質の高い見込み客と案件を獲得: ウェブサイト訪問者を見込客に転換し、一連の基準"
-"に基づいた見込客を生成して、案件の会社データを充実させましょう、"
+"質の高いリードや案件を獲得しましょう。Webサイトの訪問者をリードに転換し、特定"
+"の条件に基づいてリードを自動生成したり、案件の企業情報を充実させたりすること"
+"ができます。"
 
 #. module: iap
 #: model:ir.ui.menu,name:iap.iap_root_menu
@@ -164,15 +154,10 @@ msgstr "IAPサービス"
 
 #. module: iap
 #: model:ir.model.fields,field_description:iap.field_iap_account__id
+#: model:ir.model.fields,field_description:iap.field_iap_enrich_api__id
 #: model:ir.model.fields,field_description:iap.field_iap_service__id
 msgid "ID"
 msgstr "ID"
-
-#. module: iap
-#. odoo-javascript
-#: code:addons/iap/static/src/xml/iap_templates.xml:0
-msgid "Insufficient credit to perform this service."
-msgstr "このサービスを実行するにはクレジットが足りません。"
 
 #. module: iap
 #: model:ir.model.fields,field_description:iap.field_iap_service__integer_balance
@@ -204,6 +189,12 @@ msgid "Name"
 msgstr "名称"
 
 #. module: iap
+#. odoo-python
+#: code:addons/iap/models/iap_account.py:0
+msgid "No service exists with the provided technical name"
+msgstr "提供された技術設定名のサービスは存在しません"
+
+#. module: iap
 #: model_terms:ir.ui.view,arch_db:iap.res_config_settings_view_form
 msgid "Odoo IAP"
 msgstr "Odoo IAP"
@@ -214,8 +205,7 @@ msgstr "Odoo IAP"
 msgid ""
 "One of the email alert recipients doesn't have an email address set. Users: "
 "%s"
-msgstr ""
-"Eメール警告の宛先の1つに、Eメールアドレスが設定されていません。ユーザ: %s"
+msgstr "Eメール警告の宛先の1つに、Eメールアドレスが設定されていません。ユーザ: %s"
 
 #. module: iap
 #: model:ir.model.constraint,message:iap.constraint_iap_service_unique_technical_name
@@ -226,7 +216,7 @@ msgstr "特定のtechnical_nameで存在できるサービスは1つのみです
 #. odoo-python
 #: code:addons/iap/models/iap_account.py:0
 msgid "Please set a positive email alert threshold."
-msgstr " Eメール警告の閾値を正の値に設定して下さい。"
+msgstr "Eメール警告のしきい値を正の値に設定して下さい。"
 
 #. module: iap
 #: model:ir.model.fields.selection,name:iap.selection__iap_account__state__registered
@@ -244,12 +234,6 @@ msgid "Service Locked"
 msgstr "サービスがロックされました"
 
 #. module: iap
-#. odoo-javascript
-#: code:addons/iap/static/src/js/insufficient_credit_error_handler.js:0
-msgid "Start a Trial at Odoo"
-msgstr "Odooでトライアルを始める"
-
-#. module: iap
 #: model:ir.model.fields,field_description:iap.field_iap_account__state
 msgid "State"
 msgstr "ステータス"
@@ -259,6 +243,12 @@ msgstr "ステータス"
 #: model:ir.model.fields,field_description:iap.field_iap_service__technical_name
 msgid "Technical Name"
 msgstr "技術名称"
+
+#. module: iap
+#. odoo-python
+#: code:addons/iap/models/iap_account.py:0
+msgid "The IAP token provided is invalid or empty."
+msgstr "提供されたIAPトークンが無効か空です。"
 
 #. module: iap
 #. odoo-python
@@ -291,3 +281,15 @@ msgstr "購入済サービス一覧"
 #: model_terms:ir.ui.view,arch_db:iap.res_config_settings_view_form
 msgid "View your IAP Services and recharge your credits"
 msgstr "IAPサービス一覧とクレジットを購入"
+
+#~ msgid "Buy credits"
+#~ msgstr "クレジットを購入"
+
+#~ msgid "Cancel"
+#~ msgstr "取消"
+
+#~ msgid "Config Settings"
+#~ msgstr "コンフィグ設定"
+
+#~ msgid "Service Name"
+#~ msgstr "サービス名"

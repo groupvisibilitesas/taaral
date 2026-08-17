@@ -77,9 +77,7 @@ class PosOrder(models.Model):
         headers = self.company_id._l10n_jo_build_jofotara_headers()
         xml_order = self.env['pos.edi.xml.ubl_21.jo']._export_pos_order(self)[0]
         params = {'invoice': base64.b64encode(xml_order).decode()}
-        dict_response = {'EINV_QR': "Demo JoFotara QR"}\
-                        if self.env.company.l10n_jo_edi_demo_mode\
-                        else self.company_id._send_l10n_jo_edi_request(params, headers)
+        dict_response = self.company_id._send_l10n_jo_edi_request(params, headers)
         if 'error' in dict_response and len(dict_response) == 1:
             return dict_response['error']
         self.l10n_jo_edi_pos_qr = str(dict_response.get('EINV_QR', ''))
@@ -186,12 +184,17 @@ class PosOrder(models.Model):
         })
         return {'type': 'ir.actions.act_url', 'url': '/web/content/?' + params, 'target': 'new'}
 
+    def _is_single_jo_order(self):
+        return len(self) == 1 and self.country_code == 'JO'
+
     def _prepare_invoice_vals(self):
         # EXTENDS 'point_of_sale'
         vals = super()._prepare_invoice_vals()
+        if not self._is_single_jo_order():
+            return vals
         return {
             **vals,
-            'ref': self.l10n_jo_edi_pos_return_reason or vals.get('ref', False),
+            'ref': self.l10n_jo_edi_pos_return_reason,
             'l10n_jo_edi_uuid': self.l10n_jo_edi_pos_uuid,
             'l10n_jo_edi_state': self.l10n_jo_edi_pos_state,
             'l10n_jo_edi_error': self.l10n_jo_edi_pos_error,
@@ -206,6 +209,8 @@ class PosOrder(models.Model):
         return invoice
 
     def _link_xml_and_qr_to_invoice(self, invoice):
+        if not self._is_single_jo_order():
+            return
         if invoice and self.l10n_jo_edi_pos_xml_attachment_id:
             self.env["ir.attachment"].create(
                 {

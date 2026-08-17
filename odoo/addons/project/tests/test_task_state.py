@@ -170,6 +170,15 @@ class TestTaskState(TestProjectCommon):
 
         self.assertEqual(task.state, '01_in_progress', "The task should be in progress")
 
+    def test_changing_parent_do_not_reset_task_state(self):
+        self.task_2.state = '04_waiting_normal'
+        self.task_2.parent_id = self.task_1
+        self.assertEqual(
+            self.task_2.state,
+            '04_waiting_normal',
+            "Changing the task's parent should not reset the task's state.",
+        )
+
     def test_subtask_closed_state_not_reset_on_parent_project_change(self):
         subtask_changes_requested, subtask_done = self.env['project.task'].create([
             {
@@ -194,9 +203,12 @@ class TestTaskState(TestProjectCommon):
         self.assertEqual(subtask_done.state, '1_canceled')
 
     def test_state_dont_reset_when_enabling_task_dependencies(self):
+        self.project_goats.allow_task_dependencies = False
+        self.env.user.group_ids -= self.env.ref('project.group_project_task_dependencies')
         self.task_1.state = "03_approved"
         self.task_2.state = "02_changes_requested"
-        self.env['res.config.settings'].create({'group_project_task_dependencies': True}).execute()
+        self.project_goats.allow_task_dependencies = True
+        self.env.user.group_ids += self.env.ref('project.group_project_task_dependencies')
         self.assertEqual(self.task_1.state, "03_approved")
         self.assertEqual(self.task_2.state, "02_changes_requested")
 
@@ -221,7 +233,8 @@ class TestTaskState(TestProjectCommon):
             13. Enable again the task dependencies on the project.
             14. Check the state of task 1 did not change.
         """
-        self.env['res.config.settings'].create({'group_project_task_dependencies': True}).execute()
+        self.assertTrue(self.project_goats.allow_task_dependencies)
+        self.assertTrue(self.env.user.has_group('project.group_project_task_dependencies'))
         self.task_1.depend_on_ids = self.task_2
         self.assertEqual(self.task_1.state, '04_waiting_normal')
         self.project_goats.allow_task_dependencies = False

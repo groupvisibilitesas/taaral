@@ -2,8 +2,8 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
-from odoo.osv import expression
 from odoo.tools import Query, SQL
+
 
 class AccountAnalyticLine(models.Model):
     _inherit = 'account.analytic.line'
@@ -20,7 +20,6 @@ class AccountAnalyticLine(models.Model):
         'account.account',
         string='Financial Account',
         ondelete='restrict',
-        domain="[('deprecated', '=', False)]",
         check_company=True,
         compute='_compute_general_account_id', store=True, readonly=False
     )
@@ -102,8 +101,8 @@ class AccountAnalyticLine(models.Model):
         prod_accounts = self.product_id.product_tmpl_id.with_company(self.company_id)._get_product_accounts()
         unit = self.product_uom_id
         account = prod_accounts['expense']
-        if not unit or self.product_id.uom_po_id.category_id.id != unit.category_id.id:
-            unit = self.product_id.uom_po_id
+        if not unit:
+            unit = self.product_id.uom_id
 
         # Compute based on pricetype
         amount_unit = self.product_id._price_compute('standard_price', uom=unit)[self.product_id.id]
@@ -122,10 +121,16 @@ class AccountAnalyticLine(models.Model):
             )
         return super().view_header_get(view_id, view_type)
 
-    def _field_to_sql(self, alias: str, fname: str, query: (Query | None) = None, flush: bool = True) -> SQL:
+    @api.model_create_multi
+    def create(self, vals_list):
+        analytic_lines = super().create(vals_list)
+        analytic_lines.move_line_id._update_analytic_distribution()
+        return analytic_lines
+
+    def _field_to_sql(self, alias: str, field_expr: str, query: (Query | None) = None) -> SQL:
         # Please keep this method aligned with _compute_analytic_profitability
-        if fname != 'analytic_profitability':
-            return super()._field_to_sql(alias, fname, query, flush)
+        if field_expr != 'analytic_profitability':
+            return super()._field_to_sql(alias, field_expr, query)
 
         account_alias = query.left_join(alias, 'general_account_id', 'account_account', 'id', 'account_account')
 
@@ -146,26 +151,21 @@ class AccountAnalyticLine(models.Model):
         """,
             account_type=SQL.identifier(account_alias, 'account_type'),
             analytic_line_category=SQL.identifier(alias, 'category'),
-            analytic_line_amount=SQL.identifier(alias, 'amount'))
+            analytic_line_amount=SQL.identifier(alias, 'amount'),
+        )
 
     def _search_analytic_profitability(self, operator, value):
-        if operator not in ['=', '!=', 'in', 'not in']:
+        if operator != 'in':
             return NotImplemented
 
         query = Query(self.env, alias='account_analytic_line', table=SQL.identifier('account_analytic_line'))
-        query.add_where(SQL("%(profitability)s %(operator)s %(val)s",
+        query.add_where(SQL("%(profitability)s IN %(val)s",
             profitability=self._field_to_sql('account_analytic_line', 'analytic_profitability', query=query),
-            operator=expression.SQL_OPERATORS[operator],
-            val=tuple(value) if operator in ('in', 'not in') else value,
+            val=tuple(value),
         ))
         lines = self.browse(query)
 
         return [('id', 'in', lines.ids)]
-
-    def create(self, vals):
-        analytic_lines = super().create(vals)
-        analytic_lines.move_line_id._update_analytic_distribution()
-        return analytic_lines
 
     def write(self, vals):
         affected_move_lines = self.move_line_id

@@ -3,28 +3,28 @@
 # * payment_stripe
 #
 # Translators:
-# Wil Odoo, 2024
+# Wil Odoo, 2025
 #
-# "Tony Ng (ngto)" <ngto@odoo.com>, 2026.
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~18.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:38+0000\n"
-"PO-Revision-Date: 2026-04-17 11:30+0000\n"
-"Last-Translator: \"Tony Ng (ngto)\" <ngto@odoo.com>\n"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-03 19:07+0000\n"
+"Last-Translator: \"Dylan Kiss (dyki)\" <dyki@odoo.com>\n"
 "Language-Team: Chinese (Traditional Han script) <https://translate.odoo.com/"
-"projects/odoo-18/payment_stripe/zh_Hant/>\n"
+"projects/odoo-19/payment_stripe/zh_Hant/>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: payment_stripe
 #. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/payment_form.js:0
+#: code:addons/payment_stripe/static/src/interactions/payment_form.js:0
 msgid "Cannot display the payment form"
 msgstr "未能顯示付款表單"
 
@@ -39,16 +39,17 @@ msgid "Connect Stripe"
 msgstr "連線至 Stripe"
 
 #. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_provider.py:0
-msgid "Could not establish the connection to the API."
-msgstr "未能建立與 API 的連線。"
-
-#. module: payment_stripe
 #. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/express_checkout_form.js:0
+#: code:addons/payment_stripe/static/src/interactions/express_checkout.js:0
 msgid "Delivery"
 msgstr "送貨"
+
+#. module: payment_stripe
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_provider__display_name
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_token__display_name
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_transaction__display_name
+msgid "Display Name"
+msgstr "顯示名稱"
 
 #. module: payment_stripe
 #: model_terms:ir.ui.view,arch_db:payment_stripe.payment_provider_form
@@ -57,7 +58,7 @@ msgstr "啟用 Apple Pay"
 
 #. module: payment_stripe
 #. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/express_checkout_form.js:0
+#: code:addons/payment_stripe/static/src/interactions/express_checkout.js:0
 msgid "Free Shipping"
 msgstr "免費送貨"
 
@@ -72,6 +73,13 @@ msgid "Get your Secret and Publishable keys"
 msgstr "獲取你的秘密金鑰及可發佈密鑰"
 
 #. module: payment_stripe
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_provider__id
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_token__id
+#: model:ir.model.fields,field_description:payment_stripe.field_payment_transaction__id
+msgid "ID"
+msgstr "識別號"
+
+#. module: payment_stripe
 #: model:ir.model.fields,help:payment_stripe.field_payment_provider__stripe_webhook_secret
 msgid ""
 "If a webhook is enabled on your Stripe account, this signing secret must be "
@@ -82,15 +90,9 @@ msgstr ""
 
 #. module: payment_stripe
 #. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/payment_form.js:0
+#: code:addons/payment_stripe/static/src/interactions/payment_form.js:0
 msgid "Incorrect payment details"
 msgstr "付款資料不正確"
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_transaction.py:0
-msgid "No transaction found matching reference %s."
-msgstr "找不到符合以下參考編號的交易：%s。"
 
 #. module: payment_stripe
 #. odoo-python
@@ -120,7 +122,7 @@ msgstr "付款交易"
 
 #. module: payment_stripe
 #. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/payment_form.js:0
+#: code:addons/payment_stripe/static/src/interactions/payment_form.js:0
 msgid "Payment processing failed"
 msgstr "付款處理失敗"
 
@@ -138,20 +140,14 @@ msgstr "可發佈密鑰"
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
-msgid "Received data with invalid intent status: %s"
-msgstr "收到資料，但意圖狀態無效： %s"
+msgid "Received data with invalid intent status: %s."
+msgstr ""
 
 #. module: payment_stripe
 #. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
 msgid "Received data with missing intent status."
 msgstr "收到資料，但缺漏意圖狀態。"
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_transaction.py:0
-msgid "Received data with missing merchant reference"
-msgstr "收到資料，但缺漏商家參考"
 
 #. module: payment_stripe
 #: model:ir.model.fields,field_description:payment_stripe.field_payment_provider__stripe_secret_key
@@ -183,37 +179,6 @@ msgstr "Stripe 付款方法識別碼"
 
 #. module: payment_stripe
 #. odoo-python
-#: code:addons/payment_stripe/models/payment_provider.py:0
-msgid "Stripe Proxy error: %(error)s"
-msgstr "Stripe 代理錯誤： %(error)s"
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_provider.py:0
-msgid "Stripe Proxy: An error occurred when communicating with the proxy."
-msgstr "Stripe 代理程式：與代理程式通訊時發生錯誤。"
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_provider.py:0
-msgid "Stripe Proxy: Could not establish the connection."
-msgstr "Stripe 代理程式：無法建立連線。"
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_provider.py:0
-#: code:addons/payment_stripe/models/payment_transaction.py:0
-msgid ""
-"The communication with the API failed.\n"
-"Stripe gave us the following info about the problem:\n"
-"'%s'"
-msgstr ""
-"與 API 通訊失敗。\n"
-"就該問題，Stripe 向我們提供了以下資訊：\n"
-"%s"
-
-#. module: payment_stripe
-#. odoo-python
 #: code:addons/payment_stripe/models/payment_transaction.py:0
 msgid "The customer left the payment page."
 msgstr "客戶離開了付款頁面。"
@@ -237,12 +202,6 @@ msgstr ""
 #: model:ir.model.fields,help:payment_stripe.field_payment_provider__code
 msgid "The technical code of this payment provider."
 msgstr "此付款服務商的技術代碼。"
-
-#. module: payment_stripe
-#. odoo-python
-#: code:addons/payment_stripe/models/payment_transaction.py:0
-msgid "The transaction is not linked to a token."
-msgstr "交易未有連結至代碼。"
 
 #. module: payment_stripe
 #. odoo-python
@@ -292,7 +251,7 @@ msgstr "你的 Stripe 網絡鈎子（webhook）已經設定好。"
 
 #. module: payment_stripe
 #. odoo-javascript
-#: code:addons/payment_stripe/static/src/js/express_checkout_form.js:0
+#: code:addons/payment_stripe/static/src/interactions/express_checkout.js:0
 msgid "Your order"
 msgstr "你的訂單"
 
@@ -301,3 +260,36 @@ msgstr "你的訂單"
 #: code:addons/payment_stripe/models/payment_provider.py:0
 msgid "Your web domain was successfully verified."
 msgstr "你的網域已成功驗證。"
+
+#~ msgid "Could not establish the connection to the API."
+#~ msgstr "無法建立與 API 的連線。"
+
+#~ msgid "No transaction found matching reference %s."
+#~ msgstr "找不到符合參考 %s 的交易。"
+
+#~ msgid "Received data with invalid intent status: %s"
+#~ msgstr "收到資料，但意圖狀態無效： %s"
+
+#~ msgid "Received data with missing merchant reference"
+#~ msgstr "收到資料，但缺漏商家參考"
+
+#~ msgid "Stripe Proxy error: %(error)s"
+#~ msgstr "Stripe 代理錯誤： %(error)s"
+
+#~ msgid "Stripe Proxy: An error occurred when communicating with the proxy."
+#~ msgstr "Stripe 代理程式：與代理程式通訊時發生錯誤。"
+
+#~ msgid "Stripe Proxy: Could not establish the connection."
+#~ msgstr "Stripe 代理程式：無法建立連線。"
+
+#~ msgid ""
+#~ "The communication with the API failed.\n"
+#~ "Stripe gave us the following info about the problem:\n"
+#~ "'%s'"
+#~ msgstr ""
+#~ "與 API 通訊失敗。\n"
+#~ "就該問題，Stripe 向我們提供了以下資訊：\n"
+#~ "%s"
+
+#~ msgid "The transaction is not linked to a token."
+#~ msgstr "交易未有連結至代碼。"

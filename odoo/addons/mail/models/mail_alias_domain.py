@@ -3,9 +3,10 @@
 
 from odoo import api, exceptions, fields, models, _
 from odoo.addons.mail.models.mail_alias import dot_atom_text
+from odoo.exceptions import UserError
 
 
-class AliasDomain(models.Model):
+class MailAliasDomain(models.Model):
     """ Model alias domains, now company-specific. Alias domains are email
     domains used to receive emails through catchall and bounce aliases, as
     well as using mail.alias records to redirect email replies.
@@ -40,18 +41,14 @@ class AliasDomain(models.Model):
              "'notifications@example.com' to override all outgoing emails.")
     default_from_email = fields.Char('Default From', compute='_compute_default_from_email')
 
-    _sql_constraints = [
-        (
-            'bounce_email_uniques',
-            'UNIQUE(bounce_alias, name)',
-            'Bounce emails should be unique'
-        ),
-        (
-            'catchall_email_uniques',
-            'UNIQUE(catchall_alias, name)',
-            'Catchall emails should be unique'
-        ),
-    ]
+    _bounce_email_uniques = models.Constraint(
+        'UNIQUE(bounce_alias, name)',
+        'Bounce emails should be unique',
+    )
+    _catchall_email_uniques = models.Constraint(
+        'UNIQUE(catchall_alias, name)',
+        'Catchall emails should be unique',
+    )
 
     @api.depends('bounce_alias', 'name')
     def _compute_bounce_email(self):
@@ -150,6 +147,7 @@ class AliasDomain(models.Model):
             self._sanitize_configuration(vals)
 
         alias_domains = super().create(vals_list)
+        alias_domains._check_default_from_not_used_by_users()
 
         # alias domain init: populate companies and aliases at first creation
         if alias_domains and self.search_count([]) == len(alias_domains):
@@ -170,7 +168,20 @@ class AliasDomain(models.Model):
     def write(self, vals):
         """ Sanitize name / bounce_alias / catchall_alias / default_from """
         self._sanitize_configuration(vals)
-        return super().write(vals)
+        ret = super().write(vals)
+        self._check_default_from_not_used_by_users()
+        return ret
+
+    def _check_default_from_not_used_by_users(self):
+        """Check that the default from is not used by a personal mail servers."""
+        match_from_filter = self.env["ir.mail_server"]._match_from_filter
+        personal_mail_servers = self.env["ir.mail_server"].sudo().search([("owner_user_id", "!=", False)])
+        if any(
+            match_from_filter(e, server.from_filter)
+            for e in self.mapped("default_from_email")
+            for server in personal_mail_servers
+        ):
+            raise UserError(_("A personal mail server is using that address, you can not use it."))
 
     @api.model
     def _sanitize_configuration(self, config_values):
@@ -186,6 +197,59 @@ class AliasDomain(models.Model):
                 config_values['default_from'], is_email=True
             )
         return config_values
+
+    @api.model
+    def _find_aliases(self, email_list):
+        """ Utility method to find both alias domains aliases (bounce, catchall
+        or default from) and mail aliases from an email list.
+
+        :param email_list: list of normalized emails; normalization / removing
+            wrong emails is considered as being caller's job
+        """
+        filtered_emails = [e for e in email_list if e and '@' in e]
+        if not filtered_emails:
+            return filtered_emails
+        all_domains = self.search([])
+        aliases = set(all_domains.mapped('bounce_email') +
+                    all_domains.mapped('catchall_email') +
+                    all_domains.mapped('default_from_email'))
+
+        # Get allowed domains and convert to a set for O(1) lookup
+        catchall_params = self.env["ir.config_parameter"].sudo().get_param("mail.catchall.domain.allowed") or ''
+        catchall_domains_allowed = set(filter(None, catchall_params.split(',')))
+        if catchall_domains_allowed:
+            catchall_domains_allowed.update(all_domains.mapped('name'))
+            email_localparts_tocheck = [
+                email.partition('@')[0] for email in filtered_emails if (
+                    email.partition('@')[2] in catchall_domains_allowed
+                )]
+        else:
+            email_localparts_tocheck = [email.partition('@')[0] for email in filtered_emails if email]
+
+        # search on aliases using the proposed list, as we could have a lot of aliases
+        # better than returning 'all alias emails'
+        potential_aliases = self.env['mail.alias'].search([
+            '|',
+            ('alias_full_name', 'in', filtered_emails),
+            '&', ('alias_name', 'in', email_localparts_tocheck), ('alias_incoming_local', '=', True),
+        ])
+        # Global aliases match by full name
+        aliases.update(potential_aliases.filtered(lambda x: not x.alias_incoming_local).mapped('alias_full_name'))
+
+        # Local aliases for validated local part + domain checking
+        local_alias_names = set(potential_aliases.filtered(lambda x: x.alias_incoming_local).mapped('alias_name'))
+
+        res = []
+        for email in filtered_emails:
+            if email in aliases:
+                res.append(email)
+                continue
+
+            local_part, _, domain = email.partition('@')
+            if local_part in local_alias_names and (not catchall_domains_allowed or domain in catchall_domains_allowed):
+                res.append(email)
+
+        return res
 
     @api.model
     def _migrate_icp_to_domain(self):

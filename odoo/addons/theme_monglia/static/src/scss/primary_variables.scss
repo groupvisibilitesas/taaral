@@ -156,6 +156,10 @@ $o-website-values-palettes: (
     ),
 );
 
+$default-light-3: map-get($o-color-palettes, 'default-light-3');
+$default-light-3: map-merge($default-light-3, ('footer': 5));
+$o-color-palettes: map-merge($o-color-palettes, ('default-light-3': $default-light-3));
+
 $o-color-palettes-compatibility-indexes: (
     1: 'monglia-1',
     2: 'monglia-2',
@@ -182,6 +186,6 @@ $o-color-palettes-compatibility-indexes: (
     23: 'generic-17',
 );
 
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Blocks/04', (5:5, 3:2, 2:3, 1:4));
-$o-bg-shapes: add-extra-shape-colors-mapping('web_editor', 'Blocks/04', 'second', (5:5, 3:2, 2:3, 1:4));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Blocks/04', (5:5, 3:2, 2:3, 1:4));
+$o-bg-shapes: add-extra-shape-colors-mapping('html_builder', 'Blocks/04', 'second', (5:5, 3:2, 2:3, 1:4));
 

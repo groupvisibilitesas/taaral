@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 class SpreadsheetController(Controller):
 
-    @http.route("/spreadsheet/log", type="json", auth="user", methods=["POST"])
+    @http.route("/spreadsheet/log", type="jsonrpc", auth="user", methods=["POST"])
     def log_action(self, action_type, datasources, **kw):
         if datasources:
             self._log_spreadsheet_export(action_type, request.env.uid, datasources)

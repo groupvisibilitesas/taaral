@@ -87,10 +87,10 @@ class PortalAccount(portal.PortalAccount, PaymentPortal):
             'payment': {
                 'date': fields.Date.today(),
                 'reference': batch_name,
-                'amount': amount_residual,
+                'amount': total_amount,
                 'currency': currency,
             },
-            'amount': amount_residual,
+            'amount': total_amount,
         })
 
         common_view_values = self._get_common_page_view_values(

@@ -162,7 +162,7 @@ class CardCampaign(models.Model):
             campaign.res_model = preview_model or campaign.res_model or 'res.partner'
 
     @api.model_create_multi
-    def create(self, create_vals):
+    def create(self, vals_list):
         utm_source = self.env.ref('marketing_card.utm_source_marketing_card', raise_if_not_found=False)
         link_trackers = self.env['link.tracker'].sudo().create([
             {
@@ -171,12 +171,12 @@ class CardCampaign(models.Model):
                 'source_id': utm_source.id if utm_source else None,
                 'label': f"marketing_card_campaign_{vals.get('name', '')}_{fields.Datetime.now()}",
             }
-            for vals in create_vals
+            for vals in vals_list
         ])
         return super().create([{
             **vals,
             'link_tracker_id': link_tracker_id,
-        } for vals, link_tracker_id in zip(create_vals, link_trackers.ids)])
+        } for vals, link_tracker_id in zip(vals_list, link_trackers.ids)])
 
     def write(self, vals):
         link_tracker_vals = {}
@@ -249,13 +249,14 @@ class CardCampaign(models.Model):
             'name': _('Send Cards'),
             'res_model': 'mailing.mailing',
             'context': {
+                'create': False,
                 'default_subject': self.name,
                 'default_card_campaign_id': self.id,
                 'default_mailing_model_id': self.env['ir.model']._get_id(self.res_model),
                 'default_body_arch': self._action_share_get_default_body(),
             },
             'views': [[False, 'form']],
-            'target': 'new',
+            'target': 'current',
         }
 
     def _fetch_or_create_preview_card(self):
@@ -288,7 +289,7 @@ class CardCampaign(models.Model):
         # try to pick a relevant card if users try to visit during preview/test mailings
         preview_card = self._fetch_or_create_preview_card() if self else self.env['card.card']
         return f"""
-<div class="o_layout oe_unremovable oe_unmovable bg-200 o_empty_theme" data-name="Mailing">
+<div class="o_layout oe_unremovable oe_unmovable o_empty_theme" data-name="Mailing">
 <style id="design-element"></style>
 <div class="container o_mail_wrapper o_mail_regular oe_unremovable">
 <div class="row">
@@ -296,10 +297,10 @@ class CardCampaign(models.Model):
 
 <div class="s_text_block o_mail_snippet_general pt24 pb24" style="padding-left: 15px; padding-right: 15px;" data-snippet="s_text_block" data-name="Text">
     <div class="container s_allow_columns">
-        <p class="o_default_snippet_text">{_("Hello everyone")}</p>
-        <p class="o_default_snippet_text">{_("Here's the link to advertise your participation.")}
+        <p>{_("Hello everyone")}</p>
+        <p>{_("Here's the link to advertise your participation.")}
         <br>{_("Your help with this promotion would be greatly appreciated!")}</p>
-        <p class="o_default_snippet_text">{_("Many thanks")}</p>
+        <p>{_("Many thanks")}</p>
     </div>
 </div>
 
@@ -309,7 +310,8 @@ class CardCampaign(models.Model):
             <tr>
                 <td align="center">
                     <a href="/cards/{preview_card.id or 0}/preview" style="padding-left: 3px !important; padding-right: 3px !important">
-                        <img src="/web/image/card.campaign/{self.id or 0}/image_preview" alt="{_("Card Preview")}" class="img-fluid" style="width: 540px;"/>
+                        <img src="/web/image/card.campaign/{self.id or 0}/image_preview" alt="{_("Card Preview")}" class="img-fluid" style="width: 540px;"
+                            data-original-src="/web/image/card.campaign/{self.id or 0}/image_preview"/>
                     </a>
                 </td>
             </tr>
@@ -434,7 +436,7 @@ class CardCampaign(models.Model):
                 # force dates to their relevant timezone as that's what is usually wanted
                 if (
                     isinstance(result[el], (date, datetime))
-                    and (tz := record._mail_get_timezone_with_default(default_tz=None))
+                    and (tz := record._mail_get_timezone())
                 ):
                     result[el] = pytz.utc.localize(result[el]).astimezone(pytz.timezone(tz)).replace(tzinfo=None)
         return result

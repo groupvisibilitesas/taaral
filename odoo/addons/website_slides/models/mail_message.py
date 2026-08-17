@@ -7,8 +7,8 @@ from odoo.addons.mail.tools.discuss import Store
 class MailMessage(models.Model):
     _inherit = "mail.message"
 
-    def _to_store(self, store: Store, /, *, fields=None, **kwargs):
-        super()._to_store(store, fields=fields, **kwargs)
+    def _to_store(self, store: Store, fields, **kwargs):
+        super()._to_store(store, fields, **kwargs)
         slides = self._records_by_model_name().get("slide.slide")
         if not slides:
             return

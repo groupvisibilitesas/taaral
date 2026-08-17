@@ -1,20 +1,22 @@
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
+
 from unittest.mock import patch, call
 from datetime import timedelta, datetime
 from freezegun import freeze_time
 
 from odoo import Command, fields
 
-from odoo.addons.mail.tests.common import MailCommon, mail_new_test_user
+from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.addons.microsoft_calendar.utils.microsoft_calendar import MicrosoftCalendarService
 from odoo.addons.microsoft_calendar.utils.microsoft_event import MicrosoftEvent
-from odoo.addons.microsoft_calendar.models.res_users import User
+from odoo.addons.microsoft_calendar.models.res_users import ResUsers
 from odoo.addons.microsoft_calendar.tests.common import TestCommon, mock_get_token, _modified_date_in_the_future
 from odoo.exceptions import ValidationError, UserError
 from odoo.tests.common import tagged
 
 
 @tagged('post_install', '-at_install')
-@patch.object(User, '_get_microsoft_calendar_token', mock_get_token)
+@patch.object(ResUsers, '_get_microsoft_calendar_token', mock_get_token)
 class TestCreateEvents(TestCommon):
 
     @patch.object(MicrosoftCalendarService, 'insert')
@@ -399,9 +401,8 @@ class TestCreateEvents(TestCommon):
         mock_get_events.return_value = ([], None)
 
         # Synchronize local event with Outlook after updating it locally.
-        # Set user's microsoft_last_sync_date to now() to capture the event with the domain in
-        # _extend_microsoft_domain.
-        self.organizer_user.microsoft_last_sync_date = fields.datetime.now()
+        # Set microsoft_last_sync_date to be datetime.now() using restart_microsoft_synchronization().
+        self.organizer_user.with_user(self.organizer_user).sudo().restart_microsoft_synchronization()
         self.organizer_user.with_user(self.organizer_user).sudo()._sync_microsoft_calendar()
         self.call_post_commit_hooks()
         event.invalidate_recordset()
@@ -463,7 +464,7 @@ class TestCreateEvents(TestCommon):
             'login': 'portal@user',
             'email': 'portal@user',
             'name': 'PortalUser',
-            'groups_id': [Command.set([portal_group.id])],
+            'group_ids': [Command.set([portal_group.id])],
             })
 
         # Mock event from Microsoft and sync event with Odoo through self.attendee_user (synced user).
@@ -588,7 +589,7 @@ class TestCreateEvents(TestCommon):
         })
         self.hr_leave_type = self.env['hr.leave.type'].with_user(self.user_hrmanager).create({
             'name': 'Time Off Type',
-            'requires_allocation': 'no',
+            'requires_allocation': False,
         })
         self.holiday = self.env['hr.leave'].with_context(mail_create_nolog=True, mail_notrack=True).with_user(self.user_employee).create({
             'name': 'Time Off Employee',
@@ -597,7 +598,7 @@ class TestCreateEvents(TestCommon):
             'request_date_from': datetime(2020, 1, 15),
             'request_date_to': datetime(2020, 1, 15),
         })
-        self.holiday.with_user(self.user_hrmanager).action_validate()
+        self.holiday.with_user(self.user_hrmanager).action_approve()
 
         # Ensure the event exists in the calendar and is correctly linked to the time off
         search_domain = [
@@ -820,7 +821,7 @@ class TestCreateEvents(TestCommon):
         }
 
         # set microsoft_last_sync_date for the user at t=-12h and sync any irrelevant event
-        with self.mock_datetime_and_now(t_minus_12h), patch.object(User, '_get_microsoft_calendar_token', _mock_calendar_token):
+        with self.mock_datetime_and_now(t_minus_12h), patch.object(ResUsers, '_get_microsoft_calendar_token', _mock_calendar_token):
             self.organizer_user.with_user(self.organizer_user).restart_microsoft_synchronization()
             # also force set first sync far in the past as it affects the domain and we don't care to take it into account here
             self.env['ir.config_parameter'].sudo().set_param('microsoft_calendar.sync.first_synchronization_date', t_minus_12h - timedelta(days=5))
@@ -833,10 +834,10 @@ class TestCreateEvents(TestCommon):
         for time, should_sync, expected_insert_count in zip([t_minus_12h, t_minus_11h, t_now], [True, False, True], [1, 1, 3]):
             # force reset it as syncing between loops will set it
             self.organizer_user.microsoft_last_sync_date = t_minus_12h
-            with self.mock_datetime_and_now(time), patch.object(User, '_get_microsoft_calendar_token', _mock_calendar_token):
+            with self.mock_datetime_and_now(time), patch.object(ResUsers, '_get_microsoft_calendar_token', _mock_calendar_token):
                 event = CalendarEvent.create(vals_list)
                 events |= event
-            with self.mock_datetime_and_now(t_now), patch.object(User, '_get_microsoft_calendar_token', _mock_calendar_token):
+            with self.mock_datetime_and_now(t_now), patch.object(ResUsers, '_get_microsoft_calendar_token', _mock_calendar_token):
                 if should_sync:
                     # sudo() is for consistency, even though the case passes without it here.
                     self.organizer_user.with_user(self.organizer_user).sudo()._sync_microsoft_calendar()
@@ -850,98 +851,3 @@ class TestCreateEvents(TestCommon):
             all(events.mapped('microsoft_id')),
             "This event should be synced. It was written to after the user's microsoft_last_sync_date."
         )
-
-class TestSyncOdoo2MicrosoftMail(TestCommon, MailCommon):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.users = []
-        for n in range(1, 4):
-            user = cls.env['res.users'].create({
-                'name': f'user{n}',
-                'login': f'user{n}',
-                'email': f'user{n}@odoo.com',
-                'microsoft_calendar_rtoken': f'abc{n}',
-                'microsoft_calendar_token': f'abc{n}',
-                'microsoft_calendar_token_validity': datetime(9999, 12, 31),
-            })
-            user.res_users_settings_id.write({
-                'microsoft_synchronization_stopped': False,
-                'microsoft_calendar_sync_token': f'{n}_sync_token',
-            })
-            cls.users += [user]
-
-    @freeze_time("2020-01-01")
-    @patch.object(User, '_get_microsoft_calendar_token', lambda user: user.microsoft_calendar_token)
-    def test_event_creation_for_user(self):
-        """Check that either emails or synchronization happens correctly when creating an event for another user."""
-        user_root = self.env.ref('base.user_root')
-        self.assertFalse(user_root.microsoft_calendar_token)
-        partner = self.env['res.partner'].create({'name': 'Jean-Luc', 'email': 'jean-luc@opoo.com'})
-        event_values = {
-            'name': 'Event',
-            'need_sync_m': True,
-            'start': datetime(2020, 1, 15, 8, 0),
-            'stop': datetime(2020, 1, 15, 18, 0),
-        }
-        
-        paused_sync_user = self.users[2]
-        paused_sync_user.write({
-            'email': 'ms.sync.paused@test.lan',
-            'microsoft_synchronization_stopped': True,
-            'name': 'Paused Microsoft Sync User',
-            'login': 'ms_sync_paused_user',
-        })
-        self.assertTrue(paused_sync_user.microsoft_synchronization_stopped)
-
-        for create_user, organizer, expect_mail, attendee in [
-            (user_root, self.users[0], True, partner), # emulates online appointment with user 0
-            (user_root, None, True, partner), # emulates online resource appointment
-            (self.users[0], None, False, partner),
-            (self.users[0], self.users[0], False, partner),
-            (self.users[0], self.users[1], False, partner),
-            # create user has paused sync and organizer can sync -> will not sync because of bug
-            (paused_sync_user, self.users[0], True, paused_sync_user.partner_id),
-        ]:
-            with self.subTest(create_uid=create_user.name if create_user else None, user_id=organizer.name if organizer else None, attendee=attendee.name):
-                with self.mock_mail_gateway(), patch.object(MicrosoftCalendarService, 'insert') as mock_insert:
-                    mock_insert.return_value = ('1', '1')
-                    self.env['calendar.event'].with_user(create_user).with_context(mail_notify_author=True).create({
-                        **event_values,
-                        'partner_ids': [(4, organizer.partner_id.id), (4, attendee.id)] if organizer else [(4, attendee.id)],
-                        'user_id': organizer.id if organizer else False,
-                    })
-                    self.env.cr.postcommit.run()
-                if not expect_mail:
-                    self.assertNotSentEmail()
-                    mock_insert.assert_called_once()
-                    self.assert_dict_equal(mock_insert.call_args[0][0]['organizer'], {
-                        'emailAddress': {'address': organizer.email if organizer else '', 'name': organizer.name if organizer else ''}
-                    })
-                elif expect_mail:
-                    mock_insert.assert_not_called()
-                    self.assertMailMail(attendee, 'sent', author=(organizer or create_user).partner_id)
-
-    def test_change_organizer_pure_odoo_event(self):
-        """
-        Test that changing organizer on a pure Odoo event (not synced with Microsoft)
-        does not archive the event.
-        """
-        self.organizer_user.microsoft_synchronization_stopped = True
-        event = self.env["calendar.event"].with_user(self.organizer_user).create({
-            'name': "Pure Odoo Event",
-            'start': datetime(2024, 1, 1, 10, 0),
-            'stop': datetime(2024, 1, 1, 11, 0),
-            'user_id': self.organizer_user.id,
-            'partner_ids': [Command.set([self.organizer_user.partner_id.id, self.attendee_user.partner_id.id])],
-        })
-
-        self.assertFalse(event.microsoft_id)
-        self.assertTrue(event.active)
-
-        event.write({
-            'user_id': self.attendee_user.id,
-        })
-
-        self.assertTrue(event.active, "Pure Odoo event should not be archived when changing organizer")
-        self.assertEqual(event.user_id, self.attendee_user, "Organizer should be updated")

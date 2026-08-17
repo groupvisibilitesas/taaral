@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
-from odoo import api, models
+from odoo import models
 
 
-class AccountEdiXmlUBL21(models.AbstractModel):
-    _name = "account.edi.xml.ubl_21"
-    _inherit = 'account.edi.xml.ubl_20'
+class AccountEdiXmlUbl_21(models.AbstractModel):
+    _name = 'account.edi.xml.ubl_21'
+    _inherit = ['account.edi.xml.ubl_20']
     _description = "UBL 2.1"
 
     # -------------------------------------------------------------------------
@@ -14,54 +13,8 @@ class AccountEdiXmlUBL21(models.AbstractModel):
     def _export_invoice_filename(self, invoice):
         return f"{invoice.name.replace('/', '_')}_ubl_21.xml"
 
-    def _export_invoice_ecosio_schematrons(self):
-        return {
-            'invoice': 'org.oasis-open:invoice:2.1',
-            'credit_note': 'org.oasis-open:creditnote:2.1',
-        }
-
-    def _export_invoice_vals(self, invoice):
-        # EXTENDS account.edi.xml.ubl_20
-        vals = super()._export_invoice_vals(invoice)
-
-        vals.update({
-            'AddressType_template': 'account_edi_ubl_cii.ubl_21_AddressType',
-            'PaymentTermsType_template': 'account_edi_ubl_cii.ubl_21_PaymentTermsType',
-            'PartyType_template': 'account_edi_ubl_cii.ubl_21_PartyType',
-            'InvoiceLineType_template': 'account_edi_ubl_cii.ubl_21_InvoiceLineType',
-            'CreditNoteLineType_template': 'account_edi_ubl_cii.ubl_21_CreditNoteLineType',
-            'DebitNoteLineType_template': 'account_edi_ubl_cii.ubl_21_DebitNoteLineType',
-            'InvoiceType_template': 'account_edi_ubl_cii.ubl_21_InvoiceType',
-            'CreditNoteType_template': 'account_edi_ubl_cii.ubl_21_CreditNoteType',
-            'DebitNoteType_template': 'account_edi_ubl_cii.ubl_21_DebitNoteType',
-        })
-
-        vals['vals'].update({
-            'ubl_version_id': 2.1,
-            'buyer_reference': invoice.commercial_partner_id.ref,
-        })
-
-        return vals
-
-    @api.model
-    def _get_customization_ids(self):
-        return {
-            'ubl_bis3': 'urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0',
-            'nlcius': 'urn:cen.eu:en16931:2017#compliant#urn:fdc:nen.nl:nlcius:v1.0',
-            'ubl_sg': 'urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:sg:3.0',
-            'xrechnung': 'urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0',
-            'ubl_a_nz': 'urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0',
-            'oioubl_21': 'OIOUBL-2.1',
-            'ubl_21_fr': 'urn:cen.eu:en16931:2017#compliant#urn:peppol:france:billing:cius:1.0',
-        }
-
-    def _get_selfbilling_customization_ids(self):
-        return {
-            'ubl_bis3': 'urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:selfbilling:3.0'
-        }
-
     # -------------------------------------------------------------------------
-    # EXPORT: New (dict_to_xml) helpers
+    # EXPORT: Templates
     # -------------------------------------------------------------------------
 
     def _get_invoice_node(self, vals):
@@ -82,7 +35,7 @@ class AccountEdiXmlUBL21(models.AbstractModel):
         document_node.update({
             'cbc:UBLVersionID': {'_text': '2.1'},
             'cbc:DueDate': {'_text': invoice.invoice_date_due} if vals['document_type'] == 'invoice' else None,
-            'cbc:CreditNoteTypeCode': {'_text': 381} if vals['document_type'] == 'credit_note' else None,
+            'cbc:CreditNoteTypeCode': {'_text': 261 if vals['process_type'] == 'selfbilling' else 381} if vals['document_type'] == 'credit_note' else None,
             'cbc:BuyerReference': {'_text': invoice.commercial_partner_id.ref},
         })
 
@@ -105,6 +58,8 @@ class AccountEdiXmlUBL21(models.AbstractModel):
         pass
 
     def _add_document_line_allowance_charge_nodes(self, line_node, vals):
-        line_node['cac:AllowanceCharge'] = [self._get_line_discount_allowance_charge_node(vals)]
+        line_node['cac:AllowanceCharge'] = []
+        if node := self._get_line_discount_allowance_charge_node(vals):
+            line_node['cac:AllowanceCharge'].append(node)
         if vals['fixed_taxes_as_allowance_charges']:
             line_node['cac:AllowanceCharge'].extend(self._get_line_fixed_tax_allowance_charge_nodes(vals))

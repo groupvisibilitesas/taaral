@@ -60,40 +60,35 @@ class PosOrder(models.Model):
         if len(orders) == 0:
             return data
 
-        order_ids = self.browse([o['id'] for o in data["pos.order"]])
-        for order in order_ids:
-            for line in order.lines.filtered(lambda l: l.product_id == order.config_id.down_payment_product_id and l.qty != 0 and (l.sale_order_origin_id or l.refunded_orderline_id.sale_order_origin_id)):
-                sale_lines = line.sale_order_origin_id.order_line or line.refunded_orderline_id.sale_order_origin_id.order_line
-                sale_order_origin = line.sale_order_origin_id or line.refunded_orderline_id.sale_order_origin_id
-                if not line.sale_order_line_id:
-                    if not any(line.display_type and line.is_downpayment for line in sale_lines):
-                        self.env['sale.order.line'].create(
-                            self.env['sale.advance.payment.inv']._prepare_down_payment_section_values(sale_order_origin)
-                        )
-                    order_reference = line.name
+        AccountTax = self.env['account.tax']
+        pos_orders = self.browse([o['id'] for o in data["pos.order"]])
+        for pos_order in pos_orders:
+            # TODO: the way to retrieve the sale order in not consistent... is it a bad code or intended?
+            used_pos_lines = pos_order.lines.sale_order_origin_id.order_line.pos_order_line_ids
+            downpayment_pos_order_lines = pos_order.lines.filtered(lambda line: (
+                line not in used_pos_lines
+                and line.product_id == pos_order.config_id.down_payment_product_id
+            ))
+            so_x_pos_order_lines = downpayment_pos_order_lines\
+                .grouped(lambda l: l.sale_order_origin_id or l.refunded_orderline_id.sale_order_origin_id)
+            sale_orders = self.env['sale.order']
+            for sale_order, pos_order_lines in so_x_pos_order_lines.items():
+                if not sale_order:
+                    continue
 
-                    if order.partner_id.lang and order.partner_id.lang != line.env.lang:
-                        line = line.with_context(lang=order.partner_id.lang)
+                sale_orders += sale_order
+                down_payment_base_lines = pos_order_lines._prepare_tax_base_line_values()
+                AccountTax._add_tax_details_in_base_lines(down_payment_base_lines, sale_order.company_id)
+                AccountTax._round_base_lines_tax_details(down_payment_base_lines, sale_order.company_id)
 
-                    sale_order_line_description = _("Down payment (ref: %(order_reference)s on \n %(date)s)", order_reference=order_reference, date=format_date(line.env, line.order_id.date_order))
-                    sale_line = self.env['sale.order.line'].create({
-                        'order_id': sale_order_origin.id,
-                        'product_id': line.product_id.id,
-                        'price_unit': line.price_unit,
-                        'product_uom_qty': 0,
-                        'tax_id': [(6, 0, line.tax_ids.ids)],
-                        'is_downpayment': True,
-                        'discount': line.discount,
-                        'sequence': sale_lines and sale_lines[-1].sequence + 2 or 10,
-                        'name': sale_order_line_description
-                    })
-                    line.sale_order_line_id = sale_line
+                sale_order_sudo = sale_order.sudo()
+                sale_order_sudo._create_down_payment_section_line_if_needed()
+                sale_order_sudo._create_down_payment_lines_from_base_lines(down_payment_base_lines)
 
-            so_lines = order.lines.mapped('sale_order_line_id')
-
-            if order.state != 'draft':
-                # confirm the unconfirmed sale orders that are linked to the sale order lines
-                sale_orders = so_lines.mapped('order_id')
+            # Confirm the unconfirmed sale orders that are linked to the sale order lines.
+            so_lines = pos_order.lines.mapped('sale_order_line_id')
+            sale_orders |= so_lines.mapped('order_id')
+            if pos_order.state != 'draft':
                 for sale_order in sale_orders.filtered(lambda so: so.state in ['draft', 'sent']):
                     sale_order.action_confirm()
 
@@ -104,7 +99,7 @@ class PosOrder(models.Model):
             # track the waiting pickings
             waiting_picking_ids = set()
             for so_line in so_lines:
-                so_line_stock_move_ids = so_line.move_ids.group_id.stock_move_ids
+                so_line_stock_move_ids = so_line.move_ids.reference_ids.move_ids
                 for stock_move in so_line.move_ids:
                     picking = stock_move.picking_id
                     if not picking.state in ['waiting', 'confirmed', 'assigned']:
@@ -119,7 +114,7 @@ class PosOrder(models.Model):
 
                     qty_delivered = max(so_line.qty_delivered, get_expected_qty_to_ship_later())
                     new_qty = so_line.product_uom_qty - qty_delivered
-                    if float_compare(new_qty, 0, precision_rounding=stock_move.product_uom.rounding) <= 0:
+                    if stock_move.product_uom.compare(new_qty, 0) <= 0:
                         new_qty = 0
                     stock_move.product_uom_qty = so_line.compute_uom_qty(new_qty, stock_move, False)
                     # If the product is delivered with more than one step, we need to update the quantity of the other steps
@@ -129,7 +124,7 @@ class PosOrder(models.Model):
                     waiting_picking_ids.add(picking.id)
 
             def is_product_uom_qty_zero(move):
-                return float_is_zero(move.product_uom_qty, precision_rounding=move.product_uom.rounding)
+                return move.product_uom.is_zero(move.product_uom_qty)
 
             # cancel the waiting pickings if each product_uom_qty of move is zero
             for picking in self.env['stock.picking'].browse(waiting_picking_ids):
@@ -174,17 +169,16 @@ class PosOrder(models.Model):
             }
         return order_line
 
-    def _get_stock_moves(self):
-        res = super()._get_stock_moves()
-        return res | self.lines.sale_order_line_id.move_ids
+    def _get_invoice_lines_values(self, line_values, pos_line, move_type):
+        inv_line_vals = super()._get_invoice_lines_values(line_values, pos_line, move_type)
 
-    def _get_invoice_lines_values(self, line_values, pos_line):
-        inv_line_vals = super()._get_invoice_lines_values(line_values, pos_line)
-
-        if pos_line.sale_order_origin_id:
+        if pos_line.sale_order_origin_id and pos_line.sale_order_line_id:
             origin_line = pos_line.sale_order_line_id
             inv_line_vals["name"] = origin_line.name
             origin_line._set_analytic_distribution(inv_line_vals)
+
+        if self.config_id.down_payment_product_id == pos_line.product_id:
+            inv_line_vals["is_downpayment"] = True
 
         return inv_line_vals
 
@@ -201,8 +195,8 @@ class PosOrder(models.Model):
 class PosOrderLine(models.Model):
     _inherit = 'pos.order.line'
 
-    sale_order_origin_id = fields.Many2one('sale.order', string="Linked Sale Order")
-    sale_order_line_id = fields.Many2one('sale.order.line', string="Source Sale Order Line")
+    sale_order_origin_id = fields.Many2one('sale.order', string="Linked Sale Order", index='btree_not_null')
+    sale_order_line_id = fields.Many2one('sale.order.line', string="Source Sale Order Line", index='btree_not_null')
     down_payment_details = fields.Text(string="Down Payment Details")
     qty_delivered = fields.Float(
         string="Delivery Quantity",
@@ -213,7 +207,7 @@ class PosOrderLine(models.Model):
     def _compute_qty_delivered(self):
         product_qty_left_to_assign = {}
         for order_line in self:
-            if order_line.order_id.state in ['paid', 'done', 'invoiced']:
+            if order_line.order_id.state in ['paid', 'done']:
                 outgoing_pickings = order_line.order_id.picking_ids.filtered(
                     lambda pick: pick.state == 'done' and pick.picking_type_code == 'outgoing'
                 )
@@ -237,8 +231,8 @@ class PosOrderLine(models.Model):
                     order_line.qty_delivered = 0
 
     @api.model
-    def _load_pos_data_fields(self, config_id):
-        params = super()._load_pos_data_fields(config_id)
+    def _load_pos_data_fields(self, config):
+        params = super()._load_pos_data_fields(config)
         params += ['sale_order_origin_id', 'sale_order_line_id', 'down_payment_details']
         return params
 

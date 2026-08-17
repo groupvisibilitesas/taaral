@@ -5,11 +5,11 @@ from odoo import fields, models
 from odoo.addons.mail.tools.discuss import Store
 
 
-class MailMainAttachmentMixin(models.AbstractModel):
+class MailThreadMainAttachment(models.AbstractModel):
     """ Mixin that adds main attachment support to the MailThread class. """
 
     _name = 'mail.thread.main.attachment'
-    _inherit = 'mail.thread'
+    _inherit = ['mail.thread']
     _description = 'Mail Main Attachment management'
 
     message_main_attachment_id = fields.Many2one(string="Main Attachment", comodel_name='ir.attachment', copy=False, index='btree_not_null')
@@ -49,11 +49,11 @@ class MailMainAttachmentMixin(models.AbstractModel):
                     key=lambda r: (r.mimetype.endswith('pdf'), r.mimetype.startswith('image'))
                 ).id
 
-    def _thread_to_store(self, store: Store, /, *, request_list=None, **kwargs):
-        super()._thread_to_store(store, request_list=request_list, **kwargs)
+    def _thread_to_store(self, store: Store, fields, *, request_list=None):
+        super()._thread_to_store(store, fields, request_list=request_list)
         if request_list and "attachments" in request_list:
             store.add(
                 self,
-                {"mainAttachment": Store.one(self.message_main_attachment_id, only_id=True)},
+                Store.One("message_main_attachment_id", []),
                 as_thread=True,
             )

@@ -1,7 +1,7 @@
 from odoo import models
 
 
-class ThemeBookstore(models.AbstractModel):
+class ThemeUtils(models.AbstractModel):
     _inherit = 'theme.utils'
 
     def _theme_bookstore_post_copy(self, mod):

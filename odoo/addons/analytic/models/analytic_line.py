@@ -3,12 +3,12 @@ from dateutil.relativedelta import relativedelta
 from lxml.builder import E
 
 from odoo import api, fields, models, _
-from odoo.tools import Query, SQL
+from odoo.tools import date_utils
 from odoo.exceptions import ValidationError
-from odoo.osv.expression import OR
+from odoo.fields import Domain
 
 
-class AnalyticPlanFields(models.AbstractModel):
+class AnalyticPlanFieldsMixin(models.AbstractModel):
     """ Add one field per analytic plan to the model """
     _name = 'analytic.plan.fields.mixin'
     _description = 'Analytic Plan Fields'
@@ -46,8 +46,10 @@ class AnalyticPlanFields(models.AbstractModel):
             line[line.auto_account_id.plan_id._column_name()] = line.auto_account_id
 
     def _search_auto_account(self, operator, value):
+        if operator in Domain.NEGATIVE_OPERATORS:
+            return NotImplemented
         project_plan, other_plans = self.env['account.analytic.plan']._get_all_plans()
-        return OR([
+        return Domain.OR([
             [(plan._column_name(), operator, value)]
             for plan in project_plan + other_plans
         ])
@@ -96,8 +98,8 @@ class AnalyticPlanFields(models.AbstractModel):
                 raise ValidationError(_("At least one analytic account must be set"))
 
     @api.model
-    def default_get(self, fields_list):
-        defaults = super().default_get(fields_list)
+    def default_get(self, fields):
+        defaults = super().default_get(fields)
         account_id = self.env.context.get('default_auto_account_id')
         account = self.env['account.analytic.account'].browse(account_id).exists()
         if account:
@@ -107,7 +109,7 @@ class AnalyticPlanFields(models.AbstractModel):
     @api.model
     def fields_get(self, allfields=None, attributes=None):
         fields = super().fields_get(allfields, attributes)
-        if not self._context.get("studio") and self.env['account.analytic.plan'].has_access('read'):
+        if not self.env.context.get("studio") and self.env['account.analytic.plan'].has_access('read'):
             project_plan, other_plans = self.env['account.analytic.plan']._get_all_plans()
             for plan in project_plan + other_plans:
                 fname = plan._column_name()
@@ -121,7 +123,7 @@ class AnalyticPlanFields(models.AbstractModel):
         return self._patch_view(arch, view, view_type)
 
     def _patch_view(self, arch, view, view_type):
-        if not self._context.get("studio") and self.env['account.analytic.plan'].has_access('read'):
+        if not self.env.context.get("studio") and self.env['account.analytic.plan'].has_access('read'):
             project_plan, other_plans = self.env['account.analytic.plan']._get_all_plans()
 
             # Find main account nodes
@@ -160,7 +162,7 @@ class AnalyticPlanFields(models.AbstractModel):
 
 class AccountAnalyticLine(models.Model):
     _name = 'account.analytic.line'
-    _inherit = 'analytic.plan.fields.mixin'
+    _inherit = ['analytic.plan.fields.mixin']
     _description = 'Analytic Line'
     _order = 'date desc, id desc'
     _check_company_auto = True
@@ -186,13 +188,7 @@ class AccountAnalyticLine(models.Model):
     )
     product_uom_id = fields.Many2one(
         'uom.uom',
-        string='Unit of Measure',
-        domain="[('category_id', '=', product_uom_category_id)]",
-    )
-    product_uom_category_id = fields.Many2one(
-        related='product_uom_id.category_id',
-        string='UoM Category',
-        readonly=True,
+        string='Unit',
     )
     partner_id = fields.Many2one(
         'res.partner',
@@ -222,6 +218,11 @@ class AccountAnalyticLine(models.Model):
     category = fields.Selection(
         [('other', 'Other')],
         default='other',
+    )
+    fiscal_year_search = fields.Boolean(
+        search='_search_fiscal_date',
+        store=False, exportable=False,
+        export_string_translation=False,
     )
     analytic_distribution = fields.Json(
         'Analytic Distribution',
@@ -268,8 +269,6 @@ class AccountAnalyticLine(models.Model):
     def _split_amount_fname(self):
         return 'amount'
 
-    def _condition_to_sql(self, alias: str, fname: str, operator: str, value, query: Query) -> SQL:
-        if fname == 'date' and value == 'fiscal_start_year':
-            fiscalyear_date_range = self.env.company.compute_fiscalyear_dates(fields.Date.today())
-            value = fiscalyear_date_range['date_from'] - relativedelta(years=1)
-        return super()._condition_to_sql(alias, fname, operator, value, query)
+    def _search_fiscal_date(self, operator, value):
+        fiscalyear_date_range = self.env.company.compute_fiscalyear_dates(fields.Date.today())
+        return [('date', '>=', fiscalyear_date_range['date_from'] - relativedelta(years=1))]

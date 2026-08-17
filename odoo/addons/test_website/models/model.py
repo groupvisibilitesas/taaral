@@ -52,7 +52,7 @@ class TestModel(models.Model):
         return self.env['website'].get_client_action(f'/test_model/{self.id}')
 
 
-class TestSubModel(models.Model):
+class TestSubmodel(models.Model):
     _name = 'test.submodel'
     _description = 'Website Submodel Test'
 
@@ -84,7 +84,7 @@ class TestModelMultiWebsite(models.Model):
 
 
 class TestModelExposed(models.Model):
-    _name = "test.model.exposed"
+    _name = 'test.model.exposed'
     _inherit = [
         'website.seo.metadata',
         'website.published.mixin',

@@ -1,32 +1,54 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* mail_group
+# * mail_group
 #
-# Translators:
-# Wil Odoo, 2024
-# 何彬 <vnsoft.he@gmail.com>, 2024
-# Jeffery CHEN <jeffery9@gmail.com>, 2024
-# Chloe Wang, 2025
-#
+# "Tiffany Chang (tic)" <tic@odoo.com>, 2025, 2026.
+# "Chloe Wang (chwa)" <chwa@odoo.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 18:38+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Chloe Wang, 2025\n"
-"Language-Team: Chinese (China) (https://app.transifex.com/odoo/teams/41243/"
-"zh_CN/)\n"
+"POT-Creation-Date: 2026-04-10 18:39+0000\n"
+"PO-Revision-Date: 2026-08-03 02:31+0000\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"Language-Team: Chinese (Simplified Han script) <https://translate.odoo.com/"
+"projects/odoo-19/mail_group/zh_Hans/>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 2026.6.1\n"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_list
+msgid "#Members"
+msgstr "成员"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_list
+msgid "#Messages"
+msgstr "信息"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_list
+msgid "#To Review"
+msgstr "待审查"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_message_reject_form
 msgid ") <span invisible=\"not send_email\">and send them an email</span>."
 msgstr ")<span invisible=\"not send_email\">并向他们发送电子邮件</span>。"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.messages_short
+msgid ""
+"<br/>\n"
+"                    Get the conversation started by sending an email to"
+msgstr ""
+"<br/>\n"
+"                    发送电子邮件至以下地址，开始对话："
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.confirmation_subscription
@@ -51,15 +73,14 @@ msgid ""
 "        "
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
-"                您好。<br/><br/>\n"
-"                您已要求订阅邮件列表<strong t-out=\"object.name or ''\"/"
-"> 。\n"
-"               <br/><br/>\n"
-"                如需确认，请访问以下链接。 <strong t-"
-"if=\"ctx.get('token_url')\"><a t-att-href=\"ctx['token_url']\"><t t-"
-"out=\"ctx['token_url'] or ''\"/></a></strong>\n"
-"               <br/><br/>\n"
-"                如果这是个错误，或者您没有要求这个动作，请忽略这个消息。\n"
+"                您好！<br/><br/>\n"
+"                您已要求订阅邮寄清单<strong t-out=\"object.name or ''\"/>。\n"
+"                <br/><br/>\n"
+"                请到以下网址确认： <strong t-if=\"ctx.get('token_url')\"><a "
+"t-att-href=\"ctx['token_url']\"><t t-out=\"ctx['token_url'] or ''\"/></a></"
+"strong>\n"
+"                <br/><br/>\n"
+"                如果这是错误，或您没有请求此操作，请忽略此讯息。\n"
 "            </div>\n"
 "        "
 
@@ -81,15 +102,15 @@ msgid ""
 "        "
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
-"                您好。<br/><br/>\n"
-"                您已要求退订邮件列表<strong t-out=\"object.name or ''\"/"
-"> 。\n"
-"               <br/><br/>\n"
-"                如需确认，请访问以下链接。 <strong t-"
-"if=\"ctx.get('token_url')\"><a t-att-href=\"ctx['token_url']\"><t t-"
-"out=\"ctx['token_url'] or ''\"/></a></strong>.\n"
-"               <br/><br/>\n"
-"                如果这是个错误，或者您没有要求这个动作，请忽略这个消息。\n"
+"                您好！<br/><br/>\n"
+"                您已要求取消订阅邮寄清单 <strong t-out=\"object.name or "
+"''\"/>。\n"
+"                <br/><br/>\n"
+"                请到以下网址确认： <strong t-if=\"ctx.get('token_url')\"><a "
+"t-att-href=\"ctx['token_url']\"><t t-out=\"ctx['token_url'] or ''\"/></a></"
+"strong>\n"
+"                <br/><br/>\n"
+"                如果这是错误，或您没有请求此操作，请忽略此讯息。\n"
 "            </div>\n"
 "        "
 
@@ -106,9 +127,9 @@ msgid ""
 "        "
 msgstr ""
 "<div>\n"
-"                <p>您好 <t t-out=\"object.partner_id.name or ''\"/>，</p>\n"
-"                <p>请查看以下邮件列表的<t t-"
-"out=\"object.mail_group_id.name\"/>指南。</p>\n"
+"                <p><t t-out=\"object.partner_id.name or ''\"/> 您好！</p>\n"
+"                <p>请参阅下方有关 <t t-out=\"object.mail_group_id.name\"/> 邮"
+"寄清单的使用指引。</p>\n"
 "                <p><t t-out=\"object.mail_group_id.moderation_guidelines_msg "
 "or ''\"/></p>\n"
 "            </div>\n"
@@ -138,6 +159,16 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-envelope-o\" role=\"img\" aria-label=\"Alias\" "
 "title=\"Alias\"/>"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_groups
+#, fuzzy
+msgid ""
+"<i class=\"fa fa-fw fa-envelope-o\" role=\"img\" aria-label=\"Traffic\" "
+"title=\"Traffic\"/>"
+msgstr ""
+"<i class=\"fa fa-fw fa-envelope-o\" role=\"img\" aria-label=\"Traffic\" "
+"title=\"Traffic\"/>"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_groups
@@ -278,7 +309,6 @@ msgstr "将此电子邮件地址添加到白名单中，并接受来自同一作
 
 #. module: mail_group
 #: model:ir.model.fields,field_description:mail_group.field_mail_group__alias_id
-#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_list
 msgid "Alias"
 msgstr "别名"
 
@@ -344,7 +374,7 @@ msgstr "总是允许"
 
 #. module: mail_group
 #. odoo-javascript
-#: code:addons/mail_group/static/src/js/mail_group.js:0
+#: code:addons/mail_group/static/src/interactions/mail_group.js:0
 msgid "An email with instructions has been sent."
 msgstr "一封带有说明的电子邮件已经发出。"
 
@@ -451,6 +481,20 @@ msgid "Choose or configure a custom domain"
 msgstr "选择或配置自定义域"
 
 #. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.group_name
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_kanban
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_groups
+msgid "Closed"
+msgstr "已关闭"
+
+#. module: mail_group
+#: model:ir.model.fields,help:mail_group.field_mail_group__is_closed
+msgid ""
+"Closed groups might still be accessed, but emails sent to it will bounce"
+msgstr "已关闭的群组仍可访问，但向其传送的电邮会被弹回"
+
+#. module: mail_group
 #: model:mail.template,subject:mail_group.mail_template_list_subscribe
 msgid "Confirm subscription to {{ object.name }}"
 msgstr "确认订阅 {{ object.name }}"
@@ -530,6 +574,7 @@ msgstr "显示名称"
 #. module: mail_group
 #: model:ir.model.fields,field_description:mail_group.field_mail_group_member__email
 #: model:ir.model.fields,field_description:mail_group.field_mail_group_moderation__email
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_member_view_tree
 msgid "Email"
 msgstr "电子邮件"
 
@@ -600,12 +645,6 @@ msgid "Group"
 msgstr "群组"
 
 #. module: mail_group
-#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_message_view_search
-#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_search
-msgid "Group By"
-msgstr "分组方式"
-
-#. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_message_view_form
 msgid "Group Message"
 msgstr "团体信息"
@@ -622,6 +661,12 @@ msgid "Group message can only be linked to mail group. Current model is %s."
 msgstr "群发信息只能与邮件组相连。目前的模式是%s。"
 
 #. module: mail_group
+#. odoo-python
+#: code:addons/mail_group/controllers/portal.py:0
+msgid "Groups"
+msgstr "群组"
+
+#. module: mail_group
 #: model:ir.model.fields,field_description:mail_group.field_mail_group__moderation_guidelines_msg
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
 msgid "Guidelines"
@@ -636,6 +681,22 @@ msgstr "组的准则 {{ object.mail_group_id.name }}."
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_notify_moderation
 msgid "Hello"
 msgstr "您好"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.email_template_mail_group_closed
+msgid ""
+"Hello there,\n"
+"    <br/><br/>\n"
+"    The mailing list you are trying to reach has been closed, and will not "
+"accept new messages.\n"
+"    <br/><br/>\n"
+"    Kind Regards,"
+msgstr ""
+"您好，\n"
+"    <br/><br/>\n"
+"    您尝试联络的邮寄清单已关闭，不再接受新邮件讯息。\n"
+"    <br/><br/>\n"
+"    顺祝  安康"
 
 #. module: mail_group
 #: model:ir.model.fields,field_description:mail_group.field_mail_group__id
@@ -691,6 +752,11 @@ msgstr "允许的"
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_moderation_view_search
 msgid "Is Banned"
 msgstr "禁止的"
+
+#. module: mail_group
+#: model:ir.model.fields,field_description:mail_group.field_mail_group__is_closed
+msgid "Is Closed"
+msgstr "已关闭"
 
 #. module: mail_group
 #: model:ir.model.fields,field_description:mail_group.field_mail_group_message__is_group_moderated
@@ -818,16 +884,9 @@ msgid "Mailing-List:"
 msgstr "邮件列表："
 
 #. module: mail_group
-#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_kanban
-msgid "Member"
-msgstr "会员"
-
-#. module: mail_group
 #: model:ir.actions.act_window,name:mail_group.mail_group_member_action
 #: model:ir.model.fields,field_description:mail_group.field_mail_group__member_ids
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
-#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_kanban
-#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_list
 msgid "Members"
 msgstr "成员"
 
@@ -883,17 +942,17 @@ msgid "Messages that need an action"
 msgstr "需要采取行动的信息"
 
 #. module: mail_group
+#: model:ir.model.fields,field_description:mail_group.field_mail_group__moderation
+#, fuzzy
+msgid "Moderate"
+msgstr "管理"
+
+#. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_notify_moderation
 msgid "Moderate Messages"
 msgstr "管理消息"
 
 #. module: mail_group
-#: model:ir.model.fields,field_description:mail_group.field_mail_group__moderation
-msgid "Moderate this group"
-msgstr "对这一群体进行调控"
-
-#. module: mail_group
-#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_list
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_search
 msgid "Moderated"
 msgstr "已审核"
@@ -1042,6 +1101,12 @@ msgid "Only selected groups of users can send email to the mailing list."
 msgstr "只有选定的用户组，才能向邮件列表发送电子邮件。"
 
 #. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.messages_short
+#, fuzzy
+msgid "Oops, there are no messages here."
+msgstr "哎呀，这里没有消息。"
+
+#. module: mail_group
 #: model:ir.model.fields,help:mail_group.field_mail_group__alias_force_thread_id
 msgid ""
 "Optional ID of a thread (record) to which all incoming messages will be "
@@ -1073,8 +1138,8 @@ msgid ""
 "necessarily the model given by alias_model_id (example: project "
 "(parent_model) and task (model))"
 msgstr ""
-"父级模型拥有别名。拥有别名参考的模型不一定是alias_model_id给出的模型 (例如："
-"project(parent_model) 和任务 (模型))"
+"拥有别名的母项模型。拥有别名参考的模型不一定是alias_model_id给出的模型（例如"
+"：project(parent_model) 和任务 (模型)）"
 
 #. module: mail_group
 #: model:ir.model.fields,field_description:mail_group.field_mail_group_member__partner_id
@@ -1201,8 +1266,9 @@ msgstr "移除带有注释的消息"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
-msgid "Responsible Users"
-msgstr "负责任的用户"
+#, fuzzy
+msgid "Responsibles"
+msgstr "负责人"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_message_view_search
@@ -1223,6 +1289,12 @@ msgstr "搜索邮件组"
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_moderation_view_search
 msgid "Search Moderation List"
 msgstr "搜索审核列表"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
+#, fuzzy
+msgid "Select users"
+msgstr "选择用户"
 
 #. module: mail_group
 #: model:ir.model.fields.selection,name:mail_group.selection__mail_group__access_mode__groups
@@ -1251,19 +1323,21 @@ msgid "Send Email"
 msgstr "发送电子邮件"
 
 #. module: mail_group
-#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
-msgid "Send Guidelines"
-msgstr "发送指南"
-
-#. module: mail_group
 #: model:ir.model.fields,help:mail_group.field_mail_group_message_reject__send_email
 msgid "Send an email to the author of the message"
 msgstr "向信息的作者发送电子邮件"
 
 #. module: mail_group
+#: model:ir.actions.act_window,name:mail_group.mail_compose_message_action_mail_group
+#, fuzzy
+msgid "Send email"
+msgstr "发送邮件"
+
+#. module: mail_group
 #: model:ir.model.fields,field_description:mail_group.field_mail_group__moderation_guidelines
-msgid "Send guidelines to new subscribers"
-msgstr "向新用户发送订阅指南"
+#, fuzzy
+msgid "Send guidelines to new members"
+msgstr "向新成员发送指导原则"
 
 #. module: mail_group
 #: model:mail.template,description:mail_group.mail_template_guidelines
@@ -1294,8 +1368,6 @@ msgid "Subject"
 msgstr "主旨"
 
 #. module: mail_group
-#. odoo-javascript
-#: code:addons/mail_group/static/src/js/mail_group.js:0
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_groups
 msgid "Subscribe"
 msgstr "订阅"
@@ -1394,13 +1466,13 @@ msgstr "信息的记录应该是小组的。"
 
 #. module: mail_group
 #. odoo-javascript
-#: code:addons/mail_group/static/src/js/mail_group.js:0
+#: code:addons/mail_group/static/src/interactions/mail_group.js:0
 msgid "This email is already subscribed."
 msgstr "这封邮件已经被订阅了。"
 
 #. module: mail_group
 #. odoo-javascript
-#: code:addons/mail_group/static/src/js/mail_group.js:0
+#: code:addons/mail_group/static/src/interactions/mail_group.js:0
 msgid "This email is not subscribed."
 msgstr "此邮件未被订阅。"
 
@@ -1427,8 +1499,6 @@ msgid "To Review"
 msgstr "待审查"
 
 #. module: mail_group
-#. odoo-javascript
-#: code:addons/mail_group/static/src/js/mail_group.js:0
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_groups
 msgid "Unsubscribe"
 msgstr "退订"
@@ -1467,6 +1537,20 @@ msgid "You can create only one rule for a given email address in a group."
 msgstr "您只能为一个组中的特定电子邮件地址创建一条规则。"
 
 #. module: mail_group
+#. odoo-python
+#: code:addons/mail_group/models/mail_group.py:0
+#, fuzzy
+msgid "You can not join a closed group."
+msgstr "您不能加入封闭群组。"
+
+#. module: mail_group
+#. odoo-python
+#: code:addons/mail_group/models/mail_group.py:0
+#, fuzzy
+msgid "You can not send guidelines for a closed group."
+msgstr "您不能为封闭群组发送指南。"
+
+#. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_notify_moderation
 msgid "You have messages to moderate, please go for the proceedings."
 msgstr "您有消息要管理，请您参加诉讼。"
@@ -1498,8 +1582,20 @@ msgstr "例如，\"电子报\"。"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
+#, fuzzy
+msgid "e.g. \"This group is about ...\""
+msgstr "例：此群组是关于⋯"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
 msgid "e.g. mycompany.com"
 msgstr "e.g. mycompany.com"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_form
+#, fuzzy
+msgid "e.g.\"Please be polite and ...\""
+msgstr "例：请保持礼貌及⋯"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_group_message_view_search
@@ -1513,19 +1609,20 @@ msgstr "已经"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_groups
-msgid ""
-"members<br/>\n"
-"                        <i class=\"fa fa-fw fa-envelope-o\" role=\"img\" "
-"aria-label=\"Traffic\" title=\"Traffic\"/>"
-msgstr ""
-"成员<br/>\n"
-"                        <i class=\"fa fa-fw fa-envelope-o\" role=\"img\" "
-"aria-label=\"Traffic\" title=\"Traffic\"/>"
+#, fuzzy
+msgid "members<br/>"
+msgstr "成员<br/>"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.mail_groups
 msgid "messages / month"
 msgstr "消息 / 月"
+
+#. module: mail_group
+#: model_terms:ir.ui.view,arch_db:mail_group.mail_group_view_kanban
+#, fuzzy
+msgid "messages to review"
+msgstr "个消息待审查"
 
 #. module: mail_group
 #: model_terms:ir.ui.view,arch_db:mail_group.messages_short
@@ -1559,3 +1656,62 @@ msgstr "您的EMail..."
 
 #~ msgid "_______________________________________________"
 #~ msgstr "_______________________________________________"
+
+#~ msgid ""
+#~ "<div style=\"margin: 0px; padding: 0px;\">\n"
+#~ "                Hello,<br><br>\n"
+#~ "                You have requested to be subscribed to the mailing list "
+#~ "<strong t-out=\"object.name or ''\"></strong>.\n"
+#~ "                <br><br>\n"
+#~ "                To confirm, please visit the following link: <strong t-"
+#~ "if=\"ctx.get('token_url')\"><a t-att-href=\"ctx['token_url']\"><t t-"
+#~ "out=\"ctx['token_url'] or ''\"></t></a></strong>\n"
+#~ "                <br><br>\n"
+#~ "                If this was a mistake or you did not requested this "
+#~ "action, please ignore this message.\n"
+#~ "            </div>\n"
+#~ "        "
+#~ msgstr ""
+#~ "<div style=\"margin: 0px; padding: 0px;\">\n"
+#~ "                您好，<br><br>\n"
+#~ "                您已请求订阅邮件列表 <strong t-out=\"object.name or "
+#~ "''\"></strong>。\n"
+#~ "                <br><br>\n"
+#~ "                请点击以下链接确认订阅：<strong t-"
+#~ "if=\"ctx.get('token_url')\"><a t-att-href=\"ctx['token_url']\"><t t-"
+#~ "out=\"ctx['token_url'] or ''\"></t></a></strong>\n"
+#~ "                <br><br>\n"
+#~ "                若此操作非您本人所为，请直接忽略本邮件。\n"
+#~ "            </div>\n"
+#~ "        "
+
+#~ msgid ""
+#~ "<div style=\"margin: 0px; padding: 0px;\">\n"
+#~ "                Hello,<br><br>\n"
+#~ "                You have requested to be unsubscribed to the mailing list "
+#~ "<strong t-out=\"object.name or ''\"></strong>.\n"
+#~ "                <br><br>\n"
+#~ "                To confirm, please visit the following link: <strong t-"
+#~ "if=\"ctx.get('token_url')\"><a t-att-href=\"ctx['token_url']\"><t t-"
+#~ "out=\"ctx['token_url'] or ''\"></t></a></strong>.\n"
+#~ "                <br><br>\n"
+#~ "                If this was a mistake or you did not requested this "
+#~ "action, please ignore this message.\n"
+#~ "            </div>\n"
+#~ "        "
+#~ msgstr ""
+#~ "<div style=\"margin: 0px; padding: 0px;\">\n"
+#~ "                您好，<br><br>\n"
+#~ "                您已申请退订邮件列表 <strong t-out=\"object.name or "
+#~ "''\"></strong>。\n"
+#~ "                <br><br>\n"
+#~ "                请点击以下链接确认退订：<strong t-"
+#~ "if=\"ctx.get('token_url')\"><a t-att-href=\"ctx['token_url']\"><t t-"
+#~ "out=\"ctx['token_url'] or ''\"></t></a></strong>。\n"
+#~ "                <br><br>\n"
+#~ "                若此操作非您本人所为，请直接忽略本邮件。\n"
+#~ "            </div>\n"
+#~ "        "
+
+#~ msgid "Group By"
+#~ msgstr "分组方式"

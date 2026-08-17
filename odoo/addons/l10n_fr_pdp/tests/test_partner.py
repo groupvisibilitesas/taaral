@@ -20,7 +20,7 @@ class TestL10nFrPdpPartner(TestL10nFrPdpCommon):
             'country_id': self.env.ref('base.fr').id,
             'phone': '+33 1 23 45 67 89',
             'vat': 'FR23334175221',
-            'siret': '96851575905877',
+            'company_registry': '96851575905877',
             'invoice_edi_format': 'ubl_21_fr',
         })
         self.assertRecordValues(partner, [{
@@ -52,7 +52,7 @@ class TestL10nFrPdpPartner(TestL10nFrPdpCommon):
             'country_id': self.env.ref('base.fr').id,
             'phone': '+33 1 23 45 67 89',
             'vat': 'FR23334175221',
-            'siret': '968515759',
+            'company_registry': '968515759',
             'invoice_edi_format': 'ubl_21_fr',
         })
         self.assertRecordValues(partner, [{
@@ -88,6 +88,7 @@ class TestL10nFrPdpPartner(TestL10nFrPdpCommon):
 
     def test_validate_partner_be_invalid_format(self):
         partner = self.partner_b
+        partner.button_account_peppol_check_partner_endpoint()
         self.assertRecordValues(partner, [{
             'peppol_verification_state': 'not_valid',
             'pdp_verification_display_state': 'peppol_not_valid',
@@ -109,7 +110,8 @@ class TestL10nFrPdpPartner(TestL10nFrPdpCommon):
                 mock.patch.object(self.env.registry['res.company'], 'search', lambda *args, **kwargs: self.env.company),
                 mock.patch.object(requests.sessions.Session, 'send', _request_handler),
         ):
-            partner.invoice_edi_format = 'xrechnung'  # this should trigger a verification state update
+            partner.invoice_edi_format = 'xrechnung'
+            partner.button_account_peppol_check_partner_endpoint()
 
         self.assertRecordValues(partner, [{
             'peppol_verification_state': 'not_valid_format',
@@ -122,6 +124,7 @@ class TestL10nFrPdpPartner(TestL10nFrPdpCommon):
             partner._get_pdp_receiver_identification_info(),
             ('peppol', "0208:0239843188")
         )
+        partner.button_account_peppol_check_partner_endpoint()
         self.assertRecordValues(partner, [{
             'peppol_verification_state': 'not_valid',
             'pdp_verification_display_state': 'peppol_not_valid',
@@ -172,6 +175,7 @@ class TestL10nFrPdpPartner(TestL10nFrPdpCommon):
             partner._get_pdp_receiver_identification_info(),
             ('pdp', "0225:968515759_96851575905823")
         )
+        partner.button_account_peppol_check_partner_endpoint()
         self.assertRecordValues(partner, [{
             'peppol_verification_state': 'not_valid',
             'pdp_verification_display_state': 'pdp_not_valid',

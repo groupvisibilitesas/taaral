@@ -7,22 +7,15 @@ patch(DataServiceOptions.prototype, {
             ...super.databaseTable,
             "event.registration": {
                 key: "id",
-                condition: (record) => {
-                    return (
-                        !record.pos_order_line_id ||
-                        record.pos_order_line_id?.order_id?.canBeRemovedFromIndexedDB
-                    );
-                },
+                condition: (record) =>
+                    !record.pos_order_line_id ||
+                    record.pos_order_line_id?.order_id?.canBeRemovedFromIndexedDB,
             },
             "event.registration.answer": {
                 key: "id",
-                condition: (record) => {
-                    return (
-                        !record.registration_id ||
-                        record.registration_id?.pos_order_line_id?.order_id
-                            ?.canBeRemovedFromIndexedDB
-                    );
-                },
+                condition: (record) =>
+                    !record.registration_id ||
+                    record.registration_id?.pos_order_line_id?.order_id?.canBeRemovedFromIndexedDB,
             },
         };
     },

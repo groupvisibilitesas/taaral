@@ -569,10 +569,10 @@ class PdpFlow10XMLBuilder(models.AbstractModel):
 
     @api.model
     def _get_tax_codes_and_exemption(self, buyer, seller, tax):
-        res = self._get_tax_unece_codes(buyer, seller, tax or self.env['account.tax'])
-        tax_code = res.get('tax_category_code')
+        tax_code = self._get_tax_category_code(buyer, seller, tax or self.env['account.tax'])
         if tax_code not in VALID_TAX_CODES:
             return 'S', None, None  # default to standard rate if tax code is not valid
+        res = self._get_tax_exemption_reason(buyer, seller, tax or self.env['account.tax'])
         exemption_reason_code = res.get('tax_exemption_reason_code')
         exemption_reason = res.get('tax_exemption_reason')
         return tax_code, exemption_reason_code, exemption_reason

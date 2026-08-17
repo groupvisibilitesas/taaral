@@ -13,9 +13,6 @@ class AccountMoveSendWizard(models.TransientModel):
         """ EXTENDS 'account'
         If Customer is not valid on Nemhandel, we disable the checkbox. Also add the proxy mode if not in prod.
         """
-        for wizard in self:
-            nemhandel_partner = wizard.move_id.partner_id.commercial_partner_id.with_company(wizard.company_id)
-            nemhandel_partner.button_nemhandel_check_partner_endpoint(company=wizard.company_id)
         super()._compute_sending_method_checkboxes()
         for wizard in self:
             nemhandel_checkbox = wizard.sending_method_checkboxes.get('nemhandel')

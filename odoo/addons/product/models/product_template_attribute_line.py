@@ -110,17 +110,18 @@ class ProductTemplateAttributeLine(models.Model):
             else:
                 create_values.append(value)
         res = activated_lines + super().create(create_values)
-        if self._context.get("create_product_product", True):
+        if self.env.context.get('update_product_template_attribute_values', True):
             res._update_product_template_attribute_values()
         return res
 
-    def write(self, values):
+    def write(self, vals):
         """Override to:
         - Add constraints to prevent doing changes that are not supported such
             as modifying the template or the attribute of existing lines.
         - Clean up related values and related variants when archiving or when
             updating `value_ids`.
         """
+        values = vals
         if 'product_tmpl_id' in values:
             for ptal in self:
                 if ptal.product_tmpl_id.id != values['product_tmpl_id']:
@@ -250,7 +251,8 @@ class ProductTemplateAttributeLine(models.Model):
         if ptav_to_unlink:
             ptav_to_unlink.unlink()
         ProductTemplateAttributeValue.create(ptav_to_create)
-        self.product_tmpl_id._create_variant_ids()
+        if self.env.context.get('create_product_product', True):
+            self.product_tmpl_id._create_variant_ids()
 
     def _without_no_variant_attributes(self):
         return self.filtered(lambda ptal: ptal.attribute_id.create_variant != 'no_variant')
@@ -263,6 +265,7 @@ class ProductTemplateAttributeLine(models.Model):
             or self.value_ids.is_custom
         )
 
+    @api.readonly
     def action_open_attribute_values(self):
         return {
             'type': 'ir.actions.act_window',

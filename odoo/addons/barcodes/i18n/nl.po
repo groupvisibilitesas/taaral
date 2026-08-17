@@ -3,25 +3,26 @@
 # * barcodes
 #
 # Translators:
-# Wil Odoo, 2024
-# Erwin van der Ploeg <erwin@odooexperts.nl>, 2025
-# Bren Driesen <brdri@odoo.com>, 2026.
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Martin Trigaux, 2022
+# Gunther Clauwaert <gclauwae@hotmail.com>, 2022
+# Erwin van der Ploeg <erwin@odooexperts.nl>, 2022
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# Bren Driesen <brdri@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-04-11 09:03+0000\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-02 20:07+0000\n"
 "Last-Translator: Bren Driesen <brdri@odoo.com>\n"
-"Language-Team: Dutch <https://translate.odoo.com/projects/odoo-18/barcodes/"
+"Language-Team: Dutch <https://translate.odoo.com/projects/odoo-19/barcodes/"
 "nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: barcodes
 #. odoo-python
@@ -92,6 +93,12 @@ msgstr "Één"
 
 #. module: barcodes
 #. odoo-javascript
+#: code:addons/barcodes/static/src/components/manual_barcode.xml:0
+msgid "Apply"
+msgstr "Toepassen"
+
+#. module: barcodes
+#. odoo-javascript
 #: code:addons/barcodes/static/src/components/barcode_scanner.xml:0
 msgid "Barcode"
 msgstr "Barcode"
@@ -157,6 +164,9 @@ msgstr "Aangemaakt op"
 #. module: barcodes
 #: model:ir.model.fields,field_description:barcodes.field_barcode_nomenclature__display_name
 #: model:ir.model.fields,field_description:barcodes.field_barcode_rule__display_name
+#: model:ir.model.fields,field_description:barcodes.field_barcodes_barcode_events_mixin__display_name
+#: model:ir.model.fields,field_description:barcodes.field_ir_http__display_name
+#: model:ir.model.fields,field_description:barcodes.field_res_company__display_name
 msgid "Display Name"
 msgstr "Schermnaam"
 
@@ -181,6 +191,12 @@ msgid "Encoding"
 msgstr "Codering"
 
 #. module: barcodes
+#. odoo-javascript
+#: code:addons/barcodes/static/src/components/manual_barcode.js:0
+msgid "Enter a barcode..."
+msgstr "Voer een barcode in..."
+
+#. module: barcodes
 #: model:ir.model,name:barcodes.model_ir_http
 msgid "HTTP Routing"
 msgstr "HTTP routing"
@@ -188,6 +204,9 @@ msgstr "HTTP routing"
 #. module: barcodes
 #: model:ir.model.fields,field_description:barcodes.field_barcode_nomenclature__id
 #: model:ir.model.fields,field_description:barcodes.field_barcode_rule__id
+#: model:ir.model.fields,field_description:barcodes.field_barcodes_barcode_events_mixin__id
+#: model:ir.model.fields,field_description:barcodes.field_ir_http__id
+#: model:ir.model.fields,field_description:barcodes.field_res_company__id
 msgid "ID"
 msgstr "ID"
 
@@ -358,7 +377,7 @@ msgstr ""
 "UPC codes kunnen naar EAN omgezet worden door ze met het prefix nul te "
 "voorzien. Deze instelling bepaalt of de UPC/EAN-omzetting automatisch moet "
 "uitgevoerd wanneer er een overeenkomst wordt gezocht in een regel met de een "
-"of andere codering. "
+"of andere codering."
 
 #. module: barcodes
 #: model:ir.model.fields.selection,name:barcodes.selection__barcode_rule__encoding__upca
@@ -390,7 +409,7 @@ msgstr "Onbekend barcodecommando"
 #: model:ir.model.fields,help:barcodes.field_barcode_rule__sequence
 msgid "Used to order rules such that rules with a smaller sequence match first"
 msgstr ""
-"Wordt gebruikt om regels te ordenen zodat regels met een lagere volgorde "
+"Wordt gebruikt om regels te ordenen, zodat regels met een lagere volgorde "
 "eerst worden vergeleken."
 
 #. module: barcodes
@@ -406,3 +425,6 @@ msgid ""
 msgstr ""
 "Je kunt '%(name)s' niet verwijderen, omdat dit de standaard "
 "barcodenomenclatuur is."
+
+#~ msgid "Barcode: "
+#~ msgstr "Barcode: "

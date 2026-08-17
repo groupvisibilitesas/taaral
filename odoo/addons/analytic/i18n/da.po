@@ -3,24 +3,21 @@
 # * analytic
 #
 # Translators:
-# Ejner Sønniksen <ejner@vkdata.dk>, 2024
-# Sanne Kristensen <sanne@vkdata.dk>, 2024
-# lhmflexerp <lhm@flexerp.dk>, 2024
-# Mads Søndergaard, 2024
-# Martin Trigaux, 2024
-# Mads Søndergaard, 2024
-# Sammi Iversen <sammi@vkdata.dk>, 2025
-# Kira Petersen, 2025
+# Mads Søndergaard, 2022
+# Mads Søndergaard, 2022
+# Martin Trigaux, 2023
+#
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 # "Kira Petersen François (peti)" <peti@odoo.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-29 18:36+0000\n"
-"PO-Revision-Date: 2026-07-08 18:23+0000\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-05 16:13+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Danish <https://translate.odoo.com/projects/odoo-18/analytic/"
+"Language-Team: Danish <https://translate.odoo.com/projects/odoo-19/analytic/"
 "da/>\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
@@ -381,15 +378,6 @@ msgid "Config Settings"
 msgstr "Konfigurationsindstillinger"
 
 #. module: analytic
-#: model:ir.model.fields,help:analytic.field_account_analytic_line__product_uom_category_id
-msgid ""
-"Conversion between Units of Measure can only occur if they belong to the "
-"same category. The conversion will be made based on the ratios."
-msgstr ""
-"Konvertering mellem enheder kan kun ske, hvis de tilhører samme kategori. "
-"Konvertering vil ske ud fra forholdstallene."
-
-#. module: analytic
 #: model_terms:ir.actions.act_window,help:analytic.account_analytic_line_action
 #: model_terms:ir.actions.act_window,help:analytic.account_analytic_line_action_entries
 msgid ""
@@ -489,6 +477,10 @@ msgstr "Deaktivér gem"
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__display_name
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__display_name
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__display_name
+#: model:ir.model.fields,field_description:analytic.field_analytic_mixin__display_name
+#: model:ir.model.fields,field_description:analytic.field_analytic_plan_fields_mixin__display_name
+#: model:ir.model.fields,field_description:analytic.field_ir_config_parameter__display_name
+#: model:ir.model.fields,field_description:analytic.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr "Visningsnavn"
 
@@ -513,6 +505,12 @@ msgstr "Domæne"
 #: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
 msgid "Don't update"
 msgstr "Opdatér ikke"
+
+#. module: analytic
+#. odoo-javascript
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+msgid "Dynamic Placeholder"
+msgstr "Dynamisk placeholder"
 
 #. module: analytic
 #: model:account.analytic.account,name:analytic.analytic_rd_finance
@@ -541,12 +539,6 @@ msgid "Gross Margin"
 msgstr "Bruttoavance"
 
 #. module: analytic
-#: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_account_search
-#: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_line_filter
-msgid "Group By..."
-msgstr "Gruppér efter ..."
-
-#. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_account__has_message
 msgid "Has Message"
 msgstr "Har besked"
@@ -562,6 +554,10 @@ msgstr "Personaleadministration (HR)"
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_distribution_model__id
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__id
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_plan__id
+#: model:ir.model.fields,field_description:analytic.field_analytic_mixin__id
+#: model:ir.model.fields,field_description:analytic.field_analytic_plan_fields_mixin__id
+#: model:ir.model.fields,field_description:analytic.field_ir_config_parameter__id
+#: model:ir.model.fields,field_description:analytic.field_res_config_settings__id
 msgid "ID"
 msgstr "ID"
 
@@ -775,6 +771,7 @@ msgstr "Partnerkategori"
 #. module: analytic
 #. odoo-javascript
 #: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.js:0
+#: code:addons/analytic/static/src/components/analytic_distribution/analytic_distribution.xml:0
 msgid "Percentage"
 msgstr "Procent"
 
@@ -952,13 +949,8 @@ msgstr "Ikke ledig"
 
 #. module: analytic
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__product_uom_id
-msgid "Unit of Measure"
+msgid "Unit"
 msgstr "Enhed"
-
-#. module: analytic
-#: model:ir.model.fields,field_description:analytic.field_account_analytic_line__product_uom_category_id
-msgid "UoM Category"
-msgstr "Enhedskategori"
 
 #. module: analytic
 #. odoo-javascript
@@ -970,6 +962,14 @@ msgstr "Opdatering"
 #: model:ir.model.fields,field_description:analytic.field_account_analytic_line__user_id
 msgid "User"
 msgstr "Bruger"
+
+#. module: analytic
+#: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_form_view
+#: model_terms:ir.ui.view,arch_db:analytic.account_analytic_distribution_model_tree_view
+#: model_terms:ir.ui.view,arch_db:analytic.account_analytic_plan_form_view
+#: model_terms:ir.ui.view,arch_db:analytic.view_account_analytic_account_form
+msgid "Visible to all"
+msgstr "Kan ses af alle"
 
 #. module: analytic
 #. odoo-python
@@ -985,11 +985,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/analytic/models/analytic_account.py:0
 msgid ""
-"You can't set a different company on your analytic account since there are "
-"some analytic items linked to it."
+"You can't change the company of an analytic account that already has "
+"analytic items! It's a recipe for an analytical disaster!"
 msgstr ""
-"Du kan ikke oprette en anden virksomhed i dit omkostningssted, da der er "
-"knyttet visse omkostningsposteringer til det."
+"Det er ikke muligt at ændre virksomheden for et omkostningssted med "
+"eksisterende posteringer! Det kan føre til kaos i det analytiske regnskab!"
 
 #. module: analytic
 #. odoo-python
@@ -1017,3 +1017,44 @@ msgstr "f.eks. projekt XYZ"
 
 #~ msgid "Deco Addict"
 #~ msgstr "Deco Addict"
+
+#~ msgid "Add a line"
+#~ msgstr "Tilføj en linje"
+
+#~ msgid ""
+#~ "Conversion between Units of Measure can only occur if they belong to the "
+#~ "same category. The conversion will be made based on the ratios."
+#~ msgstr ""
+#~ "Konvertering mellem enheder kan kun ske, hvis de tilhører samme kategori. "
+#~ "Konvertering vil ske ud fra forholdstallene."
+
+#~ msgid "Editing"
+#~ msgstr "Redigering"
+
+#~ msgid "Group By..."
+#~ msgstr "Gruppér efter..."
+
+#~ msgid "Loading..."
+#~ msgstr "Indlæser..."
+
+#~ msgid "Number of messages which requires an action"
+#~ msgstr "Antal meddelser der kræver handling"
+
+#~ msgid "OK"
+#~ msgstr "Ok"
+
+#~ msgid ""
+#~ "The selected account belongs to another company than the one you're "
+#~ "trying to create an analytic item for"
+#~ msgstr ""
+#~ "Den valgte konto tilhører en anden virksomhed end den, du prøver at "
+#~ "oprette en analytisk genstand for"
+
+#~ msgid "Unit of Measure"
+#~ msgstr "Enhed"
+
+#~ msgid "UoM Category"
+#~ msgstr "Enhedskategori"
+
+#~ msgid "View"
+#~ msgstr "Vis"

@@ -1,3 +1,4 @@
+import { closestElement } from "@html_editor/utils/dom_traversal";
 import { Component, onMounted, useEffect, useExternalListener, useRef } from "@odoo/owl";
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
@@ -13,7 +14,13 @@ export class TableMenu extends Component {
         moveRow: Function,
         addRow: Function,
         removeRow: Function,
+        turnIntoHeader: Function,
+        turnIntoRow: Function,
+        resetRowHeight: Function,
+        resetColumnWidth: Function,
         resetTableSize: Function,
+        clearColumnContent: Function,
+        clearRowContent: Function,
         close: Function,
         dropdownState: Object,
         target: { validate: (el) => el.nodeType === Node.ELEMENT_NODE },
@@ -37,6 +44,7 @@ export class TableMenu extends Component {
                     const tr = this.props.target.parentElement;
                     this.isFirst = !tr.previousElementSibling;
                     this.isLast = !tr.nextElementSibling;
+                    this.isTableHeader = [...tr.children][0].nodeName === "TH";
                 }
                 this.items = this.props.type === "column" ? this.colItems() : this.rowItems();
                 this.updatePosition();
@@ -55,9 +63,24 @@ export class TableMenu extends Component {
         }
     }
 
-    get hasCustomSize() {
+    get hasCustomTableSize() {
+        const tBody = closestElement(this.props.target, "tbody");
+        if (!tBody) {
+            return false;
+        }
+        const rows = [...tBody.rows];
+        const firstRowCells = [...rows[0].cells];
+        const rowHasHeight = rows.some((row) => row.style.height);
+        const cellHasWidth = firstRowCells.some((cell) => cell.style.width);
+        return rowHasHeight || cellHasWidth;
+    }
+
+    get hasCustomRowHeight() {
+        return !!this.props.target.closest("tr").style.height;
+    }
+
+    get hasCustomColumnWidth() {
         return (
-            !!this.props.target.closest("tr").style.height ||
             !!this.props.target.closest("td")?.style?.width ||
             !!this.props.target.closest("th")?.style?.width
         );
@@ -143,17 +166,43 @@ export class TableMenu extends Component {
                 text: _t("Delete"),
                 action: this.props.removeColumn.bind(this),
             },
-            this.hasCustomSize && {
-                name: "reset_size",
+            this.hasCustomColumnWidth && {
+                name: "reset_column_size",
                 icon: "fa-table",
-                text: _t("Reset Size"),
-                action: (target) => this.props.resetTableSize(target.closest("table")),
+                text: _t("Reset column size"),
+                action: (target) => this.props.resetColumnWidth(target.closest("td, th")),
+            },
+            this.hasCustomTableSize && {
+                name: "reset_table_size",
+                icon: "fa-table",
+                text: _t("Reset table size"),
+                action: (target) => this.props.resetTableSize(target.closest("tbody")),
+            },
+            {
+                name: "clear_content",
+                icon: "fa-times-circle",
+                text: _t("Clear content"),
+                action: this.props.clearColumnContent.bind(this),
             },
         ].filter(Boolean);
     }
 
     rowItems() {
         return [
+            this.isFirst &&
+                !this.isTableHeader && {
+                    name: "make_header",
+                    icon: "fa-th-large",
+                    text: _t("Turn into header"),
+                    action: (target) => this.props.turnIntoHeader(target.parentElement),
+                },
+            this.isFirst &&
+                this.isTableHeader && {
+                    name: "remove_header",
+                    icon: "fa-table",
+                    text: _t("Turn into row"),
+                    action: (target) => this.props.turnIntoRow(target.parentElement),
+                },
             !this.isFirst && {
                 name: "move_up",
                 icon: "fa-chevron-up",
@@ -166,7 +215,7 @@ export class TableMenu extends Component {
                 text: _t("Move down"),
                 action: (target) => this.props.moveRow("down", target.parentElement),
             },
-            {
+            !this.isTableHeader && {
                 name: "insert_above",
                 icon: "fa-plus",
                 text: _t("Insert above"),
@@ -184,11 +233,23 @@ export class TableMenu extends Component {
                 text: _t("Delete"),
                 action: (target) => this.props.removeRow(target.parentElement),
             },
-            this.hasCustomSize && {
-                name: "reset_size",
+            this.hasCustomRowHeight && {
+                name: "reset_row_size",
                 icon: "fa-table",
-                text: _t("Reset Size"),
-                action: (target) => this.props.resetTableSize(target.closest("table")),
+                text: _t("Reset row size"),
+                action: (target) => this.props.resetRowHeight(target.closest("tr")),
+            },
+            this.hasCustomTableSize && {
+                name: "reset_table_size",
+                icon: "fa-table",
+                text: _t("Reset table size"),
+                action: (target) => this.props.resetTableSize(target.closest("tbody")),
+            },
+            {
+                name: "clear_content",
+                icon: "fa-times-circle",
+                text: _t("Clear content"),
+                action: (target) => this.props.clearRowContent(target.parentElement),
             },
         ].filter(Boolean);
     }

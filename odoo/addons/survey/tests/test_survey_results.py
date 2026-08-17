@@ -6,7 +6,7 @@ from odoo.tests import tagged
 
 from odoo.addons.survey.controllers.main import Survey
 from odoo.addons.survey.tests import common
-from odoo.addons.website.tools import MockRequest
+from odoo.addons.http_routing.tests.common import MockRequest
 
 
 @tagged("is_query_count")

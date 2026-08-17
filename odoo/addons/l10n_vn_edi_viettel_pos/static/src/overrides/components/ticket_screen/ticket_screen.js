@@ -7,7 +7,7 @@ patch(TicketScreen.prototype, {
     async onDoRefund() {
         await super.onDoRefund(...arguments);
         if (this.pos.isVietnamCompany()) {
-            this.pos.get_order().to_invoice = false;
+            this.pos.getOrder().to_invoice = false;
         }
     },
 });

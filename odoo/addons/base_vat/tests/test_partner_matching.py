@@ -21,6 +21,17 @@ class TestPartnerMatching(TransactionCase):
                 partner = self.env['res.partner']._retrieve_partner(vat=vat_to_test)
                 self.assertEqual(initial_partner, partner)
 
+    def test_res_partner_search_swiss_vat_does_not_match_different_uid(self):
+        initial_partner = self.env['res.partner'].create({
+            'name': 'CH Test',
+            'country_id': self.ref('base.ch'),
+            'vat': 'CHE-123.456.788 TVA',
+        })
+
+        partner = self.env['res.partner']._retrieve_partner(vat='CHE123456780TVA')
+
+        self.assertNotEqual(initial_partner, partner)
+
     def test_swiss_vat_variant_creation(self):
         """
         Ensure the Swiss VAT variants are correctly generated.

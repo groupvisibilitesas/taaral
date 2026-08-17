@@ -1,9 +1,7 @@
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import Command
-from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-from odoo.tests import tagged
 from freezegun import freeze_time
 
+from odoo import Command
+from odoo.tests import tagged
 from odoo.addons.l10n_in.tests.common import L10nInTestInvoicingCommon
 
 
@@ -13,6 +11,8 @@ class TestEdiJson(L10nInTestInvoicingCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.maxDiff = None
+
         cls.partner_a.l10n_in_gst_treatment = "regular"
 
         cls.product_a_discount = cls.env['product.product'].create({
@@ -47,7 +47,8 @@ class TestEdiJson(L10nInTestInvoicingCommon):
             "loss_account_id": cls.company_data['default_account_expense'].id,
             "rounding_method": "HALF-UP",
         })
-        cls.invoice = cls.init_invoice("out_invoice", post=False, products=cls.product_a + product_with_cess)
+
+        cls.invoice = cls.init_invoice("out_invoice", post=False, products=cls.product_a + cls.product_with_cess)
         cls.invoice.write({
             "invoice_line_ids": [(1, l_id, {"discount": 10}) for l_id in cls.invoice.invoice_line_ids.ids]})
         cls.invoice.action_post()
@@ -62,21 +63,21 @@ class TestEdiJson(L10nInTestInvoicingCommon):
         cls.invoice_zero_qty.write({
             "invoice_line_ids": [(1, l_id, {"quantity": 0}) for l_id in cls.invoice_zero_qty.invoice_line_ids.ids]})
         cls.invoice_zero_qty.action_post()
-        cls.invoice_negative_unit_price = cls.init_invoice("out_invoice", post=False, products=cls.product_a + cls.product_a_discount + product_with_cess)
+        cls.invoice_negative_unit_price = cls.init_invoice("out_invoice", post=False, products=cls.product_a + cls.product_a_discount + cls.product_with_cess)
         cls.invoice_negative_unit_price.write({
             "invoice_line_ids": [
                 (1, cls.invoice_negative_unit_price.invoice_line_ids[0].id, {"price_unit": 1000}),
                 (1, cls.invoice_negative_unit_price.invoice_line_ids[1].id, {"price_unit": -400}),
             ]})
         cls.invoice_negative_unit_price.action_post()
-        cls.invoice_negative_qty = cls.init_invoice("out_invoice", post=False, products=cls.product_a + cls.product_a_discount + product_with_cess)
+        cls.invoice_negative_qty = cls.init_invoice("out_invoice", post=False, products=cls.product_a + cls.product_a_discount + cls.product_with_cess)
         cls.invoice_negative_qty.write({
             "invoice_line_ids": [
                 (1, cls.invoice_negative_qty.invoice_line_ids[0].id, {"price_unit": 1000}),
                 (1, cls.invoice_negative_qty.invoice_line_ids[1].id, {"price_unit": 400, 'quantity': -1}),
             ]})
         cls.invoice_negative_qty.action_post()
-        cls.invoice_negative_unit_price_and_qty = cls.init_invoice("out_invoice", post=False, products=cls.product_a + cls.product_a_discount + product_with_cess)
+        cls.invoice_negative_unit_price_and_qty = cls.init_invoice("out_invoice", post=False, products=cls.product_a + cls.product_a_discount + cls.product_with_cess)
         cls.invoice_negative_unit_price_and_qty.write({
             "invoice_line_ids": [
                 (1, cls.invoice_negative_unit_price_and_qty.invoice_line_ids[0].id, {"price_unit": -1000, 'quantity': -1}),
@@ -98,7 +99,7 @@ class TestEdiJson(L10nInTestInvoicingCommon):
                 (1, cls.invoice_negative_more_than_max_line.invoice_line_ids[2].id, {"price_unit": -1100}),
             ]})
         cls.invoice_negative_more_than_max_line.action_post()
-        cls.invoice_cash_rounding = cls.init_invoice("out_invoice", post=False, products=cls.product_a + product_with_cess)
+        cls.invoice_cash_rounding = cls.init_invoice("out_invoice", post=False, products=cls.product_a + cls.product_with_cess)
         cls.invoice_cash_rounding.write({
             "invoice_line_ids": [(1, l_id, {"discount": 10}) for l_id in cls.invoice_cash_rounding.invoice_line_ids.ids],
             "invoice_cash_rounding_id": rounding.id,
@@ -144,7 +145,6 @@ class TestEdiJson(L10nInTestInvoicingCommon):
             })]
         })
         cls.invoice_global_discount.action_post()
-        cls._generate_json = cls.env["account.edi.format"]._l10n_in_edi_generate_invoice_json
 
     def test_edi_json(self):
         # line1: 1000, 10% discount and a tax of 5%
@@ -196,7 +196,7 @@ class TestEdiJson(L10nInTestInvoicingCommon):
             }
         }
         with self.subTest(scenario="Taxable Invoice"):
-            json_value = self._generate_json(self.invoice)
+            json_value = self.invoice._l10n_in_edi_generate_invoice_json()
             self.assertDictEqual(json_value, expected, "Indian EDI send json value is not matched")
         expected_copy_rounding = expected.copy()
 
@@ -205,13 +205,14 @@ class TestEdiJson(L10nInTestInvoicingCommon):
             credit_note_expected = expected.copy()
             credit_note_expected['DocDtls'] = {"Typ": "CRN", "No": "RINV/23-24/0001", "Dt": "25/12/2023"}
             self.assertDictEqual(
-                self._generate_json(self.invoice_reverse),
-                credit_note_expected
+                self.invoice_reverse._l10n_in_edi_generate_invoice_json(),
+                credit_note_expected,
+                "Indian E-invoice Credit note json value is not matched"
             )
 
-        #=================================== Full discount test =====================================
+        # =================================== Full discount test =====================================
         with self.subTest(scenario="Full Discount Invoice"):
-            json_value = self._generate_json(self.invoice_full_discount)
+            json_value = self.invoice_full_discount._l10n_in_edi_generate_invoice_json()
             expected.update({
                 "DocDtls": {"Typ": "INV", "No": "INV/18-19/0002", "Dt": "01/01/2019"},
                 "ItemList": [{
@@ -225,9 +226,9 @@ class TestEdiJson(L10nInTestInvoicingCommon):
             })
             self.assertDictEqual(json_value, expected, "Indian EDI with 100% discount sent json value is not matched")
 
-        #=================================== Zero quantity test =============================================
+        # =================================== Zero quantity test =============================================
         with self.subTest(scenario="Zero Quantity Invoice"):
-            json_value = self._generate_json(self.invoice_zero_qty)
+            json_value = self.invoice_zero_qty._l10n_in_edi_generate_invoice_json()
             expected.update({
                 "DocDtls": {"Typ": "INV", "No": "INV/18-19/0003", "Dt": "01/01/2019"},
                 "ItemList": [{
@@ -239,9 +240,9 @@ class TestEdiJson(L10nInTestInvoicingCommon):
             })
             self.assertDictEqual(json_value, expected, "Indian EDI with 0(zero) quantity sent json value is not matched")
 
-        #=================================== Negative unit price test =============================================
+        # =================================== Negative unit price test =============================================
+        json_value = self.invoice_negative_unit_price._l10n_in_edi_generate_invoice_json()
         with self.subTest(scenario="Negative Unit Price Invoice"):
-            json_value = self._generate_json(self.invoice_negative_unit_price)
             expected.update({
                 "DocDtls": {"Typ": "INV", "No": "INV/18-19/0004", "Dt": "01/01/2019"},
                 "ItemList": [
@@ -269,12 +270,12 @@ class TestEdiJson(L10nInTestInvoicingCommon):
 
         with self.subTest(scenario="Negative quantity Invoice"):
             expected.update({"DocDtls": {"Typ": "INV", "No": "INV/18-19/0005", "Dt": "01/01/2019"}})
-            json_value = self._generate_json(self.invoice_negative_qty)
+            json_value = self.invoice_negative_qty._l10n_in_edi_generate_invoice_json()
             self.assertDictEqual(json_value, expected, "Indian EDI with negative quantity sent json value is not matched")
 
         with self.subTest(scenario="Negative unit price and quantity Invoice"):
             expected.update({"DocDtls": {"Typ": "INV", "No": "INV/18-19/0006", "Dt": "01/01/2019"}})
-            json_value = self._generate_json(self.invoice_negative_unit_price_and_qty)
+            json_value = self.invoice_negative_unit_price_and_qty._l10n_in_edi_generate_invoice_json()
             self.assertDictEqual(json_value, expected, "Indian EDI with negative unit price and quantity sent json value is not matched")
 
         with self.subTest(scenario="Negative unit price with discount Invoice"):
@@ -292,8 +293,9 @@ class TestEdiJson(L10nInTestInvoicingCommon):
                     "StCesVal": 0.0, "Discount": 0.0, "RndOffAmt": 0.0, "TotInvVal": 630.0
                 },
             })
-            json_value = self._generate_json(self.invoice_negative_with_discount)
+            json_value = self.invoice_negative_with_discount._l10n_in_edi_generate_invoice_json()
             self.assertDictEqual(json_value, expected, "Indian EDI with negative unit price and quantity sent json value is not matched")
+
         with self.subTest(scenario="Negative value more than max line"):
             expected.update({
                 "DocDtls": {"Typ": "INV", "No": "INV/18-19/0008", "Dt": "01/01/2019"},
@@ -316,10 +318,11 @@ class TestEdiJson(L10nInTestInvoicingCommon):
                     "StCesVal": 0.0, "Discount": 0.0, "RndOffAmt": 0.0, "TotInvVal": 945.0
                 },
             })
-            json_value = self.env['account.edi.format']._l10n_in_edi_generate_invoice_json(self.invoice_negative_more_than_max_line)
+            json_value = self.invoice_negative_more_than_max_line._l10n_in_edi_generate_invoice_json()
             self.assertDictEqual(json_value, expected, "Indian EDI with negative value more than max line sent json value is not matched")
+
         with self.subTest(scenario="Cash Rounding Invoice"):
-            json_value = self._generate_json(self.invoice_cash_rounding)
+            json_value = self.invoice_cash_rounding._l10n_in_edi_generate_invoice_json()
             expected_copy_rounding.update({
                 "DocDtls": {"Typ": "INV", "No": "INV/18-19/0009", "Dt": "01/01/2019"},
                 "ValDtls": {
@@ -327,8 +330,9 @@ class TestEdiJson(L10nInTestInvoicingCommon):
                     "StCesVal": 0.0, "Discount": 0.0, "RndOffAmt": 0.41, "TotInvVal": 2000.00
                 }})
             self.assertDictEqual(json_value, expected_copy_rounding, "Indian EDI with cash rounding sent json value is not matched")
+
         with self.subTest(scenario="SEZ Intra IGST Invoice"):
-            json_value = self._generate_json(self.invoice_with_intra_igst)
+            json_value = self.invoice_with_intra_igst._l10n_in_edi_generate_invoice_json()
             expected_with_intra_igst = {
                 'Version': '1.1',
                 'TranDtls': {'TaxSch': 'GST', 'SupTyp': 'SEZWP', 'RegRev': 'N', 'IgstOnIntra': 'N'},
@@ -385,7 +389,7 @@ class TestEdiJson(L10nInTestInvoicingCommon):
                 "Indian EDI with Intra IGST sent json value is not matched"
             )
         with self.subTest(scenario="Overseas Export Invoice"):
-            json_value = self._generate_json(self.invoice_with_export)
+            json_value = self.invoice_with_export._l10n_in_edi_generate_invoice_json()
             expected_with_overseas = expected_with_intra_igst.copy()
             expected_with_overseas.update({
                 'TranDtls': {'TaxSch': 'GST', 'SupTyp': 'EXPWP', 'RegRev': 'N', 'IgstOnIntra': 'N'},
@@ -409,7 +413,7 @@ class TestEdiJson(L10nInTestInvoicingCommon):
 
         # =================================== RCM Tax test =============================================
         with self.subTest(scenario="RCM Tax Invoice"):
-            json_value = self._generate_json(self.invoice_with_rcm)
+            json_value = self.invoice_with_rcm._l10n_in_edi_generate_invoice_json()
             self.assertEqual(
                 json_value['TranDtls'],
                 {
@@ -466,7 +470,7 @@ class TestEdiJson(L10nInTestInvoicingCommon):
 
         # =================================== SEZ LUT Tax test =============================================
         with self.subTest(scenario="SEZ LUT Tax Invoice"):
-            json_value = self._generate_json(self.invoice_with_sez_lut)
+            json_value = self.invoice_with_sez_lut._l10n_in_edi_generate_invoice_json()
             self.assertEqual(
                 json_value['TranDtls'],
                 {
@@ -523,7 +527,7 @@ class TestEdiJson(L10nInTestInvoicingCommon):
 
         # =================================== SEZ without LUT Tax test =============================================
         with self.subTest(scenario="SEZ Tax Invoice"):
-            json_value = self._generate_json(self.invoice_with_sez_without_lut)
+            json_value = self.invoice_with_sez_without_lut._l10n_in_edi_generate_invoice_json()
             self.assertEqual(
                 json_value['TranDtls'],
                 {
@@ -577,11 +581,10 @@ class TestEdiJson(L10nInTestInvoicingCommon):
                 },
                 "Indian EDI with SEZ without LUT tax ValDtls json value is not matched"
             )
-
         # =================================== Export LUT Tax test =============================================
         with self.subTest(scenario="Export LUT Tax Invoice"):
             self.assertEqual(
-                self._generate_json(self.invoice_with_export_lut),
+                self.invoice_with_export_lut._l10n_in_edi_generate_invoice_json(),
                 {
                   'Version': '1.1',
                   'TranDtls': {
@@ -661,7 +664,7 @@ class TestEdiJson(L10nInTestInvoicingCommon):
         # =================================== Export without LUT Tax test =============================================
         with self.subTest(scenario="Export Tax Invoice"):
             self.assertEqual(
-                self._generate_json(self.invoice_with_export_without_lut),
+                self.invoice_with_export_without_lut._l10n_in_edi_generate_invoice_json(),
                 {
                   'Version': '1.1',
                   'TranDtls': {
@@ -739,9 +742,9 @@ class TestEdiJson(L10nInTestInvoicingCommon):
             )
 
         # ==================================== Global Discount Line Test ==============================================
-        with self.subTest(scenario="Global Discount Invoice"):
+        with self.subTest(scenario="Global Discount Line"):
             self.assertDictEqual(
-                self._generate_json(self.invoice_global_discount),
+                self.invoice_global_discount._l10n_in_edi_generate_invoice_json(),
                 {
                     'Version': '1.1',
                     'TranDtls': {
@@ -818,7 +821,7 @@ class TestEdiJson(L10nInTestInvoicingCommon):
         # =================================== Export without LUT Tax test =============================================
         with self.subTest(scenario="Export Tax Invoice Without LUT and Include Tax"):
             self.assertEqual(
-                self._generate_json(self.invoice_with_export_without_lut_inc),
+                self.invoice_with_export_without_lut_inc._l10n_in_edi_generate_invoice_json(),
                 {
                   'Version': '1.1',
                   'TranDtls': {

@@ -53,7 +53,7 @@ class TestWebsiteMassMailing(WebsiteMassMailingMultiCompanyCommon, MassMailCommo
             self.assertIn(f'{expected_base_url}/view', new_mail.body)
 
             # outgoing email, after substitution
-            email = self._find_sent_mail_wemail(contact.email_formatted)
+            email = self._find_sent_email_wemail(contact.email_formatted)
             self.assertNotIn('/unsubscribe_from_list', email['body'])
             self.assertNotIn(unexpected_base_url, email['body'])
             self.assertIn(f'{expected_base_url}/mailing/{test_mailing.id}/confirm_unsubscribe', email['body'])

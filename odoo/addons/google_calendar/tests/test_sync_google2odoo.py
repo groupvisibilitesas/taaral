@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import pytz
@@ -7,14 +6,14 @@ from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
 from odoo.tests.common import new_test_user
 from odoo.exceptions import ValidationError
-from odoo.addons.google_calendar.models.res_users import User
+from odoo.addons.google_calendar.models.res_users import ResUsers
 from odoo.addons.google_calendar.tests.test_sync_common import TestSyncGoogle, patch_api
 from odoo.addons.google_calendar.utils.google_calendar import GoogleEvent, GoogleCalendarService
 from odoo import Command, tools
 from unittest.mock import patch
 
 
-@patch.object(User, '_get_google_calendar_token', lambda user: 'dummy-token')
+@patch.object(ResUsers, '_get_google_calendar_token', lambda user: 'dummy-token')
 class TestSyncGoogle2Odoo(TestSyncGoogle):
     @classmethod
     def setUpClass(cls):
@@ -122,7 +121,12 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
 
     @patch_api
     def test_new_google_event(self):
-        description = '<script>alert("boom")</script><p style="white-space: pre"><h1>HELLO</h1></p><ul><li>item 1</li><li>item 2</li></ul>'
+        description = (
+            '<div><p style="white-space: pre"></p>'
+            '<h1>HELLO</h1><ul><li>item 1</li><li>item 2</li></ul><br>'
+            '<strong>Contact Details</strong><br>Public Contact<br>'
+            '<a href="mailto:public_email@example.com">public_email@example.com</a></div>'
+        )
         values = {
             'id': 'oj44nep1ldf8a3ll02uip0c9aa',
             'description': description,
@@ -157,6 +161,28 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
         self.assertEqual(self.public_partner.name, admin_attendee.partner_id.name)
         self.assertEqual(event.partner_ids, event.attendee_ids.partner_id)
         self.assertEqual('needsAction', admin_attendee.state)
+        self.assertGoogleAPINotCalled()
+
+    @patch_api
+    def test_new_google_allday_event(self):
+        values = {
+            'id': 'oj44nep1ldf8a3ll02uip0c9aa',
+            'organizer': {'email': 'odoocalendarref@gmail.com', 'self': True},
+            'summary': 'All day event',
+            'attendees': [],
+            'reminders': {'useDefault': True},
+            'start': {'date': '2020-01-13'},
+            'end': {'date': '2020-01-14'},
+        }
+        self.env['calendar.event']._sync_google2odoo(GoogleEvent([values]))
+        event = self.env['calendar.event'].search([('google_id', '=', values.get('id'))])
+        self.assertTrue(event)
+        self.assertTrue(event.allday)
+        self.assertEqual(event.start_date, date(2020, 1, 13))
+        self.assertEqual(event.stop_date, date(2020, 1, 13))
+        winnipeg = pytz.timezone('America/Winnipeg')
+        self.assertEqual(pytz.utc.localize(event.start).astimezone(winnipeg).date(), date(2020, 1, 13))
+        self.assertEqual(pytz.utc.localize(event.stop).astimezone(winnipeg).date(), date(2020, 1, 13))
         self.assertGoogleAPINotCalled()
 
     @patch_api
@@ -399,8 +425,8 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
             'attendees': [],  # <= attendee removed in Google
             'recurrence': ['RRULE:FREQ=WEEKLY;COUNT=2;BYDAY=MO'],
             'reminders': {'useDefault': True},
-            'start': {'date': '2020-01-6'},
-            'end': {'date': '2020-01-7'},
+            'start': {'date': '2020-01-06'},
+            'end': {'date': '2020-01-07'},
         }])
         events = recurrence.calendar_event_ids.sorted('start')
         self.assertEqual(events.partner_ids, user.partner_id)
@@ -470,8 +496,8 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
             'summary': 'Pricing new update',
             'recurrence': ['RRULE:FREQ=WEEKLY;WKST=SU;COUNT=3;BYDAY=MO'],
             'reminders': {'useDefault': True},
-            'start': {'date': '2020-01-6'},
-            'end': {'date': '2020-01-7'},
+            'start': {'date': '2020-01-06'},
+            'end': {'date': '2020-01-07'},
             'transparency': 'opaque',
         }
         self.env['calendar.recurrence']._sync_google2odoo(GoogleEvent([values]))
@@ -528,8 +554,8 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
             'organizer': {'email': self.env.user.email, 'self': True},
             'recurrence': ['RRULE:FREQ=WEEKLY;WKST=SU;COUNT=3;BYDAY=MO'],
             'reminders': {'useDefault': True},
-            'start': {'date': '2020-01-6'},
-            'end': {'date': '2020-01-7'},
+            'start': {'date': '2020-01-06'},
+            'end': {'date': '2020-01-07'},
         }, {   # Third event has been deleted
             'id': '%s_20200113' % recurrence_id,
             'originalStartTime': {'dateTime': '2020-01-13'},
@@ -553,9 +579,9 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
             "id": recurrence_id,
             "updated": "2020-01-13T16:17:03.806Z",
             "summary": "r rul",
-            "start": {"date": "2020-01-6"},
+            "start": {"date": "2020-01-06"},
             'organizer': {'email': self.env.user.email, 'self': True},
-            "end": {"date": "2020-01-7"},
+            "end": {"date": "2020-01-07"},
             'reminders': {'useDefault': True},
             "recurrence": ["RRULE:FREQ=WEEKLY;WKST=SU;COUNT=3;BYDAY=MO"],
         }, {
@@ -651,8 +677,8 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
             'id': recurrence_id,
             'summary': 'Pricing new update',
             'recurrence': ['RRULE:FREQ=WEEKLY;WKST=SU;COUNT=3;BYDAY=MO'],
-            'start': {'date': '2020-01-6'},
-            'end': {'date': '2020-01-7'},
+            'start': {'date': '2020-01-06'},
+            'end': {'date': '2020-01-07'},
             'reminders': {'useDefault': True},
             'updated': self.now,
             'guestsCanModify': True,
@@ -1010,8 +1036,8 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
             'recurrence': ['EXDATE;TZID=Europe/Rome:20200113',
                            'RRULE;X-EVOLUTION-ENDDATE=20200120:FREQ=WEEKLY;COUNT=3;BYDAY=MO;X-RELATIVE=1'],
             'reminders': {'useDefault': True},
-            'start': {'date': '2020-01-6'},
-            'end': {'date': '2020-01-7'},
+            'start': {'date': '2020-01-06'},
+            'end': {'date': '2020-01-07'},
         }
         self.env['calendar.recurrence']._sync_google2odoo(GoogleEvent([values]))
         recurrence = self.env['calendar.recurrence'].search([('google_id', '=', values.get('id'))])
@@ -1272,6 +1298,33 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
             self.assertEqual(len(events.exists()), 2)
 
     @patch_api
+    def test_new_google_birthday_event(self):
+        """Birthday events are not supported, so they should not be synced in."""
+        birthday_google_id = "20260226"
+        values = [{
+            'id': birthday_google_id,
+            'kind': 'calendar#event',
+            'sequence': 0,
+            'status': 'confirmed',
+            'summary': "Bob's birthday",
+            'creator': {'email': self.organizer_user.partner_id.email, 'self': True},
+            'organizer': {'email': self.organizer_user.partner_id.email, 'self': True},
+            'originalStartTime': {'date': '2026-02-26'}, 'start': {'date': '2026-02-26'}, 'end': {'date': '2026-02-27'},
+            'recurringEventId': 'abc', 'iCalUID': 'abc@google.com',
+            'transparency': 'transparent', 'visibility': 'private',
+            'birthdayProperties': {'type': 'birthday'},
+            'eventType': 'birthday',
+        }]
+        with patch.object(GoogleCalendarService, 'get_events', return_value=(
+            GoogleEvent(values), None, [{'method': 'popup', 'minutes': 30}],
+        )):
+            self.organizer_user.sudo()._sync_google_calendar(self.google_service)
+        recurrences = self.env["calendar.recurrence"].search([('google_id', '=', birthday_google_id)])
+        events = self.env["calendar.recurrence"].search([('google_id', '=', birthday_google_id)])
+        self.assertFalse(recurrences, 'Birthday recurrent events should be ignored when syncing from google, as not supported.')
+        self.assertFalse(events, 'Birthday recurrent events should be ignored when syncing from google, as not supported.')
+
+    @patch_api
     def test_new_google_notifications(self):
         """ Event from Google should not create notifications and trigger. It ruins the perfs on large databases """
         cron_id = self.env.ref('calendar.ir_cron_scheduler_alarm').id
@@ -1448,7 +1501,7 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
             'start': {'date': str(event.start_date), 'dateTime': None},
             'end': {'date': str(event.stop_date + relativedelta(days=1)), 'dateTime': None},
             'summary': 'coucou',
-            'description': '',
+            'description': event.description,
             'location': '',
             'guestsCanModify': True,
             'organizer': {'email': 'c.c@example.com', 'self': False},
@@ -1845,8 +1898,8 @@ class TestSyncGoogle2Odoo(TestSyncGoogle):
             }, ],
             'recurrence': ['RRULE:FREQ=WEEKLY;WKST=SU;COUNT=3;BYDAY=MO'],
             'reminders': {'useDefault': True},
-            'start': {'date': '2020-01-6'},
-            'end': {'date': '2020-01-7'},
+            'start': {'date': '2020-01-06'},
+            'end': {'date': '2020-01-07'},
         }
         self.env['calendar.recurrence']._sync_google2odoo(GoogleEvent([values]))
         recurrence = self.env['calendar.recurrence'].search([('google_id', '=', values.get('id'))])

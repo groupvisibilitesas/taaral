@@ -10,7 +10,6 @@ import platform
 import pprint
 import sys
 import threading
-import time
 import traceback
 import warnings
 
@@ -19,7 +18,6 @@ import werkzeug.serving
 from . import release
 from . import sql_db
 from . import tools
-from .modules import module
 
 _logger = logging.getLogger(__name__)
 
@@ -58,7 +56,7 @@ class PostgreSQLHandler(logging.Handler):
 
         if self._log_db != '%d':
             with contextlib.suppress(Exception), tools.mute_logger('odoo.sql_db'), sql_db.db_connect(self._log_db, allow_uri=True).cursor() as cr:
-                cr.execute("""SELECT 1 FROM information_schema.columns WHERE table_name='ir_logging' and column_name='metadata'""")
+                cr.execute("""SELECT 1 FROM information_schema.columns WHERE table_name='ir_logging' and column_name='metadata' AND table_schema = current_schema""")
                 self._support_metadata = bool(cr.fetchone())
 
     def emit(self, record):
@@ -75,29 +73,27 @@ class PostgreSQLHandler(logging.Handler):
                 msg = msg % record.args
             traceback = getattr(record, 'exc_text', '')
             if traceback:
-                msg = "%s\n%s" % (msg, traceback)
+                msg = f"{msg}\n{traceback}"
             # we do not use record.levelname because it may have been changed by ColoredFormatter.
             levelname = logging.getLevelName(record.levelno)
 
             val = ('server', ct_db, record.name, levelname, msg, record.pathname, record.lineno, record.funcName)
 
             if self._support_metadata:
+                from . import modules
                 metadata = {}
-                if module.current_test:
-                    try:
-                        metadata['test'] = module.current_test.get_log_metadata(record)
-                    except:
-                        pass
+                if modules.module.current_test:
+                    with contextlib.suppress(Exception):
+                        metadata['test'] = modules.module.current_test.get_log_metadata(record)
 
                 if metadata:
-                    val = (*val, json.dumps(metadata))
-                    cr.execute(f"""
+                    cr.execute("""
                         INSERT INTO ir_logging(create_date, type, dbname, name, level, message, path, line, func, metadata)
                         VALUES (NOW() at time zone 'UTC', %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    """, val)
+                    """, (*val, json.dumps(metadata)))
                     return
 
-            cr.execute(f"""
+            cr.execute("""
                 INSERT INTO ir_logging(create_date, type, dbname, name, level, message, path, line, func)
                 VALUES (NOW() at time zone 'UTC', %s, %s, %s, %s, %s, %s, %s, %s)
             """, val)
@@ -108,7 +104,7 @@ BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, _NOTHING, DEFAULT = range
 RESET_SEQ = "\033[0m"
 COLOR_SEQ = "\033[1;%dm"
 BOLD_SEQ = "\033[1m"
-COLOR_PATTERN = "%s%s%%s%s" % (COLOR_SEQ, COLOR_SEQ, RESET_SEQ)
+COLOR_PATTERN = f"{COLOR_SEQ}{COLOR_SEQ}%s{RESET_SEQ}"
 LEVEL_COLOR_MAPPING = {
     logging.DEBUG: (BLUE, DEFAULT),
     logging.INFO: (GREEN, DEFAULT),
@@ -120,7 +116,7 @@ LEVEL_COLOR_MAPPING = {
 class PerfFilter(logging.Filter):
 
     def format_perf(self, query_count, query_time, remaining_time):
-        return ("%d" % query_count, "%.3f" % query_time, "%.3f" % remaining_time)
+        return (f"{query_count:d}", f"{query_time:.3f}", f"{remaining_time:.3f}")
 
     def format_cursor_mode(self, cursor_mode):
         return cursor_mode or '-'
@@ -130,14 +126,14 @@ class PerfFilter(logging.Filter):
             query_count = threading.current_thread().query_count
             query_time = threading.current_thread().query_time
             perf_t0 = threading.current_thread().perf_t0
-            remaining_time = time.time() - perf_t0 - query_time
+            remaining_time = tools.real_time() - perf_t0 - query_time
             record.perf_info = '%s %s %s' % self.format_perf(query_count, query_time, remaining_time)
-            if tools.config['db_replica_host'] is not False:
+            if tools.config['db_replica_host'] or 'replica' in tools.config['dev_mode']:
                 cursor_mode = threading.current_thread().cursor_mode
                 record.perf_info = f'{record.perf_info} {self.format_cursor_mode(cursor_mode)}'
             delattr(threading.current_thread(), "query_count")
         else:
-            if tools.config['db_replica_host'] is not False:
+            if tools.config['db_replica_host'] or 'replica' in tools.config['dev_mode']:
                 record.perf_info = "- - - -"
             record.perf_info = "- - -"
         return True
@@ -165,23 +161,20 @@ class ColoredPerfFilter(PerfFilter):
         )
         return COLOR_PATTERN % (30 + cursor_mode_color, 40 + DEFAULT, cursor_mode)
 
-class DBFormatter(logging.Formatter):
-    def format(self, record):
-        record.pid = os.getpid()
-        record.dbname = getattr(threading.current_thread(), 'dbname', '?')
-        return logging.Formatter.format(self, record)
 
-class ColoredFormatter(DBFormatter):
+class ColoredFormatter(logging.Formatter):
     def format(self, record):
         fg_color, bg_color = LEVEL_COLOR_MAPPING.get(record.levelno, (GREEN, DEFAULT))
         record.levelname = COLOR_PATTERN % (30 + fg_color, 40 + bg_color, record.levelname)
-        return DBFormatter.format(self, record)
+        return super().format(record)
 
 
 class LogRecord(logging.LogRecord):
-    def __init__(self, name, level, pathname, lineno, msg, args, exc_info, func=None, sinfo=None):
-        super().__init__(name, level, pathname, lineno, msg, args, exc_info, func, sinfo)
+    def __init__(self, name, level, pathname, lineno, msg, args, exc_info, func=None, sinfo=None, **kwargs):
+        super().__init__(name, level, pathname, lineno, msg, args, exc_info, func=func, sinfo=sinfo, **kwargs)
         self.perf_info = ""
+        self.pid = os.getpid()
+        self.dbname = getattr(threading.current_thread(), 'dbname', '?')
 
 
 showwarning = None
@@ -202,11 +195,6 @@ def init_logger():
     warnings.simplefilter('default', category=DeprecationWarning)
     # https://github.com/urllib3/urllib3/issues/2680
     warnings.filterwarnings('ignore', r'^\'urllib3.contrib.pyopenssl\' module is deprecated.+', category=DeprecationWarning)
-    # ofxparse use an html parser to parse ofx xml files and triggers a warning since bs4 4.11.0
-    # https://github.com/jseutter/ofxparse/issues/170
-    with contextlib.suppress(ImportError):
-        from bs4 import XMLParsedAsHTMLWarning
-        warnings.filterwarnings('ignore', category=XMLParsedAsHTMLWarning)
     # ignore a bunch of warnings we can't really fix ourselves
     for module in [
         'babel.util', # deprecated parser module, no release yet
@@ -263,13 +251,12 @@ def init_logger():
     if tools.config['syslog']:
         # SysLog Handler
         if os.name == 'nt':
-            handler = logging.handlers.NTEventLogHandler("%s %s" % (release.description, release.version))
+            handler = logging.handlers.NTEventLogHandler(f"{release.description} {release.version}")
         elif platform.system() == 'Darwin':
             handler = logging.handlers.SysLogHandler('/var/run/log')
         else:
             handler = logging.handlers.SysLogHandler('/dev/log')
-        format = '%s %s' % (release.description, release.version) \
-                + ':%(dbname)s:%(levelname)s:%(name)s:%(message)s'
+        format = f'{release.description} {release.version}:%(dbname)s:%(levelname)s:%(name)s:%(message)s'
 
     elif tools.config['logfile']:
         # LogFile Handler
@@ -297,7 +284,7 @@ def init_logger():
         formatter = ColoredFormatter(format)
         perf_filter = ColoredPerfFilter()
     else:
-        formatter = DBFormatter(format)
+        formatter = logging.Formatter(format)
         perf_filter = PerfFilter()
         werkzeug.serving._log_add_style = False
     handler.setFormatter(formatter)
@@ -362,6 +349,9 @@ def showwarning_with_traceback(message, category, filename, lineno, file=None, l
     # find the stack frame matching (filename, lineno)
     filtered = []
     for frame in traceback.extract_stack():
+        if frame.name == '__call__' and frame.filename.endswith('/odoo/http.py'):
+            # we don't care about the frames above our wsgi entrypoint
+            filtered.clear()
         if 'importlib' not in frame.filename:
             filtered.append(frame)
         if frame.filename == filename and frame.lineno == lineno:

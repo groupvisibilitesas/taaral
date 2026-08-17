@@ -47,3 +47,8 @@ class TestGelatoSaleOrder(GelatoCommon):
         })
         with self.assertRaises(ValidationError):
             order_line.product_id = self.product.id
+
+    def test_prevent_confirming_order_with_incomplete_partner_address(self):
+        self.gelato_order.partner_id.street = ''
+        with self.assertRaises(ValidationError):
+            self.gelato_order.action_confirm()

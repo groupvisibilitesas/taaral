@@ -59,13 +59,6 @@ class TestProduct(AccountTestInvoicingCommon):
             'supplier_taxes_id': self.company_data['company'].account_purchase_tax_id.ids,
         }])
 
-    def test_account_manager_user_can_create_product(self):
-        """Test that a user with group_account_manager can create a product."""
-        product = self.env['product.product'].with_user(self.account_manager_user).create({
-            'name': 'Test Accountant', 'type': 'consu', 'list_price': 50.0,
-        })
-        self.assertTrue(product)
-
     def test_product_tax_with_company_and_branch(self):
         """Ensure that setting a tax on a product overrides the default tax of branch companies.
             as branches share taxes with their parent company."""
@@ -137,7 +130,27 @@ class TestProduct(AccountTestInvoicingCommon):
         self.assertEqual(bill.invoice_line_ids.account_id, child_expense,
             "Vendor bill line should use child category's expense account")
 
+    def test_product_category_defaults_after_company_account_change(self):
+        """Ensure new product categories pick up the updated expense and income accounts from settings."""
+        old_expense = self.env.company.expense_account_id
+        old_income = self.env.company.income_account_id
+        new_expense = self.copy_account(old_expense)
+        new_income = self.copy_account(old_income)
+
+        self.env.company.write({
+            'expense_account_id': new_expense.id,
+            'income_account_id': new_income.id,
+        })
+
+        fresh_categ = self.env['product.category'].create({'name': 'Category After Account Change'})
+        self.assertEqual(fresh_categ.with_company(self.env.company).property_account_expense_categ_id, new_expense)
+        self.assertEqual(fresh_categ.with_company(self.env.company).property_account_income_categ_id, new_income)
+
     def test_retrieve_product_by_name(self):
+        company = self.company_data['company']
+        if 'predict_bill_product' in company._fields:
+            company.predict_bill_product = True
+
         Product = self.env['product.product']
         Product.create({'name': 'Wireless bluetooth speaker battery'})
         product_A = Product.create({'name': 'Network Cables'})

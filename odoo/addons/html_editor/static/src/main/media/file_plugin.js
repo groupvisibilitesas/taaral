@@ -8,10 +8,16 @@ import { closestElement, firstLeaf, lastLeaf } from "@html_editor/utils/dom_trav
 import { nodeSize } from "@html_editor/utils/position";
 import { withSequence } from "@html_editor/utils/resource";
 import { _t } from "@web/core/l10n/translation";
+import { isHtmlContentSupported } from "@html_editor/core/selection_plugin";
+import { DISABLED_NAMESPACE } from "../toolbar/toolbar_plugin";
 
 export class FilePlugin extends Plugin {
     static id = "file";
     static dependencies = ["clipboard", "dom", "history", "selection"];
+    static defaultConfig = {
+        allowFile: true,
+    };
+    /** @type {import("plugins").EditorResources} */
     resources = {
         user_commands: {
             id: "uploadFile",
@@ -19,30 +25,40 @@ export class FilePlugin extends Plugin {
             description: _t("Add a download box"),
             icon: "fa-upload",
             run: this.uploadAndInsertFiles.bind(this),
-            isAvailable: this.isUploadCommandAvailable.bind(this),
+            isAvailable: (selection) =>
+                this.isUploadCommandAvailable(selection) && isHtmlContentSupported(selection),
         },
         powerbox_items: {
             categoryId: "media",
             commandId: "uploadFile",
             keywords: [_t("file"), _t("document")],
         },
-        power_buttons: withSequence(5, { commandId: "uploadFile" }),
-        unsplittable_node_predicates: (node) => node.classList?.contains("o_file_box"),
-        ...(!this.config.disableFile && {
-            media_dialog_extra_tabs: {
-                id: "DOCUMENTS",
-                title: _t("Documents"),
-                Component: this.componentForMediaDialog,
-                sequence: 15,
-            },
+        power_buttons: withSequence(5, {
+            commandId: "uploadFile",
+            description: _t("Upload a file"),
         }),
+        unsplittable_node_predicates: (node) => node.classList?.contains("o_file_box"),
+        ...(this.config.allowFile &&
+            this.config.allowMediaDocuments && {
+                media_dialog_extra_tabs: {
+                    id: "DOCUMENTS",
+                    title: _t("Documents"),
+                    Component: this.componentForMediaDialog,
+                    sequence: 15,
+                },
+            }),
         selectors_for_feff_providers: () => ".o_file_box",
+        toolbar_namespace_providers: withSequence(
+            80,
+            (targetedNodes, editableSelection) =>
+                closestElement(editableSelection.anchorNode, ".o_file_box") && DISABLED_NAMESPACE
+        ),
 
         /** Predicates */
         functional_empty_node_predicates: (node) =>
             node?.nodeName === "SPAN" && node.classList.contains("o_file_box"),
-        toolbar_visibility_predicates: (node) => {
-            if (closestElement(node, ".o_file_box")) {
+        is_node_editable_predicates: (node) => {
+            if (node?.nodeName === "SPAN" && node.classList.contains("o_file_box")) {
                 return false;
             }
         },
@@ -61,7 +77,6 @@ export class FilePlugin extends Plugin {
         paste_overrides: (selection, clipboardData) => {
             if (closestElement(selection.anchorNode, ".o_file_box")) {
                 this.dependencies.clipboard.pasteText(
-                    selection,
                     clipboardData.getData("text/plain")
                 );
                 return true;
@@ -162,7 +177,7 @@ export class FilePlugin extends Plugin {
     }
 
     isUploadCommandAvailable() {
-        return !this.config.disableFile;
+        return this.config.allowFile;
     }
 
     get componentForMediaDialog() {
@@ -171,7 +186,8 @@ export class FilePlugin extends Plugin {
 
     async uploadAndInsertFiles() {
         // Upload
-        const attachments = await this.services.uploadLocalFiles.upload(this.recordInfo, {
+        const uploadParams = this.config.publicAttachments ? {} : { ...this.recordInfo };
+        const attachments = await this.services.uploadLocalFiles.upload(uploadParams, {
             multiple: true,
             accessToken: true,
         });

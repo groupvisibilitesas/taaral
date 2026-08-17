@@ -7,7 +7,7 @@ from odoo.http import Controller, request, route
 
 class SaleProductConfiguratorController(Controller):
 
-    @route(route='/sale/product_configurator/get_values', type='json', auth='user')
+    @route(route='/sale/product_configurator/get_values', type='jsonrpc', auth='user', readonly=True)
     def sale_product_configurator_get_values(
         self,
         product_template_id,
@@ -21,7 +21,7 @@ class SaleProductConfiguratorController(Controller):
         only_main_product=False,
         **kwargs,
     ):
-        """ Return all product information needed for the product configurator.
+        """Return all product information needed for the product configurator.
 
         :param int product_template_id: The product for which to seek information, as a
             `product.template` id.
@@ -61,8 +61,8 @@ class SaleProductConfiguratorController(Controller):
         pricelist = request.env['product.pricelist'].browse(pricelist_id)
         so_date = datetime.fromisoformat(so_date)
 
-        return dict(
-            products=[
+        return {
+            'products': [
                 dict(
                     **self._get_product_information(
                         product_template,
@@ -76,7 +76,7 @@ class SaleProductConfiguratorController(Controller):
                     ),
                 )
             ],
-            optional_products=[
+            'optional_products': [
                 dict(
                     **self._get_product_information(
                         optional_product_template,
@@ -95,17 +95,17 @@ class SaleProductConfiguratorController(Controller):
                 ) for optional_product_template in product_template.optional_product_ids if
                 self._should_show_product(optional_product_template, combination)
             ] if not only_main_product else [],
-            currency_id=currency_id,
-        )
+            'currency_id': currency_id,
+        }
 
     @route(
         route='/sale/product_configurator/create_product',
-        type='json',
+        type='jsonrpc',
         auth='user',
         methods=['POST'],
     )
     def sale_product_configurator_create_product(self, product_template_id, ptav_ids):
-        """ Create the product when there is a dynamic attribute in the combination.
+        """Create the product when there is a dynamic attribute in the combination.
 
         :param int product_template_id: The product for which to seek information, as a
             `product.template` id.
@@ -121,9 +121,10 @@ class SaleProductConfiguratorController(Controller):
 
     @route(
         route='/sale/product_configurator/update_combination',
-        type='json',
+        type='jsonrpc',
         auth='user',
         methods=['POST'],
+        readonly=True,
     )
     def sale_product_configurator_update_combination(
         self,
@@ -137,7 +138,7 @@ class SaleProductConfiguratorController(Controller):
         pricelist_id=None,
         **kwargs,
     ):
-        """ Return the updated combination information.
+        """Return the updated combination information.
 
         :param int product_template_id: The product for which to seek information, as a
             `product.template` id.
@@ -177,7 +178,12 @@ class SaleProductConfiguratorController(Controller):
         values.pop('pricelist_rule_id', None)
         return values
 
-    @route(route='/sale/product_configurator/get_optional_products', type='json', auth='user')
+    @route(
+        route='/sale/product_configurator/get_optional_products',
+        type='jsonrpc',
+        auth='user',
+        readonly=True,
+    )
     def sale_product_configurator_get_optional_products(
         self,
         product_template_id,
@@ -189,7 +195,7 @@ class SaleProductConfiguratorController(Controller):
         pricelist_id=None,
         **kwargs,
     ):
-        """ Return information about optional products for the given `product.template`.
+        """Return information about optional products for the given `product.template`.
 
         :param int product_template_id: The product for which to seek information, as a
             `product.template` id.
@@ -245,9 +251,10 @@ class SaleProductConfiguratorController(Controller):
         quantity=1,
         product_uom_id=None,
         parent_combination=None,
+        show_packaging=True,
         **kwargs,
     ):
-        """ Return complete information about a product.
+        """Return complete information about a product.
 
         :param product.template product_template: The product for which to seek information.
         :param product.template.attribute.value combination: The combination of the product.
@@ -289,9 +296,13 @@ class SaleProductConfiguratorController(Controller):
                 'exclusions': dict,
                 'archived_combination': dict,
                 'parent_exclusions': dict,
+                'available_uoms': dict (optional),
             }
         """
-        product_uom = request.env['uom.uom'].browse(product_uom_id)
+        uom = (
+            (product_uom_id and request.env['uom.uom'].browse(product_uom_id))
+            or product_template.uom_id
+        )
         product = product_template._get_variant_for_combination(combination)
         attribute_exclusions = product_template._get_attribute_exclusions(
             parent_combination=parent_combination,
@@ -313,39 +324,44 @@ class SaleProductConfiguratorController(Controller):
                 pricelist,
                 combination,
                 quantity=quantity,
-                uom=product_uom,
+                uom=uom,
                 currency=currency,
                 date=so_date,
                 **kwargs,
             ),
             quantity=quantity,
-            attribute_lines=[dict(
-                id=ptal.id,
-                attribute=dict(**attrs_map[ptal.attribute_id.id]),
-                attribute_values=[
+            uom=uom.read(['id', 'display_name'])[0],
+            attribute_lines=[{
+                'id': ptal.id,
+                'attribute': dict(**attrs_map[ptal.attribute_id.id]),
+                'attribute_values': [
                     dict(
                         **ptavs_map[ptav.id],
                         price_extra=self._get_ptav_price_extra(
                             ptav, currency, so_date, product_or_template
                         ),
                     ) for ptav in ptal.product_template_value_ids
-                    if ptav.ptav_active or combination and ptav.id in combination.ids
+                    if ptav.ptav_active or (combination and ptav.id in combination.ids)
                 ],
-                selected_attribute_value_ids=combination.filtered(
+                'selected_attribute_value_ids': combination.filtered(
                     lambda c: ptal in c.attribute_line_id
                 ).ids,
-                create_variant=ptal.attribute_id.create_variant,
-            ) for ptal in product_template.attribute_line_ids],
+                'create_variant': ptal.attribute_id.create_variant,
+            } for ptal in product_template.attribute_line_ids],
             exclusions=attribute_exclusions['exclusions'],
             archived_combinations=attribute_exclusions['archived_combinations'],
             parent_exclusions=attribute_exclusions['parent_exclusions'],
         )
+        if show_packaging and product_template._has_multiple_uoms():
+            values['available_uoms'] = product_template._get_available_uoms().read(
+                ['id', 'display_name']
+            )
         # Shouldn't be sent client-side
         values.pop('pricelist_rule_id', None)
         return values
 
     def _get_basic_product_information(self, product_or_template, pricelist, combination, **kwargs):
-        """ Return basic information about a product.
+        """Return basic information about a product.
 
         :param product.product|product.template product_or_template: The product for which to seek
             information.
@@ -381,6 +397,7 @@ class SaleProductConfiguratorController(Controller):
             pricelist=pricelist,
             **kwargs,
         )
+        pricelist_rule = request.env['product.pricelist.item'].browse(pricelist_rule_id)
         return dict(
             **basic_information,
             price=price,
@@ -388,10 +405,11 @@ class SaleProductConfiguratorController(Controller):
             **request.env['product.template']._get_additional_configurator_data(
                 product_or_template, pricelist=pricelist, **kwargs
             ),
+            show_extra_price=pricelist_rule.compute_price != 'fixed'
         )
 
     def _get_ptav_price_extra(self, ptav, currency, date, product_or_template):
-        """ Hook which returns the extra price for a product template attribute value.
+        """Return the extra price for a product template attribute value.
 
         :param product.template.attribute.value ptav: The product template attribute value for which
             to compute the extra price.
@@ -410,7 +428,7 @@ class SaleProductConfiguratorController(Controller):
         )
 
     def _should_show_product(self, product_template, parent_combination):
-        """ Hook which returns whether a product should be shown in the configurator.
+        """Decide whether a product should be shown in the configurator.
 
         :param product.template product_template: The product being checked.
         :param product.template.attribute.value parent_combination: The combination of the parent

@@ -1,12 +1,4 @@
-import {
-    Component,
-    onMounted,
-    onPatched,
-    status,
-    useExternalListener,
-    useRef,
-    useState,
-} from "@odoo/owl";
+import { Component, onMounted, onPatched, status, useExternalListener, useRef } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 
 /**
@@ -20,7 +12,8 @@ export class CallParticipantVideo extends Component {
 
     setup() {
         super.setup();
-        this.rtc = useState(useService("discuss.rtc"));
+        this.rtc = useService("discuss.rtc");
+        this.store = useService("mail.store");
         this.root = useRef("root");
         onMounted(() => this._update());
         onPatched(() => this._update());

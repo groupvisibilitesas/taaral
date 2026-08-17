@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models
-from odoo.osv import expression
+from odoo.fields import Domain
 
 
-class RecurrenceRule(models.Model):
+class CalendarRecurrence(models.Model):
     _name = 'calendar.recurrence'
     _inherit = ['calendar.recurrence', 'microsoft.calendar.sync']
 
@@ -54,7 +53,7 @@ class RecurrenceRule(models.Model):
                 }]
                 event._microsoft_delete(event.user_id, event.microsoft_id)
                 event.ms_universal_event_id = False
-        self.env['calendar.event'].create(vals)
+        self.env['calendar.event'].with_context(skip_contact_description=True).create(vals)
         self.calendar_event_ids.need_sync_m = False
         return detached_events
 
@@ -149,8 +148,7 @@ class RecurrenceRule(models.Model):
 
     def _get_microsoft_sync_domain(self):
         # Do not sync Odoo recurrences with Outlook Calendar anymore.
-        domain = expression.FALSE_DOMAIN
-        return self._extend_microsoft_domain(domain)
+        return self._extend_microsoft_domain(Domain.FALSE)
 
     def _cancel_microsoft(self):
         self.calendar_event_ids.with_context(dont_notify=True)._cancel_microsoft()
@@ -169,12 +167,12 @@ class RecurrenceRule(models.Model):
 
         return recurrence
 
-    def _microsoft_values(self, fields_to_sync):
+    def _microsoft_values(self, fields_to_sync, initial_values=()):
         """
         Get values to update the whole Outlook event recurrence.
         (done through the first event of the Outlook recurrence).
         """
-        return self.base_event_id._microsoft_values(fields_to_sync, initial_values={'type': 'seriesMaster'})
+        return self.base_event_id._microsoft_values(fields_to_sync, initial_values={**dict(initial_values), 'type': 'seriesMaster'})
 
     def _ensure_attendees_have_email(self):
         self.calendar_event_ids.filtered(lambda e: e.active)._ensure_attendees_have_email()

@@ -1,5 +1,3 @@
-/** @odoo-module **/
-
     import { registry } from "@web/core/registry";
 
     registry.category("web_tour.tours").add("shop_custom_attribute_value", {
@@ -25,7 +23,7 @@
         run: 'click',
     },
     {
-        trigger: 'button:contains(Proceed to Checkout)',
+        trigger: 'button:contains(Go to Checkout)',
         run: 'click',
         expectUnloadPage: true,
     },

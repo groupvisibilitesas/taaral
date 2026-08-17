@@ -2,22 +2,17 @@
 # This file contains the translation of the following modules:
 # * loyalty
 #
-# Translators:
-# Wil Odoo, 2024
-# Jolien De Paepe, 2024
-# Manon Rondou, 2025
-# Erwin van der Ploeg <erwin@odooexperts.nl>, 2025
-# "Manon Rondou (ronm)" <ronm@odoo.com>, 2025.
-# Bren Driesen <brdri@odoo.com>, 2026.
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# Bren Driesen <brdri@odoo.com>, 2025, 2026.
+# Erwin van der Ploeg <erwin@odooexperts.nl>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 18:38+0000\n"
-"PO-Revision-Date: 2026-07-28 16:49+0000\n"
-"Last-Translator: Bren Driesen <brdri@odoo.com>\n"
-"Language-Team: Dutch <https://translate.odoo.com/projects/odoo-18/loyalty/"
+"POT-Creation-Date: 2026-04-10 18:39+0000\n"
+"PO-Revision-Date: 2026-08-02 17:24+0000\n"
+"Last-Translator: Erwin van der Ploeg <erwin@odooexperts.nl>\n"
+"Language-Team: Dutch <https://translate.odoo.com/projects/odoo-19/loyalty/"
 "nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -44,27 +39,18 @@ msgstr ""
 "        "
 
 #. module: loyalty
-#: model:ir.model.fields,help:loyalty.field_loyalty_program__available_on
-msgid ""
-"\n"
-"        Manage where your program should be available for use.\n"
-"        "
-msgstr ""
-"\n"
-"        Beheer waar je programma beschikbaar moet zijn voor gebruik.\n"
-"        "
-
-#. module: loyalty
 #: model:ir.model.fields,help:loyalty.field_loyalty_program__portal_visible
 msgid ""
 "\n"
 "        Show in web portal, PoS customer ticket, eCommerce checkout, the "
-"number of points available and used by reward.\n"
+"number of points available\n"
+"         and used by reward.\n"
 "        "
 msgstr ""
 "\n"
-"        Toon in webportaal, kassa klantticket, E-commerce kassa, het aantal "
-"beschikbare en gebruikt punten per beloning.\n"
+"        Toon het aantal beschikbare en gebruikte punten via beloning\n"
+"         in het webportaal, op het kassaticket (kassa) en tijdens de e-"
+"commerce-checkout.\n"
 "        "
 
 #. module: loyalty
@@ -180,11 +166,12 @@ msgid ""
 "                    <span style=\"background-color:#999999; display:inline-"
 "block; width:auto; border-radius:5px;\">\n"
 "                        <a t-attf-href=\"{{ object.get_base_url() }}/shop\" "
-"target=\"_blank\" style=\"text-decoration:none; font-family:arial, "
-"'helvetica neue', helvetica, sans-serif; font-size:22px; color:#FFFFFF; "
-"border-style:solid; border-color:#999999; border-width:20px 30px; "
-"display:inline-block; background-color:#999999; border-radius:5px; font-"
-"weight:bold; font-style:normal; line-height:26px; width:auto; text-"
+"target=\"_blank\" t-attf-style=\"text-decoration:none; font-family:arial, "
+"'helvetica neue', helvetica, sans-serif; font-size:22px; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-style:solid; "
+"border-width:20px 30px; display:inline-block; background-color: "
+"{{object.company_id.email_secondary_color or '#875A7B'}}; border-radius:5px; "
+"font-weight:bold; font-style:normal; line-height:26px; width:auto; text-"
 "align:center\">Use it right now!</a>\n"
 "                    </span>\n"
 "                </div>\n"
@@ -208,13 +195,13 @@ msgstr ""
 "family:arial, 'helvetica neue', helvetica, sans-serif; font-size:40px; font-"
 "style:normal; font-weight:normal; color:#333333; text-align:center\">\n"
 "                        <strong t-out=\"format_amount(object.points, "
-"object.currency_id) or ''\">$ 150.00</strong></h3>\n"
+"object.currency_id) or ''\">€ 150,00</strong></h3>\n"
 "                </div>\n"
 "                <div style=\"padding:0; margin:0px; padding-top:35px; "
 "padding-bottom:35px; background-color:#efefef; text-align:center;\">\n"
 "                    <p style=\"margin:0px; font-size:14px;font-family:arial, "
 "'helvetica neue', helvetica, sans-serif; line-height:21px; color:#333333\">\n"
-"                        <strong>Code van de cadeaubon</strong>\n"
+"                        <strong>Kortingsode</strong>\n"
 "                    </p>\n"
 "                    <p style=\"margin:0px; font-size:25px;font-family:arial, "
 "'helvetica neue', helvetica, sans-serif; line-height:38px; color:#A9A9A9\" t-"
@@ -224,21 +211,22 @@ msgstr ""
 "margin:0px; padding-top:10px; padding-bottom:10px; text-align:center;\">\n"
 "                    <h3 style=\"margin:0px; line-height:17px; font-"
 "family:arial, 'helvetica neue', helvetica, sans-serif; font-size:14px; font-"
-"style:normal; font-weight:normal; color:#A9A9A9; text-align:center\">Code "
-"verloopt op <t t-out=\"format_date(object.expiration_date) or "
-"''\">05/05/2021</t></h3>\n"
+"style:normal; font-weight:normal; color:#A9A9A9; text-align:center\">Geldig "
+"tot en met <t t-out=\"format_date(object.expiration_date) or ''\">05/05/"
+"2021</t></h3>\n"
 "                </div>\n"
-"                <div style=\"padding:20px; margin:0px; text-align:center;"
-"\">\n"
+"                <div style=\"padding:20px; margin:0px; text-align:center;\">"
+"\n"
 "                    <span style=\"background-color:#999999; display:inline-"
 "block; width:auto; border-radius:5px;\">\n"
 "                        <a t-attf-href=\"{{ object.get_base_url() }}/shop\" "
-"target=\"_blank\" style=\"text-decoration:none; font-family:arial, "
-"'helvetica neue', helvetica, sans-serif; font-size:22px; color:#FFFFFF; "
-"border-style:solid; border-color:#999999; border-width:20px 30px; "
-"display:inline-block; background-color:#999999; border-radius:5px; font-"
-"weight:bold; font-style:normal; line-height:26px; width:auto; text-"
-"align:center\">Gebruik het nu!</a>\n"
+"target=\"_blank\" t-attf-style=\"text-decoration:none; font-family:arial, "
+"'helvetica neue', helvetica, sans-serif; font-size:22px; color: {"
+"{object.company_id.email_primary_color or '#FFFFFF'}}; border-style:solid; "
+"border-width:20px 30px; display:inline-block; background-color: {"
+"{object.company_id.email_secondary_color or '#875A7B'}}; border-radius:5px; "
+"font-weight:bold; font-style:normal; line-height:26px; width:auto; text-"
+"align:center\">Wacht niet langer, gebruik hem nu!</a>\n"
 "                    </span>\n"
 "                </div>\n"
 "            </div>\n"
@@ -302,8 +290,8 @@ msgstr ""
 "                                <span class=\"o_stat_text\" "
 "invisible=\"program_type != 'loyalty'\">Klantenkaarten</span>\n"
 "                                <span class=\"o_stat_text\" "
-"invisible=\"program_type not in ('promotion', 'buy_x_get_y')\">Promo's</"
-"span>\n"
+"invisible=\"program_type not in ('promotion', 'buy_x_get_y')\">Promo's</span>"
+"\n"
 "                                <span class=\"o_stat_text\" "
 "invisible=\"program_type != 'promo_code'\">Korting</span>\n"
 "                                <span class=\"o_stat_text\" "
@@ -388,8 +376,8 @@ msgid ""
 "margin:0px auto; background:#ffffff; color:#333333;\"><tbody>\n"
 "<tr>\n"
 "    <td valign=\"top\" style=\"text-align: center; font-size: 14px;\">\n"
-"        <t t-if=\"object._get_mail_partner().name\">\n"
-"            Congratulations <t t-out=\"object._get_mail_partner().name or "
+"        <t t-if=\"object._mail_get_customer().name\">\n"
+"            Congratulations <t t-out=\"object._mail_get_customer().name or "
 "''\">Brandon Freeman</t>,<br/>\n"
 "        </t>\n"
 "\n"
@@ -398,8 +386,9 @@ msgid ""
 "\n"
 "        <t t-foreach=\"object.program_id.reward_ids\" t-as=\"reward\">\n"
 "            <t t-if=\"reward.required_points &lt;= object.points\">\n"
-"                <span style=\"font-size: 50px; color: #875A7B; font-weight: "
-"bold;\" t-esc=\"reward.description\">Reward Description</span>\n"
+"                <span t-attf-style=\"font-size: 50px; color: "
+"{{object.program_id.company_id.email_secondary_color or '#875A7B'}}; font-"
+"weight: bold;\" t-esc=\"reward.description\">Reward Description</span>\n"
 "                <br/>\n"
 "            </t>\n"
 "        </t>\n"
@@ -437,8 +426,9 @@ msgid ""
 "        <t t-if=\"object._get_signature()\" data-o-mail-quote-"
 "container=\"1\">\n"
 "            <br/>\n"
-"            <t t-out=\"object._get_signature() or ''\" data-o-mail-"
-"quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/><t t-"
+"out=\"object._get_signature() or ''\" data-o-mail-quote=\"1\">Mitchell "
+"Admin</t></div>\n"
 "        </t>\n"
 "    </td>\n"
 "</tr>\n"
@@ -449,18 +439,20 @@ msgstr ""
 "margin:0px auto; background:#ffffff; color:#333333;\"><tbody>\n"
 "<tr>\n"
 "    <td valign=\"top\" style=\"text-align: center; font-size: 14px;\">\n"
-"        <t t-if=\"object._get_mail_partner().name\">\n"
-"            Gefeliciteerd <t t-out=\"object._get_mail_partner().name or ''\">"
-"Brandon Freeman</t>,<br/>\n"
+"        <t t-if=\"object._mail_get_customer().name\">\n"
+"            Gefeliciteerd, <t t-out=\"object._mail_get_customer().name or "
+"''\">Brandon Freeman</t>,<br/>\n"
 "        </t>\n"
 "\n"
-"        Hier is je beloning van <t t-out=\"object.program_id.company_id.name "
+"        hier is je beloning van <t t-out=\"object.program_id.company_id.name "
 "or ''\">JouwBedrijf</t>.<br/>\n"
 "\n"
 "        <t t-foreach=\"object.program_id.reward_ids\" t-as=\"reward\">\n"
 "            <t t-if=\"reward.required_points &lt;= object.points\">\n"
-"                <span style=\"font-size: 50px; color: #875A7B; font-weight: "
-"bold;\" t-esc=\"reward.description\">Beschrijving van de beloning</span>\n"
+"                <span t-attf-style=\"font-size: 50px; color: {"
+"{object.program_id.company_id.email_secondary_color or '#875A7B'}}; font-"
+"weight: bold;\" t-esc=\"reward.description\">Beschrijving van de beloning</"
+"span>\n"
 "                <br/>\n"
 "            </t>\n"
 "        </t>\n"
@@ -468,10 +460,10 @@ msgstr ""
 "</tr>\n"
 "<tr style=\"margin-top: 16px\">\n"
 "    <td valign=\"top\" style=\"text-align: center; font-size: 14px;\">\n"
-"        Gebruik deze kortingscode\n"
+"        Gebruikt deze kortingscode\n"
 "        <t t-if=\"object.expiration_date\">\n"
-"            voor <t t-out=\"format_date(object.expiration_date) or ''\">16-"
-"06-2021</t>\n"
+"            voor <t t-out=\"format_date(object.expiration_date) or ''\">16/"
+"06/2021</t>\n"
 "        </t>\n"
 "        <p style=\"margin-top: 16px;\">\n"
 "            <strong style=\"padding: 16px 8px 16px 8px; border-radius: 3px; "
@@ -481,25 +473,26 @@ msgstr ""
 "        <t t-foreach=\"object.program_id.rule_ids\" t-as=\"rule\">\n"
 "            <t t-if=\"rule.minimum_qty not in [0, 1]\">\n"
 "                <span style=\"font-size: 14px;\">\n"
-"                    Bij aankoop van minimaal <t t-out=\"rule.minimum_qty or "
+"                    Bij aankoop van minstens <t t-out=\"rule.minimum_qty or "
 "''\">10</t> producten\n"
 "                </span><br/>\n"
 "            </t>\n"
 "            <t t-if=\"rule.minimum_amount != 0.00\">\n"
 "                <span style=\"font-size: 14px;\">\n"
-"                    Geldig voor aankopen vanaf <t t-"
-"out=\"rule.company_id.currency_id.symbol or ''\">€ </t><t t-out=\"'%0.2f' % "
+"                    Geldig bij een aankoopwaarde vanaf <t t-"
+"out=\"rule.company_id.currency_id.symbol or ''\">€</t><t t-out=\"'%0.2f' % "
 "float(rule.minimum_amount) or ''\">10,00</t>\n"
 "                </span><br/>\n"
 "            </t>\n"
 "        </t>\n"
 "        <br/>\n"
-"        Bedankt,\n"
+"        Bedankt!\n"
 "        <t t-if=\"object._get_signature()\" data-o-mail-quote-"
 "container=\"1\">\n"
 "            <br/>\n"
-"            <t t-out=\"object._get_signature() or ''\" data-o-mail-"
-"quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/><t t-"
+"out=\"object._get_signature() or ''\" data-o-mail-quote=\"1\">Mitchell "
+"Admin</t></div>\n"
 "        </t>\n"
 "    </td>\n"
 "</tr>\n"
@@ -851,6 +844,11 @@ msgid "Coupons"
 msgstr "Kortingsbonnen"
 
 #. module: loyalty
+#: model:ir.model,website_form_label:loyalty.model_res_partner
+msgid "Create a Customer"
+msgstr "Een klant aanmaken"
+
+#. module: loyalty
 #: model_terms:ir.actions.act_window,help:loyalty.loyalty_program_gift_ewallet_action
 msgid "Create a new one from scratch, or use one of the templates below."
 msgstr ""
@@ -1061,6 +1059,7 @@ msgid "Discounts"
 msgstr "Kortingen"
 
 #. module: loyalty
+#: model:ir.model.fields,field_description:loyalty.field_base_partner_merge_automatic_wizard__display_name
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__display_name
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card_update_balance__display_name
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_generate_wizard__display_name
@@ -1069,6 +1068,10 @@ msgstr "Kortingen"
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__display_name
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__display_name
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_rule__display_name
+#: model:ir.model.fields,field_description:loyalty.field_product_pricelist__display_name
+#: model:ir.model.fields,field_description:loyalty.field_product_product__display_name
+#: model:ir.model.fields,field_description:loyalty.field_product_template__display_name
+#: model:ir.model.fields,field_description:loyalty.field_res_partner__display_name
 msgid "Display Name"
 msgstr "Schermnaam"
 
@@ -1365,6 +1368,7 @@ msgid "History for Loyalty cards and Ewallets"
 msgstr "Geschiedenis voor klantenkaarten en e-wallets"
 
 #. module: loyalty
+#: model:ir.model.fields,field_description:loyalty.field_base_partner_merge_automatic_wizard__id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card_update_balance__id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_generate_wizard__id
@@ -1373,6 +1377,10 @@ msgstr "Geschiedenis voor klantenkaarten en e-wallets"
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_program__id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__id
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_rule__id
+#: model:ir.model.fields,field_description:loyalty.field_product_pricelist__id
+#: model:ir.model.fields,field_description:loyalty.field_product_product__id
+#: model:ir.model.fields,field_description:loyalty.field_product_template__id
+#: model:ir.model.fields,field_description:loyalty.field_res_partner__id
 msgid "ID"
 msgstr "ID"
 
@@ -1542,6 +1550,11 @@ msgstr "Loyaliteitstransactie"
 #: code:addons/loyalty/models/loyalty_program.py:0
 msgid "Loyalty point(s)"
 msgstr "Loyaliteitspunt(en)"
+
+#. module: loyalty
+#: model:ir.model.fields,help:loyalty.field_loyalty_program__available_on
+msgid "Manage where your program should be available for use."
+msgstr "Beheer waar je programma beschikbaar moet zijn."
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__discount_max_amount
@@ -1979,16 +1992,6 @@ msgid "Symbol"
 msgstr "Symbool"
 
 #. module: loyalty
-#: model:ir.model.fields,field_description:loyalty.field_loyalty_reward__tax_ids
-msgid "Taxes"
-msgstr "Btw"
-
-#. module: loyalty
-#: model:ir.model.fields,help:loyalty.field_loyalty_reward__tax_ids
-msgid "Taxes to add on the discount line."
-msgstr "Belastingen om toe te voegen aan de kortingsregel."
-
-#. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_report
 msgid "Thank you,"
 msgstr "Hartelijk dank,"
@@ -2108,12 +2111,6 @@ msgstr "Activeren"
 
 #. module: loyalty
 #. odoo-python
-#: code:addons/loyalty/models/loyalty_reward.py:0
-msgid "Unsupported search operator"
-msgstr "Niet-ondersteunde zoekoperator"
-
-#. module: loyalty
-#. odoo-python
 #: code:addons/loyalty/models/loyalty_card.py:0
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_update_balance_form
 msgid "Update Balance"
@@ -2170,6 +2167,11 @@ msgid "Valid until"
 msgstr "Geldig t/m"
 
 #. module: loyalty
+#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_program_view_form
+msgid "Visible to all"
+msgstr "Voor iedereen zichtbaar"
+
+#. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_card__website_message_ids
 msgid "Website Messages"
 msgstr "Websiteberichten"
@@ -2211,11 +2213,11 @@ msgstr ""
 #: model:ir.model.fields,help:loyalty.field_loyalty_rule__reward_point_split
 msgid ""
 "Whether to separate reward coupons per matched unit, only applies to "
-"'future' programs and trigger mode per money spent or unit paid.."
+"'future' programs and trigger mode per money spent or unit paid..."
 msgstr ""
-"Of beloningen per overeenkomende eenheid worden gescheiden, is alleen van "
-"toepassing op 'toekomstige' programma's en triggermodus per uitgegeven geld "
-"of betaalde eenheid."
+"Of beloningscoupons per overeenkomende eenheid moeten worden gescheiden, "
+"geldt alleen voor 'toekomstige' programma’s en de trigger-modus op basis van "
+"uitgegeven geld of betaalde eenheid."
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_generate_wizard__will_send_mail
@@ -2340,6 +2342,18 @@ msgid "loyalty Reward"
 msgstr "loyaliteitsbeloning"
 
 #. module: loyalty
+#. odoo-python
+#: code:addons/loyalty/models/loyalty_program.py:0
+msgid "mail.template"
+msgstr "mail.template"
+
+#. module: loyalty
+#. odoo-python
+#: code:addons/loyalty/models/loyalty_rule.py:0
+msgid "money"
+msgstr "bankbiljet"
+
+#. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_reward_view_kanban
 msgid "on the cheapest product"
 msgstr "op het goedkoopste product"
@@ -2448,9 +2462,9 @@ msgstr "je order"
 #~ "color:#333333;\"><tbody>\n"
 #~ "<tr>\n"
 #~ "    <td valign=\"top\" style=\"text-align: center; font-size: 14px;\">\n"
-#~ "        <t t-if=\"object._get_mail_partner().name\">\n"
-#~ "            Congratulations <t t-out=\"object._get_mail_partner().name or "
-#~ "''\">Brandon Freeman</t>,<br/>\n"
+#~ "        <t t-if=\"object._mail_get_customer().name\">\n"
+#~ "            Congratulations <t t-out=\"object._mail_get_customer().name "
+#~ "or ''\">Brandon Freeman</t>,<br/>\n"
 #~ "        </t>\n"
 #~ "\n"
 #~ "        Here is your reward from <t t-"
@@ -2458,7 +2472,8 @@ msgstr "je order"
 #~ "\n"
 #~ "        <t t-foreach=\"object.program_id.reward_ids\" t-as=\"reward\">\n"
 #~ "            <t t-if=\"reward.required_points &lt;= object.points\">\n"
-#~ "                <span style=\"font-size: 50px; color: #875A7B; font-"
+#~ "                <span t-attf-style=\"font-size: 50px; color: "
+#~ "{{object.program_id.company_id.email_secondary_color or '#875A7B'}}; font-"
 #~ "weight: bold;\" t-esc=\"reward.description\">Reward Description</span>\n"
 #~ "                <br/>\n"
 #~ "            </t>\n"
@@ -2497,8 +2512,9 @@ msgstr "je order"
 #~ "        <t t-if=\"object._get_signature()\" data-o-mail-quote-"
 #~ "container=\"1\">\n"
 #~ "            <br/>\n"
-#~ "            <t t-out=\"object._get_signature() or ''\" data-o-mail-"
-#~ "quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+#~ "            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/"
+#~ "><t t-out=\"object._get_signature() or ''\" data-o-mail-"
+#~ "quote=\"1\">Mitchell Admin</t></div>\n"
 #~ "        </t>\n"
 #~ "    </td>\n"
 #~ "</tr>\n"
@@ -2510,18 +2526,19 @@ msgstr "je order"
 #~ "color:#333333;\"><tbody>\n"
 #~ "<tr>\n"
 #~ "    <td valign=\"top\" style=\"text-align: center; font-size: 14px;\">\n"
-#~ "        <t t-if=\"object._get_mail_partner().name\">\n"
-#~ "            Gefeliciteerd <t t-out=\"object._get_mail_partner().name or "
+#~ "        <t t-if=\"object._mail_get_customer().name\">\n"
+#~ "            Gefeliciteerd <t t-out=\"object._mail_get_customer().name or "
 #~ "''\">Brandon Freeman</t>,<br/>\n"
 #~ "        </t>\n"
 #~ "\n"
-#~ "        Hier is je beloning van <t t-"
+#~ "        Je ontvangt een beloning van <t t-"
 #~ "out=\"object.program_id.company_id.name or ''\">YourCompany</t>.<br/>\n"
 #~ "\n"
 #~ "        <t t-foreach=\"object.program_id.reward_ids\" t-as=\"reward\">\n"
 #~ "            <t t-if=\"reward.required_points &lt;= object.points\">\n"
-#~ "                <span style=\"font-size: 50px; color: #875A7B; font-"
-#~ "weight: bold;\" t-esc=\"reward.description\">Beschrijving van de "
+#~ "                <span t-attf-style=\"font-size: 50px; color: "
+#~ "{{object.program_id.company_id.email_secondary_color or '#875A7B'}}; font-"
+#~ "weight: bold;\" t-esc=\"reward.description\">Omschrijving van de "
 #~ "beloning</span>\n"
 #~ "                <br/>\n"
 #~ "            </t>\n"
@@ -2530,10 +2547,10 @@ msgstr "je order"
 #~ "</tr>\n"
 #~ "<tr style=\"margin-top: 16px\">\n"
 #~ "    <td valign=\"top\" style=\"text-align: center; font-size: 14px;\">\n"
-#~ "        Gebruik deze promotiecode\n"
+#~ "        Gebruik deze kortingscode\n"
 #~ "        <t t-if=\"object.expiration_date\">\n"
-#~ "            voor <t t-out=\"object.expiration_date or ''\">2021-06-16</"
-#~ "t>\n"
+#~ "            tot en met <t t-out=\"object.expiration_date or "
+#~ "''\">2021-06-16</t>\n"
 #~ "        </t>\n"
 #~ "        <p style=\"margin-top: 16px;\">\n"
 #~ "            <strong style=\"padding: 16px 8px 16px 8px; border-radius: "
@@ -2543,15 +2560,15 @@ msgstr "je order"
 #~ "        <t t-foreach=\"object.program_id.rule_ids\" t-as=\"rule\">\n"
 #~ "            <t t-if=\"rule.minimum_qty not in [0, 1]\">\n"
 #~ "                <span style=\"font-size: 14px;\">\n"
-#~ "                    Minimale aankoop van <t t-out=\"rule.minimum_qty or "
-#~ "''\">10</t> producten\n"
+#~ "                    Geldig bij een minimale aankoop van <t t-"
+#~ "out=\"rule.minimum_qty or ''\">10</t> producten\n"
 #~ "                </span><br/>\n"
 #~ "            </t>\n"
 #~ "            <t t-if=\"rule.minimum_amount != 0.00\">\n"
 #~ "                <span style=\"font-size: 14px;\">\n"
-#~ "                    Geldig voor aankopen boven <t t-"
-#~ "out=\"rule.company_id.currency_id.symbol or ''\">$</t><t t-out=\"'%0.2f' "
-#~ "% float(rule.minimum_amount) or ''\"> 10.00</t>\n"
+#~ "                    Voor aankopen boven <t t-"
+#~ "out=\"rule.company_id.currency_id.symbol or ''\">€</t> <t t-out=\"'%0.2f' "
+#~ "% float(rule.minimum_amount) or ''\">10,00</t>\n"
 #~ "                </span><br/>\n"
 #~ "            </t>\n"
 #~ "        </t>\n"
@@ -2560,8 +2577,9 @@ msgstr "je order"
 #~ "        <t t-if=\"object._get_signature()\" data-o-mail-quote-"
 #~ "container=\"1\">\n"
 #~ "            <br/>\n"
-#~ "            <t t-out=\"object._get_signature() or ''\" data-o-mail-"
-#~ "quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+#~ "            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/"
+#~ "><t t-out=\"object._get_signature() or ''\" data-o-mail-"
+#~ "quote=\"1\">Mitchell Admin</t></div>\n"
 #~ "        </t>\n"
 #~ "    </td>\n"
 #~ "</tr>\n"

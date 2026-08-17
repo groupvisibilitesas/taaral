@@ -39,5 +39,8 @@ Integrates with the ETA portal to automatically send and sign the Invoices to th
     },
     'external_dependencies': {
         'python': ['asn1crypto'],
+        'apt': {
+            'asn1crypto': 'python3-asn1crypto',
+        },
     },
 }

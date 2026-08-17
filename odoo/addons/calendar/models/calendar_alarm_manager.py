@@ -1,14 +1,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import timedelta
-from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models
 from odoo.tools import plaintext2html
 from odoo.tools.sql import SQL
 
 
-class AlarmManager(models.AbstractModel):
+class CalendarAlarm_Manager(models.AbstractModel):
     _name = 'calendar.alarm_manager'
     _description = 'Event Alarm Manager'
 
@@ -74,15 +73,15 @@ class AlarmManager(models.AbstractModel):
             tuple_params += (seconds,)
 
         self.env.flush_all()
-        self._cr.execute("""
+        self.env.cr.execute("""
             WITH calcul_delta AS (%s)
             SELECT *
                 FROM ( %s ) AS ALL_EVENTS
             WHERE ALL_EVENTS.first_alarm < %s
-                AND ALL_EVENTS.last_alarm > (now() at time zone 'utc')
-        """ % (delta_request, base_request, first_alarm_max_value), tuple_params)
+                AND ALL_EVENTS.last_alarm > ('%s' at time zone 'utc')
+        """ % (delta_request, base_request, first_alarm_max_value, fields.Datetime.now()), tuple_params)
 
-        for event_id, first_alarm, last_alarm, first_meeting, last_meeting, min_duration, max_duration in self._cr.fetchall():
+        for event_id, first_alarm, last_alarm, first_meeting, last_meeting, min_duration, max_duration in self.env.cr.fetchall():
             result[event_id] = {
                 'event_id': event_id,
                 'first_alarm': first_alarm,
@@ -151,7 +150,7 @@ class AlarmManager(models.AbstractModel):
         design. The attendees receive an invitation for any new event
         already.
         """
-        lastcall = self.env.context.get('lastcall', False) or fields.date.today() - relativedelta(weeks=1)
+        lastcall = self.env.context.get('lastcall', False) or fields.Date.today() - timedelta(weeks=1)
         # TODO MASTER: remove context and add a proper parameter
         extra_conditions = self.with_context(alarm_type=alarm_type)._get_notify_alert_extra_conditions()
         now = fields.Datetime.now()
@@ -196,21 +195,13 @@ class AlarmManager(models.AbstractModel):
         alarms = self.env['calendar.alarm'].browse(events_by_alarm.keys())
         for alarm in alarms:
             alarm_attendees = attendees.filtered(lambda attendee: attendee.event_id.id in events_by_alarm[alarm.id])
-            alarm_attendees.with_context(
-                calendar_template_ignore_recurrence=True,
-                mail_notify_author=True,
-            )._send_mail_to_attendees(
+            alarm_attendees.with_context(calendar_template_ignore_recurrence=True)._notify_attendees(
                 alarm.mail_template_id,
-                force_send=len(attendees) <= force_send_limit
+                force_send=len(attendees) <= force_send_limit,
+                notify_author=True,
             )
 
-        for event in events:
-            if event.recurrence_id:
-                next_date = event.get_next_alarm_date(events_by_alarm)
-                # In cron, setup alarm only when there is a next date on the target. Otherwise the 'now()'
-                # check in the call below can generate undeterministic behavior and setup random alarms.
-                if next_date:
-                    event.recurrence_id.with_context(date=next_date)._setup_alarms()
+        events._setup_event_recurrent_alarms(events_by_alarm)
 
     @api.model
     def get_next_notif(self):
@@ -257,8 +248,8 @@ class AlarmManager(models.AbstractModel):
         """ Sends through the bus the next alarm of given partners """
         users = self.env['res.users'].search([
             ('partner_id', 'in', tuple(partner_ids)),
-            ('groups_id', 'in', self.env.ref('base.group_user').ids),
+            ('share', '=', False),
         ])
         for user in users:
-            notif = self.with_user(user).with_context(allowed_company_ids=user.company_ids.ids).get_next_notif()
+            notif = self.with_user(user).with_context(allowed_company_ids=user.sudo().company_ids.ids).get_next_notif()
             user._bus_send("calendar.alarm", notif)

@@ -13,7 +13,7 @@ class CrmLead(models.Model):
 
     partner_latitude = fields.Float('Geo Latitude', digits=(10, 7))
     partner_longitude = fields.Float('Geo Longitude', digits=(10, 7))
-    partner_assigned_id = fields.Many2one('res.partner', 'Assigned Partner', tracking=True, domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]", help="Partner this case has been forwarded/assigned to.", index='btree_not_null')
+    partner_assigned_id = fields.Many2one('res.partner', 'Assigned Partner', tracking=True, domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]", index='btree_not_null')
     partner_declined_ids = fields.Many2many(
         'res.partner',
         'crm_lead_declined_partner',
@@ -153,7 +153,7 @@ class CrmLead(models.Model):
                     ('partner_latitude', '>', latitude - 2), ('partner_latitude', '<', latitude + 2),
                     ('partner_longitude', '>', longitude - 1.5), ('partner_longitude', '<', longitude + 1.5),
                     ('country_id', '=', lead.country_id.id),
-                    ('id', 'not in', lead.partner_declined_ids.mapped('id')),
+                    ('id', 'not in', lead.partner_declined_ids.ids),
                 ])
 
                 # 2. second way: in the same country, big area
@@ -163,7 +163,7 @@ class CrmLead(models.Model):
                         ('partner_latitude', '>', latitude - 4), ('partner_latitude', '<', latitude + 4),
                         ('partner_longitude', '>', longitude - 3), ('partner_longitude', '<', longitude + 3),
                         ('country_id', '=', lead.country_id.id),
-                        ('id', 'not in', lead.partner_declined_ids.mapped('id')),
+                        ('id', 'not in', lead.partner_declined_ids.ids),
                     ])
 
                 # 3. third way: in the same country, extra large area
@@ -173,7 +173,7 @@ class CrmLead(models.Model):
                         ('partner_latitude', '>', latitude - 8), ('partner_latitude', '<', latitude + 8),
                         ('partner_longitude', '>', longitude - 8), ('partner_longitude', '<', longitude + 8),
                         ('country_id', '=', lead.country_id.id),
-                        ('id', 'not in', lead.partner_declined_ids.mapped('id')),
+                        ('id', 'not in', lead.partner_declined_ids.ids),
                     ])
 
                 # 5. fifth way: anywhere in same country
@@ -182,13 +182,13 @@ class CrmLead(models.Model):
                     partner_ids = Partner.search([
                         ('partner_weight', '>', 0),
                         ('country_id', '=', lead.country_id.id),
-                        ('id', 'not in', lead.partner_declined_ids.mapped('id')),
+                        ('id', 'not in', lead.partner_declined_ids.ids),
                     ])
 
                 # 6. sixth way: closest partner whatsoever, just to have at least one result
                 if not partner_ids:
                     # warning: point() type takes (longitude, latitude) as parameters in this order!
-                    self._cr.execute("""SELECT id, distance
+                    self.env.cr.execute("""SELECT id, distance
                                   FROM  (select id, (point(partner_longitude, partner_latitude) <-> point(%s,%s)) AS distance FROM res_partner
                                   WHERE active
                                         AND partner_longitude is not null
@@ -197,7 +197,7 @@ class CrmLead(models.Model):
                                         AND id not in (select partner_id from crm_lead_declined_partner where lead_id = %s)
                                         ) AS d
                                   ORDER BY distance LIMIT 1""", (longitude, latitude, lead.id))
-                    res = self._cr.dictfetchone()
+                    res = self.env.cr.dictfetchone()
                     if res:
                         partner_ids = Partner.browse([res['id']])
 
@@ -226,7 +226,7 @@ class CrmLead(models.Model):
             message = Markup('<p>%s</p>') % _('I am not interested by this lead. I have not contacted the lead.')
         partner_ids = self.env['res.partner'].search(
             [('id', 'child_of', self.env.user.partner_id.commercial_partner_id.id)])
-        self.message_unsubscribe(partner_ids=partner_ids.ids)
+        self.sudo().message_unsubscribe(partner_ids=partner_ids.ids)
         if comment:
             message += Markup('<p>%s</p>') % comment
         self.sudo().message_post(body=message)
@@ -236,7 +236,7 @@ class CrmLead(models.Model):
 
         if spam:
             tag_spam = self.env.ref('website_crm_partner_assign.tag_portal_lead_is_spam', False)
-            if tag_spam and tag_spam not in self.tag_ids:
+            if tag_spam and tag_spam not in self.sudo().tag_ids:
                 values['tag_ids'] = [(4, tag_spam.id, False)]
         if partner_ids:
             values['partner_declined_ids'] = [(4, p, 0) for p in partner_ids.ids]
@@ -278,11 +278,17 @@ class CrmLead(models.Model):
 
     def update_contact_details_from_portal(self, values):
         self._assert_portal_write_access()
-        fields = ['partner_name', 'phone', 'mobile', 'email_from', 'street', 'street2',
+        fields = ['partner_name', 'phone', 'email_from', 'street', 'street2',
             'city', 'zip', 'state_id', 'country_id']
         if any([key not in fields for key in values]):
             raise UserError(_("Not allowed to update the following field(s): %s.", ", ".join([key for key in values if not key in fields])))
         return self.sudo().write(values)
+
+    def update_stage_from_portal(self, stage_id):
+        """ Allow portal users to update the stage of their assigned leads """
+        self._assert_portal_write_access()
+        self.sudo().write({'stage_id': stage_id})
+        return True
 
     @api.model
     def create_opp_portal(self, values):
@@ -342,12 +348,13 @@ class CrmLead(models.Model):
         return super(CrmLead, self)._get_access_action(access_uid=access_uid, force_website=force_website)
 
     @api.model
-    def _get_mail_message_access(self, res_ids, operation, model_name=None):
+    def _mail_get_operation_for_mail_message_operation(self, message_operation):
         # Allow readonly posting for assigned users, to avoid ACLs issue in frontend
         # as they do not have write access anymore on the lead itself, just specific
         # controllers and UI
-        if operation == 'create' and res_ids and (not model_name or model_name == 'crm.lead'):
-            leads = self.browse(res_ids).with_prefetch(self._prefetch_ids)  # force prefetch, lost otherwise with rebrowsing
-            if all(lead.partner_assigned_id == self.env.user.partner_id for lead in leads):
-                return 'read'
-        return super()._get_mail_message_access(res_ids, operation, model_name=model_name)
+        assigned = self.filtered_domain([
+            ('partner_assigned_id', 'child_of', self.env.user.commercial_partner_id.id),
+        ]) if message_operation == "create" else self.browse()
+        result = super()._mail_get_operation_for_mail_message_operation(message_operation)
+        result.update(dict.fromkeys(assigned, 'read'))
+        return result

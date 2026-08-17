@@ -4,8 +4,10 @@ from unittest.mock import patch
 
 from odoo import Command
 from odoo.exceptions import UserError, ValidationError
-from odoo.addons.account_payment.tests.common import AccountPaymentCommon
 from odoo.tests import tagged
+
+from odoo.addons.account_payment.tests.common import AccountPaymentCommon
+from odoo.addons.base.models.ir_qweb import QWebError
 
 
 @tagged('-at_install', 'post_install')
@@ -183,7 +185,7 @@ class TestAccountPayment(AccountPaymentCommon):
 
         with patch(
             'odoo.addons.payment.models.payment_transaction.PaymentTransaction'
-            '._send_payment_request'
+            '._charge_with_token'
         ) as patched:
             payment_without_token.action_post()
             patched.assert_not_called()
@@ -465,3 +467,65 @@ class TestAccountPayment(AccountPaymentCommon):
             other_invoice.action_post()
             wizard = payment_register_wizard(invoice + other_invoice)
             self.assertEqual(wizard.suitable_payment_token_ids, parent_token)
+
+    def test_generate_and_send_invoice_with_qr_code(self):
+        """Test generating & sending invoices with QR codes enabled."""
+        self.env.company.link_qr_code = True
+        move = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.partner.id,
+            'invoice_line_ids': [Command.create({'name': "$100", 'price_unit': 100.0})],
+        })
+        move.action_post()
+
+        with patch.object(
+            move.__class__, '_generate_portal_payment_qr', wraps=move._generate_portal_payment_qr,
+        ) as payment_qr_mock:
+            self._assert_does_not_raise(
+                QWebError,
+                self.env['account.move.send']._generate_and_send_invoices(move),
+            )
+            self.assertTrue(payment_qr_mock.called)
+
+    def test_partial_reconcile_with_payments_coming_from_provider(self):
+        """ Test that we not allow partial reconcile on payments coming from
+            payment provider.
+        """
+        provider = self.env['payment.provider'].create({
+            'name': 'Test',
+            'journal_id': self.company_data['default_journal_bank'].id,
+        })
+        invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.partner_a.id,
+            'journal_id': self.company_data['default_journal_sale'].id,
+            'invoice_line_ids': [
+                Command.create({
+                    'account_id': self.company_data['default_account_revenue'].id,
+                    'product_id': self.product_a.id,
+                    'quantity': 1,
+                    'price_unit': 100,
+                })
+            ]
+        })
+        payment_transaction = self.env['payment.transaction'].create({
+            'provider_id': provider.id,
+            'payment_method_id': self.env.ref('payment.payment_method_unknown').id,
+            'invoice_ids': [invoice.id],
+            'partner_id': self.partner_a.id,
+            'amount': 200,
+            'currency_id': invoice.currency_id.id,
+        })
+        payment_transaction._create_payment(payment_method_line_id=self.company_data['default_journal_bank'].inbound_payment_method_line_ids[0].id)
+        payment_transaction._post_process()
+        payment = payment_transaction.payment_id
+        invoice.action_post()
+        payment.action_post()
+        statement_line = self.env['account.bank.statement.line'].create({
+            'journal_id': self.company_data['default_journal_bank'].id,
+            'date': '2026-01-01',
+            'partner_id': self.partner_a.id,
+            'amount': 100.0,
+        })
+        inv_line = payment.move_id.line_ids.filtered(lambda l: l.balance == 200)
+        self.assertFalse(statement_line._get_partial_amounts(-200, inv_line, -100, -100))

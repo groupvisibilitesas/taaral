@@ -8,7 +8,7 @@ class SmsTwilioNumber(models.Model):
 
     company_id = fields.Many2one(
         'res.company', string='Company',
-        required=True, ondelete='cascade',
+        required=True, ondelete='cascade', index='btree',
         default=lambda self: self.env.company)
     sequence = fields.Integer(default=1)
     number = fields.Char(string='Twilio Number', required=True)

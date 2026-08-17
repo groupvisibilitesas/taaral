@@ -144,7 +144,6 @@ class TestProject(TestCommonSaleTimesheet):
             'name': self.product_delivery_timesheet1.name,
             'product_id': self.product_delivery_timesheet1.id,
             'product_uom_qty': 1,
-            'product_uom': self.product_delivery_timesheet1.uom_id.id,
             'price_unit': self.product_delivery_timesheet1.list_price,
             'order_id': sale_order.id,
         })
@@ -212,42 +211,22 @@ class TestProject(TestCommonSaleTimesheet):
         self.project_global.allocated_hours = 10
         self.assertEqual(self.project_global.copy().allocated_hours, 10)
 
-    def test_task_with_newid_partner(self):
-        """
-        Test that creating a task with a NewId partner doesn't raise errors.
-        """
-        contact = self.env['res.partner'].new({
-            'name': 'contact 1',
-            'email': 'contact1@example.com',
+    def test_project_creation_timesheet_account_companies(self):
+        project_template = self.env['project.project'].create({
+            'name': 'Project template',
+            'is_template': True,
+            'company_id': False,
+            'allow_timesheets': True,
+            'allow_billable': True,
         })
-        task = self.env['project.task'].create({
-            'name': 'task 1',
-            'partner_id': contact.id,
-        })
-        task.project_id = self.project_global.id
-        sol = task._get_last_sol_of_customer()
-        self.assertEqual(sol, self.env['sale.order.line'], "SOL should be an empty record set")
-        sol = task._get_last_sol_of_customer()
 
-        contact = self.env['res.partner'].create({
-            'name': 'contact 2',
-            'email': 'contact2@test.com',
+        self.partner_b.company_id = self.company
+
+        wizard = self.env['project.template.create.wizard'].create({
+            'template_id': project_template.id,
+            'name': 'New Project from Template',
+            'partner_id': self.partner_b.id,
         })
-        sale_order = self.env['sale.order'].create({
-            'partner_id': contact.id,
-        })
-        task = self.env['project.task'].create({
-            'name': 'task 2',
-            'partner_id': contact.id,
-            'project_id': self.project_global.id,
-        })
-        expected_sol = self.env['sale.order.line'].create({
-            'order_id': sale_order.id,
-            'product_id': self.product_delivery_timesheet1.id,
-            'product_uom_qty': 10,
-            'task_id' : task.id,
-        })
-        sale_order.action_confirm()
-        expected_sol.write({'remaining_hours': 10})
-        sol = task._get_last_sol_of_customer()
-        self.assertEqual(sol, expected_sol, "SOL should match the expected one")
+        new_project = wizard._create_project_from_template()
+
+        self.assertEqual(new_project.company_id, self.partner_b.company_id)

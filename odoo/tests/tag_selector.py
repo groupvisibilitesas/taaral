@@ -12,7 +12,8 @@ class TagsSelector(object):
                                 ^
                                 ([+-]?)                     # operator_re
                                 (\*|\w*)                    # tag_re
-                                (?:\/([\w\/]*(?:.py)?))?    # module_re
+                                (\/[\w\/\.-]+.py)?           # file_re
+                                (?:\/(\w+))?                # module_re
                                 (?::(\w*))?                 # test_class_re
                                 (?:\.(\w*))?                # test_method_re
                                 (?:\[(.*)\])?               # parameters
@@ -55,7 +56,7 @@ class TagsSelector(object):
                 _logger.error('Invalid tag %s', filter_spec)
                 continue
 
-            sign, tag, module, klass, method, parameters = match.groups()
+            sign, tag, file_path, module, klass, method, parameters = match.groups()
             is_include = sign != '-'
             is_exclude = not is_include
 
@@ -65,12 +66,7 @@ class TagsSelector(object):
             elif not tag or tag == '*':
                 # '*' indicates all tests (instead of 'standard' tests only)
                 tag = None
-            module_path = None
-            if module and (module.endswith('.py')):
-                module_path = module[:-3].replace('/', '.')
-                module = None
-
-            test_filter = (tag, module, klass, method, module_path)
+            test_filter = (tag, module, klass, method, file_path)
 
             if parameters:
                 # we could check here that test supports negated parameters
@@ -94,19 +90,23 @@ class TagsSelector(object):
             return False
 
         test_module = test.test_module
-        test_class = test.test_class
+        test_class = test.__class__.__name__
         test_tags = test.test_tags | {test_module}  # module as test_tags deprecated, keep for retrocompatibility,
         test_method = test._testMethodName
+        test_module_path = test.__module__
+        for prefix in ('odoo.addons', 'odoo.upgrade'):
+            test_module_path = test_module_path.removeprefix(prefix)
+        test_module_path = test_module_path.replace('.', '/') + '.py'
 
         test._test_params = []
 
         def _is_matching(test_filter):
-            (tag, module, klass, method, module_path) = test_filter
+            (tag, module, klass, method, file_path) = test_filter
             if tag and tag not in test_tags:
                 return False
-            elif module_path and not test.__module__.endswith(module_path):
+            elif file_path and not file_path.endswith(test_module_path):
                 return False
-            elif not module_path and module and module != test_module:
+            elif not file_path and module and module != test_module:
                 return False
             elif klass and klass != test_class:
                 return False

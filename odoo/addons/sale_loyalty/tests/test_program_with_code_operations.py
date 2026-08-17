@@ -1,7 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import Command
 from odoo.exceptions import ValidationError
+from odoo.fields import Command
 
 from odoo.addons.sale_loyalty.tests.common import TestSaleCouponCommon
 
@@ -71,7 +71,6 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
             (0, False, {
                 'product_id': self.product_A.id,
                 'name': '1 Product A',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             })
         ]})
@@ -108,7 +107,6 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
             (0, False, {
                 'product_id': self.product_A.id,
                 'name': '1 Product A',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             })
         ]})
@@ -121,7 +119,6 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
             (0, False, {
                 'product_id': self.product_A.id,
                 'name': '1 Product A',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             })
         ]})
@@ -162,7 +159,6 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
             (0, False, {
                 'product_id': self.product_C.id,
                 'name': '1 Product C',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             })
         ]})
@@ -219,7 +215,6 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
             (0, False, {
                 'product_id': self.third_product.id,
                 'name': '1 Third Product',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             })
         ]})
@@ -233,7 +228,6 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
             (0, False, {
                 'product_id': self.product_A.id,
                 'name': '1 Product A',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             })
         ]})
@@ -249,7 +243,6 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
             (0, False, {
                 'product_id': self.product_B.id,
                 'name': '1 Product B',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             })
         ]})
@@ -278,7 +271,6 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
             (0, False, {
                 'product_id': self.product_A.id,
                 'name': '1 Product A',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             })
         ]})
@@ -289,7 +281,6 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
             (0, False, {
                 'product_id': self.product_B.id,
                 'name': '1 Product B',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             })
         ]})
@@ -329,7 +320,6 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
             Command.create({
                 'product_id': self.product_A.id,
                 'name': '1 Product A',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             })
         ]})
@@ -453,7 +443,6 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
             (0, False, {
                 'product_id': self.product_A.id,
                 'name': '1 Product A',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             })
         ]})
@@ -497,13 +486,11 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
             Command.create({
                 'product_id': self.product_A.id,
                 'name': '1 Product A',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             }),
             Command.create({
                 'product_id': self.product_B.id,
                 'name': '1 Product B',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             }),
         ]})
@@ -551,7 +538,6 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
             Command.create({
                 'product_id': self.product_A.id,
                 'name': '1 Product A',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             })
         ]})
@@ -603,7 +589,6 @@ class TestProgramWithCodeOperations(TestSaleCouponCommon):
             Command.create({
                 'product_id': self.product_A.id,
                 'name': '1 Product A',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
             })
         ]})

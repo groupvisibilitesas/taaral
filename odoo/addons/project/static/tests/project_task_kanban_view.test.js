@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, test } from "@odoo/hoot";
-import { animationFrame, click, edit } from "@odoo/hoot-dom";
-
+import { animationFrame, click, edit, waitFor } from "@odoo/hoot-dom";
 import {
     contains,
     fields,
@@ -46,7 +45,7 @@ beforeEach(() => {
                 </t>
             </templates>
         </kanban>
-    `;
+    `,
     onRpc(({ method }) => {
         if (method === "unlink_wizard") {
             return {
@@ -69,7 +68,7 @@ beforeEach(() => {
     });
 });
 
-test("shadow stages should be displayed in the project Kanban", async () => {
+test("stages nocontent helper should be displayed in the project Kanban", async () => {
     await mountView({
         resModel: "project.task",
         type: "kanban",
@@ -80,7 +79,70 @@ test("shadow stages should be displayed in the project Kanban", async () => {
     });
 
     expect(".o_kanban_header").toHaveCount(1);
-    expect(".o_kanban_example_background_container").toHaveCount(1);
+    expect(".o_kanban_stages_nocontent").toHaveCount(1);
+});
+
+test("quick create button is visible when the user has access rights.", async () => {
+    onRpc("has_group", () => true);
+    await mountView({
+        resModel: "project.task",
+        type: "kanban",
+        context: {
+            active_model: "project.project",
+            default_project_id: 1,
+        },
+    });
+    await animationFrame();
+    expect(".o_column_quick_create").toHaveCount(1);
+});
+
+test("quick create button is not visible when the user not have access rights", async () => {
+    onRpc("has_group", () => false);
+    await mountView({
+        resModel: "project.task",
+        type: "kanban",
+        context: {
+            active_model: "project.project",
+            default_project_id: 1,
+        },
+    });
+    await animationFrame();
+    expect(".o_column_quick_create").toHaveCount(0);
+});
+
+test("project.task (kanban): toggle sub-tasks", async () => {
+    projectModels.ProjectTask._records = [
+        {
+            id: 1,
+            project_id: 1,
+            name: "Task 1",
+            stage_id:  1,
+            display_in_project: true,
+        },
+        {
+            id: 2,
+            project_id: 1,
+            name: "Task 2",
+            stage_id:  1,
+            display_in_project: false,
+        }
+    ];
+    await mountView({
+        resModel: "project.task",
+        type: "kanban",
+        context: {
+            active_model: "project.project",
+            default_project_id: 1,
+        },
+    });
+    expect(".o_kanban_record").toHaveCount(1);
+    expect(".o_control_panel_navigation button i.fa-sliders").toHaveCount(1);
+    await click(".o_control_panel_navigation button i.fa-sliders");
+    await waitFor("span.o-dropdown-item");
+    expect("span.o-dropdown-item").toHaveText("Show Sub-Tasks");
+    await click("span.o-dropdown-item");
+    await animationFrame();
+    expect(".o_kanban_record").toHaveCount(2);
 });
 
 test("delete just created stage", async () => {
@@ -112,12 +174,13 @@ test("delete just created stage", async () => {
 });
 
 test("delete existing stage", async () => {
-    onRpc("web_read_group", () => {
-        return {
-            groups: [{ stage_id: [1, "Stage 1"] }],
-            length: 1,
-        };
-    });
+    onRpc("web_read_group", () => ({
+        groups: [{
+            stage_id: [1, "Stage 1"],
+            __records: [],
+        }],
+        length: 1,
+    }));
     await mountView({
         resModel: "project.task",
         type: "kanban",

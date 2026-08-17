@@ -50,7 +50,6 @@ class TestLoyaltyhistory(TestSaleCouponCommon):
                 Command.create({
                 'product_id': self.product_A.id,
                 'name': 'Ordinary Product A',
-                'product_uom': self.uom_unit.id,
                 'product_uom_qty': 1.0,
                 }),
             ],
@@ -70,7 +69,7 @@ class TestLoyaltyhistory(TestSaleCouponCommon):
             'order_line': [
                 Command.create({
                     'product_id': self.product_A.id,
-                    'tax_id': False,
+                    'tax_ids': False,
                 }),
             ]
         })
@@ -88,7 +87,7 @@ class TestLoyaltyhistory(TestSaleCouponCommon):
             'order_line': [
                 Command.create({
                     'product_id': self.product_A.id,
-                    'tax_id': False,
+                    'tax_ids': False,
                 }),
             ]
         })
@@ -110,7 +109,7 @@ class TestLoyaltyhistory(TestSaleCouponCommon):
             'order_line': [
                 Command.create({
                     'product_id': self.product_A.id,
-                    'tax_id': False,
+                    'tax_ids': False,
                 }),
             ],
         })
@@ -137,7 +136,7 @@ class TestLoyaltyhistory(TestSaleCouponCommon):
             'partner_id': self.partner_a.id,
             'order_line': [Command.create({
                 'product_id': self.product_A.id,
-                'tax_id': False,
+                'tax_ids': False,
             })],
         })
         order.action_confirm()
@@ -166,7 +165,7 @@ class TestLoyaltyhistory(TestSaleCouponCommon):
             'order_line': [Command.create({
                 'product_id': self.product_A.id,
                 'product_uom_qty': 2,
-                'tax_id': False,
+                'tax_ids': False,
             })],
         })
         order._update_programs_and_rewards()

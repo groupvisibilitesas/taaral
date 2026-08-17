@@ -1,9 +1,13 @@
+import logging
 from collections import defaultdict
+
 from markupsafe import Markup
 
-from odoo import _, api, models, modules, tools
+from odoo import Command, _, api, models, modules, tools
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools.misc import OrderedSet
+
+
+_logger = logging.getLogger(__name__)
 
 
 class AccountMoveSend(models.AbstractModel):
@@ -19,9 +23,9 @@ class AccountMoveSend(models.AbstractModel):
     # -------------------------------------------------------------------------
 
     @api.model
-    def _get_default_sending_method(self, move) -> str:
+    def _get_default_sending_methods(self, move) -> set:
         """ By default, we use the sending method set on the partner or email. """
-        return move.commercial_partner_id.with_company(move.company_id).invoice_sending_method or 'email'
+        return {move.commercial_partner_id.with_company(move.company_id).invoice_sending_method or 'email'}
 
     @api.model
     def _get_all_extra_edis(self) -> dict:
@@ -43,7 +47,18 @@ class AccountMoveSend(models.AbstractModel):
 
     @api.model
     def _get_default_pdf_report_id(self, move):
-        return move.commercial_partner_id.with_company(move.company_id).invoice_template_pdf_report_id or self.env.ref('account.account_invoices')
+        if partner_default_template := move.commercial_partner_id.with_company(move.company_id).invoice_template_pdf_report_id:
+            return partner_default_template
+
+        if journal_default_template := move.journal_id.with_company(move.company_id).invoice_template_pdf_report_id:
+            return journal_default_template
+
+        action_report = self.env.ref('account.account_invoices')
+
+        if move._is_action_report_available(action_report):
+            return action_report
+
+        raise UserError(_("There is no template that applies to this move type."))
 
     @api.model
     def _get_default_mail_template_id(self, move):
@@ -58,7 +73,7 @@ class AccountMoveSend(models.AbstractModel):
             return custom_settings.get(key) if key in custom_settings else move.sending_data.get(key) if from_cron else default_value
 
         vals = {
-            'sending_methods': get_setting('sending_methods', default_value={self._get_default_sending_method(move)}) or {},
+            'sending_methods': get_setting('sending_methods', default_value=self._get_default_sending_methods(move)) or {},
             'extra_edis': get_setting('extra_edis', default_value=self._get_default_extra_edis(move)) or {},
             'pdf_report': get_setting('pdf_report') or self._get_default_pdf_report_id(move),
             'author_user_id': get_setting('author_user_id', from_cron=from_cron) or self.env.user.id,
@@ -74,6 +89,7 @@ class AccountMoveSend(models.AbstractModel):
                 'mail_body': get_setting('mail_body', default_value=self._get_default_mail_body(move, mail_template, mail_lang)),
                 'mail_subject': get_setting('mail_subject', default_value=self._get_default_mail_subject(move, mail_template, mail_lang)),
                 'mail_partner_ids': get_setting('mail_partner_ids', default_value=self._get_default_mail_partner_ids(move, mail_template, mail_lang).ids),
+                'reply_to': get_setting('reply_to') or self._get_mail_default_field_value_from_template(mail_template, mail_lang, move, 'reply_to'),
             })
         # Add mail attachments if sending methods support them
         if self._display_attachments_widget(vals['invoice_edi_format'], vals['sending_methods']):
@@ -113,16 +129,29 @@ class AccountMoveSend(models.AbstractModel):
                 'action_text': _("Check") if has_cron_access else None,
                 'action': send_cron._get_records_action() if has_cron_access else None,
             }
-        if len(moves) > 1 and (partners_without_mail := moves.filtered(
-                lambda m: 'email' in moves_data[m]['sending_methods'] and not m.partner_id.email).partner_id
-        ):
-            # should only appear in mass invoice sending
-            alerts['account_missing_email'] = {
-                'level': 'warning',
-                'message': _("Partner(s) should have an email address."),
-                'action_text': _("View Partner(s)"),
-                'action': partners_without_mail._get_records_action(name=_("Check Partner(s) Email(s)")),
-            }
+        # Filter moves that are trying to send via email
+        email_moves = moves.filtered(lambda m: 'email' in moves_data[m]['sending_methods'])
+        if email_moves:
+            # Identify partners without email depending on batch/single send
+            if is_batch := len(moves) > 1:
+                # Batch sending
+                partners_without_mail = email_moves.filtered(lambda m: not m.partner_id.email).mapped('partner_id')
+            else:
+                # Single sending
+                partners_without_mail = moves_data[email_moves]['mail_partner_ids'].filtered(lambda p: not p.email)
+
+            # If there are partners without email, add an alert
+            if partners_without_mail:
+                alerts['account_missing_email'] = {
+                    'level': 'warning' if is_batch else 'danger',
+                    'message': _("Partner(s) should have an email address."),
+                    'action_text': _("View Partner(s)") if is_batch else False,
+                    'action': (
+                        partners_without_mail._get_records_action(name=_("Check Partner(s) Email(s)"))
+                        if is_batch else False
+                    ),
+                }
+
         return alerts
 
     # -------------------------------------------------------------------------
@@ -133,7 +162,7 @@ class AccountMoveSend(models.AbstractModel):
     def _get_mail_default_field_value_from_template(self, mail_template, lang, move, field, **kwargs):
         if not mail_template:
             return
-        return mail_template\
+        return mail_template.sudo()\
             .with_context(lang=lang)\
             ._render_field(field, move.ids, **kwargs)[move._origin.id]
 
@@ -162,20 +191,34 @@ class AccountMoveSend(models.AbstractModel):
 
     @api.model
     def _get_default_mail_partner_ids(self, move, mail_template, mail_lang):
+        # TDE FIXME: this should use standard composer / template code to be sure
+        # it is aligned with standard recipients management. Todo later
         partners = self.env['res.partner'].with_company(move.company_id)
-        if mail_template.email_to:
-            email_to = self._get_mail_default_field_value_from_template(mail_template, mail_lang, move, 'email_to')
-            for mail_data in tools.email_split(email_to):
-                partners |= partners.find_or_create(mail_data)
-        if mail_template.email_cc:
-            email_cc = self._get_mail_default_field_value_from_template(mail_template, mail_lang, move, 'email_cc')
-            for mail_data in tools.email_split(email_cc):
-                partners |= partners.find_or_create(mail_data)
-        if mail_template.partner_to:
+        if mail_template.use_default_to:
+            defaults = move._message_get_default_recipients()[move.id]
+            email_cc = defaults['email_to']
+            email_to = defaults['email_to']
+            partners |= partners.browse(defaults['partner_ids'])
+        else:
+            if mail_template.email_cc:
+                email_cc = self._get_mail_default_field_value_from_template(mail_template, mail_lang, move, 'email_cc')
+            else:
+                email_cc = ''
+            if mail_template.email_to:
+                email_to = self._get_mail_default_field_value_from_template(mail_template, mail_lang, move, 'email_to')
+            else:
+                email_to = ''
+
+        partners |= move._partner_find_from_emails_single(
+            tools.email_split(email_cc or '') + tools.email_split(email_to or ''),
+            no_create=False,
+        )
+
+        if not mail_template.use_default_to and mail_template.partner_to:
             partner_to = self._get_mail_default_field_value_from_template(mail_template, mail_lang, move, 'partner_to')
             partner_ids = mail_template._parse_partner_to(partner_to)
             partners |= self.env['res.partner'].sudo().browse(partner_ids).exists()
-        return partners.filtered('email')
+        return partners if self.env.context.get('allow_partners_without_mail') else partners.filtered('email')
 
     # -------------------------------------------------------------------------
     # ATTACHMENTS
@@ -183,15 +226,13 @@ class AccountMoveSend(models.AbstractModel):
 
     @api.model
     def _get_default_mail_attachments_widget(self, move, mail_template, invoice_edi_format=None, extra_edis=None, pdf_report=None):
-        if extra_edis is None:
-            extra_edis = {}
-        return self._get_placeholder_mail_attachments_data(move, invoice_edi_format=invoice_edi_format, extra_edis=extra_edis) \
+        return self._get_placeholder_mail_attachments_data(move, invoice_edi_format=invoice_edi_format, extra_edis=extra_edis, pdf_report=pdf_report) \
             + self._get_placeholder_mail_template_dynamic_attachments_data(move, mail_template, pdf_report=pdf_report) \
             + self._get_invoice_extra_attachments_data(move) \
             + self._get_mail_template_attachments_data(mail_template)
 
     @api.model
-    def _get_placeholder_mail_attachments_data(self, move, invoice_edi_format=None, extra_edis=None):
+    def _get_placeholder_mail_attachments_data(self, move, invoice_edi_format=None, extra_edis=None, pdf_report=None):
         """ Returns all the placeholder data.
         Should be extended to add placeholder based on the sending method.
         :param: move:       The current move.
@@ -203,8 +244,7 @@ class AccountMoveSend(models.AbstractModel):
         """
         if move.invoice_pdf_report_id:
             return []
-
-        filename = move._get_invoice_report_filename()
+        filename = move._get_invoice_report_filename(report=pdf_report)
         return [{
             'id': f'placeholder_{filename}',
             'name': filename,
@@ -227,12 +267,15 @@ class AccountMoveSend(models.AbstractModel):
         # In case the report selected to do so is also added in dynamic attachments of the mail template, we need to
         # filter them out to avoid duplicated placeholders, since they are already added in the
         # _get_placeholder_mail_attachments_data method.
-        invoice_template = (pdf_report or self._get_default_pdf_report_id(move)) + self.env.ref('account.account_invoices')
+        pdf_report = pdf_report or self._get_default_pdf_report_id(move)
+        invoice_template = pdf_report | self.env.ref('account.account_invoices')
         extra_mail_templates = mail_template.report_template_ids - invoice_template
-
         attachments = []
         for extra_mail_template in extra_mail_templates:
-            filename = move._get_invoice_mail_template_dynamic_report_filename(extra_mail_template) or f'{extra_mail_template.name.lower()}_{move.name}.pdf'
+            if extra_mail_template.print_report_name:
+                filename = move._get_invoice_mail_template_dynamic_report_filename(report=extra_mail_template)
+            else:
+                filename = f'{extra_mail_template.name.lower()}_{move.name}.pdf'
             attachments.append({
                 'id': f'placeholder_{extra_mail_template.name.lower()}_{filename}',
                 'name': filename,
@@ -285,7 +328,7 @@ class AccountMoveSend(models.AbstractModel):
             raise UserError('\n'.join(danger_alert_messages))
 
     @api.model
-    def _check_move_constrains(self, moves):
+    def _check_move_constraints(self, moves):
         for move in moves:
             if move_constraints := self._get_move_constraints(move):
                 raise UserError(next(iter(move_constraints.values()), None))
@@ -303,7 +346,7 @@ class AccountMoveSend(models.AbstractModel):
     def _check_invoice_report(self, moves, **custom_settings):
         if ((
                 custom_settings.get('pdf_report')
-                and not custom_settings['pdf_report'].is_invoice_report
+                and any(not move._is_action_report_available(custom_settings['pdf_report']) for move in moves)
             )
             or any(not self._get_default_pdf_report_id(move).is_invoice_report for move in moves)
         ):
@@ -311,31 +354,25 @@ class AccountMoveSend(models.AbstractModel):
 
     @api.model
     def _format_error_text(self, error):
-        """ Format the error that can be either a dict (complex format needed) or a string (simple format) into a
-        regular string.
+        """ Format the error that can be a dict (complex format needed)
 
         :param error: the error to format.
         :return: a text formatted error.
         """
-        if isinstance(error, dict):
-            errors = '\n- '.join(error['errors'])
-            return f"{error['error_title']}\n- {errors}" if errors else error['error_title']
-        else:
-            return error
+        errors = '\n- '.join(error.get('errors', ''))
+        return f"{error['error_title']}\n- {errors}" if errors else error['error_title']
 
     @api.model
     def _format_error_html(self, error):
-        """ Format the error that can be either a dict (complex format needed) or a string (simple format) into a
-        valid html format.
+        """ Format the error that can be a dict (complex format needed)
 
         :param error: the error to format.
         :return: a html formatted error.
         """
-        if isinstance(error, dict):
-            errors = Markup().join(Markup("<li>%s</li>") % error for error in error['errors'])
-            return Markup("%s<ul>%s</ul>") % (error['error_title'], errors)
-        else:
-            return error
+        if 'errors' not in error:
+            return error['error_title']
+        errors = Markup().join(Markup("<li>%s</li>") % error for error in error['errors'])
+        return Markup("%s<ul>%s</ul>") % (error['error_title'], errors)
 
     @api.model
     def _display_attachments_widget(self, edi_format, sending_methods):
@@ -388,7 +425,7 @@ class AccountMoveSend(models.AbstractModel):
 
             for invoice, invoice_data in group_invoices_data.items():
                 invoice_data['pdf_attachment_values'] = {
-                    'name': invoice._get_invoice_report_filename(),
+                    'name': invoice._get_invoice_report_filename(report=pdf_report),
                     'raw': content_by_id[invoice.id],
                     'mimetype': 'application/pdf',
                     'res_model': invoice._name,
@@ -446,52 +483,92 @@ class AccountMoveSend(models.AbstractModel):
 
     @api.model
     def _hook_if_errors(self, moves_data, allow_raising=True):
-        """ Process errors found so far when generating the documents.
-        :param from_cron:   Flag indicating if the method is called from a cron. In that case, we avoid raising any
-                            error.
-        :param allow_fallback_pdf:  In case of error when generating the documents for invoices, generate a
-                                    proforma PDF report instead.
-        """
+        """ Process errors found so far when generating the documents. """
+        group_by_partner = defaultdict(list)
         for move, move_data in moves_data.items():
             error = move_data['error']
             if allow_raising:
                 raise UserError(self._format_error_text(error))
-
-            move.with_context(no_document=True, no_new_invoice=True).message_post(body=self._format_error_html(error))
+            group_by_partner[move_data['author_partner_id']].append(move.id)
+            move.message_post(body=self._format_error_html(error))
+        self._send_notifications_to_partners(group_by_partner, is_success=False)
 
     @api.model
-    def _hook_if_success(self, moves_data):
+    def _hook_if_success(self, moves_data, from_cron=False):
         """ Process (typically send) successful documents."""
-        to_send_mail = {
-            move: move_data
-            for move, move_data in moves_data.items()
-            if 'email' in move_data['sending_methods'] and self._is_applicable_to_move('email', move, **move_data)
-        }
+        group_by_partner = defaultdict(list)
+        to_send_mail = {}
+        for move, move_data in moves_data.items():
+            if from_cron:
+                group_by_partner[move_data['author_partner_id']].append(move.id)
+            if 'email' in move_data['sending_methods'] and self._is_applicable_to_move('email', move, **move_data):
+                to_send_mail[move] = move_data
         self._send_mails(to_send_mail)
+        self._send_notifications_to_partners(group_by_partner)
+
+        # Notify subscribers.
+        for move, move_data in moves_data.items():
+            if not move.is_invoice(include_receipts=True):
+                continue
+
+            try:
+                move.journal_id._notify_invoice_subscribers(
+                    invoice=move,
+                    mail_params={
+                        'attachment_ids': [
+                            Command.create({'name': attachment.name, 'raw': attachment.raw, 'mimetype': attachment.mimetype})
+                            for attachment in self._get_invoice_extra_attachments(move)
+                        ]
+                    },
+                )
+            except Exception:
+                _logger.exception("Failed notifying subscribers for move %s", move.id)
+
+    @api.model
+    def _send_notifications_to_partners(self, moves_grouped_by_author_partner_id, is_success=True):
+        if not moves_grouped_by_author_partner_id:
+            return
+
+        def get_account_notification(move_ids, is_success: bool):
+            _ = self.env._
+            return [
+                'account_notification',
+                {
+                    'type': 'success' if is_success else 'warning',
+                    'title': _("Invoices sent") if is_success else _("Invoices in error"),
+                    'message': _("Invoices sent successfully.") if is_success else _(
+                        "One or more invoices couldn't be processed."),
+                    'action_button': {
+                        'name': _('Open'),
+                        'action_name': _("Sent invoices") if is_success else _("Invoices in error"),
+                        'model': 'account.move',
+                        'res_ids': move_ids,
+                    },
+                },
+            ]
+        ResPartner = self.env['res.partner']
+        for partner_id, move_ids in moves_grouped_by_author_partner_id.items():
+            partner = ResPartner.browse(partner_id)
+            partner._bus_send(*get_account_notification(move_ids, is_success))
 
     @api.model
     def _send_mail(self, move, mail_template, **kwargs):
         """ Send the journal entry passed as parameter by mail. """
-        partner_ids = kwargs.get('partner_ids', [])
-        author_id = kwargs.pop('author_id')
-
-        new_message = move\
-            .with_context(
-                no_document=True,
-                no_new_invoice=True,
-                mail_notify_author=author_id in partner_ids,
-                email_notification_allow_footer=True,
-            ).message_post(
-                message_type='comment',
-                **kwargs,
-                **{  # noqa: PIE804
-                    'email_layout_xmlid': self._get_mail_layout(),
-                    'email_add_signature': not mail_template,
-                    'mail_auto_delete': mail_template.auto_delete,
-                    'mail_server_id': mail_template.mail_server_id.id,
-                    'reply_to_force_new': False,
-                }
-            )
+        new_message = move.with_context(
+            email_notification_allow_footer=True,
+            disable_attachment_import=True,
+            no_document=True,
+        ).message_post(
+            message_type='comment',
+            **kwargs,
+            **{  # noqa: PIE804
+                'email_layout_xmlid': self._get_mail_layout(),
+                'email_add_signature': not mail_template,
+                'mail_auto_delete': mail_template.auto_delete,
+                'mail_server_id': mail_template.mail_server_id.id,
+                'reply_to_force_new': False,
+            }
+        )
 
         # Prevent duplicated attachments linked to the invoice.
         new_message.attachment_ids.invalidate_recordset(['res_id', 'res_model'], flush=False)
@@ -529,13 +606,16 @@ class AccountMoveSend(models.AbstractModel):
             for attachment in self.env['ir.attachment'].browse(list(seen_attachment_ids)).exists()
         ]
 
-        return {
+        params = {
             'author_id': move_data['author_partner_id'],
             'body': move_data['mail_body'],
             'subject': move_data['mail_subject'],
             'partner_ids': move_data['mail_partner_ids'],
             'attachments': mail_attachments,
         }
+        if move_data.get('reply_to'):
+            params['reply_to'] = move_data['reply_to']
+        return params
 
     @api.model
     def _generate_dynamic_reports(self, moves_data):
@@ -594,14 +674,21 @@ class AccountMoveSend(models.AbstractModel):
                 attachment = move_data['proforma_pdf_attachment']
                 mail_params['attachments'].append((attachment.name, attachment.raw))
 
+            # synchronize author / email_from, as account.move.send wizard computes
+            # a bit too much stuff
+            author_id = mail_params.pop('author_id', False)
             email_from = self._get_mail_default_field_value_from_template(mail_template, mail_lang, move, 'email_from')
+            if email_from or not author_id:
+                author_id, email_from = move._message_compute_author(email_from=email_from)
             model_description = move.with_context(lang=mail_lang).type_name
 
             self._send_mail(
                 move,
                 mail_template,
+                author_id=author_id,
                 subtype_id=subtype.id,
                 model_description=model_description,
+                notify_author_mention=True,
                 email_from=email_from,
                 **mail_params,
             )
@@ -611,7 +698,7 @@ class AccountMoveSend(models.AbstractModel):
         """ Helper to know if we can commit the current transaction or not.
         :return: True if commit is accepted, False otherwise.
         """
-        return not modules.module.current_test
+        return not (tools.config['test_enable'] or modules.module.current_test)
 
     @api.model
     def _call_web_service_before_invoice_pdf_render(self, invoices_data):
@@ -718,11 +805,11 @@ class AccountMoveSend(models.AbstractModel):
         """Assert the data provided to _generate_and_send_invoices are correct.
         This is a security in case the method is called directly without going through the wizards.
         """
-        self._check_move_constrains(moves)
+        self._check_move_constraints(moves)
         self._check_invoice_report(moves, **custom_settings)
         assert all(
             sending_method in dict(self.env['res.partner']._fields['invoice_sending_method'].selection)
-            for sending_method in OrderedSet(custom_settings.get('sending_methods', ()))
+            for sending_method in custom_settings.get('sending_methods', [])
         ) if 'sending_methods' in custom_settings else True
 
     @api.model
@@ -758,17 +845,19 @@ class AccountMoveSend(models.AbstractModel):
         # Successfully generated a PDF - Process sending.
         success = {move: move_data for move, move_data in moves_data.items() if not move_data.get('error')}
         if success:
-            self._hook_if_success(success)
+            self._hook_if_success(success, from_cron=from_cron)
 
         # Update sending data of moves
         for move, move_data in moves_data.items():
-            if from_cron and move_data.get('error'):
-                move.sending_data = {'error': True}
-            else:
-                move.sending_data = False
+            # We keep the sending_data, so it will be retried
+            if from_cron and move_data.get('error', {}).get('retry'):
+                continue
+            move.sending_data = False
 
         # Return generated attachments.
         attachments = self.env['ir.attachment']
         for move, move_data in success.items():
-            attachments += self._get_invoice_extra_attachments(move) or move_data['proforma_pdf_attachment']
+            extra_attachments = self._get_invoice_extra_attachments(move)
+            attachments += extra_attachments or move_data.get('proforma_pdf_attachment', self.env['ir.attachment'])
+
         return attachments

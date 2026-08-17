@@ -1,10 +1,12 @@
 import { LinkPopover } from "@html_editor/main/link/link_popover";
-import { rpc } from "@web/core/network/rpc";
 import { _t } from "@web/core/l10n/translation";
 import { AutoComplete } from "@web/core/autocomplete/autocomplete";
 import { patch } from "@web/core/utils/patch";
-import { useAutofocus, useChildRef } from "@web/core/utils/hooks";
+import { useChildRef } from "@web/core/utils/hooks";
 import wUtils from "@website/js/utils";
+import { useEffect } from "@odoo/owl";
+import { browser } from "@web/core/browser/browser";
+import { session } from "@web/session";
 
 /**
  * The goal of this patch is to handle the URL autocomplete in the LinkPopover
@@ -39,56 +41,6 @@ export class AutoCompleteInLinkPopover extends AutoComplete {
     }
 
     /**
-     * @param option
-     * @return {boolean}
-     */
-    isCategory(option) {
-        return !!option?.separator;
-    }
-
-    getOption(indices) {
-        const [sourceIndex, optionIndex] = indices;
-        return this.sources[sourceIndex]?.options[optionIndex];
-    }
-
-    /**
-     * @override
-     */
-    onOptionMouseEnter(indices) {
-        if (!this.isCategory(this.getOption(indices))) {
-            return super.onOptionMouseEnter(...arguments);
-        }
-    }
-
-    /**
-     * @override
-     */
-    onOptionMouseLeave(indices) {
-        if (!this.isCategory(this.getOption(indices))) {
-            return super.onOptionMouseLeave(...arguments);
-        }
-    }
-
-    isActiveSourceOption(indices) {
-        if (!this.isCategory(this.getOption(indices))) {
-            return super.isActiveSourceOption(...arguments);
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @override
-     */
-    selectOption(option) {
-        if (!this.isCategory(option)) {
-            const { value } = Object.getPrototypeOf(option);
-            this.targetDropdown.value = value;
-            return super.selectOption(...arguments);
-        }
-    }
-
-    /**
      * @override
      */
     onInput() {
@@ -99,7 +51,6 @@ export class AutoCompleteInLinkPopover extends AutoComplete {
 
 patch(LinkPopover, {
     components: { ...LinkPopover.components, AutoCompleteInLinkPopover },
-    template: "website.linkPopover",
 });
 
 /* patch the LinkPopover component to maintain the option source for the
@@ -111,10 +62,14 @@ patch(LinkPopover.prototype, {
     setup() {
         super.setup();
         this.urlRef = useChildRef();
-        useAutofocus({
-            refName: this.state.isImage || this.state.label !== "" ? this.urlRef.name : "label",
-            mobile: true,
-        });
+        useEffect(
+            (el) => {
+                if (el && (this.state.isImage || (!this.state.url && this.state.label))) {
+                    el.focus();
+                }
+            },
+            () => [this.urlRef.el]
+        );
     },
 
     get sources() {
@@ -122,52 +77,50 @@ patch(LinkPopover.prototype, {
     },
 
     get optionsSource() {
+        const body = this.props.linkElement.ownerDocument.body;
         return {
             placeholder: _t("Loading..."),
-            options: this.loadOptionsSource.bind(this),
-            optionTemplate: "website.AutoCompleteItem",
+            options: (term) => wUtils.loadOptionsSource(term, body, this.onSelect.bind(this)),
+            optionSlot: "urlOption",
         };
     },
 
-    mapItemToSuggestion(item) {
-        return {
-            ...item,
-            classList: item.separator ? "ui-autocomplete-category" : "ui-autocomplete-item",
-        };
-    },
-
-    async loadOptionsSource(term) {
-        if (term[0] === "#") {
-            const anchors = await wUtils.loadAnchors(term, this.props.linkEl.ownerDocument.body);
-            return anchors.map((anchor) =>
-                this.mapItemToSuggestion({ label: anchor, value: anchor })
-            );
-        } else if (term.startsWith("http") || term.length === 0) {
-            // avoid useless call to /website/get_suggested_links
-            return [];
-        }
-        const res = await rpc("/website/get_suggested_links", {
-            needle: term,
-            limit: 15,
-        });
-        let choices = res.matching_pages;
-        res.others.forEach((other) => {
-            if (other.values.length) {
-                choices = choices.concat(
-                    [{ separator: other.title, label: other.title }],
-                    other.values
-                );
-            }
-        });
-        return choices.map(this.mapItemToSuggestion);
-    },
-
-    onSelect(selectedSubjection) {
-        const { value } = Object.getPrototypeOf(selectedSubjection);
+    onSelect(value) {
         this.state.url = value;
+        if (!this.state.isImage) {
+            this.onChange();
+        }
     },
 
     updateValue(val) {
         this.state.url = val;
+        if (!this.state.isImage) {
+            this.onChange();
+        }
+    },
+    isFrontendUrl(url) {
+        const parsedUrl = new URL(url);
+        return (
+            (browser.location.hostname === parsedUrl.hostname ||
+                // Also check if the odoo-hosted domain is the current domain of the url
+                new RegExp(`^https?://${session.db}\\.odoo\\.com(/.*)?$`).test(parsedUrl.origin)) &&
+            !parsedUrl.pathname.startsWith("/odoo") &&
+            !parsedUrl.pathname.startsWith("/web") &&
+            !parsedUrl.pathname.startsWith("/@/")
+        );
+    },
+    onClickForcePreviewMode(ev) {
+        if (this.props.linkElement.href) {
+            const currentUrl = new URL(this.props.linkElement.href);
+            // only when we are on a frontend page (in website builder) and the link is also a frontend link
+            if (
+                this.isFrontendUrl(browser.location.href) &&
+                this.isFrontendUrl(this.props.linkElement.href)
+            ) {
+                ev.preventDefault();
+                currentUrl.pathname = `/@${currentUrl.pathname}`;
+                browser.open(currentUrl);
+            }
+        }
     },
 });

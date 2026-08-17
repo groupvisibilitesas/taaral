@@ -19,7 +19,7 @@
                     <attribute name="widget">filterable_selection</attribute>
                     <attribute name="options">{'whitelist_fname': 'available_peppol_edi_formats'}</attribute>
                 </xpath>
-                <xpath expr="//field[@name='invoice_edi_format']" position="after">
+                <xpath expr="//field[@name='peppol_eas']" position="before">
                     <field name="bank_account_count" invisible="1"/>
                     <div class="alert alert-warning"
                          colspan="2"
@@ -28,7 +28,8 @@
                          To generate complete electronic invoices, also set a country for this partner.
                     </div>
                 </xpath>
-                <xpath expr="//field[@name='peppol_endpoint']" position="after">
+                <xpath expr="//div[@id='peppol_address']" position="after">
+                    <field name="is_peppol_edi_format" invisible="1"/>
                     <field name="peppol_verification_state" invisible="1" force_save="1"/>
                     <label for="peppol_verification_state" invisible="not peppol_endpoint"/>
                     <div class="row" invisible="not peppol_endpoint">
@@ -52,7 +53,7 @@
         <field name="name">Verify Peppol</field>
         <field name="model_id" ref="account_peppol.model_res_partner"/>
         <field name="binding_model_id" ref="base.model_res_partner"/>
-        <field name="binding_view_types">list</field>
+        <field name="binding_view_types">list,kanban</field>
         <field name="state">code</field>
         <field name="code">
             for record in records:

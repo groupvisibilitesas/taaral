@@ -3,7 +3,7 @@
 from unittest.mock import patch, DEFAULT
 from odoo import Command
 from odoo.exceptions import UserError
-from odoo.tests import Form
+from odoo.tests import Form, tagged
 from odoo.tests.common import TransactionCase
 
 
@@ -155,7 +155,6 @@ class TestCarrierPropagation(TransactionCase):
             'name': 'Route1',
             'sale_selectable' : True,
             'shipping_selectable': True,
-            'warehouse_ids': [Command.link(self.env.ref("stock.warehouse0").id)],
             'rule_ids': [Command.create({
                 'name': 'rule1',
                 'location_src_id': self.warehouse.lot_stock_id.id,
@@ -175,7 +174,6 @@ class TestCarrierPropagation(TransactionCase):
             'name': 'Route2',
             'sale_selectable' : True,
             'shipping_selectable':True,
-            'warehouse_ids': [Command.link(self.env.ref("stock.warehouse0").id)],
             'rule_ids': [Command.create({
                 'name': 'rule2',
                 'location_src_id': shelf1_location.id,
@@ -196,9 +194,8 @@ class TestCarrierPropagation(TransactionCase):
                 'name': 'Cable Management Box',
                 'product_id': self.super_product.id,
                 'product_uom_qty': 2,
-                'product_uom': self.product_uom_unit.id,
                 'price_unit': 750.00,
-                'route_id' : route1.id,
+                'route_ids': route1.ids,
             })],
         })
 
@@ -219,7 +216,6 @@ class TestCarrierPropagation(TransactionCase):
                 'name': 'Cable Management Box',
                 'product_id': self.super_product.id,
                 'product_uom_qty': 2,
-                'product_uom': self.product_uom_unit.id,
                 'price_unit': 750.00,
             })],
         })
@@ -247,6 +243,7 @@ class TestCarrierPropagation(TransactionCase):
             'login': 'Mars Man',
             'name': 'Spleton',
             'email': 'alien@mars.com',
+            'group_ids': self.env.ref('stock.group_stock_user'),
         })
         super_product_2 = self.ProductProduct.create({
             'name': 'Super Product 2',
@@ -299,3 +296,83 @@ class TestCarrierPropagation(TransactionCase):
         # both pickings should be validated but and activity should have been created for the invalid picking
         self.assertEqual(pickings.mapped('state'), ['done', 'done'])
         self.assertTrue(self.env['mail.activity'].search([('res_model', '=', 'stock.picking'), ('res_id', '=', pickings[1].id), ('user_id', '=', alien.id)], limit=1))
+
+    def test_carrier_tracking_ref_propagation(self):
+        """Ensure that the carrier tracking reference is propagated across pickings
+        (OUT → PACK → SHIP) when "propagate_carrier" is enabled on the rule.
+        """
+        so = self.SaleOrder.create({
+            'partner_id': self.partner_propagation.id,
+            'partner_invoice_id': self.partner_propagation.id,
+            'order_line': [
+                Command.create({
+                    'name': self.super_product.name,
+                    'product_id': self.super_product.id,
+                    'product_uom_qty': 1,
+                    'price_unit': 1,
+                }),
+            ]
+        })
+        so.action_confirm()
+        pick = so.picking_ids
+        pick.carrier_tracking_ref = "123"
+        pick.button_validate()
+        pack = pick.move_ids.move_dest_ids.picking_id
+        self.assertEqual(pack.carrier_tracking_ref, "123")
+        pack.button_validate()
+        ship = pack.move_ids.move_dest_ids.picking_id
+        self.assertEqual(ship.carrier_tracking_ref, "123")
+
+
+@tagged('post_install', '-at_install')
+class TestCarrierPropagationPostInstall(TestCarrierPropagation):
+
+    def test_carrier_propagation_two_step_incoming_multi_so(self):
+        """Test that validating a receipt whose move references two SOs with
+        different carriers does not crash when the push rule (Input → Stock)
+        has propagate_carrier enabled, and that no carrier is set on the
+        resulting internal transfer."""
+        if 'purchase_stock' not in self.env['ir.module.module']._installed():
+            self.skipTest('purchase_stock not installed')
+
+        self.warehouse.reception_steps = 'two_steps'
+        push_rule = self.warehouse.reception_route_id.rule_ids.filtered(lambda r: r.action == 'push')
+        push_rule.propagate_carrier = True
+
+        buy_route = self.env.ref('purchase_stock.route_warehouse0_buy')
+        mto_route = self.env.ref('stock.route_warehouse0_mto')
+        mto_route.rule_ids.procure_method = 'make_to_order'
+
+        express_delivery = self.normal_delivery.copy({'name': 'Express Delivery'})
+        vendor = self.env['res.partner'].create({'name': 'Grouping Vendor', 'group_rfq': 'all'})
+        self.super_product.write({
+            'is_storable': True,
+            'route_ids': [Command.set((mto_route + buy_route).ids)],
+            'seller_ids': [Command.create({'partner_id': vendor.id})],
+        })
+
+        so1, so2 = self.env['sale.order'].create([
+            {
+                'partner_id': self.partner_propagation.id,
+                'carrier_id': self.normal_delivery.id,
+                'order_line': [Command.create({'product_id': self.super_product.id, 'product_uom_qty': 1})],
+            },
+            {
+                'partner_id': self.partner_propagation.id,
+                'carrier_id': express_delivery.id,
+                'order_line': [Command.create({'product_id': self.super_product.id, 'product_uom_qty': 1})],
+            },
+        ])
+        so1.action_confirm()
+        so2.action_confirm()
+
+        po = (so1 + so2).stock_reference_ids.purchase_ids
+        self.assertEqual(len(po), 1)
+        po.button_confirm()
+
+        receipt = po.picking_ids
+        receipt.move_ids.quantity = receipt.move_ids.product_uom_qty
+        receipt.button_validate()
+
+        internal = receipt.move_ids.move_dest_ids.picking_id
+        self.assertFalse(internal.carrier_id)

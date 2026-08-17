@@ -44,6 +44,31 @@ class TestUIPortal(TestPortal):
             login=self.user_employee.login,
         )
 
+    def test_load_more(self):
+        self.env["mail.message"].create(
+            [
+                {
+                    "author_id": self.user_employee.partner_id.id,
+                    "body": f"Test Message {i + 1}",
+                    "model": self.record_portal._name,
+                    "res_id": self.record_portal.id,
+                    "subtype_id": self.ref("mail.mt_comment"),
+                }
+                for i in range(30)
+            ]
+        )
+        self.start_tour(
+            f"/my/test_portal_records/{self.record_portal.id}",
+            "load_more_tour",
+            login=self.user_employee.login,
+        )
+
+    def test_message_actions_without_login(self):
+        self.start_tour(
+            f"/my/test_portal_records/{self.record_portal.id}?token={self.record_portal._portal_ensure_token()}",
+            "message_actions_tour",
+        )
+
     def test_rating_record_portal(self):
         record_rating = self.env["mail.test.rating"].create({"name": "Test rating record"})
         # To check if there is no message with rating, there is no rating cards feature.
@@ -72,4 +97,15 @@ class TestUIPortal(TestPortal):
         self.start_tour(
             f"/my/test_portal_rating_records/{record_rating.id}?display_rating=False&token={record_rating._portal_ensure_token()}",
             "portal_not_display_rating_tour",
+        )
+
+    def test_composer_actions_portal(self):
+        self.start_tour(
+            f"/my/test_portal_records/{self.record_portal.id}",
+            "portal_composer_actions_tour_internal_user",
+            login=self.user_employee.login,
+        )
+        self.start_tour(
+            f"/my/test_portal_records/{self.record_portal.id}?token={self.record_portal._portal_ensure_token()}",
+            "portal_composer_actions_tour_portal_user",
         )

@@ -2,20 +2,16 @@
 # This file contains the translation of the following modules:
 # * base_install_request
 #
-# Translators:
-# Petko Karamotchev, 2024
-# Albena Mincheva <albena_vicheva@abv.bg>, 2024
-# aleksandar ivanov, 2024
-# Milena Georgieva, 2024
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-07-27 11:55+0000\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-02 19:07+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-19/"
 "base_install_request/bg/>\n"
 "Language: bg\n"
 "MIME-Version: 1.0\n"
@@ -33,18 +29,18 @@ msgid ""
 "        <br/><br/>\n"
 "        <span style=\"font-weight: bold;\" t-out=\"object.user_id.name\"/> "
 "has requested to activate the <span style=\"font-weight: bold;\" t-"
-"out=\"object.module_id.shortdesc\"/> module. This module is included in your "
-"subscription. It has <span style=\"color: #875A7B; font-weight: bold;\">no "
-"extra cost</span>, but an administrator role is required to activate it.\n"
+"out=\"object.module_id.shortdesc\"/> module.\n"
 "        <br/><br/>\n"
 "        </p><blockquote data-o-mail-quote-node=\"1\" data-o-mail-"
 "quote=\"1\">\n"
 "            <t t-out=\"object.body_html\"/>\n"
 "        </blockquote>\n"
 "        <br data-o-mail-quote=\"1\"/><br data-o-mail-quote=\"1\"/>\n"
-"        <a style=\"background-color:#875A7B; padding:8px 16px 8px 16px; text-"
-"decoration:none; color:#fff; border-radius:5px\" t-attf-href=\"/odoo/"
-"{{ object.module_id.id }}/action-"
+"        <a t-attf-style=\"background-color: "
+"{{object.user_id.company_id.email_secondary_color or '#875A7B'}}; "
+"padding:8px 16px 8px 16px; text-decoration:none; color: "
+"{{object.user_id.company_id.email_primary_color or '#FFFFFF'}}; border-"
+"radius:5px\" t-attf-href=\"/odoo/{{ object.module_id.id }}/action-"
 "base_install_request.action_base_module_install_review?"
 "menu_id={{ ctx['menu_id'] }}\">Review Request</a>\n"
 "        <br/><br/>\n"
@@ -52,14 +48,48 @@ msgid ""
 "        <t t-if=\"not is_html_empty(object.user_id.signature)\" data-o-mail-"
 "quote-container=\"1\">\n"
 "            <br/><br/>\n"
-"            <t t-out=\"object.user_id.signature or ''\" data-o-mail-"
-"quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/><t t-"
+"out=\"object.user_id.signature or ''\" data-o-mail-quote=\"1\">Mitchell "
+"Admin</t></div>\n"
 "        </t>\n"
 "        <br/><br/>\n"
 "    \n"
 "</div>\n"
 "            "
 msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"        Здравейте,\n"
+"        <br/><br/>\n"
+"        <span style=\"font-weight: bold;\" t-out=\"object.user_id.name\"/> е "
+"заявил активиране на модула <span style=\"font-weight: bold;\" t-"
+"out=\"object.module_id.shortdesc\"/> .\n"
+"        <br/><br/>\n"
+"        </p><blockquote data-o-mail-quote-node=\"1\" data-o-mail-quote=\"1\">"
+"\n"
+"            <t t-out=\"object.body_html\"/>\n"
+"        </blockquote>\n"
+"        <br data-o-mail-quote=\"1\"/><br data-o-mail-quote=\"1\"/>\n"
+"        <a t-attf-style=\"background-color: {"
+"{object.user_id.company_id.email_secondary_color or '#875A7B'}}; padding:8px "
+"16px 8px 16px; text-decoration:none; color: {"
+"{object.user_id.company_id.email_primary_color or '#FFFFFF'}}; border-"
+"radius:5px\" t-attf-href=\"/odoo/{{ object.module_id.id }}/action-"
+"base_install_request.action_base_module_install_review?menu_id={{ "
+"ctx['menu_id'] }}\">Преглед на заявката</a>\n"
+"        <br/><br/>\n"
+"        Благодаря,\n"
+"        <t t-if=\"not is_html_empty(object.user_id.signature)\" data-o-mail-"
+"quote-container=\"1\">\n"
+"            <br/><br/>\n"
+"            <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/><t t-"
+"out=\"object.user_id.signature or ''\" data-o-mail-quote=\"1\">Mitchell "
+"Admin</t></div>\n"
+"        </t>\n"
+"        <br/><br/>\n"
+"    \n"
+"</div>\n"
+"            "
 
 #. module: base_install_request
 #. odoo-python
@@ -82,7 +112,7 @@ msgstr "Отказ"
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_request__create_uid
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_review__create_uid
 msgid "Created by"
-msgstr "Създаден от"
+msgstr "Създадено от"
 
 #. module: base_install_request
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_request__create_date
@@ -98,12 +128,14 @@ msgstr "Зависими приложения"
 #. module: base_install_request
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_request__display_name
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_review__display_name
+#: model:ir.model.fields,field_description:base_install_request.field_ir_module_module__display_name
 msgid "Display Name"
 msgstr "Име за показване"
 
 #. module: base_install_request
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_request__id
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_review__id
+#: model:ir.model.fields,field_description:base_install_request.field_ir_module_module__id
 msgid "ID"
 msgstr "ID"
 
@@ -157,11 +189,6 @@ msgid "Modules Description"
 msgstr "Описание на модулите"
 
 #. module: base_install_request
-#: model_terms:ir.ui.view,arch_db:base_install_request.base_module_install_review_view_form
-msgid "No extra cost, this application is free."
-msgstr ""
-
-#. module: base_install_request
 #. odoo-python
 #: code:addons/base_install_request/wizard/base_module_install_request.py:0
 msgid "No module selected."
@@ -193,13 +220,6 @@ msgstr "Следните приложения ще бъдат инсталира
 #: code:addons/base_install_request/wizard/base_module_install_request.py:0
 msgid "The module is already installed."
 msgstr "Модулът вече е инсталиран."
-
-#. module: base_install_request
-#: model_terms:ir.ui.view,arch_db:base_install_request.base_module_install_request_view_form
-msgid ""
-"This app is included in your subscription. It's free to activate, but only "
-"an administrator can do it. Fill this form to send an activation request."
-msgstr ""
 
 #. module: base_install_request
 #: model:ir.model.fields,field_description:base_install_request.field_base_module_install_request__user_id

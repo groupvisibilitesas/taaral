@@ -1,6 +1,5 @@
-/** @odoo-module **/
-
 import {
+    assertSvgColors,
     changeOption,
     insertSnippet,
     registerWebsitePreviewTour,
@@ -13,19 +12,10 @@ const COLOR_2 = THEME_STYLE.getPropertyValue("--o-color-2");
 const COLOR_3 = THEME_STYLE.getPropertyValue("--o-color-3");
 const COLOR_1_ENC = encodeURIComponent(COLOR_1);
 const COLOR_2_ENC = encodeURIComponent(COLOR_2);
-const COLOR_3_ENC = encodeURIComponent(COLOR_3);
 const IMG_SELECTOR =
     ":iframe .s_text_image img[src^='/html_editor/shape/illustration/dynamic-svg-test']";
 const IMG_SELECTOR_C1C2 = `${IMG_SELECTOR}[src*='c1=${COLOR_1_ENC}'][src*='c2=${COLOR_2_ENC}']`;
-const IMG_SELECTOR_C3 = `${IMG_SELECTOR}[src*='c1=${COLOR_3_ENC}'][src*='c2=${COLOR_2_ENC}']`;
-
-async function assertSvgColors(img, color1, color2, errorMessage) {
-    const response = await fetch(img.src);
-    const svg = await response.text();
-    if (!svg.includes(color1) || !svg.includes(color2) || !svg.includes("#000000")) {
-        throw new Error(errorMessage);
-    }
-}
+const IMG_SELECTOR_C3 = `${IMG_SELECTOR}[src*='c1=o-color-3'][src*='c2=${COLOR_2_ENC}']`;
 
 registerWebsitePreviewTour(
     "website_dynamic_svg_theme_colors",
@@ -54,12 +44,11 @@ registerWebsitePreviewTour(
             content: "Check the SVG uses theme colors",
             trigger: IMG_SELECTOR_C1C2,
             async run() {
-                await assertSvgColors(
-                    this.anchor,
+                await assertSvgColors(this.anchor, "Dynamic SVG theme colors were not applied.", [
                     COLOR_1,
                     COLOR_2,
-                    "Dynamic SVG theme colors were not applied."
-                );
+                    "#000000",
+                ]);
             },
         },
         {
@@ -67,32 +56,38 @@ registerWebsitePreviewTour(
             trigger: IMG_SELECTOR_C1C2,
             run: "click",
         },
-        changeOption("DynamicSvg", "we-select.o_we_so_color_palette"),
-        changeOption("DynamicSvg", 'button[data-color="o-color-3"]', "", "bottom", true),
+        changeOption("Image", ".o_we_color_preview"),
+        {
+            content: "Select o-color-3 in the colorpicker",
+            trigger: ".o_colorpicker_section button[data-color='o-color-3']",
+            run: "click",
+        },
         {
             content: "Check the SVG uses the new theme color",
             trigger: IMG_SELECTOR_C3,
             async run() {
-                await assertSvgColors(
-                    this.anchor,
+                await assertSvgColors(this.anchor, "Dynamic SVG color did not update.", [
                     COLOR_3,
                     COLOR_2,
-                    "Dynamic SVG color did not update."
-                );
+                    "#000000",
+                ]);
             },
         },
-        changeOption("DynamicSvg", "we-select.o_we_so_color_palette"),
-        changeOption("DynamicSvg", ".o_colorpicker_reset", "", "bottom", true),
+        changeOption("Image", ".o_we_color_preview"),
+        {
+            content: "Reset the colorpicker",
+            trigger: ".o_popover button[title='Reset']",
+            run: "click",
+        },
         {
             content: "Check the SVG uses the theme colors on reset",
             trigger: IMG_SELECTOR_C1C2,
             async run() {
-                await assertSvgColors(
-                    this.anchor,
+                await assertSvgColors(this.anchor, "Dynamic SVG theme colors were not restored.", [
                     COLOR_1,
                     COLOR_2,
-                    "Dynamic SVG theme colors were not restored."
-                );
+                    "#000000",
+                ]);
             },
         },
     ]

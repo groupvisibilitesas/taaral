@@ -1,25 +1,30 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* hr_recruitment_survey
+# * hr_recruitment_survey
 #
 # Translators:
-# Wil Odoo, 2024
-# Larisa_nexterp, 2025
-#
+# Hongu Cosmin <cosmin513@gmail.com>, 2022
+# Martin Trigaux, 2022
+# Foldi Robert <foldirobert@nexterp.ro>, 2022
+# Dorin Hongu <dhongu@gmail.com>, 2023
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Ciocoiu Beatrice-Flavia <ciocoiuflavia008@gmail.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Larisa_nexterp, 2025\n"
-"Language-Team: Romanian (https://app.transifex.com/odoo/teams/41243/ro/)\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-02 14:16+0000\n"
+"Last-Translator: Ciocoiu Beatrice-Flavia <ciocoiuflavia008@gmail.com>\n"
+"Language-Team: Romanian <https://translate.odoo.com/projects/odoo-19/"
+"hr_recruitment_survey/ro/>\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
-"2:1));\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2;\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: hr_recruitment_survey
 #: model:mail.template,body_html:hr_recruitment_survey.mail_template_applicant_interview_invite
@@ -33,9 +38,11 @@ msgid ""
 "like you to answer some questions.\n"
 "        </t>\n"
 "        </p><div style=\"margin: 16px 0px 16px 0px;\">\n"
-"            <a t-att-href=\"(object.get_start_url())\" style=\"background-"
-"color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: "
-"#fff; border-radius: 5px; font-size:13px;\">\n"
+"            <a t-att-href=\"(object.get_start_url())\" t-attf-"
+"style=\"background-color: {{user.company_id.email_secondary_color or "
+"'#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: "
+"{{user.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
+"font-size:13px;\">\n"
 "                <t>\n"
 "                    Start the written interview\n"
 "                </t>\n"
@@ -55,28 +62,29 @@ msgid ""
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"        Dragă <t t-out=\"object.partner_id.name or 'applicant'\">[nume "
-"candidat]</t><br/><br/>\n"
+"        Draga <t t-out=\"object.partner_id.name or 'applicant'\">[nume "
+"aplicant]</t><br/><br/>\n"
 "        <t>\n"
-"            Ai avansat în procesul de recrutare și dorim să răspunzi la "
+"            Ați parcurs procesul de recrutare și am dori să ne răspundeți la "
 "câteva întrebări.\n"
 "        </t>\n"
 "        </p><div style=\"margin: 16px 0px 16px 0px;\">\n"
-"            <a t-att-href=\"(object.get_start_url())\" style=\"background-"
-"color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: "
-"#fff; border-radius: 5px; font-size:13px;\">\n"
+"            <a t-att-href=\"(object.get_start_url())\" t-attf-"
+"style=\"background-color: {{user.company_id.email_secondary_color or "
+"'#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: {"
+"{user.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
+"font-size:13px;\">\n"
 "                <t>\n"
 "                    Începe interviul scris\n"
 "                </t>\n"
 "            </a>\n"
 "        </div>\n"
 "        <t t-if=\"object.deadline\">\n"
-"            Te rugăm să răspunzi la interviu până la <t t-"
-"out=\"format_date(object.deadline)\">[data limită]</t>.<br/><br/>\n"
+"            Vă rugăm să răspundeți la interviu până la <t t-out=\"format_date"
+"(object.deadline)\">[termen limită]</t>.<br/><br/>\n"
 "        </t>\n"
 "        <t>\n"
-"            Îți dorim mult succes! Îți mulțumim anticipat pentru "
-"participare.\n"
+"            Vă dorim mult succes! Vă mulțumim anticipat pentru participare.\n"
 "        </t>\n"
 "    \n"
 "</div>\n"
@@ -109,7 +117,7 @@ msgstr "Activități"
 #. module: hr_recruitment_survey
 #: model_terms:ir.actions.act_window,help:hr_recruitment_survey.survey_survey_action_recruitment
 msgid "Add a new survey"
-msgstr "Adaugă un sondaj nou"
+msgstr "Adăugare sondaj new"
 
 #. module: hr_recruitment_survey
 #: model:ir.model,name:hr_recruitment_survey.model_hr_applicant
@@ -124,20 +132,34 @@ msgid "Applicant: Interview"
 msgstr "Candidat: Interviu"
 
 #. module: hr_recruitment_survey
+#: model:ir.model,website_form_label:hr_recruitment_survey.model_hr_applicant
+msgid "Apply for a Job"
+msgstr ""
+
+#. module: hr_recruitment_survey
 #: model:ir.model.fields,help:hr_recruitment_survey.field_hr_applicant__survey_id
 #: model:ir.model.fields,help:hr_recruitment_survey.field_hr_job__survey_id
 msgid ""
 "Choose an interview form for this job position and you will be able to print/"
 "answer this interview from all applicants who apply for this job"
 msgstr ""
-"Alegeți un formular de interviu pentru această funcție și veți putea tipări/"
-"răspunde la acest interviu pentru toți candidații care aplică pentru acest "
-"loc de muncă"
+"Alegeti un formular de interviu pentru aceasta functie si veti putea tipari/"
+"raspunde la acest interviu pentru toti candidatii care aplica pentru acest "
+"loc de munca"
 
 #. module: hr_recruitment_survey
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_survey.view_hr_job_kanban_inherit
 msgid "Display Interview Form"
-msgstr "Afișează Formularul de Interviu"
+msgstr "Afișare Formular Interviu"
+
+#. module: hr_recruitment_survey
+#: model:ir.model.fields,field_description:hr_recruitment_survey.field_hr_applicant__display_name
+#: model:ir.model.fields,field_description:hr_recruitment_survey.field_hr_job__display_name
+#: model:ir.model.fields,field_description:hr_recruitment_survey.field_survey_invite__display_name
+#: model:ir.model.fields,field_description:hr_recruitment_survey.field_survey_survey__display_name
+#: model:ir.model.fields,field_description:hr_recruitment_survey.field_survey_user_input__display_name
+msgid "Display Name"
+msgstr "Nume afișat"
 
 #. module: hr_recruitment_survey
 #: model:survey.question,title:hr_recruitment_survey.survey_recruitment_form_p1_q4
@@ -147,7 +169,7 @@ msgstr "Educație"
 #. module: hr_recruitment_survey
 #: model:survey.question,title:hr_recruitment_survey.survey_recruitment_form_p1_q2
 msgid "From which university did or will you graduate?"
-msgstr "De la ce universitate ai absolvit sau vei absolvi?"
+msgstr "La ce universitate ai absolvit sau vei absolvi?"
 
 #. module: hr_recruitment_survey
 #: model:survey.question.answer,value:hr_recruitment_survey.survey_recruitment_form_p1_q8_row2
@@ -157,22 +179,31 @@ msgstr "Relaționarea cu colegii"
 #. module: hr_recruitment_survey
 #: model:survey.question.answer,value:hr_recruitment_survey.survey_recruitment_form_p1_q8_row8
 msgid "Getting perks such as free parking, gym passes"
-msgstr "Obținerea de beneficii precum parcare gratuită, abonamente la sală"
+msgstr "Obțineți avantaje, cum ar fi parcare gratuită, permise de sport"
 
 #. module: hr_recruitment_survey
 #: model:survey.question.answer,value:hr_recruitment_survey.survey_recruitment_form_p1_q8_row1
 msgid "Having a good pay"
-msgstr "A avea un salariu bun"
+msgstr "A avea o plată bună"
 
 #. module: hr_recruitment_survey
 #: model:survey.question.answer,value:hr_recruitment_survey.survey_recruitment_form_p1_q8_row3
 msgid "Having a nice office environment"
-msgstr "A avea un mediu de birou plăcut"
+msgstr "Având un mediu de birou frumos"
 
 #. module: hr_recruitment_survey
 #: model:survey.question.answer,value:hr_recruitment_survey.survey_recruitment_form_p1_q8_row7
 msgid "Having freebies such as tea, coffee and stationery"
-msgstr "A avea gratuități precum ceai, cafea și papetărie"
+msgstr "Aveți cadouri precum ceai, cafea și papetărie"
+
+#. module: hr_recruitment_survey
+#: model:ir.model.fields,field_description:hr_recruitment_survey.field_hr_applicant__id
+#: model:ir.model.fields,field_description:hr_recruitment_survey.field_hr_job__id
+#: model:ir.model.fields,field_description:hr_recruitment_survey.field_survey_invite__id
+#: model:ir.model.fields,field_description:hr_recruitment_survey.field_survey_survey__id
+#: model:ir.model.fields,field_description:hr_recruitment_survey.field_survey_user_input__id
+msgid "ID"
+msgstr "ID"
 
 #. module: hr_recruitment_survey
 #: model:survey.question.answer,value:hr_recruitment_survey.survey_recruitment_form_p1_q8_col2
@@ -189,7 +220,7 @@ msgstr "Formular de interviu"
 #. odoo-python
 #: code:addons/hr_recruitment_survey/models/hr_job.py:0
 msgid "Interview Form: %s"
-msgstr "Formular de Interviu: %s"
+msgstr "Formular Interviu: %s"
 
 #. module: hr_recruitment_survey
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_survey.res_config_settings_view_form
@@ -227,17 +258,17 @@ msgstr "Neimportant"
 #. module: hr_recruitment_survey
 #: model:survey.question.answer,value:hr_recruitment_survey.survey_recruitment_form_p1_q8_row5
 msgid "Office location"
-msgstr "Locația biroului"
+msgstr "Locație birou"
 
 #. module: hr_recruitment_survey
 #: model:mail.template,subject:hr_recruitment_survey.mail_template_applicant_interview_invite
 msgid "Participate to {{ object.survey_id.display_name }} interview"
-msgstr "Participă la interviul {{ object.survey_id.display_name }}"
+msgstr "Participați la {{ object.survey_id.display_name }} interviu"
 
 #. module: hr_recruitment_survey
 #: model:survey.question,title:hr_recruitment_survey.survey_recruitment_form_p1_q5
 msgid "Past work experiences"
-msgstr "Experiențe de muncă anterioare"
+msgstr "Experiență de muncă anterioară"
 
 #. module: hr_recruitment_survey
 #: model_terms:survey.survey,description:hr_recruitment_survey.survey_recruitment_form
@@ -245,7 +276,7 @@ msgid ""
 "Please answer those questions to help recruitment officers to preprocess "
 "your application."
 msgstr ""
-"Vă rugăm să răspundeți la aceste întrebări pentru a ajuta responsabilii de "
+"Vă rugăm să răspundeți la aceste întrebări pentru a ajuta ofițerii de "
 "recrutare să vă preproceseze candidatura."
 
 #. module: hr_recruitment_survey
@@ -257,13 +288,13 @@ msgid ""
 msgstr ""
 "Vă rugăm să completați informații despre dvs.: cine sunteți, care sunt "
 "studiile, experiența și activitățile dvs.\n"
-"    Ne va ajuta să vă gestionăm candidatura."
+"    Ne va ajuta să gestionăm aplicarea dumneavoastră."
 
 #. module: hr_recruitment_survey
 #. odoo-python
 #: code:addons/hr_recruitment_survey/models/hr_applicant.py:0
 msgid "Please provide an applicant name."
-msgstr "Vă rugăm să furnizați un nume pentru candidat."
+msgstr "Vă rog furnizați un nume pentru candidat."
 
 #. module: hr_recruitment_survey
 #: model_terms:survey.question,description:hr_recruitment_survey.survey_recruitment_form_p1_q4
@@ -288,7 +319,7 @@ msgstr "Recrutare"
 #. module: hr_recruitment_survey
 #: model:survey.survey,title:hr_recruitment_survey.survey_recruitment_form
 msgid "Recruitment Form"
-msgstr "Formular de Recrutare"
+msgstr "Formulare Recrutare"
 
 #. module: hr_recruitment_survey
 #: model:ir.model.fields,field_description:hr_recruitment_survey.field_hr_applicant__response_ids
@@ -303,7 +334,7 @@ msgstr "Vezi raportul interviului"
 #. module: hr_recruitment_survey
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_survey.hr_applicant_view_form_inherit
 msgid "Send Interview"
-msgstr "Trimite Interviul"
+msgstr "Trimite Interviu"
 
 #. module: hr_recruitment_survey
 #. odoo-python
@@ -337,8 +368,7 @@ msgstr "Răspuns Utilizator Sondaj"
 #. module: hr_recruitment_survey
 #: model_terms:survey.survey,description_done:hr_recruitment_survey.survey_recruitment_form
 msgid "Thank you for answering this survey. We will come back to you soon."
-msgstr ""
-"Vă mulțumim că ați răspuns la acest sondaj. Vom reveni curând către dvs."
+msgstr "Vă mulțumim că ați răspuns la acest sondaj. Ne vom întoarce în curând."
 
 #. module: hr_recruitment_survey
 #. odoo-python
@@ -360,13 +390,14 @@ msgstr "Foarte important"
 #. module: hr_recruitment_survey
 #: model:survey.question,title:hr_recruitment_survey.survey_recruitment_form_p1_q3
 msgid "Were you referred by an employee?"
-msgstr "Ai fost recomandat de un angajat?"
+msgstr "Ai fost trimis de un angajat?"
 
 #. module: hr_recruitment_survey
 #: model_terms:survey.question,description:hr_recruitment_survey.survey_recruitment_form_p1_q6
 msgid "What are your main knowledge regarding the job you are applying to?"
 msgstr ""
-"Care sunt principalele dvs. cunoștințe legate de postul la care aplicați?"
+"Care sunt principalele dvs. cunoștințe în ceea ce privește postul la care "
+"aplicați?"
 
 #. module: hr_recruitment_survey
 #: model:survey.question,title:hr_recruitment_survey.survey_recruitment_form_p1_q8
@@ -381,7 +412,7 @@ msgstr "Din ce țară sunteți?"
 #. module: hr_recruitment_survey
 #: model:survey.question.answer,value:hr_recruitment_survey.survey_recruitment_form_p1_q8_row4
 msgid "Working with state of the art technology"
-msgstr "Lucrul cu tehnologie de ultimă generație"
+msgstr "Lucru cu tehnologie de ultimă oră"
 
 #. module: hr_recruitment_survey
 #: model_terms:ir.actions.act_window,help:hr_recruitment_survey.survey_survey_action_recruitment

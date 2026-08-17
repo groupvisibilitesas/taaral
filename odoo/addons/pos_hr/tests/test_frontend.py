@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import Command
-from odoo.tests import tagged, new_test_user
+from odoo.tests import tagged, new_test_user, users
 from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
 
 
@@ -11,17 +10,13 @@ class TestPosHrHttpCommon(TestPointOfSaleHttpCommon):
     def setUpClass(cls):
         super().setUpClass()
 
-        cls.env.user.groups_id += cls.env.ref('hr.group_hr_user')
-
-        cls.main_pos_config.write({"module_pos_hr": True})
+        cls.env.user.group_ids += cls.env.ref('hr.group_hr_user')
 
         # Admin employee
-        cls.admin = cls.env.ref("hr.employee_admin").sudo().copy({
-            "company_id": cls.env.company.id,
-            "user_id": cls.pos_admin.id,
-            "name": "Mitchell Admin",
-            "pin": False,
-        })
+        cls.pos_admin.employee_id.name = "Mitchell Admin"
+        cls.admin = cls.pos_admin.employee_id
+
+        cls.main_pos_config.write({"module_pos_hr": True})
 
         # Managers
         cls.manager_user = new_test_user(
@@ -51,7 +46,7 @@ class TestPosHrHttpCommon(TestPointOfSaleHttpCommon):
         emp1_user = new_test_user(
             cls.env,
             login="emp1_user",
-            groups="base.group_user, point_of_sale.group_pos_user",
+            groups="base.group_user, point_of_sale.group_pos_user, account.group_account_invoice",
             name="Pos Employee1",
             email="emp1_user@pos.com",
         )
@@ -71,8 +66,14 @@ class TestPosHrHttpCommon(TestPointOfSaleHttpCommon):
             "company_id": cls.env.company.id,
         })
 
+        cls.emp4 = cls.env['hr.employee'].create({
+            'name': 'Test Employee 4',
+            "company_id": cls.env.company.id,
+        })
+
         cls.main_pos_config.write({
             'basic_employee_ids': [Command.link(cls.emp1.id), Command.link(cls.emp2.id), Command.link(cls.emp3.id)],
+            'minimal_employee_ids': [Command.link(cls.emp4.id)],
             'advanced_employee_ids': [Command.link(cls.manager1.id), Command.link(cls.manager2.id)]
         })
 
@@ -81,8 +82,9 @@ class TestPosHrHttpCommon(TestPointOfSaleHttpCommon):
 class TestUi(TestPosHrHttpCommon):
     def test_01_pos_hr_tour(self):
         self.pos_admin.write({
-            "groups_id": [
-                (4, self.env.ref('account.group_account_invoice').id)
+            "group_ids": [
+                (4, self.env.ref('account.group_account_invoice').id),
+                (4, self.env.ref("product.group_product_manager").id),
             ]
         })
         self.main_pos_config.update({
@@ -96,7 +98,7 @@ class TestUi(TestPosHrHttpCommon):
         self.main_pos_config.with_user(self.pos_admin).open_ui()
 
         self.start_tour(
-            "/pos/ui?config_id=%d" % self.main_pos_config.id,
+            "/pos/ui/%d" % self.main_pos_config.id,
             "CashierStayLogged",
             login="pos_admin",
         )
@@ -107,7 +109,7 @@ class TestUi(TestPosHrHttpCommon):
         self.main_pos_config.with_user(self.pos_admin).open_ui()
 
         self.start_tour(
-            "/pos/ui?config_id=%d" % self.main_pos_config.id,
+            "/pos/ui/%d" % self.main_pos_config.id,
             "CashierCanSeeProductInfo",
             login="pos_admin",
         )
@@ -121,7 +123,7 @@ class TestUi(TestPosHrHttpCommon):
         self.main_pos_config.with_user(self.pos_admin).open_ui()
 
         self.start_tour(
-            "/pos/ui?config_id=%d" % self.main_pos_config.id,
+            "/pos/ui/%d" % self.main_pos_config.id,
             "CashierCannotClose",
             login="pos_user",
         )
@@ -143,6 +145,18 @@ class TestUi(TestPosHrHttpCommon):
             login="pos_user",
         )
 
+    def test_change_on_rights_reflected_directly(self):
+        """When changes in employee rights (advanced/basic/minimal) should
+        be reflected directly and not read from the cache."""
+
+        self.main_pos_config.advanced_employee_ids = self.pos_admin.employee_id
+        self.main_pos_config.with_user(self.pos_admin).open_ui()
+        self.start_tour(
+            "/pos/ui?config_id=%d" % self.main_pos_config.id,
+            "test_change_on_rights_reflected_directly",
+            login="pos_admin",
+        )
+
     def test_cashier_changed_in_receipt(self):
         """
         Checks that when the cashier is changed during the order,
@@ -162,6 +176,65 @@ class TestUi(TestPosHrHttpCommon):
         order = self.main_pos_config.current_session_id.order_ids[0]
         self.assertEqual(order.cashier, "Test Employee 3")
         self.assertEqual(order.employee_id.display_name, "Test Employee 3")
+
+    def test_minimal_employee_refund(self):
+        minimal_emp = self.env['hr.employee'].create({
+            'name': 'Minimal Employee',
+            "company_id": self.env.company.id,
+        })
+        self.main_pos_config.update({
+            'minimal_employee_ids': [(6, 0, minimal_emp.ids)],
+        })
+        self.main_pos_config.with_user(self.pos_admin).open_ui()
+        current_session = self.main_pos_config.current_session_id
+        current_session.set_opening_control(0, None)
+        order = self.env['pos.order'].create({
+            'company_id': self.env.company.id,
+            'session_id': current_session.id,
+            'partner_id': self.partner_a.id,
+            'pricelist_id': self.partner_a.property_product_pricelist.id,
+            'lines': [
+                Command.create({
+                    'product_id': self.product_a.id,
+                    'qty': 1,
+                    'price_subtotal': 100.0,
+                    'price_subtotal_incl': 100.0,
+                }),
+            ],
+            'amount_tax': 0.0,
+            'amount_total': 100.0,
+            'amount_paid': 0.0,
+            'amount_return': 0.0,
+        })
+
+        payment_context = {"active_ids": order.ids, "active_id": order.id}
+        order_payment = self.env['pos.make.payment'].with_context(**payment_context).create({
+            'amount': 100,
+            'payment_method_id': self.bank_payment_method.id
+        })
+        order_payment.with_context(**payment_context).check()
+        self.start_pos_tour("test_minimal_employee_refund", login="pos_admin")
+
+    def test_cost_and_margin_visibility(self):
+        self.product_a.available_in_pos = True
+        self.main_pos_config.write({
+            'is_margins_costs_accessible_to_every_user': True,
+        })
+        self.main_pos_config.with_user(self.pos_admin).open_ui()
+
+        self.start_tour(
+            "/pos/ui?config_id=%d" % self.main_pos_config.id,
+            "test_cost_and_margin_visibility",
+            login="pos_admin",
+        )
+
+    @users('pos_admin')
+    def test_create_pos_config_without_hr_right(self):
+        self.env['pos.config'].create({
+            'name': 'My cute pos config',
+            'module_pos_hr': True,
+            'advanced_employee_ids': [(6, 0, self.emp2.ids)]
+        })
 
     def test_go_backend(self):
         self.main_pos_config.with_user(self.manager_user).open_ui()
@@ -214,31 +287,9 @@ class TestUi(TestPosHrHttpCommon):
         self.emp2.write({"pin": False, "barcode": "041222"})
         self.emp3.barcode = "041333"
         self.main_pos_config.with_user(self.pos_user).open_ui()
+        self.main_pos_config.current_session_id.set_opening_control(0, None)
         self.start_tour(
             "/pos/ui?config_id=%d" % self.main_pos_config.id,
             "test_switch_cashier_with_badge",
             login="pos_user",
-        )
-
-    def test_cost_and_margin_visibility(self):
-        self.product_a.available_in_pos = True
-        self.main_pos_config.write({
-            'is_margins_costs_accessible_to_every_user': True,
-        })
-        self.main_pos_config.with_user(self.pos_admin).open_ui()
-
-        self.start_tour(
-            "/pos/ui?config_id=%d" % self.main_pos_config.id,
-            "test_cost_and_margin_visibility",
-            login="pos_admin",
-        )
-
-        self.main_pos_config.write({
-            'is_margins_costs_accessible_to_every_user': False,
-        })
-
-        self.start_tour(
-            "/pos/ui?config_id=%d" % self.main_pos_config.id,
-            "test_cost_and_margin_visibility_no_access",
-            login="pos_admin",
         )

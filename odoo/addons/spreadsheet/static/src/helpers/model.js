@@ -1,9 +1,7 @@
-/** @odoo-module */
 // @ts-check
 
 import { parse, helpers, iterateAstNodes } from "@odoo/o-spreadsheet";
 import { isLoadingError } from "@spreadsheet/o_spreadsheet/errors";
-import { loadBundle } from "@web/core/assets";
 import { OdooSpreadsheetModel } from "@spreadsheet/model";
 import { OdooDataProvider } from "@spreadsheet/data_sources/odoo_data_provider";
 
@@ -20,15 +18,15 @@ import { getNeutralizedLink } from "./neutralized_link";
  */
 
 export async function fetchSpreadsheetModel(env, resModel, resId) {
-    const { data, revisions } = await env.services.orm.call(resModel, "join_spreadsheet_session", [
-        resId,
-    ]);
+    const { data, revisions } = await env.services.http.get(
+        `/spreadsheet/data/${resModel}/${resId}`
+    );
     return createSpreadsheetModel({ env, data, revisions });
 }
 
 export function createSpreadsheetModel({ env, data, revisions }) {
     const odooDataProvider = new OdooDataProvider(env);
-    const model = new OdooSpreadsheetModel(data, { custom: { odooDataProvider } }, revisions);
+    const model = new OdooSpreadsheetModel(data, { custom: { env, odooDataProvider } }, revisions);
     return model;
 }
 
@@ -98,17 +96,17 @@ export async function freezeOdooData(model) {
     const data = model.exportData();
     for (const sheet of Object.values(data.sheets)) {
         sheet.formats ??= {};
-        for (const [xc, cell] of Object.entries(sheet.cells)) {
+        for (const [xc, content] of Object.entries(sheet.cells)) {
             const { col, row } = toCartesian(xc);
             const sheetId = sheet.id;
             const position = { sheetId, col, row };
             const evaluatedCell = model.getters.getEvaluatedCell(position);
-            if (containsOdooFunction(cell.content)) {
+            if (containsOdooFunction(content)) {
                 const pivotId = model.getters.getPivotIdFromPosition(position);
                 if (pivotId && model.getters.getPivotCoreDefinition(pivotId).type !== "ODOO") {
                     continue;
                 }
-                cell.content = toFrozenContent(evaluatedCell);
+                sheet.cells[xc] = toFrozenContent(evaluatedCell);
                 if (evaluatedCell.format) {
                     sheet.formats[xc] = getItemId(evaluatedCell.format, data.formats);
                 }
@@ -123,10 +121,7 @@ export async function freezeOdooData(model) {
                                 col,
                                 row,
                             });
-                            sheet.cells[xc] = {
-                                ...sheet.cells[xc],
-                                content: toFrozenContent(evaluatedCell),
-                            };
+                            sheet.cells[xc] = toFrozenContent(evaluatedCell);
                             if (evaluatedCell.format) {
                                 sheet.formats[xc] = getItemId(evaluatedCell.format, data.formats);
                             }
@@ -135,18 +130,38 @@ export async function freezeOdooData(model) {
                 }
             }
             if (containsLinkToOdoo(evaluatedCell.link)) {
-                cell.content = `[${evaluatedCell.link.label}](${getNeutralizedLink()})`;
+                sheet.cells[xc] = `[${evaluatedCell.link.label}](${getNeutralizedLink()})`;
             }
         }
         for (const figure of sheet.figures) {
-            if (figure.tag === "chart" && figure.data.type.startsWith("odoo_")) {
-                await loadBundle("web.chartjs_lib");
-                const img = odooChartToImage(model, figure);
+            if (
+                figure.tag === "chart" &&
+                (figure.data.type.startsWith("odoo_") || figure.data.type === "geo")
+            ) {
+                const img = odooChartToImage(model, figure, figure.data.chartId);
                 figure.tag = "image";
                 figure.data = {
                     path: img,
                     size: { width: figure.width, height: figure.height },
                 };
+            } else if (figure.tag === "carousel") {
+                const hasImageChart = figure.data.items.some((item) => {
+                    if (item.type !== "chart") {
+                        return false;
+                    }
+                    const chartDefinition = model.getters.getChartDefinition(item.chartId);
+                    return (
+                        chartDefinition.type.startsWith("odoo_") || chartDefinition.type === "geo"
+                    );
+                });
+                if (hasImageChart) {
+                    const chartId = figure.data.items.find((item) => item.type === "chart").chartId;
+                    figure.tag = "image";
+                    figure.data = {
+                        path: odooChartToImage(model, figure, chartId),
+                        size: { width: figure.width, height: figure.height },
+                    };
+                }
             }
         }
     }
@@ -255,10 +270,11 @@ function isLoaded(model) {
  * "data:image/png;base64,iVBORw0KGg..."
  * @param {OdooSpreadsheetModel} model
  * @param {object} figure
+ * @param {string} chartId
  * @returns {string}
  */
-function odooChartToImage(model, figure) {
-    const runtime = model.getters.getChartRuntime(figure.id);
+function odooChartToImage(model, figure, chartId) {
+    const runtime = model.getters.getChartRuntime(chartId);
     // wrap the canvas in a div with a fixed size because chart.js would
     // fill the whole page otherwise
     const div = document.createElement("div");

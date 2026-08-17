@@ -3,16 +3,20 @@
 
 from odoo import http, _
 from odoo.exceptions import ValidationError
+from odoo.fields import Domain
 from odoo.http import request
 from odoo.tools.json import scriptsafe as json_safe
+from odoo.tools.translate import LazyTranslate
 
 from odoo.addons.account_payment.controllers import portal as account_payment_portal
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.payment.controllers import portal as payment_portal
 
+_lt = LazyTranslate(__name__)
+
 
 class PaymentPortal(payment_portal.PaymentPortal):
-    @http.route('/donation/pay', type='http', methods=['GET', 'POST'], auth='public', website=True, sitemap=False)
+    @http.route('/donation/pay', type='http', methods=['GET', 'POST'], auth='public', website=True, sitemap=False, list_as_website_content=_lt("Donation Payment"))
     def donation_pay(self, **kwargs):
         """ Behaves like PaymentPortal.payment_pay but for donation
 
@@ -47,7 +51,7 @@ class PaymentPortal(payment_portal.PaymentPortal):
 
         return self.payment_pay(**kwargs)
 
-    @http.route('/donation/transaction/<minimum_amount>', type='json', auth='public', website=True, sitemap=False)
+    @http.route('/donation/transaction/<minimum_amount>', type='jsonrpc', auth='public', website=True, sitemap=False)
     def donation_transaction(self, amount, currency_id, partner_id, access_token, minimum_amount=0, **kwargs):
         if float(amount) < float(minimum_amount):
             raise ValidationError(_('Donation amount must be at least %.2f.', float(minimum_amount)))
@@ -79,6 +83,7 @@ class PaymentPortal(payment_portal.PaymentPortal):
                 'partner_name': details['name'],
                 'partner_email': details['email'],
                 'partner_country_id': int(details['country_id']),
+                'partner_lang': request.env.lang,
             })
         elif not tx_sudo.partner_country_id:
             tx_sudo.partner_country_id = int(kwargs['partner_details']['country_id'])
@@ -165,6 +170,71 @@ class PaymentPortal(payment_portal.PaymentPortal):
             for provider_sudo in providers_sudo:
                 res[provider_sudo.id] = False
         return res
+
+    @http.route(
+        '/website_payment/snippet/supported_payment_methods',
+        type='http', methods=['GET'], auth='public', website=True, sitemap=False, readonly=True,
+    )
+    def get_supported_payment_methods(self, limit=None):
+        """Retrieve the payment methods linked to payment providers published on the current
+        website.
+
+        If a payment method is a primary payment method, its brands are returned instead.
+
+        Note: The provider must be linked to the same company as the website. This differs from the
+        usual payment method selection, which uses the user's company. In this case, we want to
+        display the general payment methods linked to the website, regardless of the user.
+
+        :param int limit: The number of payment methods to return.
+        :return: The supported payment methods, in [{'name': str, 'image_url': str}] format.
+        :rtype: list[dict]
+        """
+        limit = self._cast_as_int(limit)
+        website = request.website
+
+        # For any primary payment method with at least one compatible provider.
+        compatible_providers_sudo = (
+            request.env['payment.provider']
+                # Force the public user such that editors see what customers will see
+                .with_user(website.user_id)
+                .sudo()  # Needed to read providers' fields with public user
+                ._get_compatible_providers(
+                    website.company_id.id, None, 0, website_id=website.id
+                )
+        )
+        # Select the brands, i.e. non-primary payment methods. E.g., Amex for Card.
+        brands_domain = Domain([
+            ('is_primary', '=', False),
+            ('primary_payment_method_id.provider_ids', 'in', compatible_providers_sudo.ids),
+            ('primary_payment_method_id.active', '=', True),
+        ])
+        # Or, select the primary payment methods without any brands. E.g., PayPal.
+        primary_without_brands_domain = Domain([
+            ('is_primary', '=', True),
+            ('brand_ids', '=', False),
+            ('provider_ids', 'in', compatible_providers_sudo.ids),
+        ])
+
+        supported_pms = request.env['payment.method'].search(
+            Domain.OR([brands_domain, primary_without_brands_domain]),
+            limit=limit,
+        ).mapped(lambda pm: {
+            'name': pm.name,
+            # Loading the image via this url caches the image on the client browser
+            'image_url': request.env['website'].image_url(pm, 'image'),
+        })
+
+        if request.env.user._is_internal():
+            # Ensure the internal users can always see the most up to date list of PMs.
+            cache_control = 'no-cache'
+        else:
+            # Cache the PMs for public/portal users for 7 days, with an additional day to re-use
+            # the stale PMs while a background task updates the client cache.
+            cache_control = 'public, max-age=604800, stale-while-revalidate=86400'
+
+        return request.make_json_response(
+            supported_pms, headers=[('Cache-Control', cache_control)],
+        )
 
 
 class PortalAccount(account_payment_portal.PortalAccount):

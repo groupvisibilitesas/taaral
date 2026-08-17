@@ -1,16 +1,24 @@
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
-
+import io
 import logging
-
-from werkzeug.urls import url_encode
-from werkzeug.exceptions import NotFound
+from math import floor
 from urllib.parse import parse_qsl, urlencode, urlparse
+
+from PIL import Image, ImageDraw, ImageFont
+from werkzeug.exceptions import NotFound
+from werkzeug.urls import url_encode
 
 from odoo import _, http
 from odoo.exceptions import AccessError
-from odoo.http import request
+from odoo.http import STATIC_CACHE, Response, request
 from odoo.tools import consteq
-from odoo.addons.mail.models.discuss.mail_guest import add_guest_to_context
+from odoo.tools.misc import file_open
+
+from odoo.addons.mail.tools.discuss import add_guest_to_context
+
+try:
+    from werkzeug.utils import send_file
+except ImportError:
+    from .tools._vendor.send_file import send_file
 
 _logger = logging.getLogger(__name__)
 
@@ -117,7 +125,7 @@ class MailController(http.Controller):
                     # - Make a new access test if it succeeds, redirect to the record. Otherwise,
                     #   redirect to the messaging.
                     if not suggested_company:
-                        raise AccessError('')
+                        raise AccessError(_("There is no candidate company that has read access to the record."))
                     cids = cids + [suggested_company.id]
                     record_sudo.with_user(uid).with_context(allowed_company_ids=cids).check_access('read')
                     request.future_response.set_cookie('cids', '-'.join([str(cid) for cid in cids]))
@@ -244,3 +252,138 @@ class MailController(http.Controller):
             raise NotFound()
 
         return self._redirect_to_record(message.model, message.res_id, highlight_message_id=message_id)
+
+    # web_editor routes need to be kept otherwise mail already sent won't be able to load icons anymore
+    @http.route([
+        '/web_editor/font_to_img/<icon>',
+        '/web_editor/font_to_img/<icon>/<color>',
+        '/web_editor/font_to_img/<icon>/<color>/<int:size>',
+        '/web_editor/font_to_img/<icon>/<color>/<int:width>x<int:height>',
+        '/web_editor/font_to_img/<icon>/<color>/<int:size>/<int:alpha>',
+        '/web_editor/font_to_img/<icon>/<color>/<int:width>x<int:height>/<int:alpha>',
+        '/web_editor/font_to_img/<icon>/<color>/<bg>',
+        '/web_editor/font_to_img/<icon>/<color>/<bg>/<int:size>',
+        '/web_editor/font_to_img/<icon>/<color>/<bg>/<int:width>x<int:height>',
+        '/web_editor/font_to_img/<icon>/<color>/<bg>/<int:width>x<int:height>/<int:alpha>',
+        '/mail/font_to_img/<icon>',
+        '/mail/font_to_img/<icon>/<color>',
+        '/mail/font_to_img/<icon>/<color>/<int:size>',
+        '/mail/font_to_img/<icon>/<color>/<int:width>x<int:height>',
+        '/mail/font_to_img/<icon>/<color>/<int:size>/<int:alpha>',
+        '/mail/font_to_img/<icon>/<color>/<int:width>x<int:height>/<int:alpha>',
+        '/mail/font_to_img/<icon>/<color>/<bg>',
+        '/mail/font_to_img/<icon>/<color>/<bg>/<int:size>',
+        '/mail/font_to_img/<icon>/<color>/<bg>/<int:width>x<int:height>',
+        '/mail/font_to_img/<icon>/<color>/<bg>/<int:width>x<int:height>/<int:alpha>',
+        ], type='http', auth="none")
+    def export_icon_to_png(self, icon, color='#000', bg=None, size=100, alpha=255, font='/web/static/src/libs/fontawesome/fonts/fontawesome-webfont.ttf', width=None, height=None):
+        """ This method converts an unicode character to an image (using Font
+            Awesome font by default) and is used only for mass mailing because
+            custom fonts are not supported in mail.
+            :param icon : decimal encoding of unicode character
+            :param color : RGB code of the color
+            :param bg : RGB code of the background color
+            :param size : Pixels in integer
+            :param alpha : transparency of the image from 0 to 255
+            :param font : font path
+            :param width : Pixels in integer
+            :param height : Pixels in integer
+
+            :returns PNG image converted from given font
+        """
+        # For custom icons, use the corresponding custom font
+        if icon.isdigit():
+            oi_font_char_codes = {
+                # Replacement of existing Twitter icons by X icons (the route
+                # here receives the old icon code always, but the replacement
+                # one is also considered for consistency anyway).
+                "61569": "59464",  # F081 -> E848: fa-twitter-square
+                "61593": "59418",  # F099 -> E81A: fa-twitter
+
+                # Addition of new icons
+                "59407": "59407",  # E80F: fa-strava
+                "59409": "59409",  # E811: fa-discord
+                "59416": "59416",  # E818: fa-threads
+                "59417": "59417",  # E819: fa-kickstarter
+                "59419": "59419",  # E81B: fa-tiktok
+                "59420": "59420",  # E81C: fa-bluesky
+                "59421": "59421",  # E81D: fa-google-play
+            }
+            if icon in oi_font_char_codes:
+                icon = oi_font_char_codes[icon]
+                font = "/web/static/lib/odoo_ui_icons/fonts/odoo_ui_icons.woff"
+
+        size = max(width, height, 1) if width else size
+        width = width or size
+        height = height or size
+        # Make sure we have at least size=1
+        width = max(1, min(width, 512))
+        height = max(1, min(height, 512))
+        # Initialize font
+        if font.startswith('/'):
+            font = font[1:]
+        font_obj = ImageFont.truetype(file_open(font, 'rb'), height)
+
+        # if received character is not a number, keep old behaviour (icon is character)
+        icon = chr(int(icon)) if icon.isdigit() else icon
+
+        # Background standardization
+        if bg is not None and bg.startswith('rgba'):
+            bg = bg.replace('rgba', 'rgb')
+            bg = ','.join(bg.split(',')[:-1]) + ')'
+
+        # Convert the opacity value compatible with PIL Image color (0 to 255)
+        # when color specifier is 'rgba'
+        if color is not None and color.startswith('rgba'):
+            *rgb, a = color.strip(')').split(',')
+            opacity = str(floor(float(a) * 255))
+            color = ','.join([*rgb, opacity]) + ')'
+
+        # Determine the dimensions of the icon
+        image = Image.new("RGBA", (width, height), color)
+        draw = ImageDraw.Draw(image)
+
+        if hasattr(draw, 'textbbox'):
+            box = draw.textbbox((0, 0), icon, font=font_obj)
+            left = box[0]
+            top = box[1]
+            boxw = box[2] - box[0]
+            boxh = box[3] - box[1]
+        else:  # pillow < 8.00 (Focal)
+            left, top, _right, _bottom = image.getbbox()
+            boxw, boxh = draw.textsize(icon, font=font_obj)
+
+        draw.text((0, 0), icon, font=font_obj)
+
+        # Create an alpha mask
+        imagemask = Image.new("L", (boxw, boxh), 0)
+        drawmask = ImageDraw.Draw(imagemask)
+        drawmask.text((-left, -top), icon, font=font_obj, fill=255)
+
+        # Create a solid color image and apply the mask
+        if color.startswith('rgba'):
+            color = color.replace('rgba', 'rgb')
+            color = ','.join(color.split(',')[:-1]) + ')'
+        iconimage = Image.new("RGBA", (boxw, boxh), color)
+        iconimage.putalpha(imagemask)
+
+        # Create output image
+        outimage = Image.new("RGBA", (boxw, height), bg or (0, 0, 0, 0))
+        outimage.paste(iconimage, (left, top), iconimage)
+
+        # output image
+        output = io.BytesIO()
+        outimage.save(output, format="PNG")
+        output.seek(0)
+        response = send_file(
+            output,
+            request.httprequest.environ,
+            mimetype='image/png',
+            conditional=False,
+            etag=False,
+            max_age=STATIC_CACHE,
+            response_class=Response,
+        )
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, POST'
+        return response

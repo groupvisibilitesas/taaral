@@ -1,9 +1,7 @@
-/** @odoo-module */
-
-import * as ProductScreen from "@point_of_sale/../tests/tours/utils/product_screen_util";
-import * as PaymentScreen from "@point_of_sale/../tests/tours/utils/payment_screen_util";
-import * as Dialog from "@point_of_sale/../tests/tours/utils/dialog_util";
-import * as Chrome from "@point_of_sale/../tests/tours/utils/chrome_util";
+import * as ProductScreen from "@point_of_sale/../tests/pos/tours/utils/product_screen_util";
+import * as PaymentScreen from "@point_of_sale/../tests/pos/tours/utils/payment_screen_util";
+import * as Dialog from "@point_of_sale/../tests/generic_helpers/dialog_util";
+import * as Chrome from "@point_of_sale/../tests/pos/tours/utils/chrome_util";
 
 import { registry } from "@web/core/registry";
 
@@ -25,12 +23,16 @@ function isQRDisplayedinDialog() {
 function addProductandPay(isPartialPay = false) {
     return [
         ProductScreen.addOrderline("Hand Bag", "10"),
-        ProductScreen.selectedOrderlineHas("Hand Bag", "10.0"),
+        ProductScreen.selectedOrderlineHas("Hand Bag", "10"),
         ProductScreen.clickPayButton(),
 
         PaymentScreen.totalIs("48"),
         ...(isPartialPay
-            ? [PaymentScreen.clickPaymentMethod("QR Code"), PaymentScreen.clickNumpad("+10")]
+            ? [
+                  PaymentScreen.clickPaymentMethod("QR Code"),
+                  PaymentScreen.clickNumpad("⌫"),
+                  PaymentScreen.clickNumpad("+10"),
+              ]
             : [PaymentScreen.clickPaymentMethod("QR Code", true, { amount: "48" })]),
         {
             content: "Display QR Code Payment dialog",
@@ -97,7 +99,7 @@ registry.category("web_tour.tours").add("PaymentScreenWithQRPaymentSwiss", {
             Chrome.startPoS(),
             Dialog.confirm("Open Register"),
             ProductScreen.addOrderline("Hand Bag", "10"),
-            ProductScreen.selectedOrderlineHas("Hand Bag", "10.0"),
+            ProductScreen.selectedOrderlineHas("Hand Bag", "10"),
             ProductScreen.clickPartnerButton(),
             ProductScreen.clickCustomer("AAA Partner Swiss"),
             ProductScreen.clickPayButton(),

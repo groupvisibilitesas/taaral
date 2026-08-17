@@ -29,7 +29,9 @@ class SaleOrderLine(models.Model):
     def _onchange_product(self):
         for line in self:
             # Ensure selected documents are still in the available documents
-            line.product_document_ids &= line.available_product_document_ids
+            line.product_document_ids = line.product_document_ids.filtered(
+                lambda doc: doc in line.available_product_document_ids
+            )
 
     # === COMPUTE METHODS === #
 
@@ -39,12 +41,12 @@ class SaleOrderLine(models.Model):
             [
                 ('attached_on_sale', '=', 'inside'),
                 '|',
-                '&',
-                ('res_model', '=', 'product.product'),
-                ('res_id', 'in', self.product_id.ids),
-                '&',
-                ('res_model', '=', 'product.template'),
-                ('res_id', 'in', self.product_template_id.ids),
+                    '&',
+                        ('res_model', '=', 'product.product'),
+                        ('res_id', 'in', self.product_id.ids),
+                    '&',
+                        ('res_model', '=', 'product.template'),
+                        ('res_id', 'in', self.product_template_id.ids),
             ],
             ['res_model', 'res_id', 'sequence'],
             ['id:array_agg'],

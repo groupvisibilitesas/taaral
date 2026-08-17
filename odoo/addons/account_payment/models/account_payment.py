@@ -12,7 +12,7 @@ class AccountPayment(models.Model):
         string="Payment Transaction",
         comodel_name='payment.transaction',
         readonly=True,
-        auto_join=True,  # No access rule bypass since access to payments means access to txs too
+        bypass_search_access=True,  # No access rule bypass since access to payments means access to txs too
     )
     payment_token_id = fields.Many2one(
         string="Saved Payment Token", comodel_name='payment.token', domain="""[
@@ -135,7 +135,7 @@ class AccountPayment(models.Model):
         res = super(AccountPayment, self - payments_need_tx).action_post()
 
         for tx in transactions:  # Process the transactions with a payment by token
-            tx._send_payment_request()
+            tx._charge_with_token()
 
         # Post payments for issued transactions
         transactions._post_process()
@@ -200,10 +200,10 @@ class AccountPayment(models.Model):
 
     def _prepare_payment_transaction_vals(self, **extra_create_values):
         self.ensure_one()
-        if self._context.get('active_model', '') == 'account.move':
-            invoice_ids = self._context.get('active_ids', [])
-        elif self._context.get('active_model', '') == 'account.move.line':
-            invoice_ids = self.env['account.move'].search([('line_ids', '=', self._context.get('active_ids'))]).ids
+        if self.env.context.get('active_model', '') == 'account.move':
+            invoice_ids = self.env.context.get('active_ids', [])
+        elif self.env.context.get('active_model', '') == 'account.move.line':
+            invoice_ids = self.env['account.move.line'].browse(self.env.context.get('active_ids')).move_id.ids
         else:
             invoice_ids = []
         return {
@@ -219,7 +219,6 @@ class AccountPayment(models.Model):
             'operation': 'offline',
             'payment_id': self.id,
             'invoice_ids': [Command.set(invoice_ids)],
-            **extra_create_values,
         }
 
     def _get_payment_refund_wizard_values(self):

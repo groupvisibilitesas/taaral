@@ -1,5 +1,6 @@
-from odoo.addons.account.tests.common import TestTaxCommon
 from odoo.tests import tagged
+
+from odoo.addons.account.tests.common import TestTaxCommon
 
 
 @tagged('post_install', '-at_install')
@@ -31,6 +32,9 @@ class TestTaxesBaseLinesTaxDetails(TestTaxCommon):
             'total_included_currency': 10.94,
             'delta_total_excluded': 0.0,
             'delta_total_excluded_currency': 0.0,
+            'manual_total_excluded': None,
+            'manual_total_excluded_currency': None,
+            'manual_tax_amounts': None,
             'taxes_data': [
                 {
                     'tax_id': tax_21.id,
@@ -48,6 +52,9 @@ class TestTaxesBaseLinesTaxDetails(TestTaxCommon):
             'total_included_currency': 1.14,
             'delta_total_excluded': 0.0,
             'delta_total_excluded_currency': 0.0,
+            'manual_total_excluded': None,
+            'manual_total_excluded_currency': None,
+            'manual_tax_amounts': None,
             'taxes_data': [
                 {
                     'tax_id': tax_21.id,
@@ -93,6 +100,7 @@ class TestTaxesBaseLinesTaxDetails(TestTaxCommon):
         }
 
         self.assert_base_lines_tax_details(document, expected_values)
+        self._run_js_tests()
 
     def test_dispatch_delta_on_net_zero_tax(self):
         """Check that the base line delta still is dispatched if net tax is zero."""
@@ -106,10 +114,9 @@ class TestTaxesBaseLinesTaxDetails(TestTaxCommon):
                 'base_lines_tax_details': [{
                     'delta_total_excluded': 0.0,
                     'delta_total_excluded_currency': 0.0,
-                    'total_excluded': total_excluded,
-                    'total_excluded_currency': total_excluded,
-                    'total_included': total_included,
-                    'total_included_currency': total_included,
+                    'manual_tax_amounts': None,
+                    'manual_total_excluded': None,
+                    'manual_total_excluded_currency': None,
                     'taxes_data': [{
                         'base_amount': total_excluded,
                         'base_amount_currency': total_excluded,
@@ -117,6 +124,10 @@ class TestTaxesBaseLinesTaxDetails(TestTaxCommon):
                         'tax_amount_currency': tax_amount,
                         'tax_id': tax.id,
                     }],
+                    'total_excluded': total_excluded,
+                    'total_excluded_currency': total_excluded,
+                    'total_included': total_included,
+                    'total_included_currency': total_included,
                 } for total_excluded, total_included, tax_amount in base_values],
             }
 
@@ -137,6 +148,7 @@ class TestTaxesBaseLinesTaxDetails(TestTaxCommon):
             ]
             expected_values = get_expected_values(base_expected_values, tax_19_99)
             self.assert_base_lines_tax_details(document, expected_values)
+            self._run_js_tests()
 
         with self.subTest("7% tax, 30% line discount, 100% global discount"):
             tax_7 = self.percent_tax(7.0)
@@ -160,6 +172,7 @@ class TestTaxesBaseLinesTaxDetails(TestTaxCommon):
             ]
             expected_values = get_expected_values(base_expected_values, tax_7)
             self.assert_base_lines_tax_details(document, expected_values)
+            self._run_js_tests()
 
     def test_global_discount_raw_gross_total_excluded(self):
         """ Tests to ensure expected raw_gross_total_excluded is calculated

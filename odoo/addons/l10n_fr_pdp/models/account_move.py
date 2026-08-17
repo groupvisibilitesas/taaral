@@ -553,7 +553,7 @@ class AccountMove(models.Model):
         def check():
             if transaction_type == 'b2bi':
                 try:
-                    self.commercial_partner_id.check_vat()
+                    self.commercial_partner_id._check_vat()
                 except ValidationError:
                     yield self.env._("Invalid partner VAT (%(vat)s).", vat=self.commercial_partner_id.vat)
 

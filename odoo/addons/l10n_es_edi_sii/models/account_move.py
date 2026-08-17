@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models
-from odoo.tools import get_quarter_number
+from odoo.tools.date_utils import get_quarter_number
 
 
 class AccountMove(models.Model):
@@ -54,7 +54,7 @@ class AccountMove(models.Model):
 
     def _l10n_es_edi_get_period(self):
         self.ensure_one()
-        if 'account_tax_periodicity' in self.company_id._fields:
-            if self.company_id.account_tax_periodicity == 'trimester':
+        if 'account_return_periodicity' in self.company_id._fields:
+            if self.company_id.account_return_periodicity == 'trimester':
                 return f'{get_quarter_number(self.date)}T'
         return str(self.date.month).zfill(2)

@@ -1,21 +1,14 @@
 import { defineCalendarModels } from "@calendar/../tests/calendar_test_helpers";
-import {
-    assertSteps,
-    click,
-    contains,
-    start,
-    startServer,
-    step,
-} from "@mail/../tests/mail_test_helpers";
-import { expect, test } from "@odoo/hoot";
+import { click, contains, start, startServer } from "@mail/../tests/mail_test_helpers";
+import { test } from "@odoo/hoot";
 import { mockDate } from "@odoo/hoot-mock";
 import {
-    getMockEnv,
+    asyncStep,
     mockService,
     preloadBundle,
     serverState,
+    waitForSteps,
 } from "@web/../tests/web_test_helpers";
-import { actionService } from "@web/webclient/actions/action_service";
 
 defineCalendarModels();
 preloadBundle("web.fullcalendar_lib");
@@ -38,17 +31,12 @@ test("activity menu widget:today meetings", async () => {
             attendee_ids: [attendeeId],
         },
     ]);
-    mockService("action", () => {
-        const ogService = actionService.start(getMockEnv());
-        return {
-            ...ogService,
-            doAction(action) {
-                if (action?.res_model !== "res.partner") {
-                    step("action");
-                    expect(action).toBe("calendar.action_calendar_event");
-                }
-            },
-        };
+    mockService("action", {
+        doAction(action) {
+            if (typeof action === "string") {
+                asyncStep(action);
+            }
+        },
     });
     await start();
     await contains(".o_menu_systray i[aria-label='Activities']");
@@ -58,5 +46,5 @@ test("activity menu widget:today meetings", async () => {
     await contains(".o-calendar-meeting span.fw-bold", { text: "meeting1" });
     await contains(".o-calendar-meeting span:not(.fw-bold)", { text: "meeting2" });
     await click(".o-mail-ActivityMenu .o-mail-ActivityGroup");
-    await assertSteps(["action"]);
+    await waitForSteps(["calendar.action_calendar_event"]);
 });

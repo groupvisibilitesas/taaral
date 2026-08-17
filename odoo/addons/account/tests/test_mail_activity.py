@@ -13,8 +13,6 @@ class TestAccountJournalDashboardMailActivity(TestAccountJournalDashboardCommon)
         journal.activity_ids.unlink()
 
         activity_type_todo = self.env.ref('mail.mail_activity_data_todo')
-        activity_type_todo.keep_done = True
-
         move = self.env['account.move'].create({
             'journal_id': journal.id,
             'date': '2019-01-01',

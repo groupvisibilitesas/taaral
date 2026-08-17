@@ -8,7 +8,6 @@ import { MainComponentsContainer } from "@web/core/main_components_container";
 import { registry } from "@web/core/registry";
 import { View, getDefaultConfig } from "@web/views/view";
 import {
-    fakeCompanyService,
     makeFakeLocalizationService,
     patchUserWithCleanup,
 } from "../helpers/mock_services";
@@ -126,5 +125,4 @@ export function setupViewRegistries() {
         isInternalUser: true,
     });
     serviceRegistry.add("localization", makeFakeLocalizationService());
-    serviceRegistry.add("company", fakeCompanyService);
 }

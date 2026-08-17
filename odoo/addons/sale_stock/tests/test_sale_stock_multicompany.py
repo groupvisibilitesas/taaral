@@ -23,9 +23,9 @@ class TestSaleStockMultiCompany(TestSaleCommon, ValuationReconciliationTestCommo
         })
         cls.warehouse_B = cls.company_data_2['default_warehouse']
 
-        cls.env.user.groups_id |= cls.env.ref('stock.group_stock_user')
-        cls.env.user.groups_id |= cls.env.ref('stock.group_stock_multi_locations')
-        cls.env.user.groups_id |= cls.env.ref('sales_team.group_sale_salesman')
+        cls.env.user.group_ids |= cls.env.ref('stock.group_stock_user')
+        cls.env.user.group_ids |= cls.env.ref('stock.group_stock_multi_locations')
+        cls.env.user.group_ids |= cls.env.ref('sales_team.group_sale_salesman')
 
         cls.env.user.with_company(cls.company_data['company']).property_warehouse_id = cls.warehouse_A.id
         cls.env.user.with_company(cls.company_data_2['company']).property_warehouse_id = cls.warehouse_B.id
@@ -45,7 +45,6 @@ class TestSaleStockMultiCompany(TestSaleCommon, ValuationReconciliationTestCommo
                 'name': product.name,
                 'product_id': product.id,
                 'product_uom_qty': 10,
-                'product_uom': product.uom_id.id,
                 'price_unit': product.list_price})],
         }
         sale_order = self.env['sale.order']
@@ -63,7 +62,6 @@ class TestSaleStockMultiCompany(TestSaleCommon, ValuationReconciliationTestCommo
                 'name': product.name,
                 'product_id': product.id,
                 'product_uom_qty': 10,
-                'product_uom': product.uom_id.id,
                 'price_unit': product.list_price})],
         }
         so_company_A = sale_order.with_company(self.env.company).create(sale_order_vals2)
@@ -78,7 +76,6 @@ class TestSaleStockMultiCompany(TestSaleCommon, ValuationReconciliationTestCommo
                 'name': product.name,
                 'product_id': product.id,
                 'product_uom_qty': 10,
-                'product_uom': product.uom_id.id,
                 'price_unit': product.list_price})],
         }
         so_company_B = sale_order.with_company(self.company_data_2['company']).create(sale_order_vals3)
@@ -119,7 +116,7 @@ class TestSaleStockMultiCompany(TestSaleCommon, ValuationReconciliationTestCommo
                 'name': self.product_a.name,
                 'product_id': self.product_a.id,
                 'product_uom_qty': 5.0,
-                'product_uom': self.product_a.uom_id.id,
+                'product_uom_id': self.product_a.uom_id.id,
                 'price_unit': self.product_a.list_price})],
         })
         so.action_confirm()
@@ -131,7 +128,6 @@ class TestSaleStockMultiCompany(TestSaleCommon, ValuationReconciliationTestCommo
             'picking_id': picking.id,
             'location_id': picking.location_id.id,
             'location_dest_id': picking.location_dest_id.id,
-            'name': self.product_b.name,
             'product_id': self.product_b.id,
             'product_uom_qty': 1,
             'product_uom': self.product_b.uom_id.id,
@@ -153,7 +149,7 @@ class TestSaleStockMultiCompany(TestSaleCommon, ValuationReconciliationTestCommo
         """
         Check that lots and serial numbers are displayed on inter-companies invoices.
         """
-        self.env.user.groups_id |= self.env.ref('stock_account.group_lot_on_invoice')
+        self.env.user.group_ids |= self.env.ref('stock_account.group_lot_on_invoice')
         company2 = self.company_data_2['company']
         self.product_a.write({
             'is_storable': 'True',
@@ -169,7 +165,6 @@ class TestSaleStockMultiCompany(TestSaleCommon, ValuationReconciliationTestCommo
                 'name': self.product_a.name,
                 'product_id': self.product_a.id,
                 'product_uom_qty': 1.0,
-                'product_uom': self.product_a.uom_id.id,
                 'price_unit': self.product_a.list_price})],
         })
         so.action_confirm()
@@ -181,3 +176,105 @@ class TestSaleStockMultiCompany(TestSaleCommon, ValuationReconciliationTestCommo
             [(rec['product_name'], rec['lot_id']) for rec in invoice._get_invoiced_lot_values()],
             [(self.product_a.name, sn.id)]
         )
+
+    def test_intercompany_delivered_qty(self):
+        """
+        Test that when an inter-company route triggers moves across multiple companies,
+        the delivered quantity on the SO line isn't doubled by the outgoing moves of the other company.
+        Company A -> Sells to Customer
+        Company B -> Supplies Inter-company Transit -> Supplies Company A
+        """
+        company_a = self.env.company
+        company_b = self.company_data_2['company']
+
+        self.product_a.is_storable = True
+
+        interco_location = self.env.ref('stock.stock_location_inter_company')
+        customer_location = self.env.ref('stock.stock_location_customers')
+        vendor_location = self.env.ref('stock.stock_location_suppliers')
+
+        wh_a = self.warehouse_A
+        loc_a = wh_a.lot_stock_id
+
+        wh_b = self.warehouse_B
+        loc_b = wh_b.lot_stock_id
+
+        self.env['stock.quant']._update_available_quantity(self.product_a, loc_b, 10.0)
+
+        route = self.env['stock.route'].create({
+            'name': 'Pull from B to A via Interco',
+            'sale_selectable': True,
+            'company_id': False,
+            'rule_ids': [
+                Command.create({
+                    'name': 'Co B to Interco',
+                    'action': 'pull',
+                    'location_src_id': loc_b.id,
+                    'location_dest_id': interco_location.id,
+                    'picking_type_id': wh_b.out_type_id.id,
+                    'procure_method': 'make_to_order',
+                    'company_id': company_b.id,
+                    'route_id': False,
+                    'location_dest_from_rule': True,
+                }),
+                Command.create({
+                    'name': 'Interco to Co A',
+                    'action': 'pull',
+                    'location_src_id': interco_location.id,
+                    'location_dest_id': loc_a.id,
+                    'picking_type_id': wh_a.int_type_id.id,
+                    'procure_method': 'make_to_order',
+                    'company_id': company_a.id,
+                    'route_id': False,
+                }),
+            ]
+        })
+        route.rule_ids[0].route_id = route.id
+        route.rule_ids[1].route_id = route.id
+
+        self.product_a.route_ids = [Command.set([route.id])]
+
+        customer = self.partner_a
+
+        so = self.env['sale.order'].create({
+            'partner_id': customer.id,
+            'company_id': company_a.id,
+            'order_line': [Command.create({
+                'product_id': self.product_a.id,
+                'product_uom_qty': 5.0,
+            })]
+        })
+
+        so.action_confirm()
+
+        # At this point, we should have 4 moves generated:
+        # 1. Vendor -> Co B (Company B)
+        # 2. Co B -> Interco (Company B)
+        # 3. Interco -> Co A (Company A)
+        # 4. Co A -> Customer (Company A)
+        moves = so.order_line.move_ids | self.env['stock.move'].search([
+            ('product_id', '=', self.product_a.id),
+            ('origin', 'ilike', so.name)
+        ])
+
+        vendor_move = moves.filtered(lambda m: m.location_id == vendor_location and m.location_dest_id == loc_b)
+        vendor_move.quantity = 5.0
+        vendor_move.picked = True
+        vendor_move.picking_id.button_validate()
+
+        interco_1 = moves.filtered(lambda m: m.location_id == loc_b and m.location_dest_id == interco_location)
+        interco_1.quantity = 5.0
+        interco_1.picked = True
+        interco_1.picking_id.button_validate()
+
+        interco_2 = moves.filtered(lambda m: m.location_id == interco_location and m.location_dest_id == loc_a)
+        interco_2.quantity = 5.0
+        interco_2.picked = True
+        interco_2.picking_id.button_validate()
+
+        delivery = moves.filtered(lambda m: m.location_id == loc_a and m.location_dest_id == customer_location)
+        delivery.quantity = 5.0
+        delivery.picked = True
+        delivery.picking_id.button_validate()
+
+        self.assertEqual(so.order_line.qty_delivered, 5.0, "Intercompany transfers are being counted incorrectly")

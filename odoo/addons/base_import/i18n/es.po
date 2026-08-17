@@ -3,20 +3,20 @@
 # * base_import
 #
 # Translators:
-# Wil Odoo, 2024
-# Martin Trigaux, 2024
-# Larissa Manderfeld, 2024
+# Martin Trigaux, 2022
 #
-# "Larissa Manderfeld (lman)" <lman@odoo.com>, 2025.
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
+# "Malaz Siddig Elsayed Abuidris (msea)" <msea@odoo.com>, 2025, 2026.
+# "Noemi Pla Garcia (nopl)" <nopl@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 15.5alpha1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2025-12-31 08:42+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Spanish <https://translate.odoo.com/projects/odoo-18/"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-07 01:06+0000\n"
+"Last-Translator: \"Noemi Pla Garcia (nopl)\" <nopl@odoo.com>\n"
+"Language-Team: Spanish <https://translate.odoo.com/projects/odoo-19/"
 "base_import/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == "
 "0) ? 1 : 2);\n"
-"X-Generator: Weblate 5.14.3\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: base_import
 #. odoo-javascript
@@ -168,8 +168,8 @@ msgid ""
 "Column %(column)s contains incorrect values. Error in line %(line)d: %"
 "(error)s"
 msgstr ""
-"La columna %(column)s contiene valores incorrectos. Error en la línea %"
-"(line)d: %(error)s"
+"La columna %(column)s contiene valores incorrectos. Error en la línea %(line)"
+"d: %(error)s"
 
 #. module: base_import
 #: model:ir.model.fields,field_description:base_import.field_base_import_mapping__column_name
@@ -261,6 +261,7 @@ msgstr "Retraso después de cada lote"
 #. module: base_import
 #: model:ir.model.fields,field_description:base_import.field_base_import_import__display_name
 #: model:ir.model.fields,field_description:base_import.field_base_import_mapping__display_name
+#: model:ir.model.fields,field_description:base_import.field_res_users__display_name
 msgid "Display Name"
 msgstr "Nombre para mostrar"
 
@@ -346,6 +347,12 @@ msgstr "Se recomiendan los archivos de Excel ya que el formato es automático."
 #: code:addons/base_import/models/base_import.py:0
 msgid "External ID"
 msgstr "ID externo"
+
+#. module: base_import
+#. odoo-python
+#: code:addons/base_import/models/base_import.py:0
+msgid "Field '%(field)s' does not accept date/time values."
+msgstr "El campo “%(field)s” no acepta valores de tipo “Fecha/hora”."
 
 #. module: base_import
 #: model:ir.model.fields,field_description:base_import.field_base_import_mapping__field_name
@@ -440,6 +447,7 @@ msgstr "Éste es el inicio del archivo que no se pudo importar:"
 #. module: base_import
 #: model:ir.model.fields,field_description:base_import.field_base_import_import__id
 #: model:ir.model.fields,field_description:base_import.field_base_import_mapping__id
+#: model:ir.model.fields,field_description:base_import.field_res_users__id
 msgid "ID"
 msgstr "ID"
 
@@ -519,6 +527,12 @@ msgstr "Importar registros"
 #. module: base_import
 #. odoo-javascript
 #: code:addons/base_import/static/src/import_action/import_action.js:0
+msgid "Imported records"
+msgstr "Registros importados"
+
+#. module: base_import
+#. odoo-javascript
+#: code:addons/base_import/static/src/import_action/import_action.js:0
 msgid "Importing"
 msgstr "Importando"
 
@@ -529,9 +543,9 @@ msgid ""
 "Invalid cell format at row %(row)s, column %(col)s: %(cell_value)s, with "
 "format: %(cell_format)s, as (%(format_type)s) formats are not supported."
 msgstr ""
-"Formato de celda no válido en la fila %(row)s, columna %(col)s: %"
-"(cell_value)s, con el formato %(cell_format)s. El formato (%(format_type)s) "
-"no es compatible. "
+"Formato de celda no válido en la fila %(row)s, columna %(col)s: %(cell_value)"
+"s, con el formato %(cell_format)s. El formato (%(format_type)s) no es "
+"compatible."
 
 #. module: base_import
 #. odoo-python
@@ -927,7 +941,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/base_import/static/src/import_data_sidepanel/import_data_sidepanel.xml:0
 msgid "Use first row as header"
-msgstr "Utilizar la primera fila como encabezado "
+msgstr "Utilizar la primera fila como encabezado"
 
 #. module: base_import
 #: model:ir.model,name:base_import.model_res_users
@@ -954,11 +968,11 @@ msgstr "Cuando un valor no puede coincidir:"
 #. odoo-python
 #: code:addons/base_import/models/base_import.py:0
 msgid ""
-"You can not import images via URL, check with your administrator or support "
+"You can not import file via URL, check with your administrator or support "
 "for the reason."
 msgstr ""
-"No puede importar imágenes a través de la URL, consúltelo con su "
-"administrador o soporte técnico."
+"No se puede importar el archivo mediante URL. Póngase en contacto con su "
+"administrador o con el equipo de soporte para conocer el motivo."
 
 #. module: base_import
 #. odoo-javascript
@@ -983,7 +997,7 @@ msgstr "en múltiples filas"
 #. odoo-javascript
 #: code:addons/base_import/static/src/import_data_column_error/import_data_column_error.xml:0
 msgid "at row"
-msgstr "en la fila "
+msgstr "en la fila"
 
 #. module: base_import
 #. odoo-javascript
@@ -1021,3 +1035,42 @@ msgstr "segundos"
 #: code:addons/base_import/models/base_import.py:0
 msgid "unknown error code %s"
 msgstr "código de error desconocido%s"
+
+#~ msgid "Column %s contains incorrect values (value: %s)"
+#~ msgstr "La columna %s contiene valores incorrectos (valores: %s)"
+
+#~ msgid "Column %s contains incorrect values. Error in line %d: %s"
+#~ msgstr ""
+#~ "La columna %s contiene valores incorrectos. Error en la linea %d: %s"
+
+#~ msgid "Error Parsing Date [%s:L%d]: %s"
+#~ msgstr "Error al analizar la fecha [%s:L%d]: %s"
+
+#~ msgid ""
+#~ "Import timed out. Please retry. If you still encounter this issue, the "
+#~ "file may be too big for the system's configuration, try to split it "
+#~ "(import less records per file)."
+#~ msgstr ""
+#~ "La importación expiró. Por favor, intenta de nuevo. Si el problema "
+#~ "persiste, puede ser que el archivo sea demasiado grande para la "
+#~ "configuración del sistema, intenta dividirlo (importa menos registros por "
+#~ "archivo)."
+
+#~ msgid "Imported file"
+#~ msgstr "Archivo importado"
+
+#~ msgid "Load File"
+#~ msgstr "Subir archivo"
+
+#~ msgid "Upload File"
+#~ msgstr "Subir archivo "
+
+#~ msgid "Upload an Excel or CSV file to import"
+#~ msgstr "Subir un archivo de Excel o en formato CSV para importar "
+
+#~ msgid ""
+#~ "You can not import images via URL, check with your administrator or "
+#~ "support for the reason."
+#~ msgstr ""
+#~ "No puedes importar imágenes a través del URL, consúltalo con tu "
+#~ "administrador o soporte técnico."

@@ -5,12 +5,12 @@ from odoo.tests import common, Form
 
 @common.tagged('post_install', '-at_install')
 class TestDeliveryCost(common.TransactionCase):
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.partner_18 = cls.env['res.partner'].create({'name': 'My Test Customer'})
         cls.product_4 = cls.env['product.product'].create({'name': 'A product to deliver', 'weight': 1.0})
-        cls.product_uom_unit = cls.env.ref('uom.product_uom_unit')
         cls.product_delivery = cls.env['product.product'].create({
             'name': 'Delivery Charges',
             'type': 'service',
@@ -38,7 +38,6 @@ class TestDeliveryCost(common.TransactionCase):
                 'name': 'PC Assamble + 2GB RAM',
                 'product_id': self.product_4.id,
                 'product_uom_qty': 2,
-                'product_uom': self.product_uom_unit.id,
                 'price_unit': 120.00,
             })],
         })
@@ -88,7 +87,7 @@ class TestDeliveryCost(common.TransactionCase):
         shipping when the SO is locked, while a regular write on the same
         protected fields must be blocked
         """
-        self.env.user.groups_id += self.env.ref("sale.group_auto_done_setting")
+        self.env.user.group_ids += self.env.ref("sale.group_auto_done_setting")
         so = self.env['sale.order'].create({
             'partner_id': self.partner_18.id,
             'partner_invoice_id': self.partner_18.id,
@@ -97,7 +96,6 @@ class TestDeliveryCost(common.TransactionCase):
                 'name': 'PC Assemble + 2GB RAM',
                 'product_id': self.product_4.id,
                 'product_uom_qty': 1,
-                'product_uom': self.product_uom_unit.id,
                 'price_unit': 120.00,
             })],
         })

@@ -93,7 +93,9 @@ $o-website-values-palettes: (
     ),
 );
 
-$o-selected-color-palettes-names: append($o-selected-color-palettes-names, 'default-28');
+$default-28: map-get($o-color-palettes, 'default-28');
+$default-28: map-merge($default-28, ('footer': 5));
+$o-color-palettes: map-merge($o-color-palettes, ('default-28': $default-28));
 
 $o-color-palettes-compatibility-indexes: (
     1: 'real-estate-1',
@@ -123,7 +125,7 @@ $o-color-palettes-compatibility-indexes: (
 // Shapes
 //------------------------------------------------------------------------------
 
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Origins/18', (1: 3));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Origins/18', (1: 3));
 
 /* Keep for compatibility */
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Origins/14', (4: 4));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Origins/14', (4: 4));

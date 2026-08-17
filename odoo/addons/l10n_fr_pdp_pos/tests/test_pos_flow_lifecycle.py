@@ -36,7 +36,7 @@ class TestPdpPosFlowLifecycle(TestPoSCommon):
             'l10n_fr_pdp_pilot_phase': True,
             'l10n_fr_pdp_send_to_ppf': True,
             'name': 'PDP POS Company',
-            'siret': '34057796400024',
+            'company_registry': '34057796400024',
             'vat': 'FR23334175221',
         })
         cls.company.partner_id.write({
@@ -79,9 +79,12 @@ class TestPdpPosFlowLifecycle(TestPoSCommon):
                 }),
             ],
         })
+        cash_basis_transition_account = cls.tax_received_account.copy()
+        cash_basis_transition_account.reconcile = True
         cls.pos_service_tax_20 = cls.pos_tax_20.copy({
             'name': 'POS Service VAT 20%',
             'tax_exigibility': 'on_payment',
+            'cash_basis_transition_account_id': cash_basis_transition_account.id,
             'tax_scope': 'service',
         })
         cls.pos_product = cls.create_product(
@@ -173,7 +176,7 @@ class TestPdpPosFlowLifecycle(TestPoSCommon):
             'move_type': 'entry',
             'l10n_fr_pdp_flow_10_operation_type': 'sale',
             'l10n_fr_pdp_flow_10_report_type': 'transaction',
-            'l10n_fr_pdp_status': 'ready',
+            'l10n_fr_pdp_status': 'pending',
         }])
         self.assertRecordValues(pos_move.l10n_fr_pdp_last_flow_id, [{
             'operation_type': 'sale',

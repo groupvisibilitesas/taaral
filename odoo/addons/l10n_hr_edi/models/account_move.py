@@ -106,8 +106,12 @@ class AccountMove(models.Model):
     @api.constrains('move_type', 'l10n_hr_process_type')
     def _check_l10n_hr_process_type(self):
         for record in self:
-            if record.country_code == 'HR' and (record.l10n_hr_process_type == 'P9') == (record.move_type != 'out_refund'):
-                raise ValidationError(self.env._('Business Process Type P9 can only be used with credit notes and vice versa.'))
+            if record.country_code != 'HR':
+                continue
+            if record.move_type != 'out_refund' and record.l10n_hr_process_type == 'P9':
+                raise ValidationError(self.env._('Business Process Type P9 can only be used with credit notes.'))
+            if record.move_type == 'out_refund' and record.l10n_hr_process_type not in ('P9', 'P10'):
+                raise ValidationError(self.env._('Credit notes must use Business Process Type P9 or P10.'))
 
     @api.depends('l10n_hr_fiscalization_status')
     def _compute_show_reset_to_draft_button(self):
@@ -132,7 +136,7 @@ class AccountMove(models.Model):
         Only applies for Croatian sales invoices/credit notes. Expected name
         pattern is produced by the overridden `sequence.mixin` logic.
         """
-        name_regex = r'.*?(?P<seq>\d+)/(?P<premises_label>\d+)/(?P<device_label>\d+)'
+        name_regex = r'.*?(?P<seq>\d+)/(?P<premises_label>[a-zA-Z0-9]+)/(?P<device_label>\d+)'
         if match := re.match(name_regex, name):
             return f"{int(match.group('seq'))}/{match.group('premises_label')}/{match.group('device_label')}"
         else:
@@ -140,16 +144,28 @@ class AccountMove(models.Model):
 
     def _get_l10n_hr_fiscal_user_id_domain(self):
         internal_users = self.env.ref('base.group_user')
-        domain = [('user_ids', 'in', internal_users.users.ids)]
+        domain = [('user_ids', 'in', internal_users.user_ids.ids)]
         return domain
 
     @api.model
-    def _get_ubl_cii_builder_from_xml_tree(self, tree):
+    def UNUSED_get_ubl_cii_builder_from_xml_tree(self, tree):
         customization_id = tree.find('{*}CustomizationID')
         if customization_id is not None:
             if customization_id.text == 'urn:cen.eu:en16931:2017#compliant#urn:mfin.gov.hr:cius-2025:1.0#conformant#urn:mfin.gov.hr:ext-2025:1.0':
                 return self.env['account.edi.xml.ubl_hr']
         return super()._get_ubl_cii_builder_from_xml_tree(tree)
+
+    def _get_import_file_type(self, file_data):
+        """ Identify CIUS HR files. """
+        # EXTENDS 'account'
+        if (
+            file_data['xml_tree'] is not None
+            and (ubl_profile := file_data['xml_tree'].findtext('{*}CustomizationID'))
+            and ubl_profile == 'urn:cen.eu:en16931:2017#compliant#urn:mfin.gov.hr:cius-2025:1.0#conformant#urn:mfin.gov.hr:ext-2025:1.0'
+        ):
+            return 'account.edi.xml.ubl_hr'
+
+        return super()._get_import_file_type(file_data)
 
     def _get_invoice_reference_odoo_invoice(self):
         """

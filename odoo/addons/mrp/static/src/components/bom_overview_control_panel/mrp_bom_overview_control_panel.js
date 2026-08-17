@@ -1,11 +1,10 @@
-/** @odoo-module **/
-
 import { ControlPanel } from "@web/search/control_panel/control_panel";
 import { BomOverviewDisplayFilter } from "../bom_overview_display_filter/mrp_bom_overview_display_filter";
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
+import { _t } from "@web/core/l10n/translation";
 import { Many2XAutocomplete } from "@web/views/fields/relational_utils";
-import { Component } from "@odoo/owl";
+import { Component, onMounted, useRef } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 
 export class BomOverviewControlPanel extends Component {
@@ -23,7 +22,6 @@ export class BomOverviewControlPanel extends Component {
         showVariants: { type: Boolean, optional: true },
         variants: { type: Object, optional: true },
         data: { type: Object, optional: true },
-        showUom: { type: Boolean, optional: true },
         uomName: { type: String, optional: true },
         currentWarehouse: { type: Object, optional: true },
         warehouses: { type: Array, optional: true },
@@ -31,8 +29,9 @@ export class BomOverviewControlPanel extends Component {
         changeWarehouse: Function,
         changeVariant: Function,
         changeBomQuantity: Function,
-        changeDisplay: Function,
+        changeMode: Function,
         precision: Number,
+        foldable: Boolean,
         allFolded: Boolean,
     };
     static defaultProps = {
@@ -43,6 +42,12 @@ export class BomOverviewControlPanel extends Component {
     setup() {
         this.action = useService("action");
         this.controlPanelDisplay = {};
+        if(this.props.showOptions.mode == "forecast") {
+            this.quantity = useRef("quantity");
+            onMounted(() => {
+                this.quantity.el.focus();
+            });
+        }
     }
 
     //---- Handlers ----
@@ -77,9 +82,15 @@ export class BomOverviewControlPanel extends Component {
             target: "current",
             context: {
                 default_bom_id: this.props.data.bom_id,
+                bom_overview_picking_type_id: this.props.currentWarehouse.manu_type_id[0],
+                bom_overview_product_qty: this.props.bomQuantity,
             },
         };
         return this.action.doAction(action);
+    }
+
+    get foldButtonText() {
+        return this.props.allFolded ? _t("Unfold") : _t("Fold");
     }
 
     get precision() {

@@ -20,7 +20,7 @@ CREDIT_PER_COMPANY = 1
 CREDIT_PER_CONTACT = 1
 
 
-class CRMLeadMiningRequest(models.Model):
+class CrmIapLeadMiningRequest(models.Model):
     _name = 'crm.iap.lead.mining.request'
     _description = 'CRM Lead Mining Request'
 
@@ -239,13 +239,13 @@ class CRMLeadMiningRequest(models.Model):
         dbuuid = self.env['ir.config_parameter'].sudo().get_param('database.uuid')
         reveal_ids = [lead['reveal_id'] for lead in self.env['crm.lead'].search_read([('reveal_id', '!=', False)], ['reveal_id'])]
         params = {
+            'account_token': reveal_account.sudo().account_token,
             'db_uuid': dbuuid,
+            'query': server_payload,
             'db_version': release.version,
             'db_lang': self.env.lang,
-            'account_token': reveal_account.account_token,
             'country_code': self.env.company.country_id.code,
-            'query': server_payload,
-            'reveal_ids': reveal_ids
+            'reveal_ids': reveal_ids,
         }
         try:
             response = self._iap_contact_mining(params, timeout=300)

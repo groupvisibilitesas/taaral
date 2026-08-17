@@ -1,8 +1,6 @@
 import { Plugin } from "@html_editor/plugin";
 import { MentionList } from "@mail/core/web/mention_list";
-import { stateToUrl } from "@web/core/browser/router";
-import { renderToElement } from "@web/core/utils/render";
-import { url } from "@web/core/utils/urls";
+import { makeMentionFromOption } from "@mail/core/common/suggestion_hook";
 
 export class MentionPlugin extends Plugin {
     static id = "mention";
@@ -23,19 +21,10 @@ export class MentionPlugin extends Plugin {
 
     onSelect(ev, option) {
         this.dependencies.selection.focusEditable();
-        const mentionBlock = renderToElement("mail.Wysiwyg.mentionLink", {
-            option,
-            href: url(
-                stateToUrl({
-                    model: option.partner ? "res.partner" : "discuss.channel",
-                    resId: option.partner ? option.partner.id : option.channel.id,
-                })
-            ),
-        });
-        const nameNode = this.document.createTextNode(
-            `${option.partner ? "@" : "#"}${option.label}`
-        );
-        mentionBlock.appendChild(nameNode);
+        const mentionBlock = makeMentionFromOption(option, { thread: this.config.thread });
+        if (!mentionBlock) {
+            return;
+        }
         this.historySavePointRestore();
         this.dependencies.dom.insert(mentionBlock);
         this.dependencies.history.addStep();
@@ -48,7 +37,7 @@ export class MentionPlugin extends Plugin {
                 props: {
                     onSelect: this.onSelect.bind(this),
                     thread: this.config.thread,
-                    type: ev.data === "@" ? "partner" : "channel",
+                    type: ev.data === "@" ? "Partner" : "Thread",
                     close: () => {
                         this.mentionList.close();
                     },

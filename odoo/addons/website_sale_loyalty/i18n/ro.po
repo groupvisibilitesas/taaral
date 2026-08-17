@@ -1,44 +1,30 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* website_sale_loyalty
+# * website_sale_loyalty
 #
-# Translators:
-# Lyall Kindmurr, 2024
-# Maria Muntean, 2024
-# Corina Calin, 2024
-# Wil Odoo, 2024
-# Larisa_nexterp, 2025
-#
+# Alin Ilie <alin.ilie@logit-solutions.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:38+0000\n"
-"PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Larisa_nexterp, 2025\n"
-"Language-Team: Romanian (https://app.transifex.com/odoo/teams/41243/ro/)\n"
+"POT-Creation-Date: 2026-01-25 18:37+0000\n"
+"PO-Revision-Date: 2026-08-05 20:57+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Romanian <https://translate.odoo.com/projects/odoo-19/"
+"website_sale_loyalty/ro/>\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
-"2:1));\n"
-
-#. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "<strong> - </strong>"
-msgstr "<strong> - </strong>"
-
-#. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "<strong>Coupons - </strong>"
-msgstr "<strong>Cupoane - </strong>"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2;\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: website_sale_loyalty
 #. odoo-python
 #: code:addons/website_sale_loyalty/wizard/coupon_share.py:0
 msgid "A coupon is needed for coupon programs."
-msgstr "Este necesar un cupon pentru programele cu cupoane."
+msgstr "Pentru programele de cupoane este necesar un cupon."
 
 #. module: website_sale_loyalty
 #. odoo-python
@@ -63,26 +49,18 @@ msgid ""
 "Cannot process payment: applied reward was changed or has expired.\n"
 "Please refresh the page and try again."
 msgstr ""
-"Nu se poate procesa plata: recompensa aplicată a fost modificată sau a "
-"expirat.\n"
-"Vă rugăm să reîmprospătați pagina și să încercați din nou."
 
 #. module: website_sale_loyalty
 #. odoo-javascript
 #: code:addons/website_sale_loyalty/static/src/js/portal_loyalty_card.xml:0
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
 msgid "Claim"
-msgstr "Revendică"
+msgstr "Reclamație"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
 msgid "Code:"
 msgstr "Cod:"
-
-#. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "Costs"
-msgstr "Costuri"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.layout
@@ -92,14 +70,24 @@ msgstr "Nu s-a putut aplica codul promoțional:"
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__coupon_id
 msgid "Coupon"
-msgstr "Cupon"
+msgstr "Cupoane"
+
+#. module: website_sale_loyalty
+#. odoo-javascript
+#: code:addons/website_sale_loyalty/static/src/website_builder/coupon_option_plugin.js:0
+msgid "Coupon Snippet Options"
+msgstr "Opțiuni pentru fragmente de cupon"
+
+#. module: website_sale_loyalty
+#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
+msgid "Coupons -"
+msgstr "Cupoane -"
 
 #. module: website_sale_loyalty
 #: model:ir.model,name:website_sale_loyalty.model_coupon_share
 msgid "Create links that apply a coupon and redirect to a specific page"
 msgstr ""
-"Creați linkuri care aplică un cupon și redirecționează către o pagină "
-"specifică"
+"Creați linkuri care aplică un cupon și redirecționează către o anumită pagină"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__create_uid
@@ -119,7 +107,12 @@ msgstr "Recompense automate dezactivate"
 #. module: website_sale_loyalty
 #: model:ir.ui.menu,name:website_sale_loyalty.menu_discount_loyalty_type_config
 msgid "Discount & Loyalty"
-msgstr "Reducere și loialitate"
+msgstr "Reduceri și loialitate"
+
+#. module: website_sale_loyalty
+#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.reduction_coupon_code
+msgid "Discount code or gift card"
+msgstr "Cod de reducere sau card cadou"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.cart_discount
@@ -133,13 +126,19 @@ msgstr "Suma redusă"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__display_name
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_loyalty_card__display_name
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_loyalty_program__display_name
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_loyalty_rule__display_name
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_product_product__display_name
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_sale_order__display_name
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_sale_order_line__display_name
 msgid "Display Name"
 msgstr "Nume afișat"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.coupon_share_view_form
 msgid "Done"
-msgstr "Finalizat"
+msgstr "Gata"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
@@ -149,7 +148,7 @@ msgstr "Data expirării:"
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.coupon_share_view_form
 msgid "Generate Short Link"
-msgstr "Generează link scurt"
+msgstr "Generați link scurt"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.sale_coupon_result
@@ -163,6 +162,12 @@ msgstr "Carduri cadou și portofel electronic"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__id
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_loyalty_card__id
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_loyalty_program__id
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_loyalty_rule__id
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_product_product__id
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_sale_order__id
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_sale_order_line__id
 msgid "ID"
 msgstr "ID"
 
@@ -179,7 +184,7 @@ msgstr "Ultima actualizare de"
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__write_date
 msgid "Last Updated on"
-msgstr "Ultima actualizare la"
+msgstr "Ultima actualizare"
 
 #. module: website_sale_loyalty
 #: model:ir.ui.menu,name:website_sale_loyalty.menu_loyalty
@@ -189,7 +194,7 @@ msgstr "Loialitate"
 #. module: website_sale_loyalty
 #: model:ir.model,name:website_sale_loyalty.model_loyalty_card
 msgid "Loyalty Coupon"
-msgstr "Cupon de loialitate"
+msgstr "Cupoane de loialitate"
 
 #. module: website_sale_loyalty
 #: model:ir.model,name:website_sale_loyalty.model_loyalty_program
@@ -199,17 +204,17 @@ msgstr "Program de loialitate"
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.res_config_settings_view_form_inherit_website_sale_loyalty
 msgid "Loyalty Programs"
-msgstr "Programe de loialitate"
+msgstr "Programe de fidelitate"
 
 #. module: website_sale_loyalty
 #: model:ir.model,name:website_sale_loyalty.model_loyalty_rule
 msgid "Loyalty Rule"
-msgstr "Regulă de loialitate"
+msgstr "Regula de fidelitate"
 
 #. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "Pay with eWallet"
-msgstr "Plătește cu eWallet"
+#: model:ir.model,name:website_sale_loyalty.model_product_product
+msgid "Product Variant"
+msgstr "Varianta de produs"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__program_id
@@ -219,7 +224,7 @@ msgstr "Program"
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__program_website_id
 msgid "Program Website"
-msgstr "Site web program"
+msgstr "Site-ul programului"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__promo_code
@@ -242,7 +247,7 @@ msgstr "Redirecționare"
 #: model:ir.model.fields,help:website_sale_loyalty.field_loyalty_program__website_id
 #: model:ir.model.fields,help:website_sale_loyalty.field_loyalty_rule__website_id
 msgid "Restrict to a specific website."
-msgstr "Restricționează la un anumit site web."
+msgstr "Restricționați la un anumit site web."
 
 #. module: website_sale_loyalty
 #: model:ir.model,name:website_sale_loyalty.model_sale_order
@@ -252,7 +257,7 @@ msgstr "Comandă de vânzare"
 #. module: website_sale_loyalty
 #: model:ir.model,name:website_sale_loyalty.model_sale_order_line
 msgid "Sales Order Line"
-msgstr "Linie comandă de vânzare"
+msgstr "Linie de comandă de vânzare"
 
 #. module: website_sale_loyalty
 #. odoo-python
@@ -260,40 +265,46 @@ msgstr "Linie comandă de vânzare"
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.loyalty_card_view_tree_inherit_website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.loyalty_program_view_tree_inherit_website_sale_loyalty
 msgid "Share"
-msgstr "Partajează"
+msgstr "Partajare"
 
 #. module: website_sale_loyalty
 #. odoo-python
 #: code:addons/website_sale_loyalty/wizard/coupon_share.py:0
 msgid "Share %s"
-msgstr "Partajează %s"
+msgstr "Partajare %s"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__share_link
 msgid "Share Link"
-msgstr "Link de partajare"
+msgstr "Partajează link"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.coupon_share_view_form
 msgid "Share Loyalty Card"
-msgstr "Partajează cardul de loialitate"
+msgstr "Partajați cardul de fidelitate"
 
 #. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.snippet_options
+#. odoo-javascript
+#: code:addons/website_sale_loyalty/static/src/website_builder/coupon_option.xml:0
 msgid "Show Discount in Subtotal"
 msgstr "Afișează reducerea în subtotal"
+
+#. module: website_sale_loyalty
+#: model:ir.model.fields,field_description:website_sale_loyalty.field_loyalty_program__show_non_published_product_warning
+msgid "Show Non Published Product Warning"
+msgstr "Afișează avertismentul pentru produsul nepublicat"
 
 #. module: website_sale_loyalty
 #. odoo-python
 #: code:addons/website_sale_loyalty/controllers/main.py:0
 msgid ""
 "The coupon will be automatically applied when you add something in your cart."
-msgstr "Cuponul va fi aplicat automat când adăugați ceva în coș."
+msgstr "Cupoanul va fi aplicat automat când adaugi ceva în coș."
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.layout
 msgid "The following promo code was applied on your order:"
-msgstr "Următorul cod promoțional a fost aplicat la comanda dvs.:"
+msgstr "Următorul cod promoțional a fost aplicat comenzii dvs.:"
 
 #. module: website_sale_loyalty
 #. odoo-python
@@ -306,12 +317,25 @@ msgstr "Codul promoțional trebuie să fie unic."
 #: code:addons/website_sale_loyalty/wizard/coupon_share.py:0
 msgid "The shared website should correspond to the website of the program."
 msgstr ""
-"Site-ul web partajat trebuie să corespundă cu site-ul web al programului."
+"Site-ul web partajat trebuie să corespundă site-ului web al programului."
+
+#. module: website_sale_loyalty
+#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.loyalty_program_view_form_inherit_website_sale_loyalty
+msgid ""
+"To be able to top up eWallet from the portal, eWallet products must be\n"
+"                     published."
+msgstr ""
+
+#. module: website_sale_loyalty
+#. odoo-javascript
+#: code:addons/website_sale_loyalty/static/src/js/portal_loyalty_card.xml:0
+msgid "Top Up"
+msgstr "Reîncărcare"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
 msgid "Use"
-msgstr "Utilizează"
+msgstr "Utilizare"
 
 #. module: website_sale_loyalty
 #: model:ir.model.fields,field_description:website_sale_loyalty.field_coupon_share__website_id
@@ -328,21 +352,8 @@ msgid ""
 "                            It will be applied at checkout when the customer "
 "uses this link."
 msgstr ""
-"Puteți partaja această promoție cu clienții dvs.\n"
-"                            Aceasta va fi aplicată la finalizarea comenzii "
-"când clientul folosește acest link."
-
-#. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "You have"
-msgstr "Aveți"
 
 #. module: website_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
 msgid "You have successfully applied the following code:"
 msgstr "Ați aplicat cu succes următorul cod:"
-
-#. module: website_sale_loyalty
-#: model_terms:ir.ui.view,arch_db:website_sale_loyalty.modify_code_form
-msgid "in your ewallet"
-msgstr "în portofelul dvs. electronic"

@@ -11,7 +11,7 @@ from odoo.exceptions import UserError
 _logger = logging.getLogger(__name__)
 
 
-class pos_config(models.Model):
+class PosConfig(models.Model):
     _inherit = 'pos.config'
 
     def open_ui(self):
@@ -21,13 +21,10 @@ class pos_config(models.Model):
             if config.company_id._is_accounting_unalterable():
                 if config.current_session_id:
                     config.current_session_id._check_session_timing()
-        return super(pos_config, self).open_ui()
-
-    def _config_sequence_implementation(self):
-        return 'no_gap' if self.env.company._is_accounting_unalterable() else super()._config_sequence_implementation()
+        return super().open_ui()
 
 
-class pos_session(models.Model):
+class PosSession(models.Model):
     _inherit = 'pos.session'
 
     def _check_session_timing(self):
@@ -39,7 +36,7 @@ class pos_session(models.Model):
         sessions_to_check.filtered(lambda s: s.state == 'opening_control').start_at = fields.Datetime.now()
         for session in sessions_to_check:
             session._check_session_timing()
-        return super(pos_session, self).open_frontend_cb()
+        return super().open_frontend_cb()
 
 
 ORDER_FIELDS_BEFORE_17_4 = ['date_order', 'user_id', 'lines', 'payment_ids', 'pricelist_id', 'session_id', 'pos_reference', 'sale_journal', 'fiscal_position_id', 'partner_id']
@@ -47,7 +44,7 @@ ORDER_FIELDS_FROM_17_4 = ['date_order', 'user_id', 'lines', 'payment_ids', 'pric
 LINE_FIELDS = ['notice', 'product_id', 'qty', 'price_unit', 'discount', 'tax_ids', 'tax_ids_after_fiscal_position']
 
 
-class pos_order(models.Model):
+class PosOrder(models.Model):
     _inherit = 'pos.order'
 
     l10n_fr_hash = fields.Char(string="Inalteralbility Hash", readonly=True, copy=False)
@@ -67,7 +64,7 @@ class pos_order(models.Model):
             # it as a posible previous sequence number
             prev_seq = [o.l10n_fr_secure_sequence_number - 1 for o in orders if o.l10n_fr_secure_sequence_number > 1]
             prev_orders = self.search([
-                ('state', 'in', ['paid', 'done', 'invoiced']),
+                ('state', 'in', ['paid', 'done']),
                 ('company_id', '=', company_id),
                 ('l10n_fr_secure_sequence_number', 'in', prev_seq),
             ])
@@ -196,7 +193,7 @@ class pos_order(models.Model):
         for order in self:
             if order.company_id._is_accounting_unalterable():
                 # write the hash and the secure_sequence_number when posting or invoicing an pos.order
-                if vals.get('state') in ['paid', 'done', 'invoiced']:
+                if vals.get('state') in ['paid', 'done']:
                     has_been_posted = True
 
                 # restrict the operation in case we are trying to write a forbidden field
@@ -204,19 +201,19 @@ class pos_order(models.Model):
                     ORDER_FIELDS = ORDER_FIELDS_FROM_17_4
                 else:
                     ORDER_FIELDS = ORDER_FIELDS_BEFORE_17_4
-                if (order.state in ['paid', 'done', 'invoiced'] and set(vals).intersection(ORDER_FIELDS)):
+                if (order.state in ['paid', 'done'] and set(vals).intersection(ORDER_FIELDS)):
                     raise UserError(_('According to the French law, you cannot modify a point of sale order. Forbidden fields: %s.') % ', '.join(ORDER_FIELDS))
                 # restrict the operation in case we are trying to overwrite existing hash
                 if (order.l10n_fr_hash and 'l10n_fr_hash' in vals) or (order.l10n_fr_secure_sequence_number and 'l10n_fr_secure_sequence_number' in vals):
                     raise UserError(_('You cannot overwrite the values ensuring the inalterability of the point of sale.'))
-        res = super(pos_order, self).write(vals)
+        res = super().write(vals)
         # write the hash and the secure_sequence_number when posting or invoicing a pos order
         if has_been_posted:
             for order in self.filtered(lambda o: o.company_id._is_accounting_unalterable() and
                                                 not (o.l10n_fr_secure_sequence_number or o.l10n_fr_hash)):
                 new_number = order.company_id.l10n_fr_pos_cert_sequence_id.next_by_id()
-                res |= super(pos_order, order).write({'l10n_fr_secure_sequence_number': new_number})
-                res |= super(pos_order, order).write({'l10n_fr_hash': order._get_new_hash()})
+                res |= super(PosOrder, order).write({'l10n_fr_secure_sequence_number': new_number})
+                res |= super(PosOrder, order).write({'l10n_fr_hash': order._get_new_hash()})
         return res
 
     @api.ondelete(at_uninstall=True)
@@ -225,12 +222,13 @@ class pos_order(models.Model):
             if order.company_id._is_accounting_unalterable():
                 raise UserError(_("According to French law, you cannot delete a point of sale order."))
 
+
 class PosOrderLine(models.Model):
     _inherit = "pos.order.line"
 
     def write(self, vals):
         # restrict the operation in case we are trying to write a forbidden field
         if set(vals).intersection(LINE_FIELDS):
-            if any(l.company_id._is_accounting_unalterable() and l.order_id.state in ['done', 'invoiced'] for l in self):
+            if any(l.company_id._is_accounting_unalterable() and (l.order_id.account_move or l.order_id.state == 'done') for l in self):
                 raise UserError(_('According to the French law, you cannot modify a point of sale order line. Forbidden fields: %s.') % ', '.join(LINE_FIELDS))
         return super(PosOrderLine, self).write(vals)

@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 from requests import PreparedRequest, Response, Session
+from unittest.mock import patch
 
 from odoo.exceptions import ValidationError
 from odoo.tests.common import tagged, TransactionCase, freeze_time
@@ -71,10 +72,10 @@ class TestNemhandelParticipant(TransactionCase):
 
     @contextmanager
     def _set_context(self, other_context):
-        previous_context = self.env.context
-        self.env.context = dict(previous_context, **other_context)
-        yield self
-        self.env.context = previous_context
+        cls = self.__class__
+        env = cls.env(context=dict(cls.env.context, **other_context))
+        with patch.object(cls, "env", env):
+            yield
 
     def test_nemhandel_create_participant_missing_data(self):
         # creating a participant without identifier should not be possible

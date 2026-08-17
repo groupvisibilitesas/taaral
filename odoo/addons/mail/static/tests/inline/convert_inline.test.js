@@ -9,7 +9,6 @@ import {
     listGroupToTable,
     normalizeColors,
     normalizeRem,
-    splitSelectors,
 } from "@mail/views/web/fields/html_mail_field/convert_inline";
 import { beforeEach, describe, expect, getFixture, test } from "@odoo/hoot";
 import { enableTransitions } from "@odoo/hoot-mock";
@@ -1366,6 +1365,7 @@ describe("Convert classes to inline styles", () => {
             body {
                 background-color: red;
                 color: white;
+                direction: rtl;
                 font-size: 50px;
                 div {
                     border-color: ${borderColor} !important;
@@ -1374,10 +1374,10 @@ describe("Convert classes to inline styles", () => {
         `,
             0
         );
-        iframeEditable.innerHTML = `<div class="o_layout" style="padding: 50px;"></div>`;
+        iframeEditable.innerHTML = `<div class="o_layout" style="padding: 50px;">Test</div>`;
         classToStyle(iframeEditable, getCSSRules(iframeEditable.ownerDocument));
         expect(iframeEditable).toHaveInnerHTML(
-            `<div class="o_layout" style="border-radius:0px;border-style:none;margin:0px;box-sizing:border-box;border-left-color:${borderColor};border-bottom-color:${borderColor};border-right-color:${borderColor};border-top-color:${borderColor};border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;font-size:50px;color:white;background-color:red;padding: 50px;"></div>`,
+            `<div class="o_layout" style="border-radius:0px;border-style:none;margin:0px;box-sizing:border-box;border-left-color:${borderColor};border-bottom-color:${borderColor};border-right-color:${borderColor};border-top-color:${borderColor};border-left-width:0px;border-bottom-width:0px;border-right-width:0px;border-top-width:0px;font-size:50px;direction:rtl;color:white;background-color:red;padding: 50px;">Test</div>`,
             { message: "should have given all styles of body to .o_layout" }
         );
         styleSheet.deleteRule(0);
@@ -1512,18 +1512,61 @@ describe("Properly add MSO conditions", () => {
     });
 });
 
-describe("splitSelectors method", () => {
-    test("no parentheses", async () => {
-        expect(splitSelectors("abc, def, ghi")).toEqual(["abc", "def", "ghi"]);
+describe("Should not convert blacklisted class to inline styles", () => {
+    let styleEl, styleSheet;
+
+    beforeEach(() => {
+        editable = document.createElement("div");
+
+        styleEl = document.createElement("style");
+        styleEl.type = "text/css";
+        styleEl.title = "test-stylesheet";
+        document.head.appendChild(styleEl);
+        styleSheet = [...document.styleSheets].find((sheet) => sheet.title === "test-stylesheet");
     });
-    test("one depth parentheses", async () => {
-        expect(splitSelectors("abc:has(xyz), def, ghi")).toEqual(["abc:has(xyz)", "def", "ghi"]);
+
+    test("should not convert blacklisted class to inline style", async () => {
+        editable.innerHTML = `
+            <a contenteditable="false" href="#" class="o_mail_redirect">@Marc Demo</a> Testing!`;
+
+        classToStyle(editable, getCSSRules(editable.ownerDocument));
+
+        expect(editable).toHaveInnerHTML(
+            `<a contenteditable="false" href="#" class="o_mail_redirect" style="text-decoration: none; padding: 0rem 0.15rem; margin: 0rem 0.025rem; box-sizing: border-box; overflow-wrap: unset;">@Marc Demo</a> Testing!`,
+            {
+                message: "blacklisted class styles should remain unconverted",
+            }
+        );
     });
-    test("two depth parentheses", async () => {
-        expect(splitSelectors("abc:has(xyz:not(.ooo)), def, ghi")).toEqual([
-            "abc:has(xyz:not(.ooo))",
-            "def",
-            "ghi",
-        ]);
+
+    test("should convert styles from class using !important even if blacklisted class is present", async () => {
+        styleSheet.insertRule(`
+            .test-style {
+                background-color: yellow !important;
+            }
+        `);
+        editable.innerHTML = `<a contenteditable="false" href="#" class="o_mail_redirect test-style">@Marc Demo</a> Testing!`;
+        classToStyle(editable, getCSSRules(editable.ownerDocument));
+        expect(editable).toHaveInnerHTML(
+            `<a contenteditable="false" href="#" class="o_mail_redirect test-style" style="text-decoration: none; padding: 0rem 0.15rem; margin: 0rem 0.025rem; box-sizing: border-box; background-color: yellow; overflow-wrap: unset;"> @Marc Demo </a> Testing!`,
+            { message: "styles marked !important should override blacklisted class restrictions" }
+        );
+    });
+
+    test("should not convert style of class having less specificity when overridden by a blacklisted class", async () => {
+        styleSheet.insertRule(`
+            .test-color {
+                color: black;
+            }
+        `);
+        editable.innerHTML = `<a contenteditable="false" href="#" class="o_mail_redirect test-color">@Marc Demo</a> Testing!`;
+        classToStyle(editable, getCSSRules(editable.ownerDocument));
+        expect(editable).toHaveInnerHTML(
+            `<a contenteditable="false" href="#" class="o_mail_redirect test-color" style="text-decoration: none; padding: 0rem 0.15rem; margin: 0rem 0.025rem; box-sizing: border-box; overflow-wrap: unset;"> @Marc Demo </a> Testing!`,
+            {
+                message:
+                    "should ignore styles from lower specificity class in favor of blacklisted class",
+            }
+        );
     });
 });

@@ -581,11 +581,11 @@ class TestL10nEsEdiVerifactuDocument(TestL10nEsEdiVerifactuCommon):
 
     def test_verifactu_document_reading_access_right(self):
         move = self.env['account.move'].create({})
-        self.user.groups_id = self.env.ref('base.group_user')
+        self.user.group_ids = self.env.ref('base.group_user')
         with self.assertRaises(AccessError):
             move.with_user(self.user).read(['l10n_es_edi_verifactu_document_ids'])
         for group in ('account.group_account_invoice', 'account.group_account_readonly'):
-            self.user.groups_id = self.env.ref(group)
+            self.user.group_ids = self.env.ref(group)
             # Should not raise an error for accounting users
             move.with_user(self.user).read(['l10n_es_edi_verifactu_document_ids'])
 
@@ -607,8 +607,8 @@ class TestL10nEsEdiVerifactuDocument(TestL10nEsEdiVerifactuCommon):
         ]):
             self.skipTest("l10n_eu_oss is not installed")
 
-        self.company._map_eu_taxes()
-        self.partner_a.vat = False
+        self.company.sudo()._map_eu_taxes()
+        self.partner_a.sudo().vat = False
         invoice = self.env['account.move'].create({
             'move_type': 'out_invoice',
             'invoice_date': '2019-01-30',

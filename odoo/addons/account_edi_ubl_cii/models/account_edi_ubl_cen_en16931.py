@@ -28,11 +28,11 @@ class AccountEdiUBLCenEn16931(models.AbstractModel):
         # Early payment discount lines should not appear as lines but as allowances/charges.
         # Cash rounding lines should not appear as lines but in PayableRoundingAmount.
         def new_filter_function(base_line):
-            if (
-                self._ubl_is_early_payment_base_line(base_line)
-                or self._ubl_is_global_discount_base_line(base_line)
-                or self._ubl_is_cash_rounding_base_line(base_line)
-            ):
+            if any([
+                self._ubl_is_early_payment_base_line(base_line),
+                self._ubl_is_global_discount_base_line(base_line),
+                self._ubl_is_cash_rounding_base_line(base_line),
+            ]):
                 return False
             return not filter_function or filter_function(base_line)
 

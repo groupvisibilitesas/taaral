@@ -8,7 +8,7 @@ import { getChartDefinition, insertChartInSpreadsheet } from "@spreadsheet/../te
 defineSpreadsheetModels();
 
 test("getLoadedDataSources discards datasources with an invalid model", async () => {
-    const model = await createModelWithDataSource({
+    const { model } = await createModelWithDataSource({
         spreadsheetData: {
             pivots: {
                 1: {

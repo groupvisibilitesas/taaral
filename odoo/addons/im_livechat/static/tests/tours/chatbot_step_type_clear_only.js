@@ -16,11 +16,12 @@ registry.category("web_tour.tours").add("change_chatbot_step_type", {
         },
         {
             content: "Change step type to 'text'",
-            trigger: 'div[name="step_type"] select',
-            run: function (el) {
-                el.anchor.value = '"text"';
-                el.anchor.dispatchEvent(new Event("change", { bubbles: true }));
-            },
+            trigger: 'div[name="step_type"] input',
+            run: "click",
+        },
+        {
+            trigger: '.dropdown-item:contains("Text")',
+            run: "click",
         },
         {
             content: "Verify answers cleared",

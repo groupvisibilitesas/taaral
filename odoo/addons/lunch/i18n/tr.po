@@ -3,45 +3,44 @@
 # * lunch
 #
 # Translators:
-# emre oktem, 2024
-# Tiffany Chang, 2024
-# Buket Şeker <buket_skr@hotmail.com>, 2024
-# Murat Durmuş <muratd@projetgrup.com>, 2024
-# UNIBRAVO SOFTWARE <unibravo@gmail.com>, 2024
-# abc Def <hdogan1974@gmail.com>, 2024
-# Ozlem Cikrikci <ozlemc@eskayazilim.com.tr>, 2024
-# Melih Melik Sonmez, 2024
-# Ramiz Deniz Öner <deniz@denizoner.com>, 2024
-# Tugay Hatıl <tugayh@projetgrup.com>, 2024
-# Cem Uygur <cemuygur.beb@gmail.com>, 2024
-# Ahmet Altinisik <aaltinisik@altinkaya.com.tr>, 2024
-# Levent Karakaş <levent@mektup.at>, 2024
-# Umur Akın <umura@projetgrup.com>, 2024
-# Nadir Gazioglu <nadirgazioglu@gmail.com>, 2024
-# Tunç Sabah, 2024
-# İmat Yahya Çataklı <yahyacatakli@gmail.com>, 2024
-# Murat Kaplan <muratk@projetgrup.com>, 2024
-# Halil, 2024
-# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2024
-# Martin Trigaux, 2024
-# Ediz Duman <neps1192@gmail.com>, 2024
-# Deniz Guvener_Odoo <degu@odoo.com>, 2025
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Cem Uygur <cemuygur.beb@gmail.com>, 2022
+# İmat Yahya Çataklı <yahyacatakli@gmail.com>, 2022
+# Ramiz Deniz Öner <deniz@denizoner.com>, 2022
+# Murat Durmuş <muratd@projetgrup.com>, 2022
+# Tugay Hatıl <tugayh@projetgrup.com>, 2022
+# UNIBRAVO SOFTWARE <unibravo@gmail.com>, 2022
+# Ahmet Altinisik <aaltinisik@altinkaya.com.tr>, 2022
+# abc Def <hdogan1974@gmail.com>, 2022
+# Tunç Sabah, 2022
+# Buket Şeker <buket_skr@hotmail.com>, 2022
+# Ertuğrul Güreş <ertugrulg@projetgrup.com>, 2022
+# Umur Akın <umura@projetgrup.com>, 2022
+# Ozlem Cikrikci <ozlemc@eskayazilim.com.tr>, 2022
+# Ediz Duman <neps1192@gmail.com>, 2022
+# Levent Karakaş <levent@mektup.at>, 2022
+# Murat Kaplan <muratk@projetgrup.com>, 2022
+# Martin Trigaux, 2022
+# Nadir Gazioglu <nadirgazioglu@gmail.com>, 2022
+# Halil, 2023
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# DeepL <noreply-mt-deepl@weblate.org>, 2025.
+# Odoo Turkish Import <dyki+tr@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-20 18:37+0000\n"
-"PO-Revision-Date: 2025-11-25 09:48+0000\n"
+"POT-Creation-Date: 2026-04-10 18:38+0000\n"
+"PO-Revision-Date: 2026-08-06 18:41+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Turkish <https://translate.odoo.com/projects/odoo-18/lunch/tr/"
-">\n"
+"Language-Team: Turkish <https://translate.odoo.com/projects/odoo-19/lunch/"
+"tr/>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: lunch
 #: model_terms:lunch.product,description:lunch.product_temaki
@@ -66,8 +65,7 @@ msgstr "4 tane somonlu sushi, 6 tane somon maki, 4 tane somon sashimi"
 #. module: lunch
 #: model_terms:lunch.product,description:lunch.product_maki
 msgid "6 Maki Salmon - 6 Maki Tuna - 6 Maki Shrimp/Avocado"
-msgstr ""
-"6 tane somon maki, 6 ton balıklı Maki, 6 tane karides ve avokadolu maki"
+msgstr "6 tane somon maki, 6 ton balıklı Maki, 6 tane karides ve avokadolu maki"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_kanban
@@ -103,8 +101,8 @@ msgid ""
 "<i class=\"fa fa-money\" role=\"img\" aria-label=\"Amount\" title=\"Amount\"/"
 ">"
 msgstr ""
-"<i class=\"fa fa-money\" role=\"img\" aria-label=\"Amount\" title=\"Amount\"/"
-">"
+"<i class=\"fa fa-money\" role=\"img\" aria-label=\"Amount\" "
+"title=\"Amount\"/>"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_kanban
@@ -184,7 +182,7 @@ msgid ""
 "                    <td valign=\"top\" style=\"font-size: 13px;\">\n"
 "    <div>\n"
 "        <t t-set=\"lines\" t-value=\"ctx.get('lines', [])\"/>\n"
-"        <t t-set=\"order\" t-value=\"ctx.get('order')\"/>\n"
+"        <t t-set=\"order\" t-value=\"ctx.get('order', {})\"/>\n"
 "        <t t-set=\"currency\" t-"
 "value=\"user.env['res.currency'].browse(order.get('currency_id'))\"/>\n"
 "        <p>\n"
@@ -253,9 +251,9 @@ msgid ""
 "                    <td style=\"width: 100%; font-size: 13px; border-top: "
 "1px solid black;\"><strong>Total</strong></td>\n"
 "                    <td style=\"width: 100%; font-size: 13px; border-top: "
-"1px solid black;\" align=\"right\"><strong t-"
-"out=\"format_amount(order['amount_total'], currency) or ''\">$ 10.00</"
-"strong></td>\n"
+"1px solid black;\" align=\"right\"><strong t-out=\"order.get('amount_total') "
+"and format_amount(order['amount_total'], currency) or ''\">$ 10.00</strong></"
+"td>\n"
 "                </tr>\n"
 "            </tbody>\n"
 "        </table>\n"
@@ -314,8 +312,9 @@ msgid ""
 "style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; "
 "padding: 8px; border-collapse:separate;\">\n"
 "      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
-"        Powered by <a target=\"_blank\" href=\"https://www.odoo.com\" "
-"style=\"color: #875A7B;\">Odoo</a>\n"
+"        Powered by <a target=\"_blank\" href=\"https://www.odoo.com\" t-attf-"
+"style=\"color: {{user.company_id.email_secondary_color or '#875A7B'}};"
+"\">Odoo</a>\n"
 "      </td></tr>\n"
 "    </table>\n"
 "</td></tr>\n"
@@ -330,93 +329,93 @@ msgstr ""
 "style=\"padding: 16px; background-color: white; color: #454748; border-"
 "collapse:separate;\">\n"
 "<tbody>\n"
-"    <!-- BAŞLIK -->\n"
-"    <tr>\n"
+"    <!-- HEADER -->\n"
+"   <tr>\n"
 "        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"           <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
 "width=\"590\" style=\"min-width: 590px; background-color: white; padding: "
 "0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tr><td valign=\"middle\">\n"
 "                    <span style=\"font-size: 10px;\">Öğle Yemeği Siparişi</"
 "span><br/>\n"
-"                </td><td valign=\"middle\" align=\"right\" t-if=\"not "
+"               </td><td valign=\"middle\" align=\"right\" t-if=\"not "
 "user.company_id.uses_default_logo\">\n"
-"                    <img t-attf-src=\"/logo.png?"
-"company={{ user.company_id.id }}\" style=\"padding: 0px; margin: 0px; "
-"height: auto; width: 80px;\" t-att-alt=\"user.company_id.name\"/>\n"
+"                   <img t-attf-src=\"/logo.png?company={{ "
+"user.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; "
+"width: 80px;\" t-att-alt=\"user.company_id.name\"/>\n"
 "                </td></tr>\n"
 "                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
-"                  <hr width=\"100%\" style=\"background-"
-"color:rgb(204,204,204);border:medium none;clear:both;display:block;font-"
-"size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
-"                </td></tr>\n"
-"            </table>\n"
+"                  <hr width=\"100%\" style=\"background-color:rgb"
+"(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-"
+"height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+"               </td></tr>\n"
+"           </table>\n"
 "        </td>\n"
-"    </tr>\n"
-"    <!-- İÇERİK -->\n"
-"    <tr>\n"
+"   </tr>\n"
+"    <!-- CONTENT -->\n"
+"   <tr>\n"
 "        <td align=\"center\" style=\"min-width: 590px;\">\n"
-"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"           <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
 "width=\"590\" style=\"min-width: 590px; background-color: white; padding: "
 "0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tr>\n"
-"                    <td valign=\"top\" style=\"font-size: 13px;\">\n"
+"                   <td valign=\"top\" style=\"font-size: 13px;\">\n"
 "    <div>\n"
-"        <t t-set=\"lines\" t-value=\"ctx.get('lines', [])\"/>\n"
-"        <t t-set=\"order\" t-value=\"ctx.get('order')\"/>\n"
-"        <t t-set=\"currency\" t-"
-"value=\"user.env['res.currency'].browse(order.get('currency_id'))\"/>\n"
+"       <t t-set=\"lines\" t-value=\"ctx.get('lines', [])\"/>\n"
+"        <t t-set=\"order\" t-value=\"ctx.get('order', {})\"/>\n"
+"       <t t-set=\"currency\" t-value=\"user.env['res.currency'].browse"
+"(order.get('currency_id'))\"/>\n"
 "        <p>\n"
-"        Sayın <t t-out=\"order.get('supplier_name', '')\">Laurie Poiret</"
-"t>,\n"
-"        </p><p>\n"
-"        İşte <t t-out=\"order.get('company_name', '')\">LunchCompany</t>'nin "
-"bugünkü siparişleri:\n"
-"        </p>\n"
+"        Sayın <t t-out=\"order.get('supplier_name', '')\">Laurie Poiret</t>"
+",\n"
+"       </p><p>\n"
+"        İşte, bugün <t t-out=\"order.get('company_name', '')\">LunchCompany</"
+"t> için siparişler:\n"
+"       </p>\n"
 "\n"
 "        <t t-if=\"sites\">\n"
-"            <br/>\n"
+"           <br/>\n"
 "            <p>Konum</p>\n"
 "            <t t-foreach=\"site\" t-as=\"site\">\n"
 "                <p><t t-out=\"site['name'] or ''\"/> : <t t-"
 "out=\"site['address'] or ''\"/></p>\n"
-"            </t>\n"
+"           </t>\n"
 "            <br/>\n"
-"        </t>\n"
+"       </t>\n"
 "\n"
 "        <table>\n"
-"            <thead>\n"
+"           <thead>\n"
 "                <tr style=\"background-color:rgb(233,232,233);\">\n"
-"                    <th style=\"width: 100%; min-width: 96px; font-size: "
+"                   <th style=\"width: 100%; min-width: 96px; font-size: "
 "13px;\"><strong>Ürün</strong></th>\n"
-"                    <th style=\"width: 100%; min-width: 96px; font-size: "
+"                   <th style=\"width: 100%; min-width: 96px; font-size: "
 "13px;\"><strong>Yorumlar</strong></th>\n"
-"                    <th style=\"width: 100%; min-width: 96px; font-size: "
+"                   <th style=\"width: 100%; min-width: 96px; font-size: "
 "13px;\"><strong>Kişi</strong></th>\n"
-"                    <th style=\"width: 100%; min-width: 96px; font-size: "
+"                   <th style=\"width: 100%; min-width: 96px; font-size: "
 "13px;\"><strong>Site</strong></th>\n"
-"                    <th style=\"width: 100%; min-width: 96px; font-size: "
-"13px;\" align=\"center\"><strong>Adet</strong></th>\n"
-"                    <th style=\"width: 100%; min-width: 96px; font-size: "
-"13px;\" align=\"center\"><strong>Tutar</strong></th>\n"
-"                </tr>\n"
+"                   <th style=\"width: 100%; min-width: 96px; font-size: "
+"13px;\" align=\"center\"><strong>Miktar</strong></th>\n"
+"                   <th style=\"width: 100%; min-width: 96px; font-size: "
+"13px;\" align=\"center\"><strong>Fiyat</strong></th>\n"
+"               </tr>\n"
 "            </thead>\n"
-"            <tbody>\n"
+"           <tbody>\n"
 "                <tr t-foreach=\"lines\" t-as=\"line\">\n"
-"                    <td style=\"width: 100%; font-size: 13px;\" "
-"valign=\"top\" t-out=\"line['product'] or ''\">Somon sushi</td>\n"
+"                   <td style=\"width: 100%; font-size: 13px;\" "
+"valign=\"top\" t-out=\"line['product'] or ''\">Suşi somon</td>\n"
 "                    <td style=\"width: 100%; font-size: 13px;\" "
 "valign=\"top\">\n"
-"                    <t t-if=\"line['toppings']\">\n"
+"                   <t t-if=\"line['toppings']\">\n"
 "                        <t t-out=\"line['toppings'] or ''\">Soya sosu</t>\n"
 "                    </t>\n"
-"                    <t t-if=\"line['note']\">\n"
+"                   <t t-if=\"line['note']\">\n"
 "                        <div style=\"color: rgb(173,181,189);\" t-"
 "out=\"line['note'] or ''\">Wasabi ile.</div>\n"
 "                    </t>\n"
-"                    </td>\n"
+"                   </td>\n"
 "                    <td style=\"width: 100%; font-size: 13px;\" "
-"valign=\"top\" t-out=\"line['username'] or ''\">Etap</td>\n"
+"valign=\"top\" t-out=\"line['username'] or ''\">tur</td>\n"
 "                    <td style=\"width: 100%; font-size: 13px;\" "
 "valign=\"top\" t-out=\"line['site'] or ''\">Ofis 1</td>\n"
 "                    <td style=\"width: 100%; font-size: 13px;\" "
@@ -425,78 +424,83 @@ msgstr ""
 "valign=\"top\" align=\"right\" t-out=\"format_amount(line['price'], "
 "currency) or ''\">$ 1.00</td>\n"
 "                </tr>\n"
-"                <tr>\n"
+"               <tr>\n"
 "                    <td/>\n"
+"                   <td/>\n"
 "                    <td/>\n"
-"                    <td/>\n"
-"                    <td/>\n"
+"                   <td/>\n"
 "                    <td style=\"width: 100%; font-size: 13px; border-top: "
 "1px solid black;\"><strong>Toplam</strong></td>\n"
-"                    <td style=\"width: 100%; font-size: 13px; border-top: "
-"1px solid black;\" align=\"right\"><strong t-"
-"out=\"format_amount(order['amount_total'], currency) or ''\">$ 10.00</"
-"strong></td>\n"
-"                </tr>\n"
-"            </tbody>\n"
-"        </table>\n"
+"                   <td style=\"width: 100%; font-size: 13px; border-top: 1px "
+"solid black;\" align=\"right\"><strong t-out=\"order.get('amount_total') and "
+"format_amount(order['amount_total'], currency) or ''\">$ 10.00</strong></td>"
 "\n"
-"        <p>Herhangi bir sorunuz olması durumunda bizimle iletişime geçmekten "
+"               </tr>\n"
+"            </tbody>\n"
+"       </table>\n"
+"\n"
+"        <p>Herhangi bir sorunuz olursa bizimle iletişime geçmekten "
 "çekinmeyin.</p>\n"
 "    </div>\n"
-"                    </td>\n"
+"                   </td>\n"
 "                </tr>\n"
-"                <tr>\n"
+"               <tr>\n"
 "                    <td style=\"text-align:center;\">\n"
-"                        <hr width=\"100%\" style=\"background-"
-"color:rgb(204,204,204);border:medium none;clear:both;display:block;font-"
-"size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                       <hr width=\"100%\" style=\"background-color:rgb"
+"(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-"
+"height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
 "                    </td>\n"
-"                </tr>\n"
+"               </tr>\n"
 "            </table>\n"
-"        </td>\n"
+"       </td>\n"
 "    </tr>\n"
-"    <!-- ALT BAŞLIK -->\n"
+"   <!-- FOOTER -->\n"
 "    <tr>\n"
-"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"       <td align=\"center\" style=\"min-width: 590px;\">\n"
 "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
 "width=\"590\" style=\"min-width: 590px; background-color: white; font-size: "
 "11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
-"                <tr><td valign=\"middle\" align=\"left\">\n"
-"                    <t t-out=\"user.company_id.name or ''\">YourCompany</t>\n"
+"               <tr><td valign=\"middle\" align=\"left\">\n"
+"                   <t t-out=\"user.company_id.name or ''\">YourCompany</t>\n"
 "                </td></tr>\n"
-"                <tr><td valign=\"middle\" align=\"left\" style=\"opacity: "
+"                <tr> <td valign=\"middle\" align=\"left\" style=\"opacity: "
 "0.7;\">\n"
-"                    <t t-out=\"user.company_id.phone or ''\">+1 "
-"650-123-4567</t>\n"
+"                    <t t-out=\"user.company_id.phone or ''\"> +1 650-123-"
+"4567</t>\n"
 "                    <t t-if=\"user.company_id.phone and "
 "(user.company_id.email or user.company_id.website)\">|</t>\n"
 "                    <t t-if=\"user.company_id.email\">\n"
-"                        <a t-attf-href=\"'mailto:%s' % "
-"{{ user.company_id.email }}\" style=\"text-decoration:none; color: "
-"#454748;\" t-out=\"user.company_id.email or ''\">info@yourcompany.com</a>\n"
+"                        <a t-attf-href=\"'mailto:%s' % {{ "
+"user.company_id.email }}\" style=\"text-decoration:none; color: #454748;\" t-"
+"out=\"user.company_id.email or ''\">% {{ user.company_id.email }}\" "
+"style=\"text-decoration:none; color: #454748;\" t-"
+"out=\"user.company_id.email or ''\">info@yourcompany.com</a>\n"
 "                    </t>\n"
-"                    <t t-if=\"user.company_id.email and "
+"                   <t t-if=\"user.company_id.email and "
 "user.company_id.website\">|</t>\n"
 "                    <t t-if=\"user.company_id.website\">\n"
 "                        <a t-attf-href=\"'%s' % {{ user.company_id.website }}"
 "\" style=\"text-decoration:none; color: #454748;\" t-"
+"out=\"user.company_id.website or ''\">% {{ user.company_id.website }}\" "
+"style=\"text-decoration:none; color: #454748;\" t-"
 "out=\"user.company_id.website or ''\">http://www.example.com</a>\n"
 "                    </t>\n"
-"                </td></tr>\n"
-"            </table>\n"
+"               </td></tr>\n"
+"           </table>\n"
 "        </td>\n"
-"    </tr>\n"
+"   </tr>\n"
 "</tbody>\n"
 "</table>\n"
 "</td></tr>\n"
-"<!-- DESTEKLEYEN -->\n"
+"<!-- POWERED BY -->\n"
 "<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
-"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" "
+"   <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" "
 "style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; "
 "padding: 8px; border-collapse:separate;\">\n"
 "      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
-"        <a target=\"_blank\" href=\"https://www.odoo.com\" style=\"color: "
-"#875A7B;\">Odoo</a> tarafından desteklenmektedir\n"
+"        Tarafından desteklenmektedir <a target=\"_blank\" href=\"https://"
+"www.odoo.com\" t-attf-style=\"color: {{user.company_id.email_secondary_color "
+"or '#875A7B'}};\">Odoo</a>\n"
 "      </td></tr>\n"
 "    </table>\n"
 "</td></tr>\n"
@@ -643,6 +647,12 @@ msgid "Availability"
 msgstr "Müsaitlik"
 
 #. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Available Balance"
+msgstr "Mevcut Bakiye"
+
+#. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__available_on_date
 msgid "Available On Date"
 msgstr "Mevcut Tarih"
@@ -672,6 +682,14 @@ msgstr "Mevcut Malzemeler 3"
 #: model:lunch.product,name:lunch.product_bacon_0
 msgid "Bacon"
 msgstr "Domuz Pastırması"
+
+#. module: lunch
+#: model:res.groups,comment:lunch.group_lunch_manager
+msgid ""
+"Be able to create new products, cashmoves and to confirm or cancel orders."
+msgstr ""
+"Yeni ürünler oluşturabilir, para transferi yapabilir ve siparişleri "
+"onaylayabilir veya iptal edebilir."
 
 #. module: lunch
 #: model_terms:lunch.product,description:lunch.product_bacon
@@ -789,6 +807,12 @@ msgid "City"
 msgstr "Semt/İlçe"
 
 #. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Clear Order"
+msgstr "Açık Sipariş"
+
+#. module: lunch
 #: model_terms:ir.actions.act_window,help:lunch.lunch_order_action_control_suppliers
 msgid ""
 "Click on the <span class=\"fa fa-phone text-success\" title=\"Order "
@@ -807,6 +831,12 @@ msgstr ""
 "            Siparişin mevcut olmadığını duyurmak için <span class=\"fa fa-"
 "times-circle text-danger\" title=\"Cancel button\"></span> kırmızı X'e "
 "tıklayın."
+
+#. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Close"
+msgstr "Kapat"
 
 #. module: lunch
 #: model:lunch.product,name:lunch.product_club
@@ -952,6 +982,12 @@ msgid "Date"
 msgstr "Tarih"
 
 #. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Decrease quantity"
+msgstr "Miktarı azaltın"
+
+#. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__delivery
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__delivery__delivery
 msgid "Delivery"
@@ -990,6 +1026,9 @@ msgstr "Ekle Düğmesini Göster"
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__display_name
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__display_name
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__display_name
+#: model:ir.model.fields,field_description:lunch.field_res_company__display_name
+#: model:ir.model.fields,field_description:lunch.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:lunch.field_res_users__display_name
 msgid "Display Name"
 msgstr "İsim Göster"
 
@@ -1002,12 +1041,6 @@ msgstr "Ekran Yeniden Sipariş Düğmesi"
 #: model:lunch.product.category,name:lunch.categ_drinks
 msgid "Drinks"
 msgstr "İçecekler"
-
-#. module: lunch
-#. odoo-javascript
-#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
-msgid "Edit order"
-msgstr "Siparişi Düzenle"
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__email
@@ -1148,13 +1181,6 @@ msgid "Gouda Cheese"
 msgstr "Gouda peyniri"
 
 #. module: lunch
-#: model_terms:ir.ui.view,arch_db:lunch.lunch_cashmove_report_view_search_2
-#: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
-#: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_search
-msgid "Group By"
-msgstr "Grupla"
-
-#. module: lunch
 #: model_terms:lunch.product,description:lunch.product_club
 #: model_terms:lunch.product,description:lunch.product_club_0
 msgid "Ham, Cheese, Vegetables"
@@ -1164,16 +1190,6 @@ msgstr "Domuz eti, peynir, sebze"
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__has_message
 msgid "Has Message"
 msgstr "Mesaj Var"
-
-#. module: lunch
-#: model:ir.module.category,description:lunch.module_lunch_category
-msgid ""
-"Helps you handle your lunch needs, if you are a manager you will be able to "
-"create new products, cashmoves and to confirm or cancel orders."
-msgstr ""
-"Yemek gereksinimlerinizi yönetmenize yardım eder, bir yöneticiyseniz yeni "
-"ürünler, nakit hareketleri oluşturabilir ve siparişleri onaylayabilir ya da "
-"iptal edebilirsiniz."
 
 #. module: lunch
 #: model_terms:ir.actions.act_window,help:lunch.lunch_product_category_action
@@ -1212,6 +1228,9 @@ msgstr ""
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__id
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__id
 #: model:ir.model.fields,field_description:lunch.field_lunch_topping__id
+#: model:ir.model.fields,field_description:lunch.field_res_company__id
+#: model:ir.model.fields,field_description:lunch.field_res_config_settings__id
+#: model:ir.model.fields,field_description:lunch.field_res_users__id
 msgid "ID"
 msgstr "ID"
 
@@ -1270,6 +1289,12 @@ msgstr "Görsel 256"
 #: model:ir.model.fields,field_description:lunch.field_lunch_product_category__image_512
 msgid "Image 512"
 msgstr "Görsel 512"
+
+#. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Increase quantity"
+msgstr "Miktarı artırın"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_form
@@ -1347,8 +1372,8 @@ msgid "Locations"
 msgstr "Konumlar"
 
 #. module: lunch
-#: model:ir.module.category,name:lunch.module_lunch_category
 #: model:ir.ui.menu,name:lunch.menu_lunch
+#: model:res.groups.privilege,name:lunch.res_groups_privilege_lunch
 #: model_terms:ir.ui.view,arch_db:lunch.res_config_settings_view_form
 msgid "Lunch"
 msgstr "Öğle Yemeği"
@@ -1469,32 +1494,32 @@ msgid "Lunch: Supplier Order"
 msgstr "Öğle Yemeği: Tedarikçi Siparişi"
 
 #. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_alert_cron_sa_229
+#: model:ir.actions.server,name:lunch.lunch_alert_cron_sa_231
 msgid "Lunch: alert chat notification (Alert for Office 3)"
 msgstr "Öğle yemeği: uyarı sohbet bildirimi (Office 3 için uyarı)"
 
 #. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_230
+#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_232
 msgid "Lunch: send automatic email to Coin gourmand"
 msgstr "Öğle yemeği: Coin gurmand'a otomatik e-posta gönderin"
 
 #. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_225
+#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_227
 msgid "Lunch: send automatic email to Lunch Supplier"
 msgstr "Öğle yemeği: Öğle Yemeği Tedarikçisine otomatik e-posta gönderin"
 
 #. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_231
+#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_233
 msgid "Lunch: send automatic email to Pizza Inn"
 msgstr "Öğle yemeği: Pizza Inn'e otomatik e-posta gönderin"
 
 #. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_233
+#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_235
 msgid "Lunch: send automatic email to Sushi Shop"
 msgstr "Öğle yemeği: Sushi Shop'a otomatik e-posta gönderin"
 
 #. module: lunch
-#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_232
+#: model:ir.actions.server,name:lunch.lunch_supplier_cron_sa_234
 msgid "Lunch: send automatic email to The Corner"
 msgstr "Öğle yemeği: The Corner'a otomatik e-posta gönderin"
 
@@ -1697,6 +1722,12 @@ msgid "Nothing to order today"
 msgstr "Bugün sipariş edilecek bir şey yok"
 
 #. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Nothing to order, add some meals to begin."
+msgstr "Sipariş verilecek bir şey yok, başlamak için birkaç yemek ekleyin."
+
+#. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__notification_moment
 msgid "Notification Moment"
 msgstr "Bildirim Anı"
@@ -1735,6 +1766,17 @@ msgstr "İşlem gerektiren mesaj sayısı"
 #: model:ir.model.fields,help:lunch.field_lunch_supplier__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr "Teslimat hatası olan mesaj adedi"
+
+#. module: lunch
+#. odoo-python
+#: code:addons/lunch/models/lunch_order.py:0
+msgid ""
+"Oh no! You don’t have enough money in your wallet to order your selected "
+"lunch! Contact your lunch manager to add some money to your wallet."
+msgstr ""
+"Olamaz! Seçtiğiniz öğle yemeğini sipariş etmek için cüzdanınızda yeterli "
+"para yok! Cüzdanınıza biraz para eklemek için öğle yemeği yöneticinizle "
+"iletişime geçin."
 
 #. module: lunch
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__topping_quantity_1__1_more
@@ -1800,8 +1842,8 @@ msgstr "Siparişler"
 
 #. module: lunch
 #: model:mail.template,subject:lunch.lunch_order_mail_supplier
-msgid "Orders for {{ ctx['order']['company_name'] }}"
-msgstr "{{ ctx['order']['company_name'] }} için siparişler"
+msgid "Orders for {{ ctx.get('order', {}).get('company_name') }}"
+msgstr "Siparişler için {{ ctx.get('order', {}).get('company_name') }}"
 
 #. module: lunch
 #: model_terms:ir.ui.view,arch_db:lunch.res_config_settings_view_form
@@ -1813,6 +1855,12 @@ msgstr "Fazla Çekim"
 #: model:ir.model.fields.selection,name:lunch.selection__lunch_supplier__moment__pm
 msgid "PM"
 msgstr "PM"
+
+#. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "Passed orders"
+msgstr "İletilen siparişler"
 
 #. module: lunch
 #: model:lunch.product.category,name:lunch.categ_pasta
@@ -2267,7 +2315,7 @@ msgstr "Bugün mevcut bir ürün yok"
 #. module: lunch
 #: model:ir.model.fields,help:lunch.field_lunch_supplier__recurrency_end_date
 msgid "This field is used in order to "
-msgstr "Bu alan siparişte kullanılır"
+msgstr "Bu alan siparişte kullanılır "
 
 #. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_order__available_today
@@ -2326,8 +2374,6 @@ msgstr ""
 "bazı ürünleri yapılandırdığınızı kontrol edin"
 
 #. module: lunch
-#. odoo-javascript
-#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_search
 msgid "Today"
 msgstr "Bugün"
@@ -2467,6 +2513,14 @@ msgid "Vendors"
 msgstr "Tedarikçiler"
 
 #. module: lunch
+#: model_terms:ir.ui.view,arch_db:lunch.lunch_location_form_view
+#: model_terms:ir.ui.view,arch_db:lunch.lunch_product_category_view_form
+#: model_terms:ir.ui.view,arch_db:lunch.lunch_product_view_form
+#: model_terms:ir.ui.view,arch_db:lunch.lunch_supplier_view_form
+msgid "Visible to all"
+msgstr "Herkes tarafından görülebilir"
+
+#. module: lunch
 #: model:ir.model.fields,field_description:lunch.field_lunch_alert__wed
 #: model:ir.model.fields,field_description:lunch.field_lunch_supplier__wed
 msgid "Wed"
@@ -2502,12 +2556,6 @@ msgstr "En az bir %s sipariş etmelisiniz"
 #. module: lunch
 #. odoo-javascript
 #: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
-msgid "Your Account"
-msgstr "Hesabınız"
-
-#. module: lunch
-#. odoo-javascript
-#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
 msgid "Your Cart ("
 msgstr "Eşyaları sepetinize bıraktınız!"
 
@@ -2524,8 +2572,6 @@ msgid "Your Order"
 msgstr "Siparişiniz"
 
 #. module: lunch
-#. odoo-python
-#: code:addons/lunch/models/lunch_order.py:0
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_order_view_form
 msgid ""
 "Your wallet does not contain enough money to order that. To add some money "
@@ -2592,3 +2638,44 @@ msgstr ":"
 #: model_terms:ir.ui.view,arch_db:lunch.lunch_alert_view_kanban
 msgid "to"
 msgstr "den"
+
+#. module: lunch
+#. odoo-javascript
+#: code:addons/lunch/static/src/components/lunch_dashboard.xml:0
+msgid "x"
+msgstr ""
+
+#~ msgid "Edit order"
+#~ msgstr "Siparişi Düzenle"
+
+#~ msgid "Group By"
+#~ msgstr "Grupla"
+
+#~ msgid ""
+#~ "Helps you handle your lunch needs, if you are a manager you will be able "
+#~ "to create new products, cashmoves and to confirm or cancel orders."
+#~ msgstr ""
+#~ "Yemek gereksinimlerinizi yönetmenize yardım eder, bir yöneticiyseniz yeni "
+#~ "ürünler, nakit hareketleri oluşturabilir ve siparişleri onaylayabilir ya "
+#~ "da iptal edebilirsiniz."
+
+#~ msgid "Number of messages which requires an action"
+#~ msgstr "Eylem gerektiren mesaj adedi"
+
+#~ msgid "Order lines Tree"
+#~ msgstr "Sipariş kalemleri Ağacı"
+
+#~ msgid "Orders for {{ ctx['order']['company_name'] }}"
+#~ msgstr "{{ ctx['order']['company_name'] }} için siparişler"
+
+#~ msgid "Products Tree"
+#~ msgstr "Ürün Ağacı"
+
+#~ msgid "Save"
+#~ msgstr "Kaydet"
+
+#~ msgid "Your Account"
+#~ msgstr "Hesabınız"
+
+#~ msgid "cashmove tree"
+#~ msgstr "nakit hareketi ağacı"

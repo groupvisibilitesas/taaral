@@ -1,12 +1,10 @@
-/** @odoo-module **/
-
 import { registry } from "@web/core/registry";
 
 registry.category("web_tour.tours").add('website_sale_stock_multilang', {
     url: '/fr/shop?search=unavailable',
     steps: () => [{
         content: "Open unavailable product page",
-        trigger: 'a[content="unavailable_product"]',
+        trigger: 'a:contains("unavailable_product")',
         run: "click",
         expectUnloadPage: true,
     }, {

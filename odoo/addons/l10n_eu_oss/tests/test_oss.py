@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import Command
+from odoo.exceptions import RedirectWarning
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.l10n_eu_oss.models.eu_tag_map import EU_TAG_MAP
 from odoo.tests import tagged
@@ -60,9 +61,7 @@ class TestOSSBelgium(AccountTestInvoicingCommon):
                     .filtered(lambda x: x.repartition_type == 'base')\
                     .tag_ids
 
-                expected_tag_id = self.env.ref(report_expression_xml_id)\
-                    ._get_matching_tags()\
-                    .filtered(lambda t: not t.tax_negate)
+                expected_tag_id = self.env.ref(report_expression_xml_id)._get_matching_tags()
 
                 self.assertIn(expected_tag_id, oss_tag_id, f"{doc_type} tag from Belgian CoA not correctly linked")
 
@@ -75,11 +74,11 @@ class TestOSSBelgium(AccountTestInvoicingCommon):
         # get the fiscal position for another eu country
         another_eu_country = (self.env.ref('base.europe').country_ids - self.company_data['company'].country_id)[0]
         fpos = self.env['account.fiscal.position'].search([('country_id', '=', another_eu_country.id)], limit=1)
-        original_name = fpos.tax_ids.tax_dest_id[0].name
+        original_name = fpos.tax_ids[0].name
         fpos.unlink()
         self.sub_child_company._map_eu_taxes()
         fpos = self.env['account.fiscal.position'].search([('country_id', '=', another_eu_country.id)], limit=1)
-        new_name = fpos.tax_ids.tax_dest_id[0].name
+        new_name = fpos.tax_ids[0].name
         self.assertEqual(new_name, f"{original_name} (Copy)", "The tax name should be the same as the original one with (Copy) appended to it.")
 
 
@@ -109,9 +108,7 @@ class TestOSSSpain(AccountTestInvoicingCommon):
                     .filtered(lambda x: x.repartition_type == 'base')\
                     .tag_ids
 
-                expected_tag_id = self.env.ref(tag_xml_id)\
-                    ._get_matching_tags()\
-                    .filtered(lambda t: not t.tax_negate)
+                expected_tag_id = self.env.ref(tag_xml_id)._get_matching_tags()
 
                 self.assertIn(expected_tag_id, oss_tag_id, f"{doc_type} tag from Spanish CoA not correctly linked")
 
@@ -202,3 +199,17 @@ class TestOSSMap(AccountTestInvoicingCommon):
                 with self.subTest(chart_template=chart_template, tax_report_line_xml_id=tax_report_line_xml_id):
                     tag = self.env.ref(tax_report_line_xml_id, raise_if_not_found=False)
                     self.assertIsNotNone(tag, f"The following xml_id is incorrect in EU_TAG_MAP.py: {tax_report_line_xml_id}")
+
+    def test_oss_missing_account_in_tax_groups(self):
+        """ Checks that a warning is thrown in case of missing payable
+        and receivable accounts from all company's tax groups instead
+        of traceback error.
+        """
+        company = self.company_data['company']
+        TaxGroup = self.env['account.tax.group']
+        for tax_group in TaxGroup.search(TaxGroup._check_company_domain(company)):
+            tax_group.tax_payable_account_id = False
+            tax_group.tax_receivable_account_id = False
+
+        with self.assertRaises(RedirectWarning):
+            company._map_eu_taxes()

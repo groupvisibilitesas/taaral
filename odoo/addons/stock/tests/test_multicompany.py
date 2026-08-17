@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo import Command
 
-from odoo.osv import expression
+from odoo.fields import Domain
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import Form, TransactionCase
 
@@ -30,7 +30,7 @@ class TestMultiCompany(TransactionCase):
         cls.user_a = cls.env['res.users'].create({
             'name': 'user company a with access to company b',
             'login': 'user a',
-            'groups_id': [(6, 0, [
+            'group_ids': [(6, 0, [
                 group_user.id,
                 group_stock_manager.id,
             ])],
@@ -40,7 +40,7 @@ class TestMultiCompany(TransactionCase):
         cls.user_b = cls.env['res.users'].create({
             'name': 'user company b with access to company a',
             'login': 'user b',
-            'groups_id': [(6, 0, [
+            'group_ids': [(6, 0, [
                 group_user.id,
                 group_stock_manager.id,
             ])],
@@ -201,7 +201,6 @@ class TestMultiCompany(TransactionCase):
         })
         self.assertEqual(picking.company_id, self.company_a)
         move1 = self.env['stock.move'].create({
-            'name': 'test_lot_2',
             'picking_type_id': picking.picking_type_id.id,
             'location_id': picking.location_id.id,
             'location_dest_id': picking.location_dest_id.id,
@@ -259,7 +258,7 @@ class TestMultiCompany(TransactionCase):
         """As a user of company A, create an orderpoint for company B. Check itsn't possible to
         use a warehouse of companny A"""
         # Required for `warehouse_id` and `location_id` to be visible in the view
-        self.user_a.groups_id += self.env.ref("stock.group_stock_multi_locations")
+        self.user_a.group_ids += self.env.ref("stock.group_stock_multi_locations")
         product = self.env['product.product'].create({
             'is_storable': True,
             'name': 'shared product',
@@ -280,7 +279,7 @@ class TestMultiCompany(TransactionCase):
         orderpoint to Company B.
         """
         # Required for `warehouse_id` and `location_id` to be visible in the view
-        self.user_a.groups_id += self.env.ref("stock.group_stock_multi_locations")
+        self.user_a.group_ids += self.env.ref("stock.group_stock_multi_locations")
         product = self.env['product.product'].create({
             'is_storable': True,
             'name': 'shared product',
@@ -324,6 +323,7 @@ class TestMultiCompany(TransactionCase):
         depending of its `company_id`."""
         # Creates a new product with no company_id and set a responsible.
         # The product must be created as there is no company on the product.
+        self.user_a.group_ids += self.env.ref("product.group_product_manager")
         product_form = Form(self.env['product.template'].with_user(self.user_a))
         product_form.name = 'Paramite Pie'
         product_form.responsible_id = self.user_b
@@ -388,7 +388,6 @@ class TestMultiCompany(TransactionCase):
             'location_dest_id': self.stock_location_a.id,
             'product_id': product.id,
             'product_uom': product.uom_id.id,
-            'name': 'stock_move',
         })
         with self.assertRaises(UserError):
             move._action_confirm()
@@ -411,7 +410,6 @@ class TestMultiCompany(TransactionCase):
             'location_dest_id': self.stock_location_b.id,
             'product_id': product.id,
             'product_uom': product.uom_id.id,
-            'name': 'stock_move',
         })
         with self.assertRaises(UserError):
             move._action_confirm()
@@ -435,7 +433,6 @@ class TestMultiCompany(TransactionCase):
             'location_dest_id': self.stock_location_a.id,
             'product_id': product.id,
             'product_uom': product.uom_id.id,
-            'name': 'stock_move',
         })
         with self.assertRaises(UserError):
             move._action_confirm()
@@ -488,7 +485,6 @@ class TestMultiCompany(TransactionCase):
 
         move_from_supplier = self.env['stock.move'].with_user(self.user_a).create({
             'company_id': self.company_a.id,
-            'name': 'test_from_supplier',
             'location_id': supplier_location.id,
             'location_dest_id': self.stock_location_a.id,
             'product_id': product_lot.id,
@@ -506,7 +502,6 @@ class TestMultiCompany(TransactionCase):
 
         move_to_transit = self.env['stock.move'].create({
             'company_id': self.company_a.id,
-            'name': 'test_to_transit',
             'location_id': self.stock_location_a.id,
             'location_dest_id': intercom_location.id,
             'product_id': product_lot.id,
@@ -564,7 +559,6 @@ class TestMultiCompany(TransactionCase):
 
         move_sup_to_whb = self.env['stock.move'].create({
             'company_id': self.company_b.id,
-            'name': 'from_supplier_to_whb',
             'location_id': supplier_location.id,
             'location_dest_id': self.warehouse_b.lot_stock_id.id,
             'product_id': product_lot.id,
@@ -589,7 +583,6 @@ class TestMultiCompany(TransactionCase):
             'state': 'draft',
         })
         move_wha_to_cus = self.env['stock.move'].create({
-            'name': "WH_A to Customer",
             'product_id': product_lot.id,
             'product_uom_qty': 1,
             'product_uom': product_lot.uom_id.id,
@@ -718,7 +711,7 @@ class TestMultiCompany(TransactionCase):
         inter-company transit location should unpack it so it doesn't carry over to the
         receiving company.
         """
-        self.user_a.groups_id += self.env.ref('stock.group_tracking_lot')
+        self.user_a.group_ids += self.env.ref('stock.group_tracking_lot')
         self.env['ir.config_parameter'].sudo().set_param('stock.intercompany_auto_unpack', True)
         intercom_location = self.env.ref('stock.stock_location_inter_company')
         intercom_location.write({'active': True})
@@ -727,7 +720,7 @@ class TestMultiCompany(TransactionCase):
             'name': 'product',
             'is_storable': True,
         })
-        package = self.env['stock.quant.package'].create({'name': 'Transfer Package'})
+        package = self.env['stock.package'].create({'name': 'Transfer Package'})
         self.env['stock.quant']._update_available_quantity(product, self.stock_location_a, 1, package_id=package)
 
         picking = self.env['stock.picking'].with_user(self.user_a).create({
@@ -738,7 +731,6 @@ class TestMultiCompany(TransactionCase):
             'location_dest_id': intercom_location.id,
         })
         self.env['stock.move'].create({
-            'name': 'test_intercompany_unpack',
             'picking_id': picking.id,
             'company_id': self.company_a.id,
             'product_id': product.id,
@@ -780,7 +772,6 @@ class TestMultiCompany(TransactionCase):
             'location_id': supplier_location.id,
             'location_dest_id': self.stock_location_a.id,
             'move_ids': [Command.create({
-                'name': product.name,
                 'product_id': product.id,
                 'location_id': supplier_location.id,
                 'location_dest_id': self.stock_location_a.id,
@@ -790,8 +781,10 @@ class TestMultiCompany(TransactionCase):
         receipt.button_validate()
 
         base_domain = [('product_id', '=', product.id)]
-        domain_a = expression.AND([base_domain, self.env['stock.quant'].with_company(self.company_a)._get_quants_action()['domain']])
-        domain_b = expression.AND([base_domain, self.env['stock.quant'].with_company(self.company_b)._get_quants_action()['domain']])
+        extra_domain_a = self.env['stock.quant'].with_company(self.company_a)._get_quants_action().get('domain') or []
+        extra_domain_b = self.env['stock.quant'].with_company(self.company_b)._get_quants_action().get('domain') or []
+        domain_a = Domain.AND([base_domain, extra_domain_a])
+        domain_b = Domain.AND([base_domain, extra_domain_b])
         quants_company_a = self.env['stock.quant'].with_company(self.company_a).search(domain_a)
         quants_company_b = self.env['stock.quant'].with_company(self.company_b).search(domain_b)
         self.assertTrue(quants_company_a)
@@ -814,6 +807,6 @@ class TestMultiCompany(TransactionCase):
             'inventory_quantity': 10,
         }])
         base_domain = [('product_id', '=', product.id)]
-        domain = expression.AND([base_domain, self.env['stock.quant'].with_company(self.branch_company_a)._get_quants_action()['domain']])
+        domain = Domain.AND([base_domain, self.env['stock.quant'].with_company(self.branch_company_a)._get_quants_action()['domain']])
         quants_branch = self.env['stock.quant'].with_company(self.branch_company_a).search(domain)
         self.assertTrue(quants_branch)

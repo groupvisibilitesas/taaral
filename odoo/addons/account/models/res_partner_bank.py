@@ -5,8 +5,8 @@ from collections import defaultdict
 import werkzeug
 import werkzeug.exceptions
 from odoo import _, api, fields, models, SUPERUSER_ID, tools
-from odoo.fields import SQL
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import SQL
 from odoo.tools.image import image_data_uri
 
 
@@ -39,6 +39,7 @@ class ResPartnerBank(models.Model):
     active = fields.Boolean(tracking=True)
     acc_number = fields.Char(tracking=True)
     acc_holder_name = fields.Char(tracking=True)
+    clearing_number = fields.Char(tracking=True)
     partner_id = fields.Many2one(tracking=True)
     user_has_group_validate_bank_account = fields.Boolean(compute='_compute_user_has_group_validate_bank_account')
     allow_out_payment = fields.Boolean(
@@ -57,7 +58,6 @@ class ResPartnerBank(models.Model):
             if len(bank.journal_id) > 1:
                 raise ValidationError(_('A bank account can belong to only one journal.'))
 
-    @api.constrains('allow_out_payment')
     def _check_allow_out_payment(self):
         """ Block enabling the setting, but it can be set to false without the group. (For example, at creation) """
         for bank in self:
@@ -87,7 +87,9 @@ class ResPartnerBank(models.Model):
             ids=self.ids,
         )))
         for bank in self:
-            bank.duplicate_bank_partner_ids = self.env['res.partner'].browse(id2duplicates.get(bank._origin.id))
+            duplicate_record = id2duplicates.get(bank._origin.id) or []
+            duplicate_record = [x for x in duplicate_record if x]
+            bank.duplicate_bank_partner_ids = self.env['res.partner'].browse(duplicate_record) if duplicate_record else False
 
     @api.depends('partner_id.country_id', 'sanitized_acc_number', 'allow_out_payment', 'acc_type')
     def _compute_display_account_warning(self):
@@ -169,8 +171,7 @@ class ResPartnerBank(models.Model):
                     }
 
             if not silent_errors:
-                error_header = _("The following error prevented '%s' QR-code to be generated though it was detected as eligible: ", candidate_name)
-                raise UserError(error_header + error_message)
+                raise UserError(self.env._("The following error prevented '%(candidate)s' QR-code to be generated though it was detected as eligible: ", candidate=candidate_name) + error_message)
 
         return None
 
@@ -332,7 +333,7 @@ class ResPartnerBank(models.Model):
             should_allow_changes = True  # If we were on a non-trusted account, we will allow to change (setting/... one last time before trusting)
         else:
             # If we were on a trusted account, we only allow changes if the account is moving to untrusted.
-            should_allow_changes = ('allow_out_payment' in vals and vals['allow_out_payment'] is False)
+            should_allow_changes = self.env.su or ('allow_out_payment' in vals and vals['allow_out_payment'] is False)
 
         lock_fields = {'acc_number', 'sanitized_acc_number', 'partner_id', 'acc_type'}
         if not should_allow_changes and any(
@@ -349,6 +350,10 @@ class ResPartnerBank(models.Model):
             raise UserError(_("You do not have the rights to trust or un-trust accounts."))
 
         res = super().write(vals)
+
+        # Check
+        if "allow_out_payment" in vals:
+            self._check_allow_out_payment()
 
         # Log changes to move lines on each move
         for account, initial_values in account_initial_values.items():
@@ -367,15 +372,16 @@ class ResPartnerBank(models.Model):
             account.partner_id._message_log(body=msg)
         return super().unlink()
 
-    def default_get(self, fields_list):
-        if 'acc_number' not in fields_list:
-            return super().default_get(fields_list)
+    @api.model
+    def default_get(self, fields):
+        if 'acc_number' not in fields:
+            return super().default_get(fields)
 
         # When create & edit, `name` could be used to pass (in the context) the
         # value input by the user. However, we want to set the default value of
         # `acc_number` variable instead.
-        default_acc_number = self._context.get('default_acc_number', False) or self._context.get('default_name', False)
-        return super(ResPartnerBank, self.with_context(default_acc_number=default_acc_number)).default_get(fields_list)
+        default_acc_number = self.env.context.get('default_acc_number', False) or self.env.context.get('default_name', False)
+        return super(ResPartnerBank, self.with_context(default_acc_number=default_acc_number)).default_get(fields)
 
     @api.depends('allow_out_payment', 'acc_number', 'bank_id')
     @api.depends_context('display_account_trust')

@@ -18,7 +18,7 @@ class AccountMove(models.Model):
         help="Jordan: technical field to determine if this invoice is eligible to be e-invoiced.",
     )
     l10n_jo_edi_state = fields.Selection(
-        selection=[('to_send', 'To Send'), ('sent', 'Sent')],
+        selection=[('to_send', 'To Send'), ('sent', 'Sent'), ('demo', 'Sent (Demo)')],
         string="JoFotara State",
         tracking=True,
         copy=False)
@@ -49,6 +49,22 @@ class AccountMove(models.Model):
         help="Jordan: e-invoice XML.",
     )
     reversed_entry_id = fields.Many2one(tracking=True)
+    l10n_jo_edi_invoice_type = fields.Selection(
+        selection=[
+            ('local', 'Local'),
+            ('export', 'Export'),
+            ('development', 'Development Area'),
+            ('transit', 'Transit'),
+            ('foreign', 'Foreign Trade'),
+            ('freezone', 'Free Zone Transfer'),
+        ],
+        string="Invoice Type",
+        precompute=True,
+        compute='_compute_l10n_jo_edi_invoice_type',
+        readonly=False, store=True,
+        tracking=True,
+        help="Invoice Types as per the Income and Sales Tax Department for JoFotara",
+    )
 
     def _auto_init(self):
         if not column_exists(self.env.cr, 'account_move', 'l10n_jo_edi_uuid'):
@@ -84,6 +100,31 @@ class AccountMove(models.Model):
             else:
                 invoice.l10n_jo_edi_computed_xml = False
 
+    @api.depends('partner_id.country_code')
+    def _compute_l10n_jo_edi_invoice_type(self):
+        for move in self.filtered(lambda m: m.l10n_jo_edi_is_needed and m.l10n_jo_edi_invoice_type != 'development'):
+            country_code = move.commercial_partner_id.country_code
+            if country_code == 'JO':
+                move.l10n_jo_edi_invoice_type = 'local'
+            elif country_code:
+                move.l10n_jo_edi_invoice_type = 'export'
+            else:
+                move.l10n_jo_edi_invoice_type = False
+
+    @api.depends('partner_id', 'company_id')
+    def _compute_preferred_payment_method_line_id(self):
+        super()._compute_preferred_payment_method_line_id()
+
+        for move in self.filtered(lambda m: m.partner_id and m.l10n_jo_edi_is_needed):
+            expected_type = 'bank' if move.partner_id.is_company or move.partner_id.parent_id else 'cash'
+            journal = self.env['account.journal'].search([
+                ('type', '=', expected_type),
+                ('company_id', '=', move.company_id.id),
+                ('inbound_payment_method_line_ids', '!=', False),
+            ], limit=1)
+            if journal and (payment_method_line := journal.inbound_payment_method_line_ids[0]):
+                move.preferred_payment_method_line_id = payment_method_line
+
     def download_l10n_jo_edi_computed_xml(self):
         if error_message := self._l10n_jo_validate_config() or self._l10n_jo_validate_fields():
             raise ValidationError(_("The following errors have to be fixed in order to create an XML:\n") + error_message)
@@ -101,6 +142,7 @@ class AccountMove(models.Model):
         self.ensure_one()
         encoded_params = url_encode({
             'barcode_type': 'QR',
+            'quiet': 0,
             'value': self.l10n_jo_edi_qr,
             'width': 200,
             'height': 200,
@@ -112,12 +154,17 @@ class AccountMove(models.Model):
         return self.company_id.l10n_jo_edi_taxpayer_type == 'sales' and self.move_type == 'out_refund'
 
     def _get_invoice_scope_code(self):
-        "Invoices in this module are always local invoices"
-        return '0'
+        return {
+            'local': '0',
+            'export': '1',
+            'development': '2',
+            'transit': '3',
+            'foreign': '4',
+            'freezone': '5',
+        }.get(self.l10n_jo_edi_invoice_type, '0')
 
     def _get_invoice_payment_method_code(self):
-        "Invoices in this module are always receivable invoices"
-        return '2'
+        return '1' if self.preferred_payment_method_line_id.journal_id.type == 'cash' else '2'
 
     def _get_invoice_tax_payer_type_code(self):
         return {
@@ -152,7 +199,7 @@ class AccountMove(models.Model):
     def _get_name_invoice_report(self):
         # EXTENDS account
         self.ensure_one()
-        if self.l10n_jo_edi_state in self._l10n_jo_edi_state_sent_options() and self.l10n_jo_edi_xml_attachment_id:
+        if self.l10n_jo_edi_state in ['sent', 'demo'] and self.l10n_jo_edi_xml_attachment_id:
             return 'l10n_jo_edi.report_invoice_document'
         return super()._get_name_invoice_report()
 
@@ -195,6 +242,13 @@ class AccountMove(models.Model):
 
         error_msgs = []
 
+        if not self.preferred_payment_method_line_id:
+            error_msgs.append(_("Please select a payment method before submission."))
+        if not self.l10n_jo_edi_invoice_type:
+            error_msgs.append(_("Please select an invoice type before submitting this invoice to JoFotara."))
+        if self.l10n_jo_edi_invoice_type in ('transit', 'foreign', 'freezone') and self.company_id.l10n_jo_edi_taxpayer_type != 'sales':
+            error_msgs.append(_("To issue the selected Invoice type, please set the Taxpayer Type to 'Registered in the sales tax' by going to Accounting > Configuration > Settings > Electronic Invoicing (Jordan)"))
+
         customer = self.partner_id
         has_non_digit_vat(customer, 'customer', error_msgs)
 
@@ -211,13 +265,13 @@ class AccountMove(models.Model):
                 error_msgs.append(_('Please make sure the "Customer Reference" contains the reason for the return'))
 
         if any(
-            line.display_type not in ('line_note', 'line_section')
+            line.display_type not in ('line_section', 'line_subsection', 'line_note')
             and (line.quantity < 0 or line.price_unit < 0)
             for line in self.invoice_line_ids
         ):
             error_msgs.append(_("JoFotara portal cannot process negative quantity nor negative price on invoice lines"))
 
-        for line in self.invoice_line_ids.filtered(lambda line: line.display_type not in ('line_note', 'line_section')):
+        for line in self.invoice_line_ids.filtered(lambda line: line.display_type not in ('line_section', 'line_subsection', 'line_note')):
             if self.company_id.l10n_jo_edi_taxpayer_type == 'income' and len(line.tax_ids) != 0:
                 error_msgs.append(_("No taxes are allowed on invoice lines for taxpayers unregistered in the sales tax"))
             elif self.company_id.l10n_jo_edi_taxpayer_type == 'sales' and len(line.tax_ids) != 1:
@@ -227,12 +281,9 @@ class AccountMove(models.Model):
 
         return "\n".join(error_msgs)
 
-    def _l10n_jo_edi_state_sent_options(self):
-        return ['sent']
-
     def _mark_sent_jo_edi(self):
         self.l10n_jo_edi_error = False
-        self.l10n_jo_edi_state = 'sent'
+        self.l10n_jo_edi_state = 'demo' if self.env.company.l10n_jo_edi_demo_mode else 'sent'
 
     def _l10n_jo_edi_send(self):
         self.ensure_one()
@@ -243,7 +294,7 @@ class AccountMove(models.Model):
             return error_message
         else:
             self._mark_sent_jo_edi()
-            self.with_context(no_new_invoice=True).message_post(
+            self.message_post(
                 body=_("E-invoice (JoFotara) submitted successfully."),
                 attachment_ids=self.l10n_jo_edi_xml_attachment_id.ids,
             )

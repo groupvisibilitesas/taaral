@@ -9,10 +9,6 @@ from odoo.addons.account_edi_proxy_client.models.account_edi_proxy_user import A
 from odoo.addons.l10n_it_edi.tests.common import TestItEdi
 
 
-def attachment_to_dict(attachment):
-    return {'name': attachment.name, 'raw': attachment.raw}
-
-
 @tagged('post_install_l10n', 'post_install', '-at_install')
 class TestItAccountMoveSend(TestItEdi, TestAccountMoveSendCommon):
 
@@ -59,11 +55,11 @@ class TestItAccountMoveSend(TestItEdi, TestAccountMoveSendCommon):
         self.assertEqual((invoice1 + invoice2).mapped('sending_data'), [False, False])
         self.assertEqual(1, len(self.get_attachments(invoice1.id)))
         self.assertTrue(invoice1.invoice_pdf_report_id)
-        self.assertFalse(invoice1.l10n_it_edi_attachment_id)
+        self.assertFalse(invoice1.l10n_it_edi_attachment_file)
         self.assertFalse(invoice1.is_being_sent)
         self.assertEqual(1, len(self.get_attachments(invoice2.id)))
         self.assertTrue(invoice2.invoice_pdf_report_id)
-        self.assertFalse(invoice2.l10n_it_edi_attachment_id)
+        self.assertFalse(invoice2.l10n_it_edi_attachment_file)
         self.assertFalse(invoice2.is_being_sent)
 
     def test_invoice_multi_with_l10n_it_edi_xml_export(self):
@@ -79,17 +75,17 @@ class TestItAccountMoveSend(TestItEdi, TestAccountMoveSendCommon):
                 'odoo.addons.account.models.account_move_send.AccountMoveSend._get_default_extra_edis',
                 _get_default_extra_edis
         ):
-            self.env['account.move.send']._generate_and_send_invoices(invoice1 + invoice2)
+            self.env['account.move.send']._generate_and_send_invoices(invoice1 + invoice2, sending_methods=['email'])
 
         # Asserts
         self.assertEqual((invoice1 + invoice2).mapped('sending_data'), [False, False])
         self.assertEqual(2, len(self.get_attachments(invoice1.id)))
         self.assertTrue(invoice1.invoice_pdf_report_id)
-        self.assertTrue(invoice1.l10n_it_edi_attachment_id)
+        self.assertTrue(invoice1.l10n_it_edi_attachment_file)
         self.assertFalse(invoice1.is_being_sent)
         self.assertEqual(2, len(self.get_attachments(invoice2.id)))
         self.assertTrue(invoice2.invoice_pdf_report_id)
-        self.assertTrue(invoice2.l10n_it_edi_attachment_id)
+        self.assertTrue(invoice2.l10n_it_edi_attachment_file)
         self.assertFalse(invoice2.is_being_sent)
 
     def test_invoice_with_cig_or_cup_or_both(self):
@@ -140,7 +136,6 @@ class TestItAccountMoveSend(TestItEdi, TestAccountMoveSendCommon):
         second_company.write({
             'vat': 'IT12345670017',
             'phone': '0266766700',
-            'mobile': '+393288088988',
             'email': 'test@test.it',
             'street': '1234 Test Street',
             'zip': '12345',
@@ -168,7 +163,7 @@ class TestItAccountMoveSend(TestItEdi, TestAccountMoveSendCommon):
         )
 
         with patch('odoo.addons.l10n_it_edi.models.account_move.AccountMove._l10n_it_edi_upload_single', return_value={}, autospec=True) as mock_check:
-            self.env['account.move.send'].with_context(allowed_company_ids=[second_company.id, self.company.id])._generate_and_send_invoices(invoice2 + invoice1)
+            self.env['account.move.send'].with_context(allowed_company_ids=[second_company.id, self.company.id])._generate_and_send_invoices(invoice2 + invoice1, sending_methods=['email'])
             self.assertEqual(mock_check.call_count, 2)
             res_call_invoice1, res_call_invoice2 = mock_check.call_args_list
             res_invoice1, res_invoice2 = res_call_invoice2[0][0], res_call_invoice1[0][0]
@@ -182,13 +177,22 @@ class TestItAccountMoveSend(TestItEdi, TestAccountMoveSendCommon):
         self.generate_l10n_it_edi_send_attachments(invoice)
         success = {'id_transaction': "SDI ID 1", 'signed': False, 'signed_data': False}
         with patch('odoo.addons.l10n_it_edi.models.account_move.AccountMove._l10n_it_edi_upload_single', return_value=success) as mock_check:
-            attachments_vals = {invoice: attachment_to_dict(invoice.l10n_it_edi_attachment_id)}
+            attachments_vals = {invoice: {'name': invoice.l10n_it_edi_attachment_name, 'raw': invoice.l10n_it_edi_attachment_file}}
             results = invoice._l10n_it_edi_send(attachments_vals)
 
             self.assertEqual(mock_check.call_count, 1)
-            self.assertEqual(results, {invoice.l10n_it_edi_attachment_id.name: success})
+            self.assertEqual(results, {invoice.l10n_it_edi_attachment_name: success})
             self.assertEqual(invoice.l10n_it_edi_state, "processing")
             self.assertEqual(invoice.l10n_it_edi_transaction, success['id_transaction'])
+
+    def test_l10n_it_edi_send_success_with_signed_data_update_attachment(self):
+        invoice = self.init_invoice(self.italian_partner_a)
+        self.generate_l10n_it_edi_send_attachments(invoice)
+        signed_data_result = 'some signed data'
+        success = {'id_transaction': "SDI ID 1", 'signed': True, 'signed_data': signed_data_result}
+        with patch('odoo.addons.l10n_it_edi.models.account_move.AccountMove._l10n_it_edi_upload_single', return_value=success, autospec=True):
+            self.env['account.move.send']._generate_and_send_invoices(invoice, sending_methods=['email'])
+            self.assertEqual(base64.b64decode(invoice.l10n_it_edi_attachment_file).decode(), signed_data_result)
 
     def test_pa_state_keeps_updating_after_sdi_validation(self):
         """
@@ -205,11 +209,11 @@ class TestItAccountMoveSend(TestItEdi, TestAccountMoveSendCommon):
         }
         l10n_it_move = 'odoo.addons.l10n_it_edi.models.account_move.AccountMove'
         with patch(f'{l10n_it_move}._l10n_it_edi_upload_single', return_value=success) as mock_check:
-            attachments_vals = {invoice: {'name': invoice.l10n_it_edi_attachment_id.name, 'raw': invoice.l10n_it_edi_attachment_file}}
+            attachments_vals = {invoice: {'name': invoice.l10n_it_edi_attachment_name, 'raw': invoice.l10n_it_edi_attachment_file}}
             results = invoice._l10n_it_edi_send(attachments_vals)
 
             self.assertEqual(mock_check.call_count, 1)
-            self.assertEqual(results, {invoice.l10n_it_edi_attachment_id.name: success})
+            self.assertEqual(results, {invoice.l10n_it_edi_attachment_name: success})
             self.assertEqual(invoice.l10n_it_edi_state, "processing")
             self.assertEqual(invoice.l10n_it_edi_transaction, success['id_transaction'])
 
@@ -236,12 +240,12 @@ class TestItAccountMoveSend(TestItEdi, TestAccountMoveSendCommon):
         self.generate_l10n_it_edi_send_attachments(invoice)
         proxy_error = {'error': 'error_code', 'error_description': 'error_description'}
         with patch('odoo.addons.l10n_it_edi.models.account_move.AccountMove._l10n_it_edi_upload_single', return_value=proxy_error) as mock_check:
-            attachments_vals = {invoice: attachment_to_dict(invoice.l10n_it_edi_attachment_id)}
+            attachments_vals = {invoice: {'name': invoice.l10n_it_edi_attachment_name, 'raw': invoice.l10n_it_edi_attachment_file}}
             results = invoice._l10n_it_edi_send(attachments_vals)
             proxy_error['error_message'] = invoice._l10n_it_edi_upload_error_message(proxy_error['error'], proxy_error['error_description'])
 
             self.assertEqual(mock_check.call_count, 1)
-            self.assertEqual(results, {invoice.l10n_it_edi_attachment_id.name: proxy_error})
+            self.assertEqual(results, {invoice.l10n_it_edi_attachment_name: proxy_error})
             self.assertFalse(invoice.l10n_it_edi_state)
             self.assertFalse(invoice.l10n_it_edi_transaction)
 
@@ -249,11 +253,11 @@ class TestItAccountMoveSend(TestItEdi, TestAccountMoveSendCommon):
         invoice = self.init_invoice(self.italian_partner_a)
         self.generate_l10n_it_edi_send_attachments(invoice)
         with patch('odoo.addons.l10n_it_edi.models.account_move.AccountMove._l10n_it_edi_upload_single', side_effect=AccountEdiProxyError('error_code', message='error_description')) as mock_check:
-            attachments_vals = {invoice: attachment_to_dict(invoice.l10n_it_edi_attachment_id)}
+            attachments_vals = {invoice: {'name': invoice.l10n_it_edi_attachment_name, 'raw': invoice.l10n_it_edi_attachment_file}}
             results = invoice._l10n_it_edi_send(attachments_vals)
 
             self.assertEqual(mock_check.call_count, 1)
-            self.assertIn('error_message', results[invoice.l10n_it_edi_attachment_id.name])
+            self.assertIn('error_message', results[invoice.l10n_it_edi_attachment_name])
             self.assertFalse(invoice.l10n_it_edi_state)
             self.assertFalse(invoice.l10n_it_edi_transaction)
 
@@ -269,15 +273,15 @@ class TestItAccountMoveSend(TestItEdi, TestAccountMoveSendCommon):
             return success if file['filename'] == 'file_1.xml' else proxy_error
 
         with patch('odoo.addons.l10n_it_edi.models.account_move.AccountMove._l10n_it_edi_upload_single', side_effect=_l10n_it_edi_upload_single, autospec=True) as mock_check:
-            invoices[0].l10n_it_edi_attachment_id.name = 'file_1.xml'
+            invoices[0].l10n_it_edi_attachment_name = 'file_1.xml'
 
-            attachments_vals = {invoice: attachment_to_dict(invoice.l10n_it_edi_attachment_id) for invoice in invoices}
+            attachments_vals = {invoice: {'name': invoice.l10n_it_edi_attachment_name, 'raw': invoice.l10n_it_edi_attachment_file} for invoice in invoices}
             results = invoices._l10n_it_edi_send(attachments_vals)
 
             self.assertEqual(mock_check.call_count, 2)
             self.assertEqual(results, {
-                invoices[0].l10n_it_edi_attachment_id.name: success,
-                invoices[1].l10n_it_edi_attachment_id.name: proxy_error
+                invoices[0].l10n_it_edi_attachment_name: success,
+                invoices[1].l10n_it_edi_attachment_name: proxy_error
             })
 
             self.assertEqual(invoices[0].l10n_it_edi_state, "processing")
@@ -287,6 +291,21 @@ class TestItAccountMoveSend(TestItEdi, TestAccountMoveSendCommon):
             self.assertFalse(invoices[1].l10n_it_edi_state)
             self.assertFalse(invoices[1].l10n_it_edi_transaction)
             self.assertTrue(invoices[1].l10n_it_edi_header)
+
+    def test_enasarco_no_warnings(self):
+        self.proxy_user.edi_mode = 'demo'
+        ref = self.env['account.chart.template'].with_company(self.proxy_user.company_id).ref
+        self.partner_a.write({
+            "l10n_it_codice_fiscale": "PERTLELPALQZRTSN",
+            'country_id': self.env.ref('base.it').id,
+            'street': 'Test street',
+            'city': 'Test town',
+            'zip': '32121',
+        })
+        invoice = self.init_invoice(partners=self.partner_a, taxes=ref('22v') | ref('23vwo') | ref('enasarcov'))
+        wizard = self.create_send_and_print(invoice, sending_methods=['l10n_it_edi'])
+        non_info_alerts = {k: v for k, v in wizard.alerts.items() if v.get('level') != 'info'}
+        self.assertFalse(non_info_alerts)
 
     def test_l10n_it_edi_foreign_currency(self):
         invoice = self.env['account.move'].create({
@@ -304,7 +323,7 @@ class TestItAccountMoveSend(TestItEdi, TestAccountMoveSendCommon):
         })
         invoice.action_post()
         self.generate_l10n_it_edi_send_attachments(invoice)
-        self.assertTrue(invoice.l10n_it_edi_attachment_id)
+        self.assertTrue(invoice.l10n_it_edi_attachment_file)
 
     def test_detach_invoice(self):
         # Prepare an invoice
@@ -320,11 +339,15 @@ class TestItAccountMoveSend(TestItEdi, TestAccountMoveSendCommon):
             _get_default_extra_edis
         ):
             self.env['account.move.send']._generate_and_send_invoices(invoice)
-        attachment_name = invoice.l10n_it_edi_attachment_id.name
+        attachments = self.env['ir.attachment'].search([
+            ('res_model', '=', 'account.move'),
+            ('res_field', '=', 'l10n_it_edi_attachment_file'),
+            ('res_id', 'in', invoice.ids),
+        ])
         invoice.button_draft()
 
-        self.assertNotEqual(invoice.l10n_it_edi_attachment_id.name, attachment_name)
-        self.assertTrue('detached' in invoice.l10n_it_edi_attachment_id.name.lower())
+        self.assertFalse(invoice.l10n_it_edi_attachment_name)
+        self.assertTrue('detached' in attachments.name.lower())
 
     def test_detach_bill_fails(self):
         # Fake an exported bill by manually attaching its export
@@ -345,11 +368,16 @@ class TestItAccountMoveSend(TestItEdi, TestAccountMoveSendCommon):
         # Post it, add an attachment, revert to draft
         bill.action_post()
         bill.l10n_it_edi_attachment_file = base64.b64encode(bill._l10n_it_edi_render_xml())
-        attachment_name = bill.l10n_it_edi_attachment_id.name
+        bill.l10n_it_edi_attachment_name = "IT1234567890_10001.xml"
+        attachments = self.env['ir.attachment'].search([
+            ('res_model', '=', 'account.move'),
+            ('res_field', '=', 'l10n_it_edi_attachment_file'),
+            ('res_id', 'in', bill.ids),
+        ])
         bill.button_draft()
 
-        self.assertEqual(bill.l10n_it_edi_attachment_id.name, attachment_name)
-        self.assertFalse('detached' in bill.l10n_it_edi_attachment_id.name.lower())
+        self.assertEqual(bill.l10n_it_edi_attachment_name, "IT1234567890_10001.xml")
+        self.assertFalse('detached' in attachments.name.lower())
 
     def test_detach_reverse_charged_bill(self):
         # Create a reverse charged tax
@@ -359,11 +387,11 @@ class TestItAccountMoveSend(TestItEdi, TestAccountMoveSendCommon):
             'amount_type': 'percent',
             'type_tax_use': 'purchase',
             'invoice_repartition_line_ids': self.repartition_lines(
-                self.RepartitionLine(100, 'base', ('+03', '+vj9')),
-                self.RepartitionLine(100, 'tax', ('+5v',)),
-                self.RepartitionLine(-100, 'tax', ('-4v',))),
+                self.RepartitionLine(100, 'base', ('03', 'vj9')),
+                self.RepartitionLine(100, 'tax', ('5v',)),
+                self.RepartitionLine(-100, 'tax', ('4v',))),
             'refund_repartition_line_ids': self.repartition_lines(
-                self.RepartitionLine(100, 'base', ('-03', '-vj9')),
+                self.RepartitionLine(100, 'base', ('03', 'vj9')),
                 self.RepartitionLine(100, 'tax', False),
                 self.RepartitionLine(-100, 'tax', False)),
         })
@@ -384,13 +412,18 @@ class TestItAccountMoveSend(TestItEdi, TestAccountMoveSendCommon):
         })
 
         # Post it, add an attachment, revert to draft
-        bill.action_post()
+        bill.with_company(self.company).action_post()
         bill.l10n_it_edi_attachment_file = base64.b64encode(bill._l10n_it_edi_render_xml())
-        attachment_name = bill.l10n_it_edi_attachment_id.name
-        bill.button_draft()
+        attachments = self.env['ir.attachment'].search([
+            ('res_model', '=', 'account.move'),
+            ('res_field', '=', 'l10n_it_edi_attachment_file'),
+            ('res_id', 'in', bill.ids),
+        ])
+        bill.with_company(self.company).button_draft()
+        attachments.invalidate_recordset(fnames=['name'])
 
-        self.assertNotEqual(bill.l10n_it_edi_attachment_id.name, attachment_name)
-        self.assertTrue('detached' in bill.l10n_it_edi_attachment_id.name.lower())
+        self.assertFalse(bill.l10n_it_edi_attachment_name)
+        self.assertTrue('detached' in attachments.name.lower())
 
     def test_invoice_send_email_then_sdi(self):
         invoice = self.init_invoice(self.partner_a)
@@ -399,7 +432,7 @@ class TestItAccountMoveSend(TestItEdi, TestAccountMoveSendCommon):
         settings_email = {'sending_methods': {'email'}, 'extra_edis': set()}
         self.env['account.move.send']._generate_and_send_invoices(invoice, **settings_email)
         self.assertTrue(invoice.invoice_pdf_report_id)
-        self.assertFalse(invoice.l10n_it_edi_attachment_id)
+        self.assertFalse(invoice.l10n_it_edi_attachment_file)
 
         wizard = self.env['account.move.send.wizard'].create({'move_id': invoice.id})
         self.assertIn('l10n_it_edi_pdf_already_generated', wizard.alerts)

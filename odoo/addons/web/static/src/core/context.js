@@ -62,7 +62,7 @@ function getPartialNames(ast) {
  * contains keys whose values are static or can be evaluated with the given evaluation context.
  *
  * @param {string} context
- * @param {Object} [evaluationContext={}]
+ * @param {Context} [evaluationContext={}]
  * @returns {Context}
  */
 export function evalPartialContext(_context, evaluationContext = {}) {

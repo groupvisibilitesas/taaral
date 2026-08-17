@@ -16,7 +16,7 @@ class TestThemeAsset(TransactionCase):
         convert_file(
             self.env, 'theme_default',
             file_path('test_website/tests/asset_tag.xml'),
-            {}, 'init', False, 'test'
+            {}, 'init', False,
         )
         active_keep_asset = self.env.ref('theme_default.test_asset_tag_aaa')
         inactive_keep_asset = self.env.ref('theme_default.test_asset_tag_iii')
@@ -61,7 +61,7 @@ class TestThemeAsset(TransactionCase):
                 'theme_default.test_asset_tag_iaa': inactive_switch_asset.id,
                 'theme_default.test_asset_tag_prepend': prepend_asset.id,
                 'theme_default.test_asset_tag_extra': asset_with_extra_field.id,
-            }, 'update', False, 'test'
+            }, 'update', False,
         )
 
         # Verify updated load

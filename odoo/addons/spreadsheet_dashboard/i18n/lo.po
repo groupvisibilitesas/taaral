@@ -2,29 +2,34 @@
 # This file contains the translation of the following modules:
 # * spreadsheet_dashboard
 #
-# Weblate <noreply-mt-weblate@weblate.org>, 2026.
 # Bone NI <bounkirdni@gmail.com>, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-05 18:38+0000\n"
-"PO-Revision-Date: 2026-05-26 04:54+0000\n"
+"POT-Creation-Date: 2026-03-06 18:37+0000\n"
+"PO-Revision-Date: 2026-08-07 05:03+0000\n"
 "Last-Translator: Bone NI <bounkirdni@gmail.com>\n"
-"Language-Team: Lao <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Lao <https://translate.odoo.com/projects/odoo-19/"
 "spreadsheet_dashboard/lo/>\n"
 "Language: lo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.17\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: spreadsheet_dashboard
 #. odoo-python
 #: code:addons/spreadsheet_dashboard/models/spreadsheet_dashboard.py:0
 msgid "%s (copy)"
 msgstr "%s (ສຳເນົາ)"
+
+#. module: spreadsheet_dashboard
+#. odoo-javascript
+#: code:addons/spreadsheet_dashboard/static/src/bundle/dashboard_action/dashboard_search_bar/dashboard_search_bar.js:0
+msgid "(no result)"
+msgstr "(ບໍ່ມີຜົນການຄົ້ນຫາ)"
 
 #. module: spreadsheet_dashboard
 #: model:ir.model.fields,field_description:spreadsheet_dashboard.field_spreadsheet_dashboard_share__access_token
@@ -40,7 +45,7 @@ msgstr "ຜູ້ດູແລລະບົບ"
 #. odoo-javascript
 #: code:addons/spreadsheet_dashboard/static/src/bundle/dashboard_action/dashboard_action.xml:0
 msgid "An error occured while loading the dashboard"
-msgstr "ເກີດຂໍ້ຜິດພາດຂຶ້ນໃນຂະນະທີ່ກຳລັງໂຫຼດແຜງຄວບຄຸມ"
+msgstr "ເກີດຂໍ້ຜິດພາດໃນຂະນະທີ່ກຳລັງໂຫລດແຜງຄວບຄຸມ"
 
 #. module: spreadsheet_dashboard
 #. odoo-javascript
@@ -55,14 +60,14 @@ msgid "Choose a dashboard...."
 msgstr "ເລືອກແຜງຄວບຄຸມ...."
 
 #. module: spreadsheet_dashboard
-#: model:ir.model.fields,field_description:spreadsheet_dashboard.field_spreadsheet_dashboard__company_id
-msgid "Company"
+#: model:ir.model.fields,field_description:spreadsheet_dashboard.field_spreadsheet_dashboard__company_ids
+msgid "Companies"
 msgstr "ບໍລິສັດ"
 
 #. module: spreadsheet_dashboard
 #: model:ir.ui.menu,name:spreadsheet_dashboard.spreadsheet_dashboard_menu_configuration
 msgid "Configuration"
-msgstr "ການກໍານົດຄ່າ"
+msgstr "ການຕັ້ງຄ່າ"
 
 #. module: spreadsheet_dashboard
 #: model:ir.model,name:spreadsheet_dashboard.model_spreadsheet_dashboard_share
@@ -86,6 +91,7 @@ msgstr "ສ້າງເມື່ອ"
 #. module: spreadsheet_dashboard
 #: model:ir.model.fields,field_description:spreadsheet_dashboard.field_spreadsheet_dashboard_group__dashboard_ids
 #: model:ir.model.fields,field_description:spreadsheet_dashboard.field_spreadsheet_dashboard_share__dashboard_id
+#: model:res.groups.privilege,name:spreadsheet_dashboard.res_groups_privilege_dashboard
 msgid "Dashboard"
 msgstr "ແຜງຄວບຄຸມ"
 
@@ -95,6 +101,9 @@ msgid "Dashboard Group"
 msgstr "ກຸ່ມແຜງຄວບຄຸມ"
 
 #. module: spreadsheet_dashboard
+#. odoo-javascript
+#: code:addons/spreadsheet_dashboard/static/src/assets/dashboard_action_loader.js:0
+#: code:addons/spreadsheet_dashboard/static/src/bundle/dashboard_action/dashboard_action.js:0
 #: model:ir.actions.act_window,name:spreadsheet_dashboard.spreadsheet_dashboard_action_configuration_dashboards
 #: model:ir.actions.client,name:spreadsheet_dashboard.ir_actions_dashboard_action
 #: model:ir.ui.menu,name:spreadsheet_dashboard.spreadsheet_dashboard_menu_configuration_dashboards
@@ -119,7 +128,24 @@ msgstr "ຊື່ທີ່ສະແດງ"
 #. module: spreadsheet_dashboard
 #: model:ir.model.fields,field_description:spreadsheet_dashboard.field_spreadsheet_dashboard_share__excel_export
 msgid "Excel Export"
-msgstr "ການສົ່ງອອກ Excel"
+msgstr "ສົ່ງອອກ Excel"
+
+#. module: spreadsheet_dashboard
+#. odoo-javascript
+#: code:addons/spreadsheet_dashboard/static/src/bundle/dashboard_action/dashboard_loader_service.js:0
+msgid "FAVORITES"
+msgstr "ລາຍການທີ່ມັກ"
+
+#. module: spreadsheet_dashboard
+#: model:ir.model.fields,field_description:spreadsheet_dashboard.field_spreadsheet_dashboard__favorite_user_ids
+msgid "Favorite Users"
+msgstr "ຜູ້ໃຊ້ທີ່ມັກ"
+
+#. module: spreadsheet_dashboard
+#. odoo-javascript
+#: code:addons/spreadsheet_dashboard/static/src/bundle/pivot/clickable_cell.js:0
+msgid "Filter on this value"
+msgstr "ກັ່ນຕອງຕາມຄ່ານີ້"
 
 #. module: spreadsheet_dashboard
 #: model:spreadsheet.dashboard.group,name:spreadsheet_dashboard.spreadsheet_dashboard_group_finance
@@ -146,7 +172,17 @@ msgstr "ຊັບພະຍາກອນມະນຸດ"
 #: model:ir.model.fields,field_description:spreadsheet_dashboard.field_spreadsheet_dashboard_group__id
 #: model:ir.model.fields,field_description:spreadsheet_dashboard.field_spreadsheet_dashboard_share__id
 msgid "ID"
-msgstr "ID"
+msgstr "ໄອດີ"
+
+#. module: spreadsheet_dashboard
+#: model:ir.model.fields,help:spreadsheet_dashboard.field_spreadsheet_dashboard__is_favorite
+msgid "Indicates whether the dashboard is favorited by the current user"
+msgstr "ລະບຸວ່າແຜງຄວບຄຸມນີ້ຖືກເລືອກເປັນລາຍການທີ່ມັກໂດຍຜູ້ໃຊ້ປະຈຸບັນຫຼືບໍ່"
+
+#. module: spreadsheet_dashboard
+#: model:ir.model.fields,field_description:spreadsheet_dashboard.field_spreadsheet_dashboard__is_favorite
+msgid "Is Favorite"
+msgstr "ເປັນລາຍການທີ່ມັກ"
 
 #. module: spreadsheet_dashboard
 #: model:ir.model.fields,field_description:spreadsheet_dashboard.field_spreadsheet_dashboard__is_published
@@ -169,9 +205,15 @@ msgstr "ແກ້ໄຂຫຼ້າສຸດເມື່ອ"
 
 #. module: spreadsheet_dashboard
 #. odoo-javascript
+#: code:addons/spreadsheet_dashboard/static/src/bundle/dashboard_action/dashboard_search_bar/dashboard_search_bar.js:0
+msgid "Load more"
+msgstr "ໂຫລດເພີ່ມເຕີມ"
+
+#. module: spreadsheet_dashboard
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard/static/src/bundle/dashboard_action/dashboard_action.xml:0
 msgid "Loading..."
-msgstr "ກຳລັງໂຫຼດ..."
+msgstr "ກຳລັງໂຫລດ..."
 
 #. module: spreadsheet_dashboard
 #: model:spreadsheet.dashboard.group,name:spreadsheet_dashboard.spreadsheet_dashboard_group_logistics
@@ -181,7 +223,7 @@ msgstr "ໂລຈິສຕິກ"
 #. module: spreadsheet_dashboard
 #: model:ir.model.fields,field_description:spreadsheet_dashboard.field_spreadsheet_dashboard__main_data_model_ids
 msgid "Main Data Model"
-msgstr "ແບບຈໍາລອງຂໍ້ມູນຫຼັກ"
+msgstr "ແບບຈຳລອງຂໍ້ມູນຫຼັກ"
 
 #. module: spreadsheet_dashboard
 #: model:spreadsheet.dashboard.group,name:spreadsheet_dashboard.spreadsheet_dashboard_group_marketing
@@ -197,9 +239,15 @@ msgstr "ຊື່"
 
 #. module: spreadsheet_dashboard
 #. odoo-javascript
+#: code:addons/spreadsheet_dashboard/static/src/bundle/dashboard_action/dashboard_search_bar/dashboard_search_bar.js:0
+msgid "No"
+msgstr "ບໍ່"
+
+#. module: spreadsheet_dashboard
+#. odoo-javascript
 #: code:addons/spreadsheet_dashboard/static/src/bundle/dashboard_action/dashboard_action.xml:0
 msgid "No available dashboard"
-msgstr "ບໍ່ມີແຜງຄວບຄຸມທີ່ສາມາດໃຊ້ໄດ້"
+msgstr "ບໍ່ມີແຜງຄວບຄຸມທີ່ພ້ອມໃຊ້ງານ"
 
 #. module: spreadsheet_dashboard
 #. odoo-javascript
@@ -208,7 +256,13 @@ msgid ""
 "Only chart figures are displayed in small screens but this dashboard doesn't"
 " contain any"
 msgstr ""
-"ສະເພາະແຜນພູມເທົ່ານັ້ນທີ່ຈະສະແດງໃນໜ້າຈໍຂະໜາດນ້ອຍ ແຕ່ແຜງຄວບຄຸມນີ້ບໍ່ມີແຜນພູມໃດໆ"
+"ສະແດງສະເພາະຕົວເລກແຜນພູມໃນໜ້າຈໍຂະໜາດນ້ອຍ ແຕ່ແຜງຄວບຄຸມນີ້ບໍ່ມີຂໍ້ມູນດັ່ງກ່າວ"
+
+#. module: spreadsheet_dashboard
+#. odoo-javascript
+#: code:addons/spreadsheet_dashboard/static/src/bundle/list/clickable_cell.js:0
+msgid "Open record"
+msgstr "ເປີດຂໍ້ມູນ"
 
 #. module: spreadsheet_dashboard
 #: model:ir.model.fields,field_description:spreadsheet_dashboard.field_spreadsheet_dashboard_group__published_dashboard_ids
@@ -216,9 +270,27 @@ msgid "Published Dashboard"
 msgstr "ແຜງຄວບຄຸມທີ່ເຜີຍແຜ່ແລ້ວ"
 
 #. module: spreadsheet_dashboard
+#. odoo-javascript
+#: code:addons/spreadsheet_dashboard/static/src/bundle/dashboard_action/dashboard_facet/dashboard_facet.xml:0
+msgid "Remove"
+msgstr "ລຶບອອກ"
+
+#. module: spreadsheet_dashboard
 #: model:spreadsheet.dashboard.group,name:spreadsheet_dashboard.spreadsheet_dashboard_group_sales
 msgid "Sales"
 msgstr "ການຂາຍ"
+
+#. module: spreadsheet_dashboard
+#. odoo-javascript
+#: code:addons/spreadsheet_dashboard/static/src/bundle/dashboard_action/dashboard_search_bar/dashboard_search_bar.xml:0
+msgid "Search..."
+msgstr "ຄົ້ນຫາ..."
+
+#. module: spreadsheet_dashboard
+#. odoo-javascript
+#: code:addons/spreadsheet_dashboard/static/src/bundle/pivot/clickable_cell.js:0
+msgid "See records"
+msgstr "ເບິ່ງຂໍ້ມູນ"
 
 #. module: spreadsheet_dashboard
 #: model:ir.model.fields,field_description:spreadsheet_dashboard.field_spreadsheet_dashboard__sequence
@@ -266,9 +338,26 @@ msgid "Thumbnail"
 msgstr "ຮູບຕົວຢ່າງ"
 
 #. module: spreadsheet_dashboard
+#. odoo-javascript
+#: code:addons/spreadsheet_dashboard/static/src/bundle/dashboard_action/dashboard_action.xml:0
+msgid "Toggle favorite"
+msgstr "ເປີດ/ປິດ ລາຍການທີ່ມັກ"
+
+#. module: spreadsheet_dashboard
 #: model:ir.model.fields,field_description:spreadsheet_dashboard.field_spreadsheet_dashboard_share__full_url
 msgid "URL"
-msgstr "URL"
+msgstr "ຢູອາແອລ (URL)"
+
+#. module: spreadsheet_dashboard
+#: model:ir.model.fields,help:spreadsheet_dashboard.field_spreadsheet_dashboard__favorite_user_ids
+msgid "Users who have favorited this dashboard"
+msgstr "ຜູ້ໃຊ້ທີ່ເພີ່ມແຜງຄວບຄຸມນີ້ເຂົ້າໃນລາຍການທີ່ມັກ"
+
+#. module: spreadsheet_dashboard
+#: model_terms:ir.ui.view,arch_db:spreadsheet_dashboard.spreadsheet_dashboard_view_form
+#: model_terms:ir.ui.view,arch_db:spreadsheet_dashboard.spreadsheet_dashboard_view_list
+msgid "Visible to all"
+msgstr "ທຸກຄົນສາມາດເບິ່ງເຫັນໄດ້"
 
 #. module: spreadsheet_dashboard
 #: model:spreadsheet.dashboard.group,name:spreadsheet_dashboard.spreadsheet_dashboard_group_website
@@ -276,10 +365,16 @@ msgid "Website"
 msgstr "ເວັບໄຊ"
 
 #. module: spreadsheet_dashboard
+#. odoo-javascript
+#: code:addons/spreadsheet_dashboard/static/src/bundle/dashboard_action/dashboard_search_bar/dashboard_search_bar.js:0
+msgid "Yes"
+msgstr "ແມ່ນ"
+
+#. module: spreadsheet_dashboard
 #. odoo-python
 #: code:addons/spreadsheet_dashboard/models/spreadsheet_dashboard_group.py:0
 msgid "You cannot delete %s as it is used in another module."
-msgstr "ທ່ານບໍ່ສາມາດລຶບ %s ໄດ້ ເນື່ອງຈາກມັນຖືກນໍາໃຊ້ໃນໂມດູນອື່ນ."
+msgstr "ທ່ານບໍ່ສາມາດລຶບ %s ໄດ້ ເນື່ອງຈາກມັນຖືກນຳໃຊ້ຢູ່ໃນໂມດູນອື່ນ."
 
 #. module: spreadsheet_dashboard
 #. odoo-python
@@ -293,3 +388,9 @@ msgstr "ທ່ານບໍ່ມີສິດເຂົ້າເຖິງແຜງ
 msgid ""
 "You don't have the rights to export data. Please contact an Administrator."
 msgstr "ທ່ານບໍ່ມີສິດໃນການສົ່ງອອກຂໍ້ມູນ. ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບ."
+
+#. module: spreadsheet_dashboard
+#. odoo-javascript
+#: code:addons/spreadsheet_dashboard/static/src/bundle/dashboard_action/dashboard_search_bar/dashboard_search_bar.js:0
+msgid "for"
+msgstr "ສຳລັບ"

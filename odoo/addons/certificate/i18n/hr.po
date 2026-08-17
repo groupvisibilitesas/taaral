@@ -2,22 +2,15 @@
 # This file contains the translation of the following modules:
 # * certificate
 #
-# Translators:
-# Tina Milas, 2024
-# Đurđica Žarković <durdica.zarkovic@storm.hr>, 2024
-# Bole <bole@dajmi5.com>, 2024
-# Karolina Tonković <karolina.tonkovic@storm.hr>, 2024
-# Milan Tribuson <one.mile.code@gmail.com>, 2024
-# Martin Trigaux, 2024
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-03 17:39+0000\n"
-"PO-Revision-Date: 2025-11-21 06:41+0000\n"
+"POT-Creation-Date: 2026-07-10 17:36+0000\n"
+"PO-Revision-Date: 2026-08-07 05:05+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Croatian <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Croatian <https://translate.odoo.com/projects/odoo-19/"
 "certificate/hr/>\n"
 "Language: hr\n"
 "MIME-Version: 1.0\n"
@@ -25,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: certificate
 #. odoo-python
@@ -37,7 +30,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:certificate.field_certificate_certificate__active
 #: model:ir.model.fields,field_description:certificate.field_certificate_key__active
 msgid "Active"
-msgstr "Aktivno"
+msgstr "Aktivan"
 
 #. module: certificate
 #: model_terms:ir.ui.view,arch_db:certificate.res_config_settings_view_form
@@ -150,7 +143,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:certificate.field_certificate_certificate__display_name
 #: model:ir.model.fields,field_description:certificate.field_certificate_key__display_name
 msgid "Display Name"
-msgstr "Naziv za prikaz"
+msgstr "Naziv"
 
 #. module: certificate
 #: model:ir.model.fields,field_description:certificate.field_certificate_certificate__date_end
@@ -216,7 +209,7 @@ msgstr "Promijenio"
 #: model:ir.model.fields,field_description:certificate.field_certificate_certificate__write_date
 #: model:ir.model.fields,field_description:certificate.field_certificate_key__write_date
 msgid "Last Updated on"
-msgstr "Promijenjeno"
+msgstr "Vrijeme promjene"
 
 #. module: certificate
 #: model:ir.model.fields,field_description:certificate.field_certificate_certificate__loading_error
@@ -228,6 +221,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/certificate/models/key.py:0
 msgid "Make sure to use a private key to sign documents."
+msgstr ""
+
+#. module: certificate
+#. odoo-python
+#: code:addons/certificate/models/key.py:0
+msgid "Make sure to use a public key to verify the signature of documents."
 msgstr ""
 
 #. module: certificate
@@ -296,7 +295,7 @@ msgstr ""
 #. module: certificate
 #: model_terms:ir.ui.view,arch_db:certificate.certificate_key_view_search
 msgid "Public"
-msgstr "Javno"
+msgstr "Javni"
 
 #. module: certificate
 #: model:ir.model.fields,field_description:certificate.field_certificate_certificate__public_key_id
@@ -352,12 +351,12 @@ msgstr ""
 
 #. module: certificate
 #: model:ir.model.fields,help:certificate.field_certificate_certificate__date_end
-msgid "The date on which the certificate expires (UTC)"
+msgid "The date on which the certificate expires"
 msgstr ""
 
 #. module: certificate
 #: model:ir.model.fields,help:certificate.field_certificate_certificate__date_start
-msgid "The date on which the certificate starts to be valid (UTC)"
+msgid "The date on which the certificate starts to be valid"
 msgstr ""
 
 #. module: certificate
@@ -439,6 +438,14 @@ msgstr ""
 msgid ""
 "Unsupported asymmetric cryptography algorithm '%s'. Currently supported for "
 "signature: EC and RSA."
+msgstr ""
+
+#. module: certificate
+#. odoo-python
+#: code:addons/certificate/models/key.py:0
+msgid ""
+"Unsupported asymmetric cryptography algorithm '%s'. Currently supported for "
+"signature: ED25519, EC and RSA."
 msgstr ""
 
 #. module: certificate

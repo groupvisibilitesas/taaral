@@ -13,8 +13,6 @@ class AccountChartTemplate(models.AbstractModel):
             'visible': 0,
             'property_account_receivable_id': 'account_common_4300',
             'property_account_payable_id': 'account_common_4100',
-            'property_account_expense_categ_id': 'account_common_600',
-            'property_account_income_categ_id': 'account_common_7000',
         }
 
     @template('es_common', 'res.company')
@@ -35,5 +33,18 @@ class AccountChartTemplate(models.AbstractModel):
                 'default_cash_difference_expense_account_id': 'account_common_678',
                 'deferred_expense_account_id': 'account_common_480',
                 'deferred_revenue_account_id': 'account_common_485',
+                'expense_account_id': 'account_common_600',
+                'income_account_id': 'account_common_7000',
+                'account_stock_journal_id': 'inventory_valuation',
+                'account_stock_valuation_id': 'account_common_310',
+            },
+        }
+
+    @template('es_common', 'account.account')
+    def _get_es_common_account_account(self):
+        return {
+            'account_common_310': {
+                'account_stock_expense_id': 'account_common_601',
+                'account_stock_variation_id': 'account_common_611',
             },
         }

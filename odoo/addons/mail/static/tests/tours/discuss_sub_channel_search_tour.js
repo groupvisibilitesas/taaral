@@ -41,10 +41,10 @@ registry.category("web_tour.tours").add("test_discuss_sub_channel_search", {
             async run() {
                 // 30 newest sub channels are loaded initially.
                 for (let i = 99; i > 69; i--) {
-                    await contains(".o-mail-SubChannelList-thread", {
+                    await contains(".o-mail-SubChannelPreview", {
                         text: `Sub Channel ${i}`,
                     });
-                    await contains(".o-mail-SubChannelList-thread", { count: 30 });
+                    await contains(".o-mail-SubChannelPreview", { count: 30 });
                 }
             },
         },
@@ -58,9 +58,9 @@ registry.category("web_tour.tours").add("test_discuss_sub_channel_search", {
             run: "click",
         },
         {
-            trigger: ".o-mail-SubChannelList-thread:contains(Sub Channel 10)",
+            trigger: ".o-mail-SubChannelPreview:contains(Sub Channel 10)",
             async run() {
-                await contains(".o-mail-SubChannelList-thread", { count: 1 });
+                await contains(".o-mail-SubChannelPreview", { count: 1 });
                 waitForLoadMoreToDisappearDef = new Deferred();
             },
         },
@@ -69,17 +69,17 @@ registry.category("web_tour.tours").add("test_discuss_sub_channel_search", {
             run: "clear",
         },
         {
-            trigger: ".o-mail-SubChannelList-thread:contains(Sub Channel 99)",
+            trigger: ".o-mail-SubChannelPreview:contains(Sub Channel 99)",
             async run() {
-                await contains(".o-mail-SubChannelList-thread", { count: 31 });
+                await contains(".o-mail-SubChannelPreview", { count: 31 });
                 // Already fetched sub channels are shown in addition to the one
                 // that was fetched during the search.
                 for (let i = 99; i > 69; i--) {
-                    await contains(".o-mail-SubChannelList-thread", {
+                    await contains(".o-mail-SubChannelPreview", {
                         text: `Sub Channel ${i}`,
                     });
                 }
-                await contains(".o-mail-SubChannelList-thread", { text: `Sub Channel 10` });
+                await contains(".o-mail-SubChannelPreview", { text: `Sub Channel 10` });
                 // Ensure lazy loading is still working after a search.
                 await waitForLoadMoreToDisappearDef;
                 waitForLoadMoreToDisappearDef = new Deferred();
@@ -87,11 +87,11 @@ registry.category("web_tour.tours").add("test_discuss_sub_channel_search", {
             },
         },
         {
-            trigger: ".o-mail-SubChannelList-thread:contains(Sub Channel 40)",
+            trigger: ".o-mail-SubChannelPreview:contains(Sub Channel 40)",
             async run() {
-                await contains(".o-mail-SubChannelList-thread", { count: 61 });
+                await contains(".o-mail-SubChannelPreview", { count: 61 });
                 for (let i = 99; i > 39; i--) {
-                    await contains(".o-mail-SubChannelList-thread", {
+                    await contains(".o-mail-SubChannelPreview", {
                         text: `Sub Channel ${i}`,
                     });
                 }
@@ -101,11 +101,11 @@ registry.category("web_tour.tours").add("test_discuss_sub_channel_search", {
             },
         },
         {
-            trigger: ".o-mail-SubChannelList-thread:contains(Sub Channel 11)",
+            trigger: ".o-mail-SubChannelPreview:contains(Sub Channel 11)",
             async run() {
-                await contains(".o-mail-SubChannelList-thread", { count: 90 });
+                await contains(".o-mail-SubChannelPreview", { count: 90 });
                 for (let i = 99; i > 9; i--) {
-                    await contains(".o-mail-SubChannelList-thread", {
+                    await contains(".o-mail-SubChannelPreview", {
                         text: `Sub Channel ${i}`,
                     });
                 }
@@ -114,11 +114,11 @@ registry.category("web_tour.tours").add("test_discuss_sub_channel_search", {
             },
         },
         {
-            trigger: ".o-mail-SubChannelList-thread:contains(Sub Channel 0)",
+            trigger: ".o-mail-SubChannelPreview:contains(Sub Channel 0)",
             async run() {
-                await contains(".o-mail-SubChannelList-thread", { count: 100 });
+                await contains(".o-mail-SubChannelPreview", { count: 100 });
                 for (let i = 99; i > 0; i--) {
-                    await contains(".o-mail-SubChannelList-thread", {
+                    await contains(".o-mail-SubChannelPreview", {
                         text: `Sub Channel ${i}`,
                     });
                 }
@@ -136,24 +136,25 @@ registry.category("web_tour.tours").add("create_thread_for_attachment_without_bo
         },
         {
             content: "Drop a file",
-            trigger: ".o-mail-Discuss-main",
+            trigger: ".o-mail-DiscussContent-main",
             async run() {
                 const files = [new File(["hi there"], "file2.txt", { type: "text/plain" })];
-                await dragenterFiles(".o-mail-Discuss-main", files);
+                await dragenterFiles(".o-mail-DiscussContent-main", files);
                 await dropFiles(".o-Dropzone", files);
             },
         },
         {
-            trigger: '.o-mail-AttachmentCard:not(.o-isUploading):contains("file2.txt")',
+            trigger: '.o-mail-AttachmentContainer:not(.o-isUploading):contains("file2.txt")',
         },
         {
             content: "Click on send button",
-            trigger: ".o-mail-Composer-send:enabled",
+            trigger: ".o-mail-Composer-mainActions [title='Send']:enabled",
             run: "click",
         },
         {
             content: "Hover on attachment",
-            trigger: '.o-mail-Message .o-mail-AttachmentCard:contains("file2.txt")',
+            trigger:
+                '.o-mail-Message:not(:has(.o-mail-Message-pendingProgress)) .o-mail-AttachmentContainer:contains("file2.txt")',
             run: "hover",
         },
         {

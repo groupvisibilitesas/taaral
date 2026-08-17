@@ -9,13 +9,23 @@ registerWebsitePreviewTour("website_designer_iframe_video",
     () => [
         {
             content: "As administrator, add a video block to the description field",
-            trigger: `#oe_snippets .oe_snippet[name="Video"] .oe_snippet_thumbnail:not(.o_we_ongoing_insertion)`,
+            trigger: `.o_block_tab:not(.o_we_ongoing_insertion) #snippet_content .o_snippet[name="Video"].o_draggable .o_snippet_thumbnail`,
             run: "drag_and_drop :iframe .o_test_website_description",
+        },
+        {
+            content: "Add a video URL",
+            trigger: ".o_select_media_dialog #o_video_text",
+            run: `edit https://www.youtube.com/watch?v=G8b4UZIcTfg`,
+        },
+        {
+            content: "Add the video",
+            trigger: ".o_select_media_dialog .modal-footer .btn-primary",
+            run: "click",
         },
         ...clickOnSave(),
         {
             content: "Check that the video was correctly saved",
-            trigger: ":iframe .media_iframe_video[data-oe-expression*='nbso3NVz3p8']",
+            trigger: ":iframe .media_iframe_video[data-oe-expression*='G8b4UZIcTfg']",
             run: () => {},
         },
     ]
@@ -31,7 +41,7 @@ registerWebsitePreviewTour("website_restricted_editor_iframe_video", {
         {
             content: "Check that the video iframe was correctly restored after saving the changes",
             trigger:
-                ":iframe [data-oe-field]:not([data-oe-sanitize-prevent-edition]) .media_iframe_video[data-oe-expression*='nbso3NVz3p8']",
+                ":iframe [data-oe-field]:not([data-oe-sanitize-prevent-edition]) .media_iframe_video[data-oe-expression*='G8b4UZIcTfg']",
             run: () => {},
         },
         {

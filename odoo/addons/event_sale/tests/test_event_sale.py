@@ -401,6 +401,19 @@ class TestEventSale(TestEventSaleCommon):
         with self.assertRaises(ValidationError):
             editor.action_make_registration()
 
+    def test_event_sale_price_total(self):
+        """ Test that the `sale_amount_total` matches the total amount of all confirmed orders.
+        """
+        self.env['sale.order.line'].create({
+            'product_id': self.event_product.id,
+            'order_id': self.sale_order.id,
+            'event_id': self.event_0.id,
+            'event_ticket_id': self.ticket.id,
+        })
+        self.sale_order.action_confirm()
+        expected_price = sum(self.event_0.sale_order_lines_ids.mapped('price_total'))
+        self.assertEqual(self.event_0.sale_price_total, expected_price)
+
     def test_ticket_price_with_currency_conversion(self):
         """ Test that the price of the ticket and the `sale_price_total` are
         correctly converted when using another currency.
@@ -488,7 +501,7 @@ class TestEventSale(TestEventSaleCommon):
 
         so.action_confirm()
         self.assertAlmostEqual(
-            event.sale_price_subtotal,
+            event.sale_price_total,
             currency_VEF._convert(
                 so.amount_total, currency_USD, self.env.user.company_id, so.date_order
             ),

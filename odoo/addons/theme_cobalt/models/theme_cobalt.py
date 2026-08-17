@@ -1,7 +1,7 @@
 from odoo import models
 
 
-class ThemeCobalt(models.AbstractModel):
+class ThemeUtils(models.AbstractModel):
     _inherit = 'theme.utils'
 
     def _theme_cobalt_post_copy(self, mod):

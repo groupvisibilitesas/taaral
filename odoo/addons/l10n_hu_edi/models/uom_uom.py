@@ -3,7 +3,7 @@
 from odoo import fields, models
 
 
-class ProductUoM(models.Model):
+class UomUom(models.Model):
     _inherit = 'uom.uom'
 
     l10n_hu_edi_code = fields.Selection(

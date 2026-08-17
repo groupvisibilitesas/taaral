@@ -3,22 +3,21 @@
 # * base_import_module
 #
 # Translators:
-# Petko Karamotchev, 2024
-# Martin Trigaux, 2024
-# KeyVillage, 2024
-# Elena Varbanova, 2024
-# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2024
-# aleksandar ivanov, 2024
-# Maria Boyadjieva <marabo2000@gmail.com>, 2024
+# Nikola Iliev, 2023
+# aleksandar ivanov, 2023
+# Martin Trigaux, 2023
+# Maria Boyadjieva <marabo2000@gmail.com>, 2023
+# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2023, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Ivaylo Malinov <iv.malinov@gmail.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server saas~12.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-07-29 16:04+0000\n"
+"POT-Creation-Date: 2026-01-25 18:36+0000\n"
+"PO-Revision-Date: 2026-08-07 05:54+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-19/"
 "base_import_module/bg/>\n"
 "Language: bg\n"
 "MIME-Version: 1.0\n"
@@ -92,7 +91,7 @@ msgstr "Не можахте да изберете база данни '%s'"
 #. module: base_import_module
 #: model:ir.model.fields,field_description:base_import_module.field_base_import_module__create_uid
 msgid "Created by"
-msgstr "Създаден от"
+msgstr "Създадено от"
 
 #. module: base_import_module
 #: model:ir.model.fields,field_description:base_import_module.field_base_import_module__create_date
@@ -101,6 +100,10 @@ msgstr "Създадено на"
 
 #. module: base_import_module
 #: model:ir.model.fields,field_description:base_import_module.field_base_import_module__display_name
+#: model:ir.model.fields,field_description:base_import_module.field_base_module_uninstall__display_name
+#: model:ir.model.fields,field_description:base_import_module.field_ir_http__display_name
+#: model:ir.model.fields,field_description:base_import_module.field_ir_module_module__display_name
+#: model:ir.model.fields,field_description:base_import_module.field_ir_ui_view__display_name
 msgid "Display Name"
 msgstr "Име за показване"
 
@@ -137,7 +140,16 @@ msgstr ""
 "записите `noupdate='1'`)"
 
 #. module: base_import_module
+#: model:ir.model,name:base_import_module.model_ir_http
+msgid "HTTP Routing"
+msgstr "HTTP Маршрутизиране"
+
+#. module: base_import_module
 #: model:ir.model.fields,field_description:base_import_module.field_base_import_module__id
+#: model:ir.model.fields,field_description:base_import_module.field_base_module_uninstall__id
+#: model:ir.model.fields,field_description:base_import_module.field_ir_http__id
+#: model:ir.model.fields,field_description:base_import_module.field_ir_module_module__id
+#: model:ir.model.fields,field_description:base_import_module.field_ir_ui_view__id
 msgid "ID"
 msgstr "ID"
 
@@ -197,7 +209,7 @@ msgstr "Последно актуализирано на"
 #. module: base_import_module
 #: model_terms:ir.ui.view,arch_db:base_import_module.view_base_module_import
 msgid "Load demo data"
-msgstr "Зареждане на демонстрационни данни"
+msgstr "Зареждане на демо данни"
 
 #. module: base_import_module
 #. odoo-python
@@ -246,9 +258,20 @@ msgid "No file sent."
 msgstr "Не е изпратен файл."
 
 #. module: base_import_module
-#: model_terms:ir.ui.view,arch_db:base_import_module.view_base_module_import
-msgid "Note: you can only import data modules (.xml files and static assets)"
+#. odoo-python
+#: code:addons/base_import_module/models/ir_module.py:0
+msgid "No manifest found in '%(modules)s'. Can't import the zip file."
 msgstr ""
+"Не е намерен манифест в '%(modules)s'. Не може да се импортира zip файлът."
+
+#. module: base_import_module
+#: model_terms:ir.ui.view,arch_db:base_import_module.view_base_module_import
+msgid ""
+"Note: you can only import data modules (.xml files, i18n files and static "
+"assets)"
+msgstr ""
+"Забележка: можете да импортирате само модули с данни (.xml файлове, i18n "
+"файлове и статични ресурси)"
 
 #. module: base_import_module
 #: model:ir.model.fields.selection,name:base_import_module.selection__ir_module_module__module_type__official
@@ -283,6 +306,16 @@ msgstr "Състояние"
 #: code:addons/base_import_module/models/ir_module.py:0
 msgid "Studio customizations require the Odoo Studio app."
 msgstr "Персонализациите със Studio изискват приложението Odoo Studio."
+
+#. module: base_import_module
+#. odoo-python
+#: code:addons/base_import_module/models/ir_module.py:0
+msgid ""
+"The assets path in the manifest of imported module '%(module_name)s' cannot "
+"contain glob wildcards (e.g., *, **)."
+msgstr ""
+"Пътят за активи в манифеста на импортирания модул '%(module_name)s' не може "
+"да съдържа glob заместители (напр. *, **)."
 
 #. module: base_import_module
 #. odoo-python
@@ -335,3 +368,18 @@ msgstr "извършен"
 #: model:ir.model.fields.selection,name:base_import_module.selection__base_import_module__state__init
 msgid "init"
 msgstr "init"
+
+#~ msgid "Import App"
+#~ msgstr "Въведете приложение "
+
+#~ msgid "Import module"
+#~ msgstr "Въведете модул"
+
+#~ msgid "Last Modified on"
+#~ msgstr "Последна промяна на"
+
+#~ msgid "Open Modules"
+#~ msgstr "Отворете модули"
+
+#~ msgid "Select module package to import (.zip file):"
+#~ msgstr "Изберете пакета модули за въвеждане (.zip файл):"

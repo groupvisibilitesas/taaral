@@ -139,6 +139,10 @@ $o-website-values-palettes: (
     ),
 );
 
+$default-16: map-get($o-color-palettes, 'default-16');
+$default-16: map-merge($default-16, ('footer': 5));
+$o-color-palettes: map-merge($o-color-palettes, ('default-16': $default-16));
+
 $o-color-palettes-compatibility-indexes: (
     1: 'kiddo-3',
     2: 'kiddo-2',
@@ -176,6 +180,6 @@ $o-gray-color-palettes-compatibility-indexes: (
 // Shapes
 //------------------------------------------------------------------------------
 
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Origins/14_001', (3: 2, 4: rgba(0, 0, 0, 0)));
-$o-bg-shapes: change-shape-colors-mapping('web_editor', 'Origins/16', (3: 3));
-$o-bg-shapes: add-footer-shape-colors-mapping('web_editor', 'Wavy/22', (3: 'footer'));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Origins/14_001', (3: 2, 4: rgba(0, 0, 0, 0)));
+$o-bg-shapes: change-shape-colors-mapping('html_builder', 'Origins/16', (3: 3));
+$o-bg-shapes: add-footer-shape-colors-mapping('html_builder', 'Wavy/22', (3: 'footer'));

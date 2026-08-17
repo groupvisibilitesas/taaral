@@ -3,20 +3,36 @@
 # * purchase_requisition
 #
 # Translators:
-# Tiffany Chang, 2024
-# Wil Odoo, 2024
-# Marta Wacławek, 2025
-#
-# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
-# "Marta (wacm)" <wacm@odoo.com>, 2026.
+# Arek Smagacz <arek.smagacz@gmail.com>, 2022
+# Piotr Cierkosz <piotr.w.cierkosz@gmail.com>, 2022
+# DanielDemedziuk <daniel.demedziuk@gmail.com>, 2022
+# Tomasz Leppich <t.leppich@gmail.com>, 2022
+# Zdzisław Krajewski <zdzichucb@gmail.com>, 2022
+# Paweł Wodyński <pw@myodoo.pl>, 2022
+# Piotr Szlązak <szlazakpiotr@gmail.com>, 2022
+# Marcin Młynarczyk <mlynarczyk@gmail.com>, 2022
+# Andrzej Wiśniewski <a.wisniewski@hadron.eu.com>, 2022
+# Karol Rybak <karolrybak85@gmail.com>, 2022
+# Dawid Prus, 2022
+# Radosław Biegalski <radoslaw.biegalski@openglobe.pl>, 2022
+# Piotr Strębski <strebski@gmail.com>, 2022
+# Natalia Gros <nag@odoo.com>, 2022
+# Wojciech Warczakowski <w.warczakowski@gmail.com>, 2022
+# Judyta Kaźmierczak <judyta.kazmierczak@openglobe.pl>, 2022
+# Grzegorz Grzelak <grzegorz.grzelak@openglobe.pl>, 2022
+# Dariusz Żbikowski <darek@krokus.com.pl>, 2022
+# Martin Trigaux, 2022
+# Tadeusz Karpiński <tadeuszkarpinski@gmail.com>, 2023
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
+# "Marta (wacm)" <wacm@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 18:38+0000\n"
-"PO-Revision-Date: 2026-03-21 09:23+0000\n"
+"POT-Creation-Date: 2026-04-10 18:39+0000\n"
+"PO-Revision-Date: 2026-08-05 16:17+0000\n"
 "Last-Translator: \"Marta (wacm)\" <wacm@odoo.com>\n"
-"Language-Team: Polish <https://translate.odoo.com/projects/odoo-18/"
+"Language-Team: Polish <https://translate.odoo.com/projects/odoo-19/"
 "purchase_requisition/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
@@ -25,7 +41,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && "
 "(n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && "
 "n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: purchase_requisition
 #: model:ir.actions.report,print_report_name:purchase_requisition.action_report_purchase_requisitions
@@ -86,6 +102,7 @@ msgstr "Ikona typu aktywności"
 #: model:ir.model.fields,field_description:purchase_requisition.field_product_supplierinfo__purchase_requisition_id
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order__requisition_id
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__name
+#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_search_inherit
 msgid "Agreement"
 msgstr "Umowa"
 
@@ -115,6 +132,12 @@ msgstr "Alternatywne PO"
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_form_inherit
 msgid "Alternative Purchase Order"
 msgstr "Alternatywne zamówienie zakupu"
+
+#. module: purchase_requisition
+#. odoo-python
+#: code:addons/purchase_requisition/wizard/purchase_requisition_create_alternative.py:0
+msgid "Alternative Purchase Orders"
+msgstr "Alternatywne zamówienia zakupu"
 
 #. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_requisition_alternative_warning_form
@@ -196,17 +219,12 @@ msgid "Cancelled by the agreement associated to this quotation."
 msgstr "Anulowane przez umowę powiązaną z niniejszą ofertą."
 
 #. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__product_uom_category_id
-msgid "Category"
-msgstr "Kategoria"
-
-#. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_line_compare_tree
 msgid "Choose"
 msgstr "Wybierz"
 
 #. module: purchase_requisition
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_create_alternative__partner_id
+#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_create_alternative__partner_ids
 msgid "Choose a vendor for alternative PO"
 msgstr "Wybór dostawcy dla alternatywnego PO"
 
@@ -283,15 +301,6 @@ msgid "Confirmed"
 msgstr "Potwierdzone"
 
 #. module: purchase_requisition
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_line__product_uom_category_id
-msgid ""
-"Conversion between Units of Measure can only occur if they belong to the "
-"same category. The conversion will be made based on the ratios."
-msgstr ""
-"Konwersja pomiędzy jednostkami miary (JM) może nastąpić tylko pomiędzy "
-"jednostkami z tej samej kategorii. Do konwersji jest stosowany przelicznik."
-
-#. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__copy_products
 msgid "Copy Products"
 msgstr "Kopiuj produkty"
@@ -306,17 +315,16 @@ msgstr "Utwórz alternatywę"
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_form_inherit
 msgid ""
 "Create a call for tender by adding alternative requests for quotation to "
-"different vendors.\n"
-"                            Make your choice by selecting the best "
-"combination of lead time, OTD and/or total amount.\n"
-"                            By comparing product lines you can also decide "
-"to order some products from one vendor and others from another vendor."
+"different vendors.                                 Make your choice by "
+"selecting the best combination of lead time, OTD and/or total "
+"amount.                                 By comparing product lines you can "
+"also decide to order some products from one vendor and others from another "
+"vendor."
 msgstr ""
 "Utwórz zapytanie ofertowe, dodając alternatywne zapytania ofertowe do "
-"różnych dostawców.\n"
-"                                 Dokonaj wyboru, wybierając najlepszą "
-"kombinację czasu realizacji, OTD i/lub całkowitej kwoty.\n"
-"                                 Porównując pozycje produktów, możesz "
+"różnych dostawców.                                 Dokonaj wyboru, "
+"wybierając najlepszą kombinację czasu realizacji, OTD i/lub całkowitej "
+"kwoty.                                 Porównując pozycje produktów, możesz "
 "również zdecydować się na zamówienie niektórych produktów od jednego "
 "dostawcy, a innych od innego."
 
@@ -345,11 +353,6 @@ msgid "Created on"
 msgstr "Data utworzenia"
 
 #. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__creation_blocked
-msgid "Creation Blocked"
-msgstr "Tworzenie zablokowane"
-
-#. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__currency_id
 msgid "Currency"
 msgstr "Waluta"
@@ -376,11 +379,16 @@ msgid "Discard"
 msgstr "Odrzuć"
 
 #. module: purchase_requisition
+#: model:ir.model.fields,field_description:purchase_requisition.field_product_product__display_name
+#: model:ir.model.fields,field_description:purchase_requisition.field_product_supplierinfo__display_name
+#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order__display_name
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order_group__display_name
+#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order_line__display_name
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__display_name
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_alternative_warning__display_name
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__display_name
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__display_name
+#: model:ir.model.fields,field_description:purchase_requisition.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr "Nazwa wyświetlana"
 
@@ -454,28 +462,21 @@ msgid "Future Activities"
 msgstr "Przyszłe aktywności"
 
 #. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
-msgid "Group By"
-msgstr "Grupuj wg"
-
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order__has_alternatives
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_kpis_tree_inherit_purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_tree_inherit_purchase_requisition
-msgid "Has Alternatives"
-msgstr "Ma alternatywy"
-
-#. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__has_message
 msgid "Has Message"
 msgstr "Ma wiadomość"
 
 #. module: purchase_requisition
+#: model:ir.model.fields,field_description:purchase_requisition.field_product_product__id
+#: model:ir.model.fields,field_description:purchase_requisition.field_product_supplierinfo__id
+#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order__id
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order_group__id
+#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order_line__id
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__id
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_alternative_warning__id
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__id
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__id
+#: model:ir.model.fields,field_description:purchase_requisition.field_res_config_settings__id
 msgid "ID"
 msgstr "ID"
 
@@ -500,20 +501,6 @@ msgstr "Jeśli zaznaczone, nowe wiadomości wymagają twojej uwagi."
 msgid "If checked, some messages have a delivery error."
 msgstr ""
 "Jeśli zaznaczone, niektóre wiadomości napotkały błędy podczas doręczenia."
-
-#. module: purchase_requisition
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_create_alternative__creation_blocked
-msgid ""
-"If the chosen vendor or if any of the products in the original PO have a "
-"blocking warning then we prevent creation of alternative PO. This is because "
-"normally these fields are cleared w/warning message within form view, but we "
-"cannot recreate that in this case."
-msgstr ""
-"Jeśli wybrany dostawca lub którykolwiek z produktów w oryginalnym zamówieniu "
-"ma ostrzeżenie o blokowaniu, uniemożliwiamy utworzenie alternatywnego "
-"zamówienia. Dzieje się tak, ponieważ normalnie te pola są czyszczone z "
-"komunikatem ostrzegawczym w widoku formularza, ale nie możemy tego odtworzyć "
-"w tym przypadku."
 
 #. module: purchase_requisition
 #: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_create_alternative__copy_products
@@ -585,6 +572,11 @@ msgstr "Wiadomości"
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisition_document
 msgid "Mitchell Admin"
 msgstr "Mitchell Admin"
+
+#. module: purchase_requisition
+#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
+msgid "My Activities"
+msgstr "Moje aktywności"
 
 #. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__my_activity_date_deadline
@@ -712,11 +704,6 @@ msgid "Product"
 msgstr "Produkt"
 
 #. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__product_uom_id
-msgid "Product Unit of Measure"
-msgstr "Jednostka miary produktu"
-
-#. module: purchase_requisition
 #: model:ir.model,name:purchase_requisition.model_product_product
 msgid "Product Variant"
 msgstr "Wariant produktu"
@@ -780,11 +767,6 @@ msgstr "Pozycje zamówienia zakupu"
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__purchase_ids
 msgid "Purchase Orders"
 msgstr "Zamówienia Zakupu"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_search_inherit
-msgid "Purchase Orders with requisition"
-msgstr "Zamówienia zakupu ze zleceniem"
 
 #. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisition_document
@@ -860,11 +842,6 @@ msgid "Request for Quotations"
 msgstr "Zapytanie ofertowe"
 
 #. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_search_inherit
-msgid "Requisition"
-msgstr "Zlecenie"
-
-#. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_form
 msgid "Reset to Draft"
 msgstr "Przywróć do wersji roboczej"
@@ -886,10 +863,8 @@ msgstr "Wyszukiwanie umów kupna"
 
 #. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
-msgid "Show all records which has next action date is before today"
-msgstr ""
-"Pokaż wszystkie rekordy, których data kolejnej czynności przypada przed "
-"dzisiaj"
+msgid "Show all records whose next activity date is past"
+msgstr "Pokaż wszystkie zapisy, których data kolejnej aktywności wypada po"
 
 #. module: purchase_requisition
 #. odoo-python
@@ -966,18 +941,6 @@ msgstr ""
 
 #. module: purchase_requisition
 #. odoo-python
-#: code:addons/purchase_requisition/wizard/purchase_requisition_create_alternative.py:0
-msgid ""
-"The vendor you have selected or at least one of the products you are copying "
-"from the original order has a blocking warning on it and cannot be selected "
-"to create an alternative."
-msgstr ""
-"Wybrany sprzedawca lub co najmniej jeden z produktów kopiowanych z "
-"oryginalnego zamówienia ma ostrzeżenie o blokowaniu i nie można go wybrać w "
-"celu utworzenia alternatywy."
-
-#. module: purchase_requisition
-#. odoo-python
 #: code:addons/purchase_requisition/models/purchase.py:0
 msgid "There are no quantities to clear."
 msgstr "Nie ma żadnych ilości do wyczyszczenia."
@@ -991,12 +954,6 @@ msgid ""
 msgstr ""
 "Istnieje już otwarte zamówienie zbiorcze dla tego dostawcy. Sugerujemy "
 "dokończenie tego otwartego zamówienia zbiorczego zamiast tworzenia nowego."
-
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/wizard/purchase_requisition_create_alternative.py:0
-msgid "This is a blocking warning!\n"
-msgstr "To jest ostrzeżenie o blokowaniu!\n"
 
 #. module: purchase_requisition
 #. odoo-python
@@ -1029,6 +986,7 @@ msgid "Type of the exception activity on record."
 msgstr "Typ wyjątku aktywności na rekordzie."
 
 #. module: purchase_requisition
+#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__product_uom_id
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisition_document
 msgid "Unit"
 msgstr "Jednostka"
@@ -1040,13 +998,8 @@ msgid "Unit Price"
 msgstr "Cena jednostkowa"
 
 #. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_form
-msgid "UoM"
-msgstr "JM"
-
-#. module: purchase_requisition
 #: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__vendor_id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__partner_id
+#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__partner_ids
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_line_compare_tree
 msgid "Vendor"
 msgstr "Dostawca"
@@ -1097,15 +1050,6 @@ msgstr "Historia komunikacji"
 #: code:addons/purchase_requisition/models/purchase.py:0
 msgid "What about the alternative Requests for Quotations?"
 msgstr "A co z alternatywnymi zapytaniami ofertowymi?"
-
-#. module: purchase_requisition
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_order__has_alternatives
-msgid ""
-"Whether or not this purchase order is linked to another purchase order as an "
-"alternative."
-msgstr ""
-"Czy to zamówienie zakupu jest alternatywnie powiązane z innym zamówieniem "
-"zakupu."
 
 #. module: purchase_requisition
 #: model:ir.model,name:purchase_requisition.model_purchase_requisition_alternative_warning
@@ -1190,3 +1134,103 @@ msgstr "np. PO0025"
 
 #~ msgid "2023-09-15"
 #~ msgstr "2023-09-15"
+
+#~ msgid "<strong>Date</strong>"
+#~ msgstr "<strong>Data</strong>"
+
+#~ msgid "<strong>Description</strong>"
+#~ msgstr "<strong>Opis</strong>"
+
+#~ msgid "<strong>Product UoM</strong>"
+#~ msgstr "<strong>Produkt JM</strong>"
+
+#~ msgid "<strong>Qty</strong>"
+#~ msgstr "<strong>Ilość</strong>"
+
+#~ msgid "<strong>Reference </strong>"
+#~ msgstr "<strong>Odnośnik </strong>"
+
+#~ msgid "<strong>Scheduled Date</strong>"
+#~ msgstr "<strong>Zaplanowana data</strong>"
+
+#~ msgid "<strong>Scheduled Ordering Date:</strong><br/>"
+#~ msgstr "<strong>Zaplanowana data złożenia zamówienia:</strong>"
+
+#~ msgid "<strong>Source:</strong><br/>"
+#~ msgstr "<strong>Źródło:</strong><br/>"
+
+#~ msgid "<strong>Vendor </strong>"
+#~ msgstr "<strong>Dostawca </strong>"
+
+#~ msgid "Bid Selection"
+#~ msgstr "Wybór ofert"
+
+#~ msgid "Category"
+#~ msgstr "Kategoria"
+
+#~ msgid ""
+#~ "Conversion between Units of Measure can only occur if they belong to the "
+#~ "same category. The conversion will be made based on the ratios."
+#~ msgstr ""
+#~ "Konwersja pomiędzy jednostkami miary (JM) może nastąpić tylko pomiędzy "
+#~ "jednostkami z tej samej kategorii. Do konwersji jest stosowany "
+#~ "przelicznik."
+
+#~ msgid "Custom Description"
+#~ msgstr "Własny opis"
+
+#~ msgid "Data for new quotations"
+#~ msgstr "Dane do nowego zapytania ofertowego"
+
+#~ msgid "Delivery Date"
+#~ msgstr "Data Dostawy"
+
+#~ msgid "Group By"
+#~ msgstr "Grupuj wg."
+
+#~ msgid "Lines"
+#~ msgstr "Pozycje"
+
+#~ msgid "Number of messages which requires an action"
+#~ msgstr "Liczba wiadomości wymagających akcji"
+
+#~ msgid "Price Unit"
+#~ msgstr "Cena jednostkowa"
+
+#~ msgid "Product Unit of Measure"
+#~ msgstr "Jednostka miary produktu"
+
+#~ msgid "Purchase Orders with requisition"
+#~ msgstr "Zamówienia zakupu ze zleceniem"
+
+#~ msgid "Quantities"
+#~ msgstr "Ilości"
+
+#~ msgid "Reference:"
+#~ msgstr "Odnośnik:"
+
+#~ msgid "Requests for Quotation Details"
+#~ msgstr "Szczegóły zapytania"
+
+#~ msgid "Requisition"
+#~ msgstr "Zlecenie"
+
+#~ msgid "Scheduled Date"
+#~ msgstr "Zaplanowana data"
+
+#~ msgid "Sequence"
+#~ msgstr "Sekwencja"
+
+#~ msgid "Show all records which has next action date is before today"
+#~ msgstr ""
+#~ "Pokaż wszystkie rekordy, których data kolejnej czynności przypada przed "
+#~ "dzisiaj"
+
+#~ msgid "Source Document"
+#~ msgstr "Dokument źródłowy"
+
+#~ msgid "UoM"
+#~ msgstr "JM"
+
+#~ msgid "Validate"
+#~ msgstr "Zatwierdź"

@@ -151,7 +151,7 @@ class TestSwissQR(AccountTestInvoicingCommon):
             'barLevel': 'M',
             'width': 256,
             'height': 256,
-            'quiet': 1,
+            'quiet': 0,
             'mask': 'ch_cross',
             'value': expected_payload,
         }
@@ -189,6 +189,7 @@ class TestSwissQR(AccountTestInvoicingCommon):
         """
         if 'sale.order' not in self.env:
             self.skipTest('`sale` is not installed')
+        self.env.user.group_ids += self.env.ref('sales_team.group_sale_salesman')
 
         payment_custom = self.env['ir.module.module']._get('payment_custom')
         if payment_custom.state != 'installed':
@@ -217,6 +218,7 @@ class TestSwissQR(AccountTestInvoicingCommon):
             'currency_id': self.env.company.currency_id.id,
         })
         payment_transaction._set_pending()
+        payment_transaction._post_process()
 
         self.assertEqual(order.reference, mod10r(order.reference[:-1]))
 

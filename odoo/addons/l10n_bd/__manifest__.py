@@ -1,7 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
     'name': 'Bangladesh - Accounting',
-    'website': 'https://www.odoo.com/documentation/18.0/applications/finance/fiscal_localizations.html',
+    'website': 'https://www.odoo.com/documentation/latest/applications/finance/fiscal_localizations.html',
     'icon': '/account/static/description/l10n.png',
     'countries': ['bd'],
     'version': '1.0',
@@ -24,12 +24,12 @@ Activates:
     'auto_install': ['account'],
     'data': [
         'data/account.account.tag.csv',
-        'data/res.country.state.csv',
         'data/account_tax_report_data.xml',
         'views/menu_items.xml',
     ],
     'demo': [
         'demo/demo_company.xml',
     ],
+    'author': 'Odoo S.A.',
     'license': 'LGPL-3',
 }

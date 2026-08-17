@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api
+from odoo import Command, models, fields, api
 from odoo.tools.translate import _
 from odoo.exceptions import UserError
 
@@ -72,7 +72,9 @@ class AccountMoveReversal(models.TransientModel):
             raise UserError(_("All selected moves for reversal must belong to the same company."))
 
         if any(move.state != "posted" for move in move_ids):
-            raise UserError(_('You can only reverse posted moves.'))
+            raise UserError(_(
+                'To reverse a journal entry, it has to be posted first.'
+            ))
         if 'company_id' in fields:
             res['company_id'] = move_ids.company_id.id or self.env.company.id
         if 'move_ids' in fields:
@@ -141,7 +143,7 @@ class AccountMoveReversal(models.TransientModel):
                 moves_vals_list = []
                 for move in moves.with_context(include_business_fields=True):
                     data = move.copy_data(self._modify_default_reverse_values(move))[0]
-                    data['line_ids'] = [line for line in data['line_ids'] if line[2]['display_type'] in ('product', 'line_section', 'line_note')]
+                    data['line_ids'] = [line for line in data['line_ids'] if line[2]['display_type'] in ('product', 'line_section', 'line_subsection', 'line_note')]
                     moves_vals_list.append(data)
                 new_moves = self.env['account.move'].create(moves_vals_list)
                 new_moves._compute_partner_bank_id()
@@ -178,7 +180,17 @@ class AccountMoveReversal(models.TransientModel):
         return self.reverse_moves(is_modify=True)
 
     def _modify_default_reverse_values(self, origin_move):
-        return {
+        data = {
             'date': self.date,
             'invoice_origin': origin_move.invoice_origin,
         }
+
+        # if has vendor attachment, keep it
+        if origin_move.move_type.startswith('in_') and origin_move.message_main_attachment_id:
+            new_main_attachment_id = origin_move.message_main_attachment_id.copy({'res_id': False}).id
+            data.update({
+                'message_main_attachment_id': new_main_attachment_id,
+                'attachment_ids': [Command.link(new_main_attachment_id)],
+            })
+
+        return data

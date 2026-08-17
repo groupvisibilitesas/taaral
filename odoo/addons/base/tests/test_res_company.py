@@ -64,5 +64,5 @@ class TestCompany(TransactionCase):
             'symbol': 'AAA',
             'rate_ids': [Command.create({'name': '2009-09-09', 'rate': 1})]
         })
-        with patch('odoo.addons.base.models.res_company.Company._get_company_root_delegated_field_names', return_value=["currency_id", "zip"]):
+        with patch('odoo.addons.base.models.res_company.ResCompany._get_company_root_delegated_field_names', return_value=["currency_id", "zip"]):
             self.env.company.write({'currency_id': new_currency.id, 'zip': '12345'})

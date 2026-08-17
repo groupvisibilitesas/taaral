@@ -1,4 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+import base64
 import importlib
 import io
 import re
@@ -10,20 +11,11 @@ from logging import getLogger
 from zlib import compress, decompress, decompressobj
 
 from PIL import Image, PdfImagePlugin
-from reportlab.lib import colors
-from reportlab.lib.units import cm
-from reportlab.lib.utils import ImageReader
-from reportlab.pdfgen import canvas
 
+from odoo import modules
 from odoo.tools.arabic_reshaper import reshape
 from odoo.tools.parse_version import parse_version
-from odoo.tools.misc import file_open
-
-try:
-    import fontTools
-    from fontTools.ttLib import TTFont
-except ImportError:
-    TTFont = None
+from odoo.tools.misc import file_open, SENTINEL
 
 # ----------------------------------------------------------
 # PyPDF2 hack
@@ -236,32 +228,60 @@ def rotate_pdf(pdf):
         return _buffer.getvalue()
 
 
-def to_pdf_stream(attachment) -> io.BytesIO:
+def to_pdf_stream(attachment) -> io.BytesIO | None:
     """Get the byte stream of the attachment as a PDF."""
+    if not attachment.raw:
+        _logger.warning("%s has no raw data.", attachment)
+        return None
+
+    if attachment_raw := attachment._get_pdf_raw():
+        return io.BytesIO(attachment_raw)
     stream = io.BytesIO(attachment.raw)
-    if attachment.mimetype == 'application/pdf':
-        return stream
-    elif attachment.mimetype.startswith('image'):
+    if attachment.mimetype.startswith('image'):
         output_stream = io.BytesIO()
         Image.open(stream).convert("RGB").save(output_stream, format="pdf")
         return output_stream
     _logger.warning("mimetype (%s) not recognized for %s", attachment.mimetype, attachment)
+    return None
 
 
-def add_banner(pdf_stream, text=None, logo=False, thickness=2 * cm):
+def extract_page(attachment, num_page=0) -> io.BytesIO | None:
+    """Exctract a specific page form an attachement pdf"""
+    pdf_stream = to_pdf_stream(attachment)
+    if not pdf_stream:
+        return
+    pdf = PdfFileReader(pdf_stream)
+    page = pdf.getPage(num_page)
+    pdf_writer = PdfFileWriter()
+    pdf_writer.addPage(page)
+    stream = io.BytesIO()
+    pdf_writer.write(stream)
+    return stream
+
+
+def add_banner(pdf_stream, text=None, logo=False, thickness=SENTINEL):
     """ Add a banner on a PDF in the upper right corner, with Odoo's logo (optionally).
 
     :param pdf_stream (BytesIO):    The PDF stream where the banner will be applied.
     :param text (str):              The text to be displayed.
     :param logo (bool):             Whether to display Odoo's logo in the banner.
-    :param thickness (float):       The thickness of the banner in pixels.
+    :param thickness (float):       The thickness of the banner in pixels (default: 2cm).
     :return (BytesIO):              The modified PDF stream.
     """
+    from reportlab.lib import colors  # noqa: PLC0415
+    from reportlab.lib.utils import ImageReader  # noqa: PLC0415
+    from reportlab.pdfgen import canvas  # noqa: PLC0415
+
+    if thickness is SENTINEL:
+        from reportlab.lib.units import cm  # noqa: PLC0415
+        thickness = 2 * cm
 
     old_pdf = PdfFileReader(pdf_stream, strict=False, overwriteWarnings=False)
     packet = io.BytesIO()
     can = canvas.Canvas(packet)
-    odoo_logo = Image.open(file_open('base/static/img/main_partner-image.png', mode='rb'))
+    with file_open('base/static/img/main_partner-image.png', mode='rb') as f:
+        odoo_logo_file = io.BytesIO(f.read())
+    odoo_logo = Image.open(odoo_logo_file)
     odoo_color = colors.Color(113 / 255, 75 / 255, 103 / 255, 0.8)
 
     for p in range(old_pdf.getNumPages()):
@@ -572,7 +592,11 @@ class OdooPdfFileWriter(PdfFileWriter):
 
         # PDF/A needs the glyphs width array embedded in the pdf to be consistent with the ones from the font file.
         # But it seems like it is not the case when exporting from wkhtmltopdf.
-        if TTFont:
+        try:
+            import fontTools.ttLib  # noqa: PLC0415
+        except ImportError:
+            _logger.warning('The fonttools package is not installed. Generated PDF may not be PDF/A compliant.')
+        else:
             fonts = {}
             # First browse through all the pages of the pdf file, to get a reference to all the fonts used in the PDF.
             for page in pages:
@@ -586,7 +610,7 @@ class OdooPdfFileWriter(PdfFileWriter):
             for font in fonts.values():
                 font_file = font['/FontDescriptor']['/FontFile2']
                 stream = io.BytesIO(decompress(font_file._data))
-                ttfont = TTFont(stream)
+                ttfont = fontTools.ttLib.TTFont(stream)
                 font_upm = ttfont['head'].unitsPerEm
                 if parse_version(fontTools.__version__) < parse_version('4.37.2'):
                     glyphs = ttfont.getGlyphSet()._hmtx.metrics
@@ -599,8 +623,6 @@ class OdooPdfFileWriter(PdfFileWriter):
 
                 font[NameObject('/W')] = ArrayObject([NumberObject(1), ArrayObject(glyph_widths)])
                 stream.close()
-        else:
-            _logger.warning('The fonttools package is not installed. Generated PDF may not be PDF/A compliant.')
 
         # Every annotation dictionary, except those whose subtype is Popup,
         # must contain the /F key (annotation flags), as required by PDF/A (clause 6.3.2).

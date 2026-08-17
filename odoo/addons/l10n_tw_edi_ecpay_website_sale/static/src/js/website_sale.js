@@ -65,7 +65,7 @@ publicWidget.registry.knowledgeBaseAutocomplete = publicWidget.Widget.extend({
     },
 
     getTokenInfo() {
-        const form = document.getElementById("ecpay_invoice_form");
+        const form = document.getElementById("form_l10n_tw_invoicing_info");
         const saleOrderId = form.getAttribute("date-order-id");
         const accessToken = form.getAttribute("data-access-token");
         return { saleOrderId, accessToken };

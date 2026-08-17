@@ -11,7 +11,7 @@ class AccountChartTemplate(models.AbstractModel):
         return {
             'name': _('Common'),
             'visible': 0,
-            'code_digits': 6,
+            'code_digits': 4,
             'use_storno_accounting': True,
             'property_account_receivable_id': 'l10n_cn_common_account_1122',
             'property_account_payable_id': 'l10n_cn_common_account_2202',
@@ -35,6 +35,10 @@ class AccountChartTemplate(models.AbstractModel):
     @template('cn_common', 'account.journal')
     def _get_cn_account_journal(self):
         return {
-            'cash': {'default_account_id': 'l10n_cn_common_account_1001'},
+            'cash': {
+                'name': _("Cash"),
+                'type': 'cash',
+                'default_account_id': 'l10n_cn_common_account_1001',
+            },
             'bank': {'default_account_id': 'l10n_cn_common_account_1002'},
         }

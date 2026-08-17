@@ -4,6 +4,7 @@ from odoo import api, fields, models, tools
 
 from odoo.addons.hr_homeworking.models.hr_homeworking import DAYS
 
+
 class HomeworkLocationWizard(models.TransientModel):
     _name = 'homework.location.wizard'
     _description = 'Set Homework Location Wizard'
@@ -13,7 +14,6 @@ class HomeworkLocationWizard(models.TransientModel):
     work_location_type = fields.Selection(related="work_location_id.location_type")
     employee_id = fields.Many2one('hr.employee', default=lambda self: self.env.user.employee_id, required=True, ondelete="cascade")
     employee_name = fields.Char(related="employee_id.name")
-    user_can_edit = fields.Boolean(compute='_compute_user_can_edit')
     weekly = fields.Boolean(default=False)
     date = fields.Date(string="Date")
     day_week_string = fields.Char(compute="_compute_day_week_string")
@@ -22,10 +22,6 @@ class HomeworkLocationWizard(models.TransientModel):
     def _compute_day_week_string(self):
         for record in self:
             record.day_week_string = tools.format_date(record.env, record.date, date_format='EEEE') if record.date else ''
-
-    @api.depends('date')
-    def _compute_user_can_edit(self):
-        self.user_can_edit = self.env.user.can_edit
 
     def set_employee_location(self):
         self.ensure_one()

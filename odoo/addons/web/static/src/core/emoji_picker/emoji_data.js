@@ -53,10 +53,10 @@
 // Since JSON grammar is way simpler than JavaScript's grammar, it is actually
 // faster to parse the data as a JSON object than as a JavaScript object.
 
-import { _t as realT } from "@web/core/l10n/translation";
+import { appTranslateFn } from "@web/core/l10n/translation";
 
 // Escape translated strings to prevent parsing errors
-const _t = (str) => JSON.stringify(realT(str)).slice(1, -1);
+const _t = (str) => JSON.stringify(appTranslateFn(str, "web")).slice(1, -1);
 
 const _getCategories = () => `[
     {
@@ -1482,7 +1482,8 @@ const _getEmojisData1 = () => `{
     ],
     "name": "` + _t("face with steam from nose") + `",
     "shortcodes": [
-        ":face_with_steam_from_nose:"
+        ":face_with_steam_from_nose:",
+        ":triumph:"
     ]
 },
 {
@@ -1911,6 +1912,7 @@ const _getEmojisData1 = () => `{
     ],
     "name": "` + _t("see-no-evil monkey") + `",
     "shortcodes": [
+        ":see_no_evil:",
         ":see-no-evil_monkey:"
     ]
 },
@@ -1930,6 +1932,7 @@ const _getEmojisData1 = () => `{
     ],
     "name": "` + _t("hear-no-evil monkey") + `",
     "shortcodes": [
+        ":hear_no_evil:",
         ":hear-no-evil_monkey:"
     ]
 },
@@ -1949,6 +1952,7 @@ const _getEmojisData1 = () => `{
     ],
     "name": "` + _t("speak-no-evil monkey") + `",
     "shortcodes": [
+        ":speak_no_evil:",
         ":speak-no-evil_monkey:"
     ]
 },
@@ -2261,6 +2265,7 @@ const _getEmojisData1 = () => `{
     ],
     "name": "` + _t("hundred points") + `",
     "shortcodes": [
+        ":100:",
         ":hundred_points:"
     ]
 },
@@ -2463,6 +2468,7 @@ const _getEmojisData2 = () => `{
     ],
     "name": "` + _t("waving hand") + `",
     "shortcodes": [
+        ":wave:",
         ":waving_hand:"
     ]
 },
@@ -2751,6 +2757,7 @@ const _getEmojisData2 = () => `{
     ],
     "name": "` + _t("thumbs up") + `",
     "shortcodes": [
+        ":+1:",
         ":thumbs_up:"
     ]
 },
@@ -2926,6 +2933,7 @@ const _getEmojisData2 = () => `{
     ],
     "name": "` + _t("folded hands") + `",
     "shortcodes": [
+        ":pray:",
         ":folded_hands:"
     ]
 },
@@ -10359,6 +10367,7 @@ const _getEmojisData4 = () => `{
     ],
     "name": "` + _t("hot beverage") + `",
     "shortcodes": [
+        ":coffee:",
         ":hot_beverage:"
     ]
 },
@@ -13696,6 +13705,7 @@ const _getEmojisData5 = () => `{
     ],
     "name": "` + _t("high voltage") + `",
     "shortcodes": [
+        ":zap:",
         ":high_voltage:"
     ]
 },
@@ -13798,6 +13808,7 @@ const _getEmojisData5 = () => `{
     ],
     "name": "` + _t("water wave") + `",
     "shortcodes": [
+        ":ocean:",
         ":water_wave:"
     ]
 },`;
@@ -21849,42 +21860,6 @@ const _getEmojisData8 = () => `{
     "name": "` + _t("pirate flag") + `",
     "shortcodes": [
         ":pirate_flag:"
-    ]
-},
-{
-    "category": "Symbols",
-    "codepoints": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
-    "emoticons": [],
-    "keywords": [
-        "` + _t("flag") + `"
-    ],
-    "name": "` + _t("flag: England") + `",
-    "shortcodes": [
-        ":england:"
-    ]
-},
-{
-    "category": "Symbols",
-    "codepoints": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
-    "emoticons": [],
-    "keywords": [
-        "` + _t("flag") + `"
-    ],
-    "name": "` + _t("flag: Scotland") + `",
-    "shortcodes": [
-        ":scotland:"
-    ]
-},
-{
-    "category": "Symbols",
-    "codepoints": "🏴󠁧󠁢󠁷󠁬󠁳󠁿",
-    "emoticons": [],
-    "keywords": [
-        "` + _t("flag") + `"
-    ],
-    "name": "` + _t("flag: Wales") + `",
-    "shortcodes": [
-        ":wales:"
     ]
 }`;
 

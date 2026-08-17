@@ -46,19 +46,6 @@ class TestReports(L10nInTestInvoicingCommon):
                 'l10n_in_state_id': expected_pos_id,
             }]
         )
-        self.partner_b.write({
-            'vat': False,
-            'l10n_in_gst_treatment': 'unregistered',
-            'state_id': self.state_in_hp,  # change state of partner
-        })
-        self.assertRecordValues(
-            self.invoice_b,
-            [{
-                'state': 'draft',
-                'l10n_in_gst_treatment': self.partner_b.l10n_in_gst_treatment,
-                'l10n_in_state_id': expected_pos_id, # POS doesn't change unless the partner changes
-            }]
-        )
         self.assertRecordValues(
             invoice_b_2,
             [{ # check gst treatment and pos doesn't change on posted invoice
@@ -75,14 +62,6 @@ class TestReports(L10nInTestInvoicingCommon):
             taxes=[self.igst_sale_18],
         )
 
-        self.assertRecordValues(
-            self.invoice_a,
-            [{
-                'state': 'draft',
-                'l10n_in_gst_treatment': self.partner_a.l10n_in_gst_treatment,
-                'l10n_in_state_id': self.state_in_gj.id,
-            }]
-        )
         self.invoice_a.partner_id = self.partner_foreign
         self.assertRecordValues(
             self.invoice_a,
@@ -141,3 +120,16 @@ class TestReports(L10nInTestInvoicingCommon):
                 'l10n_in_state_id': self.env.ref("l10n_in.state_in_oc").id,
             }]
         )
+
+    def test_government_gstin_extraction_tan(self):
+        """ Verify that a GSTIN based on a TAN (Government entity) correctly populates the TAN field and leaves the PAN field empty. """
+        gov_partner = self.env['res.partner'].create({
+            'name': "Gov Partner",
+            'country_id': self.env.ref('base.in').id,
+            'state_id': self.env.ref('base.state_in_dl').id,
+            'vat': '07DELN10357E1DH',
+        })
+        self.assertRecordValues(gov_partner, [{
+            'l10n_in_pan_entity_id': False,
+            'l10n_in_tan': 'DELN10357E',
+        }])

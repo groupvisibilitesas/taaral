@@ -55,8 +55,7 @@ function computeOffsetParams(args) {
     }
 
     // Auto-fill remaining arguments with mock date parameters
-    const fillStartIndex = args.length;
-    for (let i = fillStartIndex; i < dateParams.length; i++) {
+    for (let i = args.length; i < dateParams.length; i++) {
         args[i] = dateParams[i];
     }
 
@@ -73,12 +72,13 @@ function computeOffsetParams(args) {
 
     // Add the offset to each part:
     //  - starting from the 'milliseconds' part (index 6)
-    //  - stopping at the last auto-filled part
+    //  - stopping when there is no more offset to add
     //  - for each part: add the offset and carry the overflow to the next
-    for (let i = 6; i >= fillStartIndex; i--) {
+    for (let i = 6; i >= 0 && offset > 0; i--) {
         const maxValue = OFFSET_MAX_VALUES[$abs(i - 6)];
         if (!maxValue) {
             // Offset is beyoud the 'hours' part: no need to add it for each part
+            args[i] += offset;
             break;
         }
         // Combine the current value to the offset
@@ -87,10 +87,6 @@ function computeOffsetParams(args) {
         args[i] = offset % maxValue;
         // Carry the remainder to the next part
         offset = $floor(offset / maxValue);
-        if (offset <= 0) {
-            // No more offset to add
-            break;
-        }
     }
 
     return args;

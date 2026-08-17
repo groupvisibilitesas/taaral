@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import logging
 import os
@@ -13,8 +12,8 @@ except ImportError:
 import subprocess
 
 from odoo import tools
-from odoo.modules import get_modules, get_module_path
-from odoo.tests.common import TransactionCase, no_retry
+from odoo.modules import Manifest
+from odoo.tests import TransactionCase, no_retry
 from odoo.tools.which import which
 
 HERE = os.path.dirname(os.path.realpath(__file__))
@@ -37,10 +36,10 @@ class TestPyLint(TransactionCase):
         if tools.parse_version(pylint_version) < required_pylint_version:
             self._skip_test('please upgrade pylint to >= %s' % required_pylint_version)
 
-        paths = {tools.config['root_path']}
-        for module in get_modules():
-            module_path = get_module_path(module)
-            if module_path.startswith(join(tools.config['root_path'], 'addons')):
+        paths = {tools.config.root_path}
+        for manifest in Manifest.all_addon_manifests():
+            module_path = manifest.path
+            if module_path.startswith(join(tools.config.root_path, 'addons')):
                 continue
             paths.add(module_path)
 
@@ -56,6 +55,7 @@ class TestPyLint(TransactionCase):
 
                 # custom checkers
                 'sql-injection',
+        'missing-gettext',
                 'gettext-variable',
                 'gettext-placeholders',
                 'gettext-repr',
