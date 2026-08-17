@@ -1,7 +1,7 @@
 # ============================================================
 # docker-compose.yml — Projet taaral / Odoo 19 Community
 # PostgreSQL géré séparément via Dokploy "Database"
-# Ports internes : web 8401 / longpolling 8402
+# Ports internes : web 8601 / longpolling 8602
 # ============================================================
 
 version: '3.8'
@@ -38,22 +38,22 @@ services:
       - "traefik.http.middlewares.taaral-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.taaral-https-redirect.redirectscheme.permanent=true"
 
-      # ── HTTPS web (port 8401) ────────────────────────────
+      # ── HTTPS web (port 8601) ────────────────────────────
       - "traefik.http.routers.taaral-https.rule=Host(`${ODOO_DOMAIN}`)"
       - "traefik.http.routers.taaral-https.entrypoints=websecure"
       - "traefik.http.routers.taaral-https.tls=true"
       - "traefik.http.routers.taaral-https.tls.certresolver=letsencrypt"
       - "traefik.http.routers.taaral-https.service=taaral-web"
       - "traefik.http.routers.taaral-https.middlewares=taaral-security-headers"
-      - "traefik.http.services.taaral-web.loadbalancer.server.port=8401"
+      - "traefik.http.services.taaral-web.loadbalancer.server.port=8601"
 
-      # ── HTTPS longpolling (port 8402) ────────────────────
+      # ── HTTPS longpolling (port 8602) ────────────────────
       - "traefik.http.routers.taaral-lp.rule=Host(`${ODOO_DOMAIN}`) && PathPrefix(`/longpolling`)"
       - "traefik.http.routers.taaral-lp.entrypoints=websecure"
       - "traefik.http.routers.taaral-lp.tls=true"
       - "traefik.http.routers.taaral-lp.tls.certresolver=letsencrypt"
       - "traefik.http.routers.taaral-lp.service=taaral-lp"
-      - "traefik.http.services.taaral-lp.loadbalancer.server.port=8402"
+      - "traefik.http.services.taaral-lp.loadbalancer.server.port=8602"
 
       # ── Security headers ─────────────────────────────────
       - "traefik.http.middlewares.taaral-security-headers.headers.customResponseHeaders.X-Frame-Options=SAMEORIGIN"
