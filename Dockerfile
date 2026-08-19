@@ -36,9 +36,6 @@ EXPOSE 8602
 
 VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
 
-# ✅ IMPORTANT : Rester en root pour que l'entrypoint puisse exécuter les commandes
-# L'entrypoint basculera vers 'odoo' après les opérations admin
-# (pas de USER odoo ici)
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["odoo", "--config=/etc/odoo/odoo.conf"]
