@@ -38,4 +38,5 @@ VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
 
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["odoo", "--config=/etc/odoo/odoo.conf"]
+# CMD ["odoo", "--config=/etc/odoo/odoo.conf"]
+CMD []
